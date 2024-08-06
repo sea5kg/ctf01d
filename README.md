@@ -48,8 +48,6 @@ services:
     ports:
       - "8080:8080"
     restart: always
-    links:
-      - "ctf01d_db"
     networks:
       - ctf01d_net
 
