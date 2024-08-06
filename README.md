@@ -37,8 +37,6 @@ version: '3'
 
 services:
   ctf01d_jury:
-    depends_on:
-      - ctf01d_db
     container_name: ctf01d_jury_my_game
     image: sea5kg/ctf01d:latest
     volumes:
