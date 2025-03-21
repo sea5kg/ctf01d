@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [v0.5.3] - (2023 ?? ??)
 
 * Add utility ping to docker image
+* Updated libhv from 1.3.1 to 1.3.3 from (https://github.com/ithewei/libhv)
+* Updated sqlite from 3.43.2 to 3.49.1 from sqlite-amalgamation-3490100.zip (https://www.sqlite.org/download.html)
+* Fix #76 change icons for attack and defence to understooble
+* Fix #75 show time in human readable in scoreboard
 
 ## [v0.5.2] - (2023 Nov 18)
 
