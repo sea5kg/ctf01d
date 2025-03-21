@@ -287,7 +287,13 @@ static int __nio_write(hio_t* io, const void* buf, int len) {
     case HIO_TYPE_UDP:
     case HIO_TYPE_KCP:
     case HIO_TYPE_IP:
+    {
         nwrite = sendto(io->fd, buf, len, 0, io->peeraddr, SOCKADDR_LEN(io->peeraddr));
+        if (((sockaddr_u*)io->localaddr)->sin.sin_port == 0) {
+            socklen_t addrlen = sizeof(sockaddr_u);
+            getsockname(io->fd, io->localaddr, &addrlen);
+        }
+    }
         break;
     default:
         nwrite = write(io->fd, buf, len);
@@ -317,16 +323,19 @@ read:
             // goto read_done;
             return;
         } else if (err == EMSGSIZE) {
-            // ignore
-            return;
+            nread = len;
         } else {
             // perror("read");
             io->error = err;
             goto read_error;
         }
     }
-    if (nread == 0) {
+    if (nread == 0 && (io->io_type & HIO_TYPE_SOCK_STREAM)) {
         goto disconnect;
+    }
+    if (nread < len) {
+        // NOTE: make string friendly
+        ((char*)buf)[nread] = '\0';
     }
     io->readbuf.tail += nread;
     __read_cb(io, buf, nread);
@@ -375,7 +384,7 @@ write:
             goto write_error;
         }
     }
-    if (nwrite == 0) {
+    if (nwrite == 0 && (io->io_type & HIO_TYPE_SOCK_STREAM)) {
         goto disconnect;
     }
     pbuf->offset += nwrite;
@@ -506,11 +515,11 @@ try_write:
                 goto write_error;
             }
         }
-        if (nwrite == 0) {
-            goto disconnect;
-        }
         if (nwrite == len) {
             goto write_done;
+        }
+        if (nwrite == 0 && (io->io_type & HIO_TYPE_SOCK_STREAM)) {
+            goto disconnect;
         }
 enqueue:
         hio_add(io, hio_handle_events, HV_WRITE);
@@ -533,8 +542,9 @@ enqueue:
         write_queue_push_back(&io->write_queue, &remain);
         io->write_bufsize += remain.len;
         if (io->write_bufsize > WRITE_BUFSIZE_HIGH_WATER) {
-            hlogw("write len=%d enqueue %u, bufsize=%u over high water %u",
-                len, (unsigned int)(remain.len - remain.offset),
+            hlogw("write len=%u enqueue %u, bufsize=%u over high water %u",
+                (unsigned int)len,
+                (unsigned int)(remain.len - remain.offset),
                 (unsigned int)io->write_bufsize,
                 (unsigned int)WRITE_BUFSIZE_HIGH_WATER);
         }
@@ -561,7 +571,7 @@ disconnect:
 
 int hio_close (hio_t* io) {
     if (io->closed) return 0;
-    if (hv_gettid() != io->loop->tid) {
+    if (io->destroy == 0 && hv_gettid() != io->loop->tid) {
         return hio_close_async(io);
     }
 
@@ -570,7 +580,7 @@ int hio_close (hio_t* io) {
         hrecursive_mutex_unlock(&io->write_mutex);
         return 0;
     }
-    if (!write_queue_empty(&io->write_queue) && io->error == 0 && io->close == 0) {
+    if (!write_queue_empty(&io->write_queue) && io->error == 0 && io->close == 0 && io->destroy == 0) {
         io->close = 1;
         hrecursive_mutex_unlock(&io->write_mutex);
         hlogw("write_queue not empty, close later.");
@@ -595,6 +605,8 @@ int hio_close (hio_t* io) {
     SAFE_FREE(io->hostname);
     if (io->io_type & HIO_TYPE_SOCKET) {
         closesocket(io->fd);
+    } else if (io->io_type == HIO_TYPE_PIPE) {
+        close(io->fd);
     }
     return 0;
 }

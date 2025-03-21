@@ -131,7 +131,7 @@ hv::KeyValue splitKV(const std::string& str, char kv_kv, char k_v) {
             state = s_key;
             key = p+1;
         }
-        else if (*p == k_v) {
+        else if (*p == k_v && state != s_value) {
             state = s_value;
             value = p+1;
         }
@@ -200,6 +200,28 @@ std::string replaceAll(const std::string& str, const std::string& find, const st
         pos += b;
     }
     return res;
+}
+
+void NetAddr::from_string(const std::string& ipport) {
+    auto pos = ipport.find_last_of(':');
+    if (pos != std::string::npos) {
+        ip = trim_pairs(ipport.substr(0, pos), "[]");
+        std::string strPort = ipport.substr(pos + 1);
+        port = atoi(strPort.c_str());
+    } else if (ipport.find('.') != std::string::npos) {
+        ip = ipport;
+        port = 0;
+    } else {
+        port = atoi(ipport.c_str());
+    }
+}
+
+std::string NetAddr::to_string() {
+    const char* fmt = "%s:%d";
+    if (ip.find(':') != std::string::npos) {
+        fmt = "[%s]:%d";
+    }
+    return hv::asprintf(fmt, ip.c_str(), port);
 }
 
 } // end namespace hv

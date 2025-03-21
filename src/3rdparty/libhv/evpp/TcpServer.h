@@ -32,7 +32,11 @@ public:
     }
 
     EventLoopPtr loop(int idx = -1) {
-        return worker_threads.loop(idx);
+        EventLoopPtr worker_loop = worker_threads.loop(idx);
+        if (worker_loop == NULL) {
+            worker_loop = acceptor_loop;
+        }
+        return worker_loop;
     }
 
     //@retval >=0 listenfd, <0 error
@@ -146,7 +150,7 @@ public:
     // channel
     const TSocketChannelPtr& addChannel(hio_t* io) {
         uint32_t id = hio_id(io);
-        auto channel = TSocketChannelPtr(new TSocketChannel(io));
+        auto channel = std::make_shared<TSocketChannel>(io);
         std::lock_guard<std::mutex> locker(mutex_);
         channels[id] = channel;
         return channels[id];
@@ -287,14 +291,16 @@ public:
         stop(true);
     }
 
-    const EventLoopPtr& loop(int idx = -1) {
+    EventLoopPtr loop(int idx = -1) {
         return TcpServerEventLoopTmpl<TSocketChannel>::loop(idx);
     }
 
     // start thread-safe
     void start(bool wait_threads_started = true) {
         TcpServerEventLoopTmpl<TSocketChannel>::start(wait_threads_started);
-        EventLoopThread::start(wait_threads_started);
+        if (!isRunning()) {
+            EventLoopThread::start(wait_threads_started);
+        }
     }
 
     // stop thread-safe

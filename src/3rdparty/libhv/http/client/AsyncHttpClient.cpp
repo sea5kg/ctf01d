@@ -2,11 +2,28 @@
 
 namespace hv {
 
+int AsyncHttpClient::send(const HttpRequestPtr& req, HttpResponseCallback resp_cb) {
+    hloop_t* loop = EventLoopThread::hloop();
+    if (loop == NULL) return -1;
+    auto task = std::make_shared<HttpClientTask>();
+    task->req = req;
+    task->cb = std::move(resp_cb);
+    task->start_time = hloop_now_hrtime(loop);
+    if (req->retry_count > 0 && req->retry_delay > 0) {
+        req->retry_count = MIN(req->retry_count, req->timeout * 1000 / req->retry_delay - 1);
+    }
+    return send(task);
+}
+
 // createsocket => startConnect =>
 // onconnect => sendRequest => startRead =>
 // onread => HttpParser => resp_cb
 int AsyncHttpClient::doTask(const HttpClientTaskPtr& task) {
     const HttpRequestPtr& req = task->req;
+    if (req->cancel) {
+        return -1;
+    }
+
     // queueInLoop timeout?
     uint64_t now_hrtime = hloop_now_hrtime(EventLoopThread::hloop());
     int elapsed_ms = (now_hrtime - task->start_time) / 1000;
@@ -66,6 +83,10 @@ int AsyncHttpClient::doTask(const HttpClientTaskPtr& task) {
     channel->onread = [this, &channel](Buffer* buf) {
         HttpClientContext* ctx = channel->getContext<HttpClientContext>();
         if (ctx->task == NULL) return;
+        if (ctx->task->req->cancel) {
+            channel->close();
+            return;
+        }
         const char* data = (const char*)buf->data();
         int len = buf->size();
         int nparse = ctx->parser->FeedRecvData(data, len);
@@ -113,10 +134,13 @@ int AsyncHttpClient::doTask(const HttpClientTaskPtr& task) {
 
         const HttpClientTaskPtr& task = ctx->task;
         if (task) {
-            if (ctx->parser && ctx->parser->IsEof()) {
+            if (ctx->parser &&
+                ctx->parser->IsEof()) {
                 ctx->successCallback();
             }
-            else if (task->req && task->req->retry_count-- > 0) {
+            else if (task->req &&
+                     task->req->cancel == 0 &&
+                     task->req->retry_count-- > 0) {
                 if (task->req->retry_delay > 0) {
                     // try again after delay
                     setTimeout(task->req->retry_delay, [this, task](TimerID timerID){
@@ -166,24 +190,27 @@ int AsyncHttpClient::doTask(const HttpClientTaskPtr& task) {
 int AsyncHttpClient::sendRequest(const SocketChannelPtr& channel) {
     HttpClientContext* ctx = (HttpClientContext*)channel->context();
     assert(ctx != NULL && ctx->task != NULL);
+    if (ctx->resp == NULL) {
+        ctx->resp = std::make_shared<HttpResponse>();
+    }
     HttpRequest* req = ctx->task->req.get();
     HttpResponse* resp = ctx->resp.get();
+    assert(req != NULL && resp != NULL);
+    if (req->http_cb) resp->http_cb = std::move(req->http_cb);
 
     if (ctx->parser == NULL) {
         ctx->parser.reset(HttpParser::New(HTTP_CLIENT, (http_version)req->http_major));
     }
-    if (resp == NULL) {
-        resp = new HttpResponse;
-        ctx->resp.reset(resp);
-    }
-    if (req->http_cb) resp->http_cb = std::move(req->http_cb);
-
     ctx->parser->InitResponse(resp);
     ctx->parser->SubmitRequest(req);
 
     char* data = NULL;
     size_t len = 0;
     while (ctx->parser->GetSendData(&data, &len)) {
+        if (req->cancel) {
+            channel->close();
+            return -1;
+        }
         // NOTE: ensure write buffer size is enough
         if (len > (1 << 22) /* 4M */) {
             channel->setMaxWriteBufsize(len);

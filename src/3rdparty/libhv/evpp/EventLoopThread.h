@@ -44,9 +44,10 @@ public:
                Functor pre = Functor(),
                Functor post = Functor()) {
         if (status() >= kStarting && status() < kStopped) return;
+        if (isRunning()) return;
         setStatus(kStarting);
 
-        thread_.reset(new std::thread(&EventLoopThread::loop_thread, this, pre, post));
+        thread_ = std::make_shared<std::thread>(&EventLoopThread::loop_thread, this, pre, post);
 
         if (wait_thread_started) {
             while (loop_->status() < kRunning) {
@@ -66,9 +67,7 @@ public:
 
         if (wait_thread_stopped) {
             if (hv_gettid() == loop_tid) return;
-            while (!isStopped()) {
-                hv_delay(1);
-            }
+            join();
         }
     }
 

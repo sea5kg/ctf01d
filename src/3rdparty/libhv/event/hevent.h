@@ -25,6 +25,7 @@
 #define HIO_READ_UNTIL_DELIM    0x4
 
 ARRAY_DECL(hio_t*, io_array);
+ARRAY_DECL(hsignal_t*, signal_array);
 QUEUE_DECL(hevent_t, event_queue);
 
 struct hloop_s {
@@ -45,6 +46,9 @@ struct hloop_s {
     uint32_t                    npendings;
     // pendings: with priority as array.index
     hevent_t*                   pendings[HEVENT_PRIORITY_SIZE];
+    // signals
+    struct signal_array         signals;
+    uint32_t                    nsignals;
     // idles
     struct list_head            idles;
     uint32_t                    nidles;
@@ -219,6 +223,15 @@ void hio_del_write_timer(hio_t* io);
 void hio_del_keepalive_timer(hio_t* io);
 void hio_del_heartbeat_timer(hio_t* io);
 
+static inline void hio_use_loop_readbuf(hio_t* io) {
+    hloop_t* loop = io->loop;
+    if (loop->readbuf.len == 0) {
+        loop->readbuf.len = HLOOP_READ_BUFSIZE;
+        HV_ALLOC(loop->readbuf.base, loop->readbuf.len);
+    }
+    io->readbuf.base = loop->readbuf.base;
+    io->readbuf.len  = loop->readbuf.len;
+}
 static inline bool hio_is_loop_readbuf(hio_t* io) {
     return io->readbuf.base == io->loop->readbuf.base;
 }

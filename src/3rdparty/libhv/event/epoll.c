@@ -5,14 +5,21 @@
 #include "hdef.h"
 #include "hevent.h"
 
+#ifdef OS_WIN
+#include "wepoll/wepoll.h"
+typedef HANDLE  epoll_handle_t;
+#else
 #include <sys/epoll.h>
+typedef int     epoll_handle_t;
+#define epoll_close(epfd) close(epfd)
+#endif
 
 #include "array.h"
 #define EVENTS_INIT_SIZE    64
 ARRAY_DECL(struct epoll_event, events);
 
 typedef struct epoll_ctx_s {
-    int                 epfd;
+    epoll_handle_t      epfd;
     struct events       events;
 } epoll_ctx_t;
 
@@ -29,7 +36,7 @@ int iowatcher_init(hloop_t* loop) {
 int iowatcher_cleanup(hloop_t* loop) {
     if (loop->iowatcher == NULL) return 0;
     epoll_ctx_t* epoll_ctx = (epoll_ctx_t*)loop->iowatcher;
-    close(epoll_ctx->epfd);
+    epoll_close(epoll_ctx->epfd);
     events_cleanup(&epoll_ctx->events);
     HV_FREE(loop->iowatcher);
     return 0;
