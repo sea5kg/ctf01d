@@ -44,6 +44,18 @@ checkers:
     script_path: "./checker.py"
     script_wait_in_sec: 5
     time_sleep_between_run_scripts_in_sec: 15
+  - id: "example_service5" # work directory will be checker_example_service4
+    service_name: "Service5"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
+  - id: "example_service6" # work directory will be checker_example_service4
+    service_name: "Service6"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
 
 teams:
   - id: "t01" # must be uniq
@@ -91,6 +103,7 @@ teams:
     active: yes
     logo: "./html/images/teams/team09.png"
     ip_address: "127.0.9.1" # address to vulnserver
+
   - id: "t10" # must be uniq
     name: "Team #10"
     active: yes
@@ -136,3 +149,65 @@ teams:
     active: yes
     logo: "./html/images/teams/team18.png"
     ip_address: "127.0.18.1" # address to vulnserver
+  - id: "t19" # must be uniq
+    name: "Team #19"
+    active: yes
+    logo: "./html/images/teams/team19.png"
+    ip_address: "127.0.19.1" # address to vulnserver
+
+  - id: "t20" # must be uniq
+    name: "Team #20"
+    active: yes
+    logo: "./html/images/teams/team20.png"
+    ip_address: "127.0.20.1" # address to vulnserver
+  - id: "t21" # must be uniq
+    name: "Team #21"
+    active: yes
+    logo: "./html/images/teams/team21.png"
+    ip_address: "127.0.21.1" # address to vulnserver
+  - id: "t22" # must be uniq
+    name: "Team #22"
+    active: yes
+    logo: "./html/images/teams/team22.png"
+    ip_address: "127.0.22.1" # address to vulnserver
+  - id: "t23" # must be uniq
+    name: "Team #23"
+    active: yes
+    logo: "./html/images/teams/team23.png"
+    ip_address: "127.0.23.1" # address to vulnserver
+  - id: "t24" # must be uniq
+    name: "Team #24"
+    active: yes
+    logo: "./html/images/teams/team24.png"
+    ip_address: "127.0.24.1" # address to vulnserver
+  - id: "t25" # must be uniq
+    name: "Team #25"
+    active: yes
+    logo: "./html/images/teams/team25.png"
+    ip_address: "127.0.25.1" # address to vulnserver
+  - id: "t26" # must be uniq
+    name: "Team #26"
+    active: yes
+    logo: "./html/images/teams/team26.png"
+    ip_address: "127.0.26.1" # address to vulnserver
+  - id: "t27" # must be uniq
+    name: "Team #27"
+    active: yes
+    logo: "./html/images/teams/team27.png"
+    ip_address: "127.0.27.1" # address to vulnserver
+  - id: "t28" # must be uniq
+    name: "Team #28"
+    active: yes
+    logo: "./html/images/teams/team28.png"
+    ip_address: "127.0.28.1" # address to vulnserver
+  - id: "t29" # must be uniq
+    name: "Team #29"
+    active: yes
+    logo: "./html/images/teams/team29.png"
+    ip_address: "127.0.29.1" # address to vulnserver
+
+  - id: "t30" # must be uniq
+    name: "Team #30"
+    active: yes
+    logo: "./html/images/teams/team30.png"
+    ip_address: "127.0.30.1" # address to vulnserver
