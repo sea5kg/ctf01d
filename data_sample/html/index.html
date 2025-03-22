@@ -7,76 +7,39 @@
     <link rel="stylesheet" href="css/scoreboard.css">
 </head>
 <body>
-
-    <div class="ctf01d-tabs">
-        <div class="ctf01d-tab" tabcontentid="game_details">Details</div>
-        <div class="ctf01d-tab active" tabcontentid="game_scoreboard">Scoreboard</div>
-        <!-- div class="ctf01d-tab" tabcontentid="game_activities">Activities</div -->
-        <div class="ctf01d-tab" tabcontentid="game_rules">Rules</div>
-    </div>
-    <div class="ctf01d-tab-content" id="game_details">
+    <div class="ctf01d-global-page-switcher" id="menu_btn" nextcontentid="game_details"></div>
+    <div class="ctf01d-page-content" id="game_details">
         <div class="game-name" id="game_name"></div>
         <div class="game-time-range" id="game_time_range"></div>
-        <hr>
-        <h3>Scoreboard Legend</h3>
+        <div class="ctf01d-blockinfo">
+                <div class="ctf01d-blockinfo-header">Rules</div>
+                <div class="ctf01d-blockinfo-content">
+                    <h3>1. Basic</h3>
+                    <p>Every flag have a lifetime (default: 1 minute)</p> <!-- TODO get from server -->
+                    <p>Basic cost of stolen flag (default: 1.0 points)</p> <!-- TODO get from server -->
 
-        <p><div class="legend service-status down"></div> - service is down (dead)</p>
-        <p><div class="legend service-status up"></div> - service is work (up)</p>
-        <p><div class="legend service-status mumble"></div> - service is mumble (so slow)</p>
-        <p><div class="legend service-status corrupt"></div> - service is corrupt</p>
-        <p><div class="legend service-status shit"></div> - checker is shit (developer of checker for service must fix this)</p>
-        <p><div class="legend activity"><div class="activity-icon"></div></div> - activities (how much try send flags by team)</p>
+                    <h3>2. Acception of flag defence</h3>
+                    <p>Only that flag defence from the service is counted if:</p>
+                    <div>
+                        <p>- the flag was successfully putted to the service</<p>
+                        <p>- the flag has existed on the service all the time of it's life</<p>
+                        <p>- the flag was not stolen by another team (s)</<p>
+                        <p>- the cost of the defences flag is fixed and equal to 1.0 points</<p> <!-- TODO get from server -->
+                    </div>
 
-        <hr>
-        <h3>Flag send</h3>
-        <p>The flag format must match the regular expression (uuid):</p>
-        <pre>"^c01d[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}[0-9]{8}$"</pre>
-        <div style="display: inline-block;">
-            <pre class="pre-flag-format">
-Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
-              c01d...random-data-flag.....time
-              ^ prefix                    ^ timestamp is the last 8 digits
-              always c01d                   (how many seconds have passed
-                                            since the start of the game)
-            </pre>
-        </div>
+                    <h3>3. Acception of flag attack</h3>
 
-
-        <p>Form for send flag:</p>
-        <form target="_blank" method="GET" action="/flag">
-            By Team<select name="teamid" id="team_list"></select>
-            <input type="text" size="36" placeholder="Flag value" name="flag"> 
-            <button>Send</button><br>
-        </form>
-
-    </div>
-    <div class="ctf01d-tab-content" id="game_rules">
-        <h3>1. Basic</h3>
-        <p>Every flag have a lifetime (default: 1 minute)</p> <!-- TODO get from server -->
-        <p>Basic cost of stolen flag (default: 10 points)</p> <!-- TODO get from server -->
-
-        <h3>2. Acception of flag defence</h3>
-        <p>Only that flag defence from the service is counted if:</p>
-        <div>
-            <p>- the flag was successfully putted to the service</<p>>
-            <p>- the flag has existed on the service all the time of it's life</<p>>
-            <p>- the flag was not stolen by another team (s)</<p>>
-            <p>- the cost of the defences flag is fixed and equal to 1.0 points</<p>> <!-- TODO get from server -->
-        </div>
-
-        <h3>3. Acception of flag attack</h3>
-
-        <p>The attack flag counts if:</p>
-        <div>
-            <p>- the flag has the correct format</p>
-            <p>- the flag does not belong to your team (not from your service)</p>
-            <p>- a flag from the same type of service as yours, but your service must be in UP state</p>
-            <p>- the flag is dealt the first time by your team (the same flag may be dealt by different teams)</p>
-            <p>- the flag is still alive (the flag has not expired)</p>
-            <p>- only during the announced game (flags are not accepted during coffeebreaking)</p>
-        </div>
-        <div style="display: inline-block;">
-            <pre class="pre-flag-format">
+                    <p>The attack flag counts if:</p>
+                    <div>
+                        <p>- the flag has the correct format</p>
+                        <p>- the flag does not belong to your team (not from your service)</p>
+                        <p>- a flag from the same type of service as yours, but your service must be in UP state</p>
+                        <p>- the flag is dealt the first time by your team (the same flag may be dealt by different teams)</p>
+                        <p>- the flag is still alive (the flag has not expired)</p>
+                        <p>- only during the announced game (flags are not accepted during coffeebreaking)</p>
+                    </div>
+                    <div style="display: inline-block;">
+                        <pre class="pre-flag-format">
 # formala1
 basic_flag_points = 1.0
 motivation = 1.0
@@ -89,14 +52,96 @@ team_points = team_points + SLA_1 * (service1_defence_points + service1_attack_p
 team_points = team_points + SLA_2 * (service2_defence_points + service2_attack_points)
 ...
 team_points = team_points + SLA_N * (serviceN_defence_points + serviceN_attack_points)
-            </pre>
+                    </pre>
+                </div>
+            </div>
         </div>
-        <div class="game-rule-header">4. Issues for a jury system</div>
-        <div class="game-rule">
-            <a target="_blank" href="https://github.com/sea-kg/ctf01d/issues">https://github.com/sea-kg/ctf01d/issues</a>
+        <div class="ctf01d-blockinfo">
+            <div class="ctf01d-blockinfo-header">Flag send</div>
+            <div class="ctf01d-blockinfo-content">
+                <p>The flag format must match the regular expression (uuid):</p>
+                <div style="display: inline-block;">
+                    <pre class="pre-flag-format">"^c01d[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}[0-9]{8}$"</pre>
+                </div>
+                <br>
+                <div style="display: inline-block;">
+                    <pre class="pre-flag-format">
+Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
+              c01d...random-data-flag.....time
+              ^ prefix                    ^ timestamp is the last 8 digits
+              always c01d                   (how many seconds have passed
+                                            since the start of the game)
+                    </pre>
+                </div>
+
+                <h3>Form for send flag:</h3>
+                <form target="_blank" method="GET" action="/flag">
+                    By Team<select name="teamid" id="team_list"></select>
+                    <input type="text" size="36" placeholder="Flag value" name="flag">
+                    <button>Send</button><br>
+                </form>
+            </div>
+        </div>
+
+        <div class="ctf01d-blockinfo">
+            <div class="ctf01d-blockinfo-header">Scoreboard Legend</div>
+            <div class="ctf01d-blockinfo-content">
+                <p><div class="legend service-status down"></div> - service is down (dead)</p>
+                <p><div class="legend service-status up"></div> - service is work (up)</p>
+                <p><div class="legend service-status mumble"></div> - service is mumble (so slow)</p>
+                <p><div class="legend service-status corrupt"></div> - service is corrupt</p>
+                <p><div class="legend service-status shit"></div> - checker is shit (developer of checker for service must fix this)</p>
+                <p><div class="legend activity"><div class="activity-icon"></div></div> - activities (how much try send flags by team)</p>
+
+                <p><div class="legend icon-attack"><div class="activity-icon"></div></div> - Total number of successful attacks</p>
+                <p><div class="legend icon-attack-points"><div class="activity-icon"></div></div> - The number of points received for a successful attack</p>
+                <p><div class="legend icon-defence-flags"><div class="activity-icon"></div></div> - Total number of successful defenses flags</p>
+                <p><div class="legend icon-defence-points"><div class="activity-icon"></div></div> - Number of points for a successful defense</p>
+                <p><div class="legend icon-first-blood"><div class="activity-icon"></div></div> - First Blood (who was the first to find a vulnerability and successfully exploit it)</p>
+                <p><div class="legend icon-sla"><div class="activity-icon"></div></div> - Service Level Agreement</p>
+                <p><div class="legend icon-round-time"><div class="activity-icon"></div></div> - Round time for flag planting</p>
+
+            </div>
+        </div>
+
+        <div class="ctf01d-blockinfo">
+            <div class="ctf01d-blockinfo-header">About ctf01d</div>
+            <div class="ctf01d-blockinfo-content">
+                <img src="./images/logo.png"/>
+                <br>
+                <br>
+                Repository: <a target="_blank" href="https://github.com/sea-kg/ctf01d/issues">https://github.com/sea-kg/ctf01d/issues</a>
+                <br>
+                <br>
+                <div style="display: inline-block;">
+                    <pre class="pre-flag-format">
+MIT License
+
+Copyright (c) 2018-2025 Evgenii Sopov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+                    </pre>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="ctf01d-tab-content" id="game_scoreboard" style="display: block">
+    <div class="ctf01d-page-content" id="game_scoreboard" style="display: block">
         <div id="scoreboard_content" style="display: none">
         </div>
         <div id="loader_content" style="display: block">

@@ -263,15 +263,15 @@ resources:
     modified: 1699775797
     sha1: "94bc90a0ba18eb99fa8f8e9830e7bf7bec347119"
   - filepath: "./data_sample/html/index.html"
-    filesize: 5254
+    filesize: 8442
     pack-as: "text"
-    modified: 1700251411
-    sha1: "90457b37aab5c6e901ed1d1ea98a61e5af189b1c"
+    modified: 1742624110
+    sha1: "71f6fe4b69240f66139f7c7919e27ae53974dcb7"
   - filepath: "./data_sample/html/js/scoreboard.js"
-    filesize: 26420
+    filesize: 26449
     pack-as: "text"
-    modified: 1704529155
-    sha1: "07d5727f8abf64c8020664ea6749d57d739b01fe"
+    modified: 1742620779
+    sha1: "293acc4996f2bd00abaf158b4c40a785123b01f8"
   - filepath: "./data_sample/html/images/first-blood.svg"
     filesize: 3653
     pack-as: "text"
@@ -393,10 +393,10 @@ resources:
     modified: 1700126010
     sha1: "0f591a740f6fe9a7868758935986945b810e3958"
   - filepath: "./data_sample/html/css/scoreboard.css"
-    filesize: 14527
+    filesize: 15551
     pack-as: "text"
-    modified: 1700247832
-    sha1: "3b8627e0c277e381c330039ab3c7ff272366c9b3"
+    modified: 1742624314
+    sha1: "ebc6a405b147eb11354c0f7815c8f05e3af4c2bb"
 
   - filepath: "./data_sample/html/images/teams/team30.png"
     filesize: 6052
@@ -448,4 +448,10 @@ resources:
     pack-as: "binary"
     modified: 1742569343
     sha1: "cd35d14634e5ca97ac5162ffee14399f6a0f3091"
+
+  - filepath: "./data_sample/html/images/details.svg"
+    filesize: 7007
+    pack-as: "binary"
+    modified: 1742623168
+    sha1: "24aa81f99e1227810fca3d3293ea5cfde1667009"
 

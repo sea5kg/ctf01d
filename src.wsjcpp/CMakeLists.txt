@@ -190,6 +190,8 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src-resources.wsjcpp/__data_sam
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src-resources.wsjcpp/__data_sample_html_images_teams_team26_png_pathf665c6.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src-resources.wsjcpp/__data_sample_html_images_teams_team27_png_path8cc20f.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src-resources.wsjcpp/__data_sample_html_images_teams_team27_png_path8cc20f.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src-resources.wsjcpp/__data_sample_html_images_details_svg_path793589.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src-resources.wsjcpp/__data_sample_html_images_details_svg_path793589.cpp")
 
 # required-libraries
 list (APPEND WSJCPP_LIBRARIES "-lpthread")

@@ -1,21 +1,24 @@
 
-// init tabs
-var tabs = document.getElementsByClassName('ctf01d-tab');
-var tabs_content = document.getElementsByClassName('ctf01d-tab-content');
-function switchToTabContent() {
-    var tabcontentid = this.getAttribute('tabcontentid');
-    for (var i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
+var mneu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];
+var tabs_content = document.getElementsByClassName('ctf01d-page-content');
+
+mneu_btn.onclick = function() {
+    // mneu_btn
     for (var i = 0; i < tabs_content.length; i++) {
         tabs_content[i].style.display = '';
     }
-    this.classList.add('active');
-    document.getElementById(tabcontentid).style.display = 'block';
-}
-for (var i in tabs) {
-    // console.log(tabs[i]);
-    tabs[i].onclick = switchToTabContent;
+
+    var nextcontentid = this.getAttribute('nextcontentid');
+    document.getElementById(nextcontentid).style.display = 'block';
+
+    if (nextcontentid == 'game_details') {
+        this.setAttribute('nextcontentid', 'game_scoreboard');
+    } else {
+        this.setAttribute('nextcontentid', 'game_details');
+    }
+
+    console.log(nextcontentid)
+
 }
 
 // post request to server Async

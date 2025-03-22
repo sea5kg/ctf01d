@@ -17,31 +17,34 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path36c4b6::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path36c4b6::getBufferSize() const {
-    return 26420;
+    return 26449;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() const {
-    static const std::string sRet = "" // size: 26420
+    static const std::string sRet = "" // size: 26449
         "\n"
-        "// init tabs\n"
-        "var tabs = document.getElementsByClassName('ctf01d-tab');\n"
-        "var tabs_content = document.getElementsByClassName('ctf01d-tab-content');\n"
-        "function switchToTabContent() {\n"
-        "    var tabcontentid = this.getAttribute('tabcontentid');\n"
-        "    for (var i = 0; i < tabs.length; i++) {\n"
-        "        tabs[i].classList.remove('active');\n"
-        "    }\n"
+        "var mneu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];\n"
+        "var tabs_content = document.getElementsByClassName('ctf01d-page-content');\n"
+        "\n"
+        "mneu_btn.onclick = function() {\n"
+        "    // mneu_btn\n"
         "    for (var i = 0; i < tabs_content.length; i++) {\n"
         "        tabs_content[i].style.display = '';\n"
         "    }\n"
-        "    this.classList.add('active');\n"
-        "    document.getElementById(tabcontentid).style.display = 'block';\n"
-        "}\n"
-        "for (var i in tabs) {\n"
-        "    // console.log(tabs[i]);\n"
-        "    tabs[i].onclick = switchToTabContent;\n"
+        "\n"
+        "    var nextcontentid = this.getAttribute('nextcontentid');\n"
+        "    document.getElementById(nextcontentid).style.display = 'block';\n"
+        "\n"
+        "    if (nextcontentid == 'game_details') {\n"
+        "        this.setAttribute('nextcontentid', 'game_scoreboard');\n"
+        "    } else {\n"
+        "        this.setAttribute('nextcontentid', 'game_details');\n"
+        "    }\n"
+        "\n"
+        "    console.log(nextcontentid)\n"
+        "\n"
         "}\n"
         "\n"
         "// post request to server Async\n"
