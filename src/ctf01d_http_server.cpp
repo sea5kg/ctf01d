@@ -115,15 +115,6 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
 
     m_pHttpService->GET("*", std::bind(&Ctf01dHttpServer::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
     // m_pHttpService->GET("/admin*", std::bind(&Ctf01dHttpServer::httpAdmin, this, std::placeholders::_1, std::placeholders::_2));
-
-
-    // m_pHttpService->GET("/get", [](HttpRequest* req, HttpResponse* resp) {
-    //     resp->json["origin"] = req->client_addr.ip;
-    //     resp->json["url"] = req->url;
-    //     resp->json["args"] = req->query_params;
-    //     resp->json["headers"] = req->headers;
-    //     return 200;
-    // });
 }
 
 hv::HttpService *Ctf01dHttpServer::getService() {
@@ -174,16 +165,11 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
 
     if (sRequestPath.rfind(m_sApiPathPrefix, 0) == 0) {
         if (sRequestPath == "/api/v1/game") {
-            // std::cout << m_sCacheResponseGameJson << std::endl;
-            resp->Data(
-                (void *)(m_sCacheResponseGameJson.c_str()),
-                m_sCacheResponseGameJson.length(),
-                true // nocopy
-            );
-            resp->SetContentTypeByFilename("game.json");
-            return 200;
+            return this->httpApiV1Game(req, resp);
         } else if (sRequestPath == "/api/v1/scoreboard") {
             return this->httpApiV1Scoreboard(req, resp);
+        } else if (sRequestPath == "/api/v1/myip") {
+            return this->httpApiV1MyIp(req, resp);
         } else if (sRequestPath == "/api/v1/teams") {
             resp->Data(
                 (void *)(m_sCacheResponseTeamsJson.c_str()),
@@ -398,5 +384,21 @@ int Ctf01dHttpServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) 
         false // nocopy - force copy
     );
     resp->SetContentTypeByFilename("scoreboard.json");
+    return 200;
+}
+
+int Ctf01dHttpServer::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
+    // std::cout << m_sCacheResponseGameJson << std::endl;
+    resp->Data(
+        (void *)(m_sCacheResponseGameJson.c_str()),
+        m_sCacheResponseGameJson.length(),
+        true // nocopy
+    );
+    resp->SetContentTypeByFilename("game.json");
+    return 200;
+}
+
+int Ctf01dHttpServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
+    resp->json["myip"] = req->client_addr.ip;
     return 200;
 }

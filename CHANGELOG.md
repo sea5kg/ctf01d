@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Fix #75 show time in human readable in scoreboard
 * Updated year copyright
 * Updated ctf01d-stage-release (added python packages grpcio grpcio-tools protobuf tzdata, added ruby-full)
+* Added new api handler `http://{HOST}:{PORT}/api/v1/myip` for detect myip
 
 ## [v0.5.2] - (2023 Nov 18)
 

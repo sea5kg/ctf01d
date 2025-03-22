@@ -1,11 +1,11 @@
 # ctf01d
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/sea5kg/ctf01d.svg)](https://hub.docker.com/r/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/stars/sea-kg/ctf01d.svg?label=github%20%E2%98%85)](https://github.com/sea-kg/ctf01d/) [![Github Stars](https://img.shields.io/github/contributors/sea-kg/ctf01d.svg)](https://github.com/sea-kg/ctf01d/) [![Github Forks](https://img.shields.io/github/forks/sea-kg/ctf01d.svg?label=github%20forks)](https://github.com/sea-kg/ctf01d/) 
+[![Docker Pulls](https://img.shields.io/docker/pulls/sea5kg/ctf01d.svg)](https://hub.docker.com/r/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/stars/sea5kg/ctf01d.svg?label=github%20%E2%98%85)](https://github.com/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/contributors/sea5kg/ctf01d.svg)](https://github.com/sea5kg/ctf01d/) [![Github Forks](https://img.shields.io/github/forks/sea5kg/ctf01d.svg?label=github%20forks)](https://github.com/sea5kg/ctf01d/)
 
 Jury System for attack-defence ctf game (ctf-scoreboard).
 Also you can use it for training.
 
-![scoreboard](https://raw.githubusercontent.com/sea-kg/ctf01d/master/misc/screens/screen1.png)
+![scoreboard](https://raw.githubusercontent.com/sea5kg/ctf01d/master/misc/screens/screen1.png)
 
 ## Easy way to start/init it (based on docker-compose)
 
@@ -219,7 +219,7 @@ team_points = team_points + SLA_N * (serviceN_defence_points + serviceN_attack_p
 ```
 $ sudo apt install git-core
 $ cd ~
-$ git clone http://github.com/sea-kg/ctf01d.git ctf01d.git
+$ git clone http://github.com/sea5kg/ctf01d.git ctf01d.git
 $ nano ~/ctf01d.git/data_sample/config.yml
 ```
 Config files (see comments in file):
@@ -343,12 +343,13 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
 
  # Jury API requests list
 
+ * `http://{HOST}:{PORT}/flag` - send flag
  * `http://{HOST}:{PORT}/api/v1/game` - info about the game
  * `http://{HOST}:{PORT}/api/v1/teams` - list of teams
  * `http://{HOST}:{PORT}/api/v1/services` - list of services
  * `http://{HOST}:{PORT}/api/v1/scoreboard` - scoreboard table teams-services
  * `http://{HOST}:{PORT}/team-logo/{TEAMID}` - team logos
-
+ * `http://{HOST}:{PORT}/api/v1/myip` - client ip
 
 # How to prepare vuln service
 
@@ -558,7 +559,7 @@ sudo apt install git git-core\
 
 Clone source code of the project:
 ```
-$ git clone https://github.com/sea-kg/ctf01d ~/ctf01d.git
+$ git clone https://github.com/sea5kg/ctf01d ~/ctf01d.git
 ```
 
 Build:
@@ -588,14 +589,6 @@ We can look for docker status: `docker ps -a`
 
 *Notice: multistage build docker*
 
-You need to download latest version of ctf01d:stage-build-latest / ctf01d:stage-release-latest or build it first
-
-Download (docker pull):
-```
-$ docker pull sea5kg/ctf01d:stage-build-latest
-$ docker pull sea5kg/ctf01d:stage-release-latest
-```
-
 Or build fresh images for stages:
 ```
 $ cd ~/ctf01d.git/contrib/docker-build-stages/
@@ -612,7 +605,7 @@ And now you can build image:
 ```
 $ cd ~/ctf01d.git
 $ docker build --rm=true -t "sea5kg/ctf01d:latest" .
-$ docker tag "sea5kg/ctf01d:latest" "sea5kg/ctf01d:v0.4.x"
+$ docker tag "sea5kg/ctf01d:latest" "sea5kg/ctf01d:v0.5.x"
 ```
 
 3. Run dev docker-container, build and start
@@ -723,7 +716,7 @@ $ sudo systemctl restart myservice
 
 I have only one schmea now:
 
-![schema1](https://raw.githubusercontent.com/sea-kg/ctf01d/master/misc/schemas/basic_schema_masquerade_openvpn.png)
+![schema1](https://raw.githubusercontent.com/sea5kg/ctf01d/master/misc/schemas/basic_schema_masquerade_openvpn.png)
 
 # Similar Systems && Helpful Links
 
