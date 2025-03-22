@@ -1,6 +1,8 @@
 .vscode
 jury.d/logs/*.log
 dckr_mysql/*
+__pycache__
+found_flags.json
 vulnbox/example_service1/flags/*
 game-simulation/vulnbox/service3_php/tmp/*
 *.log

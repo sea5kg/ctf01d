@@ -62,7 +62,7 @@ def put_flag():
         s.recv(1024)
         s.close()
     except socket.timeout:
-        service_mumble()
+        service_down()
     except socket.error as serr:
         if serr.errno == errno.ECONNREFUSED:
             service_down()
