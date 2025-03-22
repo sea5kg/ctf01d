@@ -318,14 +318,14 @@ public:
         }
     }
 
-    int String(const std::string& str, int return_code = 200) {
+    int String(const std::string& str) {
         content_type = TEXT_PLAIN;
         body = str;
-        return return_code;
+        return 200;
     }
 
-    int Data(void* data, int len, bool nocopy = true, http_content_type data_content_type = APPLICATION_OCTET_STREAM) {
-        content_type = data_content_type;
+    int Data(void* data, int len, bool nocopy = true) {
+        content_type = APPLICATION_OCTET_STREAM;
         if (nocopy) {
             content = data;
             content_length = len;
