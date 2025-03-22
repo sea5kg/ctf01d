@@ -85,15 +85,18 @@ services:
     networks:
       - sample_vulnbox_net
 
-  # ferma:
-  #   image: python:latest
-  #   volumes:
-  #     # - "./tmp/flags_service6:/root/flags"
-  #     - "./run_exploit.py:/root/run_exploit.py"
-  #   command: sh -c "python3 -m pip install requests && python3 -u /root/run_exploit.py 192.168.88.252:8080"
-  #   restart: always
-  #   networks:
-  #     - sample_vulnbox_net
+  ferma:
+    build:
+      context: .
+      dockerfile: Dockerfile.exploit
+    image: test_sample_game_network:2019.1.6
+    volumes:
+      - "./tmp/flags_exploit:/root/flags"
+      - "./run_exploit.py:/root/run_exploit.py"
+    command: sh -c "python3 -u /root/run_exploit.py 10.10.100.101:8080"
+    restart: always
+    networks:
+      - sample_vulnbox_net
 
 networks:
   sample_vulnbox_net:
