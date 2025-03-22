@@ -1,0 +1,100 @@
+version: '3'
+
+services:
+  sample_service1:
+    image: python:latest
+    volumes:
+      - "./tmp/flags_service1:/root/flags"
+      - "./sample_service.py:/root/sample_service.py"
+    command: sh -c "python3 -u /root/sample_service.py 4101"
+    expose:
+      - "4101"
+    ports:
+      - "4101:4101"
+    restart: always
+    networks:
+      - sample_vulnbox_net
+
+  sample_service2:
+    image: python:latest
+    volumes:
+      - "./tmp/flags_service2:/root/flags"
+      - "./sample_service.py:/root/sample_service.py"
+    command: sh -c "python3 -u /root/sample_service.py 4102"
+    expose:
+      - "4102"
+    ports:
+      - "4102:4102"
+    restart: always
+    networks:
+      - sample_vulnbox_net
+
+  sample_service3:
+    image: python:latest
+    volumes:
+      - "./tmp/flags_service3:/root/flags"
+      - "./sample_service.py:/root/sample_service.py"
+    command: sh -c "python3 -u /root/sample_service.py 4103"
+    expose:
+      - "4103"
+    ports:
+      - "4103:4103"
+    restart: always
+    networks:
+      - sample_vulnbox_net
+
+  sample_service4:
+    image: python:latest
+    volumes:
+      - "./tmp/flags_service4:/root/flags"
+      - "./sample_service.py:/root/sample_service.py"
+    command: sh -c "python3 -u /root/sample_service.py 4104"
+    expose:
+      - "4104"
+    ports:
+      - "4104:4104"
+    restart: always
+    networks:
+      - sample_vulnbox_net
+
+  sample_service5:
+    image: python:latest
+    volumes:
+      - "./tmp/flags_service5:/root/flags"
+      - "./sample_service.py:/root/sample_service.py"
+    command: sh -c "python3 -u /root/sample_service.py 4105"
+    expose:
+      - "4105"
+    ports:
+      - "4105:4105"
+    restart: always
+    networks:
+      - sample_vulnbox_net
+
+  sample_service6:
+    image: python:latest
+    volumes:
+      - "./tmp/flags_service6:/root/flags"
+      - "./sample_service.py:/root/sample_service.py"
+    command: sh -c "python3 -u /root/sample_service.py 4106"
+    expose:
+      - "4106"
+    ports:
+      - "4106:4106"
+    restart: always
+    networks:
+      - sample_vulnbox_net
+
+  # ferma:
+  #   image: python:latest
+  #   volumes:
+  #     # - "./tmp/flags_service6:/root/flags"
+  #     - "./run_exploit.py:/root/run_exploit.py"
+  #   command: sh -c "python3 -m pip install requests && python3 -u /root/run_exploit.py 192.168.88.252:8080"
+  #   restart: always
+  #   networks:
+  #     - sample_vulnbox_net
+
+networks:
+  sample_vulnbox_net:
+    driver: bridge
