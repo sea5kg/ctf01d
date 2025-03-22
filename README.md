@@ -279,6 +279,22 @@ http-code responses:
  * 200 - flag is accepted
  * 403 - flag is not accepted (probable reasons: old, already accepted, not found)
 
+Example of sending a flag (via python):
+
+```python
+r = requests.get("http://192.168.1.10:8080/flag?teamid=keva&flag=c01d4567-e89b-12d3-a456-426600000010")
+if r.status_code == 200:
+  print("OK (flag accepted) ", r.text)
+  sys.exit(0)
+elif r.status_code == 403:
+  print("FAIL " + flag + " " + r.text)
+  sys.exit(0)
+elif r.status_code == 400:
+  print("FAIL Request incorrect. " + r.text + "\n" + flag)
+  sys.exit(1)
+else:
+    print("FAIL Something went wrong. " + str(r.status_code) + ", response"+ r.text)
+```
 
 # Checker script description
 
@@ -302,6 +318,16 @@ Call-examples:
 
  * ```./checker.py 127.0.0.1 put "1q2w3e4r5t" "c01d1fd2-133a-4713-9587-126500000010"```
  * ```./checker.py 127.0.0.1 check "1q2w3e4r5t" "c01d1fd2-133a-4713-9587-126500000010"```
+
+Flag format description:
+
+```
+Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
+              c01d...random-data-flag.....time
+              ^ prefix                    ^ timestamp is the last 8 digits
+              always c01d                   (how many seconds have passed
+                                            since the start of the game)
+```
 
 ### Possible return codes
 
@@ -415,7 +441,8 @@ Allowed return codes:
 For example checker script (in python):
 
 ```python
-#!/usr/bin/python
+#!/usr/bin/env python3
+
 import sys
 import math
 import socket
