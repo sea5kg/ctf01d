@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 import sys
 import socket
 import errno
@@ -62,7 +62,7 @@ def put_flag():
         s.recv(1024)
         s.close()
     except socket.timeout:
-        service_down()
+        service_mumble()
     except socket.error as serr:
         if serr.errno == errno.ECONNREFUSED:
             service_down()

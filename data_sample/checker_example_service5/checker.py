@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 import sys
 import socket
 import errno
@@ -29,8 +29,15 @@ if len(sys.argv) != 5:
     print("\n")
     exit(0)
 
+def debug(err):
+    pass
+    # if isinstance(err, str):
+    #     err = Exception(err)
+    # traceback.print_exc()
+    # raise err
+
 host = sys.argv[1]
-port = 4444
+port = 4105
 command = sys.argv[2]
 f_id = sys.argv[3]
 flag = sys.argv[4]
@@ -47,23 +54,23 @@ def put_flag():
         s.settimeout(1)
         s.connect((host, port))
         s.recv(1024)
-        s.send("put" + "\n")
+        s.send(("put" + "\n").encode("utf-8"))
         s.recv(1024)
-        s.send(f_id + "\n")
+        s.send((f_id + "\n").encode("utf-8"))
         s.recv(1024)
-        s.send(flag + "\n")
+        s.send((flag + "\n").encode("utf-8"))
         s.recv(1024)
         s.close()
     except socket.timeout:
-        service_down()
+        service_mumble()
     except socket.error as serr:
         if serr.errno == errno.ECONNREFUSED:
             service_down()
         else:
-            print(serr)
+            debug(serr)
             service_corrupt()
     except Exception as e:
-        print(e)
+        debug(e)
         service_corrupt()
 
 def check_flag():
@@ -76,12 +83,13 @@ def check_flag():
         s.settimeout(1)
         s.connect((host, port))
         s.recv(1024)
-        s.send("get\n")
+        s.send(("get\n").encode("utf-8"))
         s.recv(1024)
-        s.send(f_id + "\n")
+        s.send((f_id + "\n").encode("utf-8"))
         result = s.recv(1024)
+        result = result.decode("utf-8", "ignore")
         flag2 = result.strip()
-        flag2 = flag2.split("FOUND FLAG: ");
+        flag2 = flag2.split("FOUND FLAG: ")
         if len(flag2) == 2:
             flag2 = flag2[1]
         else:
@@ -93,13 +101,14 @@ def check_flag():
         if serr.errno == errno.ECONNREFUSED:
             service_down()
         else:
-            print(serr)
+            debug(serr)
             service_corrupt()
     except Exception as e:
-        print(e)
+        debug(e)
         service_corrupt()
 
     if flag != flag2:
+        debug('flag: [' + flag +  '] flag2: [' + str(flag2) + ']')
         service_corrupt()
 
 
