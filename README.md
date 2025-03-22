@@ -81,6 +81,9 @@ ctf01d_jury_1  | 2021-05-17 03:05:29.695, 0x00007f10affff700 [INFO] Checker: so_
 ```
 *And you can also find dashboard on http://localhost:8080/*
 
+Preinstalled packages for checker:
+- python3: `requests faker grpcio grpcio-tools protobuf tzdata`
+- Installed `ruby-full`
 
 ### terminal1
 

@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Fix #76 change icons for attack and defence to understooble
 * Fix #75 show time in human readable in scoreboard
 * Updated year copyright
+* Updated ctf01d-stage-release (added python packages grpcio grpcio-tools protobuf tzdata, added ruby-full)
 
 ## [v0.5.2] - (2023 Nov 18)
 
