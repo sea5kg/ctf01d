@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Updated libhv from 1.3.1 to 1.3.3 from (https://github.com/ithewei/libhv)
 * Updated sqlite from 3.43.2 to 3.49.1 from sqlite-amalgamation-3490100.zip (https://www.sqlite.org/download.html)
 * Updated wsjcpp-yaml from v0.1.1 to v0.1.7 (https://github.com/wsjcpp/wsjcpp-yaml)
+* Updated config - extend to 6 services and 30 teams
 * Fix #76 change icons for attack and defence to understooble
 * Fix #75 show time in human readable in scoreboard
+* Updated year copyright
 
 ## [v0.5.2] - (2023 Nov 18)
 

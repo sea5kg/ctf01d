@@ -136,7 +136,7 @@ $ docker-compose up
 
 ## License
 
-* CTF01D - MIT. Copyright (c) 2018-2026 Evgenii Sopov
+* CTF01D - MIT. Copyright (c) 2018-2025 Evgenii Sopov
 * libhv (v1.3.3) - BSD 3-Clause License. Copyright (c) 2020, ithewei
 * SQLITE (v3.49.1) - SQLite is in the Public Domain
 
