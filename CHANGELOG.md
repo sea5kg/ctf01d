@@ -5,6 +5,8 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.5.4] - (2025 ?? ??)
+
 ## [v0.5.3] - (2025 Mar 23)
 
 * Add utility ping to docker image
