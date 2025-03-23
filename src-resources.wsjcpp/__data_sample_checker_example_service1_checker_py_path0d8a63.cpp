@@ -17,13 +17,13 @@ const std::string &RES___data_sample_checker_example_service1_checker_py_path0d8
 // ---------------------------------------------------------------------
 
 int RES___data_sample_checker_example_service1_checker_py_path0d8a63::getBufferSize() const {
-    return 3153;
+    return 3151;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_checker_example_service1_checker_py_path0d8a63::getBuffer() const {
-    static const std::string sRet = "" // size: 3153
+    static const std::string sRet = "" // size: 3151
         "#!/usr/bin/python3\n"
         "import sys\n"
         "import socket\n"
@@ -88,7 +88,7 @@ const char *RES___data_sample_checker_example_service1_checker_py_path0d8a63::ge
         "        s.recv(1024)\n"
         "        s.close()\n"
         "    except socket.timeout:\n"
-        "        service_mumble()\n"
+        "        service_down()\n"
         "    except socket.error as serr:\n"
         "        if serr.errno == errno.ECONNREFUSED:\n"
         "            service_down()\n"
