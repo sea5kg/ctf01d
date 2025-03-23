@@ -5,7 +5,7 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v0.5.3] - (2023 ?? ??)
+## [v0.5.3] - (2025 Mar 23)
 
 * Add utility ping to docker image
 * Updated libhv from 1.3.1 to 1.3.3 from (https://github.com/ithewei/libhv)
@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Updated year copyright
 * Updated ctf01d-stage-release (added python packages grpcio grpcio-tools protobuf tzdata, added ruby-full)
 * Added new api handler `http://{HOST}:{PORT}/api/v1/myip` for detect myip
+* Prepare tests/test_sample_game_network_6x30 for check network configuration + jury base on test services (6 services x 30 teams)
+
 
 ## [v0.5.2] - (2023 Nov 18)
 
