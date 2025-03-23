@@ -443,6 +443,10 @@ bool HttpMessage::IsKeepAlive() {
     return keepalive;
 }
 
+bool HttpMessage::IsUpgrade() {
+    auto iter = headers.find("upgrade");
+    return iter != headers.end();
+}
 
 // headers
 void HttpMessage::SetHeader(const char* key, const std::string& value) {
@@ -460,6 +464,12 @@ void HttpMessage::AddCookie(const HttpCookie& cookie) {
 const HttpCookie& HttpMessage::GetCookie(const std::string& name) {
     for (auto iter = cookies.begin(); iter != cookies.end(); ++iter) {
         if (iter->name == name) {
+            return *iter;
+        }
+        auto kv_iter = iter->kv.find(name);
+        if (kv_iter != iter->kv.end()) {
+            iter->name = name;
+            iter->value = kv_iter->second;
             return *iter;
         }
     }
@@ -485,7 +495,24 @@ void HttpMessage::DumpHeaders(std::string& str) {
             // %s: %s\r\n
             str += header.first;
             str += ": ";
-            str += header.second;
+            // fix CVE-2023-26148
+            // if the value has \r\n, translate to \\r\\n
+            if (header.second.find("\r") != std::string::npos ||
+                header.second.find("\n") != std::string::npos) {
+                std::string newStr = "";
+                for (size_t i = 0; i < header.second.size(); ++i) {
+                    if (header.second[i] == '\r') {
+                        newStr += "\\r";
+                    } else if (header.second[i] == '\n') {
+                        newStr += "\\n";
+                    } else {
+                        newStr += header.second[i];
+                    }
+                }
+                str += newStr;
+            } else {
+                str += header.second;
+            }
             str += "\r\n";
         }
     }
@@ -619,6 +646,7 @@ void HttpRequest::Init() {
     retry_delay = DEFAULT_HTTP_FAIL_RETRY_DELAY;
     redirect = 1;
     proxy = 0;
+    cancel = 0;
 }
 
 void HttpRequest::Reset() {

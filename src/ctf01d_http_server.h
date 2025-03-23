@@ -10,7 +10,7 @@
  * (_______/   )_(   |/       (_______)\____/(______/
  *
  * MIT License
- * Copyright (c) 2018-2023 Evgenii Sopov
+ * Copyright (c) 2018-2025 Evgenii Sopov
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +51,8 @@ class Ctf01dHttpServer {
         int httpWebFolder(HttpRequest* req, HttpResponse* resp);
         int httpApiV1Flag(HttpRequest* req, HttpResponse* resp);
         int httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp);
+        int httpApiV1Game(HttpRequest* req, HttpResponse* resp);
+        int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
 
     private:
         std::string TAG;

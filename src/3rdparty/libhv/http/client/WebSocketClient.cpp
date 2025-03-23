@@ -39,7 +39,7 @@ int WebSocketClient::open(const char* _url, const http_headers& headers) {
     }
     hlogi("%s", url.c_str());
     if (!http_req_) {
-        http_req_.reset(new HttpRequest);
+        http_req_ = std::make_shared<HttpRequest>();
     }
     // ws => http
     http_req_->url = "http" + url.substr(2, -1);
@@ -88,7 +88,7 @@ int WebSocketClient::open(const char* _url, const http_headers& headers) {
             state = WS_UPGRADING;
             // prepare HttpParser
             http_parser_.reset(HttpParser::New(HTTP_CLIENT, HTTP_V1));
-            http_resp_.reset(new HttpResponse);
+            http_resp_ = std::make_shared<HttpResponse>();
             http_parser_->InitResponse(http_resp_.get());
         } else {
             state = WS_CLOSED;
@@ -137,19 +137,20 @@ int WebSocketClient::open(const char* _url, const http_headers& headers) {
                     channel->close();
                     return;
                 }
-                ws_parser_.reset(new WebSocketParser);
+                ws_parser_ = std::make_shared<WebSocketParser>();
                 // websocket_onmessage
                 ws_parser_->onMessage = [this, &channel](int opcode, const std::string& msg) {
                     channel->opcode = (enum ws_opcode)opcode;
                     switch (opcode) {
                     case WS_OPCODE_CLOSE:
+                        channel->send(msg, WS_OPCODE_CLOSE);
                         channel->close();
                         break;
                     case WS_OPCODE_PING:
                     {
                         // printf("recv ping\n");
                         // printf("send pong\n");
-                        channel->sendPong();
+                        channel->send(msg, WS_OPCODE_PONG);
                         break;
                     }
                     case WS_OPCODE_PONG:

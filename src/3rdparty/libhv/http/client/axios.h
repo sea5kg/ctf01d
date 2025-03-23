@@ -1,4 +1,5 @@
 #ifndef HV_AXIOS_H_
+#define HV_AXIOS_H_
 
 #include "json.hpp"
 #include "requests.h"
@@ -64,7 +65,7 @@ using requests::ResponseCallback;
 namespace axios {
 
 HV_INLINE Request newRequestFromJson(const json& jreq) {
-    Request req(new HttpRequest);
+    auto req = std::make_shared<HttpRequest>();
     // url
     if (jreq.contains("url")) {
         req->url = jreq["url"];

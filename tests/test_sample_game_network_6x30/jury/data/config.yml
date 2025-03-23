@@ -1,0 +1,211 @@
+## Combined config for ctf01d
+# use 2 spaces for tab
+
+game:
+  id: "test_sample_game" # uniq gameid must be regexp [a-z0-9]+
+  name: "Test Sample Game" # visible game name in scoreboard
+  start: "2023-11-12 16:00:00" # start time of game (UTC)
+  end: "2030-11-12 22:00:00" # end time of game (UTC)
+  coffee_break_start: "2023-11-12 20:00:00" # start time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
+  coffee_break_end: "2023-11-12 21:00:00" # end time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
+  flag_timelive_in_min: 1 # you can change flag time live (in minutes)
+  basic_costs_stolen_flag_in_points: 1 # basic costs stolen (attack) flag in points for adaptive scoreboard
+  cost_defence_flag_in_points: 1.0 # cost defences flag in points
+
+scoreboard:
+  port: 8080 # http port for scoreboard
+  htmlfolder: "./html" # web page for scoreboard see index-template.html
+  random: no # If yes - will be random values in scoreboard
+
+checkers:
+  - id: "example_service1" # work directory will be checker_example_service4
+    service_name: "Service1"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5 # max time for running script
+    time_sleep_between_run_scripts_in_sec: 15 # like a round for service
+  - id: "example_service2" # work directory will be checker_example_service4
+    service_name: "Service2"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
+  - id: "example_service3" # work directory will be checker_example_service4
+    service_name: "Service3"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
+  - id: "example_service4" # work directory will be checker_example_service4
+    service_name: "Service4"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
+  - id: "example_service5" # work directory will be checker_example_service4
+    service_name: "Service5"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
+  - id: "example_service6" # work directory will be checker_example_service4
+    service_name: "Service6"
+    enabled: yes
+    script_path: "./checker.py"
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
+
+teams:
+  - id: "t01" # must be uniq
+    name: "Team #1"
+    active: yes
+    logo: "./html/images/teams/team01.png"
+    ip_address: "10.10.1.3" # address to vulnserver
+  - id: "t02" # must be uniq
+    name: "Team #2"
+    active: yes
+    logo: "./html/images/teams/team02.png"
+    ip_address: "10.10.2.3" # address to vulnserver
+  - id: "t03" # must be uniq
+    name: "Team #3"
+    active: yes
+    logo: "./html/images/teams/team03.png"
+    ip_address: "10.10.3.3" # address to vulnserver
+  - id: "t04" # must be uniq
+    name: "Team #4"
+    active: yes
+    logo: "./html/images/teams/team04.png"
+    ip_address: "10.10.3.3" # address to vulnserver
+  - id: "t05" # must be uniq
+    name: "Team #5"
+    active: yes
+    logo: "./html/images/teams/team05.png"
+    ip_address: "10.10.5.3" # address to vulnserver
+  - id: "t06" # must be uniq
+    name: "Team #6"
+    active: yes
+    logo: "./html/images/teams/team06.png"
+    ip_address: "10.10.6.3" # address to vulnserver
+  - id: "t07" # must be uniq
+    name: "Team #7"
+    active: yes
+    logo: "./html/images/teams/team07.png"
+    ip_address: "10.10.7.3" # address to vulnserver
+  - id: "t08" # must be uniq
+    name: "Team #8"
+    active: yes
+    logo: "./html/images/teams/team08.png"
+    ip_address: "10.10.8.3" # address to vulnserver
+  - id: "t09" # must be uniq
+    name: "Team #9"
+    active: yes
+    logo: "./html/images/teams/team09.png"
+    ip_address: "10.10.9.3" # address to vulnserver
+
+  - id: "t10" # must be uniq
+    name: "Team #10"
+    active: yes
+    logo: "./html/images/teams/team10.png"
+    ip_address: "10.10.10.3" # address to vulnserver
+  - id: "t11" # must be uniq
+    name: "Team #11"
+    active: yes
+    logo: "./html/images/teams/team11.png"
+    ip_address: "10.10.11.3" # address to vulnserver
+  - id: "t12" # must be uniq
+    name: "Team #12"
+    active: yes
+    logo: "./html/images/teams/team12.png"
+    ip_address: "10.10.12.3" # address to vulnserver
+  - id: "t13" # must be uniq
+    name: "Team #13"
+    active: yes
+    logo: "./html/images/teams/team13.png"
+    ip_address: "10.10.13.3" # address to vulnserver
+  - id: "t14" # must be uniq
+    name: "Team #14"
+    active: yes
+    logo: "./html/images/teams/team14.png"
+    ip_address: "10.10.14.3" # address to vulnserver
+  - id: "t15" # must be uniq
+    name: "Team #15"
+    active: yes
+    logo: "./html/images/teams/team15.png"
+    ip_address: "10.10.15.3" # address to vulnserver
+  - id: "t16" # must be uniq
+    name: "Team #16"
+    active: yes
+    logo: "./html/images/teams/team16.png"
+    ip_address: "10.10.16.3" # address to vulnserver
+  - id: "t17" # must be uniq
+    name: "Team #17"
+    active: yes
+    logo: "./html/images/teams/team17.png"
+    ip_address: "10.10.17.3" # address to vulnserver
+  - id: "t18" # must be uniq
+    name: "Team #18"
+    active: yes
+    logo: "./html/images/teams/team18.png"
+    ip_address: "10.10.18.3" # address to vulnserver
+  - id: "t19" # must be uniq
+    name: "Team #19"
+    active: yes
+    logo: "./html/images/teams/team19.png"
+    ip_address: "10.10.19.3" # address to vulnserver
+
+  - id: "t20" # must be uniq
+    name: "Team #20"
+    active: yes
+    logo: "./html/images/teams/team20.png"
+    ip_address: "10.10.20.3" # address to vulnserver
+  - id: "t21" # must be uniq
+    name: "Team #21"
+    active: yes
+    logo: "./html/images/teams/team21.png"
+    ip_address: "10.10.21.3" # address to vulnserver
+  - id: "t22" # must be uniq
+    name: "Team #22"
+    active: yes
+    logo: "./html/images/teams/team22.png"
+    ip_address: "10.10.22.3" # address to vulnserver
+  - id: "t23" # must be uniq
+    name: "Team #23"
+    active: yes
+    logo: "./html/images/teams/team23.png"
+    ip_address: "10.10.23.3" # address to vulnserver
+  - id: "t24" # must be uniq
+    name: "Team #24"
+    active: yes
+    logo: "./html/images/teams/team24.png"
+    ip_address: "10.10.24.3" # address to vulnserver
+  - id: "t25" # must be uniq
+    name: "Team #25"
+    active: yes
+    logo: "./html/images/teams/team25.png"
+    ip_address: "10.10.25.3" # address to vulnserver
+  - id: "t26" # must be uniq
+    name: "Team #26"
+    active: yes
+    logo: "./html/images/teams/team26.png"
+    ip_address: "10.10.26.3" # address to vulnserver
+  - id: "t27" # must be uniq
+    name: "Team #27"
+    active: yes
+    logo: "./html/images/teams/team27.png"
+    ip_address: "10.10.27.3" # address to vulnserver
+  - id: "t28" # must be uniq
+    name: "Team #28"
+    active: yes
+    logo: "./html/images/teams/team28.png"
+    ip_address: "10.10.28.3" # address to vulnserver
+  - id: "t29" # must be uniq
+    name: "Team #29"
+    active: yes
+    logo: "./html/images/teams/team29.png"
+    ip_address: "10.10.29.3" # address to vulnserver
+
+  - id: "t30" # must be uniq
+    name: "Team #30"
+    active: yes
+    logo: "./html/images/teams/team30.png"
+    ip_address: "10.10.30.3" # address to vulnserver

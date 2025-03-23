@@ -3,9 +3,11 @@
 
 #include "hexport.h"
 #include "hssl.h"
+// #include "EventLoop.h"
 #include "HttpService.h"
 // #include "WebSocketServer.h"
 namespace hv {
+class EventLoop;
 struct WebSocketService;
 }
 using hv::HttpService;
@@ -72,18 +74,16 @@ int main() {
         return 200;
     });
 
-    HttpServer server;
-    server.registerHttpService(&service);
-    server.setPort(8080);
+    HttpServer server(&service);
     server.setThreadNum(4);
-    server.run();
+    server.run(":8080");
     return 0;
 }
 */
 
 namespace hv {
 
-class HttpServer : public http_server_t {
+class HV_EXPORT HttpServer : public http_server_t {
 public:
     HttpServer(HttpService* service = NULL)
         : http_server_t()
@@ -95,6 +95,8 @@ public:
     void registerHttpService(HttpService* service) {
         this->service = service;
     }
+
+    std::shared_ptr<hv::EventLoop> loop(int idx = -1);
 
     void setHost(const char* host = "0.0.0.0") {
         if (host) strcpy(this->host, host);
@@ -117,6 +119,11 @@ public:
         this->worker_threads = num;
     }
 
+    void setMaxWorkerConnectionNum(uint32_t num) {
+        this->worker_connections = num;
+    }
+    size_t connectionNum();
+
     // SSL/TLS
     int setSslCtx(hssl_ctx_t ssl_ctx) {
         this->ssl_ctx = ssl_ctx;
@@ -130,12 +137,20 @@ public:
         return setSslCtx(ssl_ctx);
     }
 
-    int run(bool wait = true) {
+    // run(":8080")
+    // run("0.0.0.0:8080")
+    // run("[::]:8080")
+    int run(const char* ip_port = NULL, bool wait = true) {
+        if (ip_port) {
+            hv::NetAddr listen_addr(ip_port);
+            if (listen_addr.ip.size() != 0) setHost(listen_addr.ip.c_str());
+            if (listen_addr.port != 0)      setPort(listen_addr.port);
+        }
         return http_server_run(this, wait);
     }
 
-    int start() {
-        return run(false);
+    int start(const char* ip_port = NULL) {
+        return run(ip_port, false);
     }
 
     int stop() {

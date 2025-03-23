@@ -1,11 +1,11 @@
 # ctf01d
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/sea5kg/ctf01d.svg)](https://hub.docker.com/r/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/stars/sea-kg/ctf01d.svg?label=github%20%E2%98%85)](https://github.com/sea-kg/ctf01d/) [![Github Stars](https://img.shields.io/github/contributors/sea-kg/ctf01d.svg)](https://github.com/sea-kg/ctf01d/) [![Github Forks](https://img.shields.io/github/forks/sea-kg/ctf01d.svg?label=github%20forks)](https://github.com/sea-kg/ctf01d/) 
+[![Docker Pulls](https://img.shields.io/docker/pulls/sea5kg/ctf01d.svg)](https://hub.docker.com/r/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/stars/sea5kg/ctf01d.svg?label=github%20%E2%98%85)](https://github.com/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/contributors/sea5kg/ctf01d.svg)](https://github.com/sea5kg/ctf01d/) [![Github Forks](https://img.shields.io/github/forks/sea5kg/ctf01d.svg?label=github%20forks)](https://github.com/sea5kg/ctf01d/)
 
 Jury System for attack-defence ctf game (ctf-scoreboard).
 Also you can use it for training.
 
-![scoreboard](https://raw.githubusercontent.com/sea-kg/ctf01d/master/misc/screens/screen1.png)
+![scoreboard](https://raw.githubusercontent.com/sea5kg/ctf01d/master/misc/screens/screen1.png)
 
 ## Easy way to start/init it (based on docker-compose)
 
@@ -37,8 +37,6 @@ version: '3'
 
 services:
   ctf01d_jury:
-    depends_on:
-      - ctf01d_db
     container_name: ctf01d_jury_my_game
     image: sea5kg/ctf01d:latest
     volumes:
@@ -48,8 +46,6 @@ services:
     ports:
       - "8080:8080"
     restart: always
-    links:
-      - "ctf01d_db"
     networks:
       - ctf01d_net
 
@@ -85,6 +81,9 @@ ctf01d_jury_1  | 2021-05-17 03:05:29.695, 0x00007f10affff700 [INFO] Checker: so_
 ```
 *And you can also find dashboard on http://localhost:8080/*
 
+Preinstalled packages for checker:
+- python3: `requests faker grpcio grpcio-tools protobuf tzdata`
+- Installed `ruby-full`
 
 ### terminal1
 
@@ -140,9 +139,9 @@ $ docker-compose up
 
 ## License
 
-* CTF01D - MIT. Copyright (c) 2018-2023 Evgenii Sopov
-* libhv - BSD 3-Clause License. Copyright (c) 2020, ithewei
-* SQLITE - SQLite is in the Public Domain
+* CTF01D - MIT. Copyright (c) 2018-2025 Evgenii Sopov
+* libhv (v1.3.3) - BSD 3-Clause License. Copyright (c) 2020, ithewei
+* SQLITE (v3.49.1) - SQLite is in the Public Domain
 
 ## Rules
 
@@ -220,7 +219,7 @@ team_points = team_points + SLA_N * (serviceN_defence_points + serviceN_attack_p
 ```
 $ sudo apt install git-core
 $ cd ~
-$ git clone http://github.com/sea-kg/ctf01d.git ctf01d.git
+$ git clone http://github.com/sea5kg/ctf01d.git ctf01d.git
 $ nano ~/ctf01d.git/data_sample/config.yml
 ```
 Config files (see comments in file):
@@ -283,6 +282,22 @@ http-code responses:
  * 200 - flag is accepted
  * 403 - flag is not accepted (probable reasons: old, already accepted, not found)
 
+Example of sending a flag (via python):
+
+```python
+r = requests.get("http://192.168.1.10:8080/flag?teamid=keva&flag=c01d4567-e89b-12d3-a456-426600000010")
+if r.status_code == 200:
+  print("OK (flag accepted) ", r.text)
+  sys.exit(0)
+elif r.status_code == 403:
+  print("FAIL " + flag + " " + r.text)
+  sys.exit(0)
+elif r.status_code == 400:
+  print("FAIL Request incorrect. " + r.text + "\n" + flag)
+  sys.exit(1)
+else:
+    print("FAIL Something went wrong. " + str(r.status_code) + ", response"+ r.text)
+```
 
 # Checker script description
 
@@ -307,6 +322,16 @@ Call-examples:
  * ```./checker.py 127.0.0.1 put "1q2w3e4r5t" "c01d1fd2-133a-4713-9587-126500000010"```
  * ```./checker.py 127.0.0.1 check "1q2w3e4r5t" "c01d1fd2-133a-4713-9587-126500000010"```
 
+Flag format description:
+
+```
+Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
+              c01d...random-data-flag.....time
+              ^ prefix                    ^ timestamp is the last 8 digits
+              always c01d                   (how many seconds have passed
+                                            since the start of the game)
+```
+
 ### Possible return codes
 
  * 101 - service is up (works fine)
@@ -318,12 +343,13 @@ Call-examples:
 
  # Jury API requests list
 
+ * `http://{HOST}:{PORT}/flag` - send flag
  * `http://{HOST}:{PORT}/api/v1/game` - info about the game
  * `http://{HOST}:{PORT}/api/v1/teams` - list of teams
  * `http://{HOST}:{PORT}/api/v1/services` - list of services
  * `http://{HOST}:{PORT}/api/v1/scoreboard` - scoreboard table teams-services
  * `http://{HOST}:{PORT}/team-logo/{TEAMID}` - team logos
-
+ * `http://{HOST}:{PORT}/api/v1/myip` - client ip
 
 # How to prepare vuln service
 
@@ -419,7 +445,8 @@ Allowed return codes:
 For example checker script (in python):
 
 ```python
-#!/usr/bin/python
+#!/usr/bin/env python3
+
 import sys
 import math
 import socket
@@ -532,7 +559,7 @@ sudo apt install git git-core\
 
 Clone source code of the project:
 ```
-$ git clone https://github.com/sea-kg/ctf01d ~/ctf01d.git
+$ git clone https://github.com/sea5kg/ctf01d ~/ctf01d.git
 ```
 
 Build:
@@ -562,14 +589,6 @@ We can look for docker status: `docker ps -a`
 
 *Notice: multistage build docker*
 
-You need to download latest version of ctf01d:stage-build-latest / ctf01d:stage-release-latest or build it first
-
-Download (docker pull):
-```
-$ docker pull sea5kg/ctf01d:stage-build-latest
-$ docker pull sea5kg/ctf01d:stage-release-latest
-```
-
 Or build fresh images for stages:
 ```
 $ cd ~/ctf01d.git/contrib/docker-build-stages/
@@ -586,7 +605,7 @@ And now you can build image:
 ```
 $ cd ~/ctf01d.git
 $ docker build --rm=true -t "sea5kg/ctf01d:latest" .
-$ docker tag "sea5kg/ctf01d:latest" "sea5kg/ctf01d:v0.4.x"
+$ docker tag "sea5kg/ctf01d:latest" "sea5kg/ctf01d:v0.5.x"
 ```
 
 3. Run dev docker-container, build and start
@@ -697,7 +716,7 @@ $ sudo systemctl restart myservice
 
 I have only one schmea now:
 
-![schema1](https://raw.githubusercontent.com/sea-kg/ctf01d/master/misc/schemas/basic_schema_masquerade_openvpn.png)
+![schema1](https://raw.githubusercontent.com/sea5kg/ctf01d/master/misc/schemas/basic_schema_masquerade_openvpn.png)
 
 # Similar Systems && Helpful Links
 

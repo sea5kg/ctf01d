@@ -4,6 +4,7 @@
 #include <string>
 #include <functional>
 #include <memory>
+#include <atomic>
 
 #include "hloop.h"
 #include "hsocket.h"
@@ -155,6 +156,10 @@ public:
     }
 
     // iobuf setting
+    void setReadBuf(void* buf, size_t len) {
+        if (io_ == NULL) return;
+        hio_set_readbuf(io_, buf, len);
+    }
     void setMaxReadBufsize(uint32_t size) {
         if (io_ == NULL) return;
         hio_set_max_read_bufsize(io_, size);
@@ -189,7 +194,8 @@ public:
         CONNECTED,
         DISCONNECTED,
         CLOSED,
-    } status;
+    };
+    std::atomic<Status>          status;
     std::function<void(Buffer*)> onread;
     // NOTE: Use Channel::isWriteComplete in onwrite callback to determine whether all data has been written.
     std::function<void(Buffer*)> onwrite;

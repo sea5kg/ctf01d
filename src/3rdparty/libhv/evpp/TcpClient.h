@@ -35,6 +35,13 @@ public:
         return loop_;
     }
 
+    // delete thread-safe
+    void deleteInLoop() {
+        loop_->runInLoop([this](){
+            delete this;
+        });
+    }
+
     // NOTE: By default, not bind local port. If necessary, you can call bind() after createsocket().
     // @retval >=0 connfd, <0 error
     int createsocket(int remote_port, const char* remote_host = "127.0.0.1") {
@@ -59,7 +66,7 @@ public:
         hio_t* io = hio_get(loop_->loop(), connfd);
         assert(io != NULL);
         hio_set_peeraddr(io, remote_addr, SOCKADDR_LEN(remote_addr));
-        channel.reset(new TSocketChannel(io));
+        channel = std::make_shared<TSocketChannel>(io);
         return connfd;
     }
 
@@ -86,7 +93,7 @@ public:
 
     // closesocket thread-safe
     void closesocket() {
-        if (channel) {
+        if (channel && channel->status != SocketChannel::CLOSED) {
             loop_->runInLoop([this](){
                 if (channel) {
                     setReconnect(NULL);
@@ -147,11 +154,11 @@ public:
             }
         };
         channel->onclose = [this]() {
+            bool reconnect = reconn_setting != NULL;
             if (onConnection) {
                 onConnection(channel);
             }
-            // reconnect
-            if (reconn_setting) {
+            if (reconnect) {
                 startReconnect();
             }
         };

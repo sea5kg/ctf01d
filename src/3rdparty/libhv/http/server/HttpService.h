@@ -55,10 +55,10 @@ struct http_handler {
     http_handler(http_ctx_handler fn)   : ctx_handler(std::move(fn))    {}
     http_handler(http_state_handler fn) : state_handler(std::move(fn))  {}
     http_handler(const http_handler& rhs)
-        : sync_handler(std::move(rhs.sync_handler))
-        , async_handler(std::move(rhs.async_handler))
-        , ctx_handler(std::move(rhs.ctx_handler))
-        , state_handler(std::move(rhs.state_handler))
+        : sync_handler(std::move(const_cast<http_handler&>(rhs).sync_handler))
+        , async_handler(std::move(const_cast<http_handler&>(rhs).async_handler))
+        , ctx_handler(std::move(const_cast<http_handler&>(rhs).ctx_handler))
+        , state_handler(std::move(const_cast<http_handler&>(rhs).state_handler))
     {}
 
     const http_handler& operator=(http_sync_handler fn) {
@@ -107,6 +107,7 @@ typedef std::unordered_map<std::string, std::shared_ptr<http_method_handlers>>  
 namespace hv {
 
 struct HV_EXPORT HttpService {
+    /* handler chain */
     // preprocessor -> middleware -> processor -> postprocessor
     http_handler        preprocessor;
     http_handlers       middleware;
@@ -114,11 +115,11 @@ struct HV_EXPORT HttpService {
     http_handler        processor;
     http_handler        postprocessor;
 
-    // api service (that is http.ApiServer)
+    /* API handlers */
     std::string         base_url;
     http_path_handlers  pathHandlers;
 
-    // file service (that is http.FileServer)
+    /* Static file service */
     http_handler    staticHandler;
     http_handler    largeFileHandler;
     std::string     document_root;
@@ -126,13 +127,17 @@ struct HV_EXPORT HttpService {
     std::string     error_page;
     // nginx: location => root
     std::map<std::string, std::string, std::greater<std::string>> staticDirs;
-    // indexof service (that is http.DirectoryServer)
+    /* Indexof directory service */
     std::string     index_of;
     http_handler    errorHandler;
 
-    // proxy service (that is http.ProxyServer)
+    /* Proxy service */
+    /* Reverse proxy service */
     // nginx: location => proxy_pass
     std::map<std::string, std::string, std::greater<std::string>> proxies;
+    /* Forward proxy service */
+    StringList  trustProxies;
+    StringList  noProxies;
     int proxy_connect_timeout;
     int proxy_read_timeout;
     int proxy_write_timeout;
@@ -150,6 +155,7 @@ struct HV_EXPORT HttpService {
      */
     int limit_rate; // limit send rate, unit: KB/s
 
+    unsigned enable_access_log      :1;
     unsigned enable_forward_proxy   :1;
 
     HttpService() {
@@ -170,6 +176,7 @@ struct HV_EXPORT HttpService {
         file_cache_expired_time = DEFAULT_FILE_CACHE_EXPIRED_TIME;
         limit_rate = -1; // unlimited
 
+        enable_access_log = 1;
         enable_forward_proxy = 0;
     }
 
@@ -187,8 +194,12 @@ struct HV_EXPORT HttpService {
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     void AllowCORS();
 
+    // proxy
     // forward proxy
     void EnableForwardProxy() { enable_forward_proxy = 1; }
+    void AddTrustProxy(const char* host);
+    void AddNoProxy(const char* host);
+    bool IsTrustProxy(const char* host);
     // reverse proxy
     // Proxy("/api/v1/", "http://www.httpbin.org/");
     void Proxy(const char* path, const char* url);

@@ -10,7 +10,7 @@
  * (_______/   )_(   |/       (_______)\____/(______/
  *
  * MIT License
- * Copyright (c) 2018-2023 Evgenii Sopov
+ * Copyright (c) 2018-2025 Evgenii Sopov
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -115,15 +115,6 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
 
     m_pHttpService->GET("*", std::bind(&Ctf01dHttpServer::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
     // m_pHttpService->GET("/admin*", std::bind(&Ctf01dHttpServer::httpAdmin, this, std::placeholders::_1, std::placeholders::_2));
-
-
-    // m_pHttpService->GET("/get", [](HttpRequest* req, HttpResponse* resp) {
-    //     resp->json["origin"] = req->client_addr.ip;
-    //     resp->json["url"] = req->url;
-    //     resp->json["args"] = req->query_params;
-    //     resp->json["headers"] = req->headers;
-    //     return 200;
-    // });
 }
 
 hv::HttpService *Ctf01dHttpServer::getService() {
@@ -163,35 +154,30 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
         if (pLogo == nullptr) {
             return 404;
         }
-        resp->SetContentTypeByFilename(pLogo->sFilename.c_str());
-        return resp->Data(
+        resp->Data(
             pLogo->pBuffer,
             pLogo->nBufferSize,
-            true, // nocopy
-            resp->content_type
+            true // nocopy
         );
+        resp->SetContentTypeByFilename(pLogo->sFilename.c_str());
+        return 200;
     }
 
     if (sRequestPath.rfind(m_sApiPathPrefix, 0) == 0) {
         if (sRequestPath == "/api/v1/game") {
-            resp->SetContentTypeByFilename("game.json");
-            std::cout << m_sCacheResponseGameJson << std::endl;
-            return resp->Data(
-                (void *)(m_sCacheResponseGameJson.c_str()),
-                m_sCacheResponseGameJson.length(),
-                true,
-                resp->content_type
-            );
+            return this->httpApiV1Game(req, resp);
         } else if (sRequestPath == "/api/v1/scoreboard") {
             return this->httpApiV1Scoreboard(req, resp);
+        } else if (sRequestPath == "/api/v1/myip") {
+            return this->httpApiV1MyIp(req, resp);
         } else if (sRequestPath == "/api/v1/teams") {
-            resp->SetContentTypeByFilename("teams.json");
-            return resp->Data(
+            resp->Data(
                 (void *)(m_sCacheResponseTeamsJson.c_str()),
                 m_sCacheResponseTeamsJson.length(),
-                true,
-                resp->content_type
+                true // nocopy
             );
+            resp->SetContentTypeByFilename("teams.json");
+            return 200;
         }
         return this->httpApiV1GetPaths(req, resp);
     }
@@ -210,8 +196,13 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     std::string sResPath = "./data_sample/html" + sRequestPath;
     if (WsjcppResourcesManager::has(sResPath)) {
         WsjcppResourceFile *pFile = WsjcppResourcesManager::get(sResPath);
+        resp->Data(
+            (void *)pFile->getBuffer(),
+            pFile->getBufferSize(),
+            true // nocopy
+        );
         resp->SetContentTypeByFilename(sResPath.c_str());
-        return resp->Data((void *)pFile->getBuffer(), pFile->getBufferSize(), true, resp->content_type);
+        return 200;
     }
     return 404; // Not found
 }
@@ -246,7 +237,8 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     if (nCurrentTimeSec < m_pConfig->gameStartUTCInSec()) {
         const std::string sErrorMsg = "Error(-8): Game not started yet";
         WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
+        resp->String(sErrorMsg);
+        return 400;
     }
 
     if (m_pConfig->gameHasCoffeeBreak()
@@ -255,13 +247,15 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     ) {
         static const std::string sErrorMsg = "Error(-8): Game on coffeebreak now";
         WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
+        resp->String(sErrorMsg);
+        return 400;
     }
 
     if (nCurrentTimeSec > m_pConfig->gameEndUTCInSec()) {
         static const std::string sErrorMsg = "Error(-9): Game already ended";
         WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
+        resp->String(sErrorMsg);
+        return 400;
     }
 
     std::string sTeamId = req->GetParam("teamid");
@@ -274,25 +268,18 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     if (sTeamId == "") {
         static const std::string sErrorMsg = "Error(-10): Not found get-parameter 'teamid' or parameter is empty";
         WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
+        resp->String(sErrorMsg);
+        return 400;
     }
 
     if (sFlag == "") {
         static const std::string sErrorMsg = "Error(-11): Not found get-parameter 'flag' or parameter is empty";
         WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
+        resp->String(sErrorMsg);
+        return 400;
     }
 
-    // int nTeamNum = atoi(sTeamID.c_str());
-    // if (nTeamNum == 0) {
-    //     pRequest->response(
-    //         LightHttpRequest::RESP_BAD_REQUEST,
-    //         "text/html",
-    //         "Error(-12): 'teamid' must be number");
-    //     Log::warn(TAG, "Error(-12): 'teamid' must be number");
-    //     return true;
-    // }
-
+    // TODO optimize
     bool bTeamFound = false;
     for (unsigned int iteam = 0; iteam < m_pConfig->teamsConf().size(); iteam++) {
         Ctf01dTeamDef teamConf = m_pConfig->teamsConf()[iteam];
@@ -301,20 +288,19 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
         }
     }
 
-
     if (!bTeamFound) {
         static const std::string sErrorMsg = "Error(-130): this is team not found";
         WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
+        resp->String(sErrorMsg);
+        return 400;
     }
 
-
-
-    const std::regex reFlagFormat("[a-f0-9]{8,8}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{12,12}");
+    const static std::regex reFlagFormat("c01d[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}[0-9]{8,8}");
     if (!std::regex_match(sFlag, reFlagFormat)) {
         static const std::string sErrorMsg = "Error(-140): flag has wrong format";
         WsjcppLog::err(TAG, sErrorMsg);
-        return resp->String(sErrorMsg, 400);
+        resp->String(sErrorMsg);
+        return 400;
     }
     m_pConfig->scoreboard()->incrementTries(sTeamId);
 
@@ -326,7 +312,8 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     if (!m_pConfig->scoreboard()->findFlagLive(sFlag, flag)) {
         static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag alredy stole.";
         WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}");
-        return resp->String(sErrorMsg, 403);
+        resp->String(sErrorMsg);
+        return 403;
     }
 
     long nCurrentTimeMSec = (long)nCurrentTimeSec;
@@ -336,7 +323,8 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
         // TODO
         static const std::string sErrorMsg = "Error(-151): flag is too old";
         WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}");
-        return resp->String(sErrorMsg, 403);
+        resp->String(sErrorMsg);
+        return 403;
     }
 
     // if (flag.teamStole() == sTeamId) {
@@ -348,7 +336,8 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     if (flag.getTeamId() == sTeamId) {
         static const std::string sErrorMsg = "Error(-180): this is your flag";
         WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}");
-        return resp->String(sErrorMsg, 403);
+        resp->String(sErrorMsg);
+        return 403;
     }
 
     std::string sServiceStatus = m_pConfig->scoreboard()->serviceStatus(sTeamId, flag.getServiceId());
@@ -358,13 +347,15 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     if (sServiceStatus != ServiceStatusCell::SERVICE_UP) {
         static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
         WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}");
-        return resp->String(sErrorMsg, 403);
+        resp->String(sErrorMsg);
+        return 403;
     }
 
     if (m_pEmployDatabase->isAlreadyStole(flag, sTeamId)) {
         static const std::string sErrorMsg = "Error(-170): flag already stoled by your";
         WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}");
-        return resp->String(sErrorMsg, 403);
+        resp->String(sErrorMsg);
+        return 403;
     }
 
     // TODO light update scoreboard
@@ -373,7 +364,13 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     std::string sResponse = "Accepted: Recieved flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
     WsjcppLog::ok(TAG, sResponse);
-    return resp->Data((void *)(sResponse.c_str()), sResponse.size(), false, TEXT_PLAIN);
+    resp->Data(
+        (void *)(sResponse.c_str()),
+        sResponse.size(),
+        false // copy buffer
+    );
+    resp->content_type = TEXT_PLAIN;
+    return 200;
 }
 
 int Ctf01dHttpServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
@@ -381,11 +378,27 @@ int Ctf01dHttpServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) 
     nlohmann::json jsonScoreboard = m_pConfig->scoreboard()->toJson();
     m_pTeamLogos->updateScorebordJson(jsonScoreboard);
     std::string sScoreboardJson = jsonScoreboard.dump();
-    resp->SetContentTypeByFilename("scoreboard.json");
-    return resp->Data(
+    resp->Data(
         (void *)(sScoreboardJson.c_str()),
         sScoreboardJson.length(),
-        false, // nocopy - force copy
-        resp->content_type
+        false // nocopy - force copy
     );
+    resp->SetContentTypeByFilename("scoreboard.json");
+    return 200;
+}
+
+int Ctf01dHttpServer::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
+    // std::cout << m_sCacheResponseGameJson << std::endl;
+    resp->Data(
+        (void *)(m_sCacheResponseGameJson.c_str()),
+        m_sCacheResponseGameJson.length(),
+        true // nocopy
+    );
+    resp->SetContentTypeByFilename("game.json");
+    return 200;
+}
+
+int Ctf01dHttpServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
+    resp->json["myip"] = req->client_addr.ip;
+    return 200;
 }

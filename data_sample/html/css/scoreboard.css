@@ -13,38 +13,53 @@ body,html{
     text-align: center;
 }
 
+.ctf01d-global-page-switcher {
+  top: 5px;
+  left: 5px;
+  position: fixed;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+  background-image: url("../images/details.svg");
+  background-position: 0px 0px;
+  background-size: 100% 100%;
+  z-index: 100000;
+}
+
+.ctf01d-global-page-switcher:hover {
+  animation: blinking 0.8s reverse infinite;
+}
+
+.ctf01d-blockinfo {
+  border: 1px solid #444;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  margin-left: 10%;
+  margin-right: 10%;
+  overflow: hidden;
+}
+
+.ctf01d-blockinfo-header {
+  border-bottom: 1px solid #444;
+  padding: 10px;
+  font-size: 25px;
+  font-weight: bold;
+  background-color: #303030;
+}
+
+.ctf01d-blockinfo-content {
+  padding: 10px;
+}
+
 .game-name{
     font-size: 40px;
     padding-top: 40px;
     height: 40px;
 }
 
-.ctf01d-tabs {
-  display: block;
-  border-bottom: 1px solid #aaa;
-  padding-top: 20px;
-}
 
-.ctf01d-tab {
-  display: inline-block;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border: 1px solid #aaa;
-  padding: 5px;
-  margin-left: 10px;
-  margin-right: 10px;
-  font-weight: bold;
-  background-color: #202020;
-  cursor: pointer;
-  margin-bottom: -1px;
-}
-
-.ctf01d-tab.active {
-  margin-bottom: -1px;
-  border-bottom: 1px solid #202020;
-}
-
-.ctf01d-tab-content {
+.ctf01d-page-content {
   display: none;
 }
 
@@ -581,11 +596,47 @@ img.team-logo {
   height: 50px !important;
   border: 1px solid #aaa;
   padding: 0px;
+  background-size: 100% 100%;
+  display: inline-block !important;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 100% 100%;
+  vertical-align: middle;
+}
+
+.icon-attack {
+  background-image: url("../images/attack.svg");
+}
+
+.icon-attack-points {
+  background-image: url("../images/attack-points.svg");
+}
+
+.icon-defence-flags {
+  background-image: url("../images/defence-flags.svg");
+}
+
+.icon-defence-points {
+  background-image: url("../images/defence-points.svg");
+}
+
+.icon-first-blood {
+  background-image: url("../images/first-blood.svg");
+}
+
+.icon-sla {
+  background-image: url("../images/sla.svg");
+}
+
+.icon-round-time {
+  background-image: url("../images/round-time.svg");
 }
 
 .pre-flag-format {
   display: block;
   text-align: left;
+  padding: 10px;
+  background-color: #111;
 }
 
 .mass-action {

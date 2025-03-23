@@ -10,7 +10,7 @@
 # (_______/   )_(   |/       (_______)\____/(______/
 #
 # MIT License
-# Copyright (c) 2018-2023 Evgenii Sopov
+# Copyright (c) 2018-2025 Evgenii Sopov
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -143,4 +143,6 @@ install(
         ${CMAKE_INSTALL_PREFIX}/bin
 )
 
-
+# enable testing functionality
+enable_testing()
+add_subdirectory(src/tests)

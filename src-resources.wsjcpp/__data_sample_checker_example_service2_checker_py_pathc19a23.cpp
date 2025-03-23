@@ -24,7 +24,7 @@ int RES___data_sample_checker_example_service2_checker_py_pathc19a23::getBufferS
 
 const char *RES___data_sample_checker_example_service2_checker_py_pathc19a23::getBuffer() const {
     static const std::string sRet = "" // size: 3151
-        "#!/usr/bin/python2\n"
+        "#!/usr/bin/python3\n"
         "import sys\n"
         "import socket\n"
         "import errno\n"

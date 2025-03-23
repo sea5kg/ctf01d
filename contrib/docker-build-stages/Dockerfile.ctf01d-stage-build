@@ -1,7 +1,7 @@
 FROM debian:12
 # stage build
 LABEL "maintainer"="Evgenii Sopov <mrseakg@gmail.com>"
-LABEL "repository"="https://github.com/sea-kg/ctf01d"
+LABEL "repository"="https://github.com/sea5kg/ctf01d"
 
 RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
     make cmake \
