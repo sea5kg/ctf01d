@@ -16,4 +16,4 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
     python3-pip \
     telnet \
     iputils-ping \
-    && python3 -m pip install --break-system-packages requests faker grpcio grpcio-tools protobuf tzdata
+    && python3 -m pip install --break-system-packages requests faker grpcio grpcio-tools protobuf tzdata bs4
