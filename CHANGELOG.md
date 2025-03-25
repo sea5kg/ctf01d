@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v0.5.4] - (2025 ?? ??)
 
+* Added `contrib/auto_static_ip_for_vulnbox` - Script automaticly set static IP for VULNBOX machine on start
+* Added preinstalled `bs4`
+
 ## [v0.5.3] - (2025 Mar 23)
 
 * Add utility ping to docker image
