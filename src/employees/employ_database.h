@@ -90,7 +90,7 @@ class EmployDatabase : public WsjcppEmployBase {
         int numberOfFlagFlagsCheckerPutAllResults(std::string sTeamId, std::string sServiceId);
         int numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId, std::string sServiceId);
 
-        void insertFlagAttempt(std::string sTeamId, std::string sFlag);
+        void insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP);
         int numberOfFlagAttempts(std::string sTeamId);
 
         void insertToFlagsDefence(Ctf01dFlag flag, int nPoints);

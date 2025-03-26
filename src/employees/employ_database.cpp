@@ -242,6 +242,7 @@ bool EmployDatabase::init() {
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  flag VARCHAR(36) NOT NULL, "
         "  teamid VARCHAR(50) NOT NULL, "
+        "  request_ip VARCHAR(50) NOT NULL, "
         "  dt INTEGER NOT NULL"
         ");"
     );
@@ -367,9 +368,9 @@ int EmployDatabase::numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId
     );
 }
 
-void EmployDatabase::insertFlagAttempt(std::string sTeamId, std::string sFlag) {
-    std::string sQuery = "INSERT INTO flags_attempts(flag, teamid, dt) "
-        " VALUES('" + sFlag + "', '" + sTeamId + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
+void EmployDatabase::insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP) {
+    std::string sQuery = "INSERT INTO flags_attempts(flag, teamid, request_ip, dt) "
+        " VALUES('" + sFlag + "', '" + sTeamId + "', '" + sRequestIP + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
 
     if (!m_pFlagsAttempts->executeQuery(sQuery)) {
         WsjcppLog::err(TAG, "Error insert");
