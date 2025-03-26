@@ -99,6 +99,10 @@ def restart_networking():
 INTERFACES_PATH = "/etc/network/interfaces"
 INTERFACES_BACKUP_PATH = "/etc/network/interfaces.backup"
 
+
+print("> Wait 15 seconds before start")
+time.sleep(15)
+
 MY_IP = get_myip()
 CURRENT_IP = get_current_ip_wait()
 
