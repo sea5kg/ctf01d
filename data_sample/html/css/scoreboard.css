@@ -106,11 +106,15 @@ button {
     display: inline-block;
 }
 
-.team-name{
-  font-size: 24px;
+.team-name {
+  font-size: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.current-team .team-name {
+  color: white;
 }
 
 .team-ip{
@@ -142,7 +146,7 @@ button {
   -webkit-transition: top 1.2s;
   -o-transition: top 1.2s;
   transition: top 1.2s;*/
-  height: 50px;
+  height: 38px;
   border-bottom: 1px solid #444;
   padding-top: 15px;
   position: absolute;
@@ -152,15 +156,16 @@ button {
 
 .place {
   display: inline-block;
-  font-size: 25px;
-  width: 50px;
+  font-size: 20px;
+  font-weight: bold;
+  width: 35px;
   text-align: center;
-  height: 50px;
+  height: 35px;
   vertical-align: top;
-  line-height: 50px;
-  padding-left: 50px;
+  line-height: 35px;
+  padding-left: 0px;
   background-position: 0px 0px;
-  background-size: 50px 50px;
+  background-size: 35px 35px;
   background-repeat: no-repeat;
 }
 
@@ -178,8 +183,8 @@ button {
 
 .team-logo {
   display: inline-block;
-  height: 50px;
-  width: 50px;
+  height: 35px;
+  width: 35px;
   vertical-align: top;
 }
 
@@ -198,20 +203,21 @@ button {
 }
 
 img.team-logo {
-  width: 40px;
-	height: 40px;
-  padding-bottom: 10px;
+  width: 35px;
+	height: 35px;
   padding-left: 5px;
   padding-right: 5px;
 }
 
 .team {
   display: inline-block;
-  height: 50px;
+  height: 35px;
   vertical-align: top;
-  width: 150px;
+  width: 140px;
   line-height: 25px;
-  overflow: hidden;
+  padding-left: 5px;
+  padding-right: 5px;
+  /* overflow: hidden; */
 }
 
 .hdrs .team {
@@ -224,7 +230,7 @@ img.team-logo {
   vertical-align: top;
   text-align: center;
   width: 100px;
-  line-height: 50px;
+  line-height: 35px;
   border-left: 1px solid #444;
 }
 
@@ -240,28 +246,28 @@ img.team-logo {
 
 .service {
   display: inline-block;
-  height: 50px;
+  height: 35px;
   vertical-align: top;
-  width: 180px;
+  width: 150px;
   line-height: 25px;
   border-left: 1px solid #444;
-  padding-left: 10px;
-  padding-right: 5px;
+  /*padding-left: 10px;
+  padding-right: 5px;*/
   text-align: center;
 }
 
 .hdrs .service {
   height: 100px;
   line-height: 20px;
-  width: 185px;
+  width: 139px;
   padding-left: 10px;
   padding-right: 5px;
 }
 
 .hdrs .service .service-att-def {
   padding-left: 20px;
-  width: 200px;
-  max-width: 200px;
+  width: 133px;
+  max-width: 133px;
 }
 
 .first-blood {
@@ -354,6 +360,7 @@ img.team-logo {
   background-size: 70% 70px;
   background-repeat: no-repeat;
   background-position: 0px -10px;*/
+  z-index: 999;
 }
 
 .hdrs-time-fill {
@@ -414,18 +421,19 @@ img.team-logo {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% 100%;
-  width: 50px;
-  height: 50px;
+  width: 35px;
+  height: 35px;
   vertical-align: middle;
 }
 
 .service-status {
   display: inline-block;
-  height: 50px;
-  padding-left: 52px;
+  height: 35px;
+  padding-left: 44px;
   background-repeat: no-repeat;
-  background-size: 50px 50px;
+  background-size: 32px 32px;
   vertical-align: middle;
+  background-position: 5px -5px;
 }
 
 .service-status.down {
@@ -467,8 +475,8 @@ img.team-logo {
   line-height: 25px;
   margin: 0px;
   padding: 0px;
-  max-width: 150px;
-  width: 150px;
+  max-width: 120px;
+  width: 120px;
   table-layout: fixed
 }
 
@@ -482,7 +490,7 @@ img.team-logo {
   padding-left: 22px;
   padding-top: 2px;
   line-height: 20px;
-  overflow: hidden;
+  /*overflow: hidden;*/
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
@@ -490,7 +498,44 @@ img.team-logo {
   background-repeat: no-repeat;
   font-size: 12px;
   font-weight: bold;
-  background-position: 0px 2px;
+  background-position: 0px 0px;
+}
+
+.service-att-def-cell.first-column {
+  width: 21px;
+}
+
+.attack-points-value {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.service-sla-notify-container {
+  height: 5px;
+  width: 137px;
+  display: inline;
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+  position: relative;
+  left: -161px;
+  top: -5px;
+  vertical-align: bottom;
+  background-color: #213350;
+  border-radius: 5px;
+  border: 1px solid #627eac;
+  text-align: left;
+  /*padding: 2px;*/
+}
+
+.service-sla-notify-progress {
+  height: 5px;
+  width: 0%;
+  display: inline-block;
+  vertical-align: bottom;
+  background-color: #596a86;
+  border-radius: 5px;
 }
 
 .service-att-def-cell.defence-points {
@@ -812,3 +857,62 @@ img.team-logo {
   animation: rotating 2s linear infinite;
 }
 */
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: auto;
+  background-color: #202020;
+  color: #9cb9ea;
+  text-align: left;
+  padding: 2px;
+  padding-left: 32px;
+  padding-right: 10px;
+  border-radius: 50px;
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1000;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+.tooltiptext.sla {
+  background-image: url("../images/sla.svg");
+  background-repeat: no-repeat;
+  background-position: 3px 2px;
+  background-size: 25px 25px;
+  color: #9cb9ea;
+  border: 1px solid #9cb9ea;
+}
+
+.tooltiptext.team-info {
+  /* background-image: url("../images/sla.svg"); */
+  background-repeat: no-repeat;
+  background-position: 3px 2px;
+  background-size: 25px 25px;
+  color: #aaa;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+}
+
+.tooltiptext.stollen-flags {
+  background-image: url("../images/attack.svg");
+  background-repeat: no-repeat;
+  background-position: 7px 2px;
+  background-size: 25px 25px;
+  padding-left: 35px;
+  color: #cc5914;
+  border: 1px solid #cc5914;
+  height: 25px;
+  line-height: 25px;
+}
+
+.current-team {
+  background-color: #1c4128;
+}

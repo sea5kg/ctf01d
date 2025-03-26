@@ -207,7 +207,7 @@ teams:
     ip_address: "127.0.29.1" # address to vulnserver
 
   - id: "t30" # must be uniq
-    name: "Team #30"
+    name: "Team #30 1111111111111111111111111111111"
     active: yes
     logo: "./html/images/teams/team30.png"
-    ip_address: "127.0.30.1" # address to vulnserver
+    ip_address: "192.168.88.3" # address to vulnserver

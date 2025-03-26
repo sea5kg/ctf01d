@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path37a5c6::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path37a5c6::getBufferSize() const {
-    return 7337;
+    return 7371;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path37a5c6::getBuffer() const {
-    static const std::string sRet = "" // size: 7337
+    static const std::string sRet = "" // size: 7371
         "## Combined config for ctf01d\n"
         "# use 2 spaces for tab\n"
         "\n"
@@ -233,10 +233,10 @@ const char *RES___data_sample_config_yml_path37a5c6::getBuffer() const {
         "    ip_address: \"127.0.29.1\" # address to vulnserver\n"
         "\n"
         "  - id: \"t30\" # must be uniq\n"
-        "    name: \"Team #30\"\n"
+        "    name: \"Team #30 1111111111111111111111111111111\"\n"
         "    active: yes\n"
         "    logo: \"./html/images/teams/team30.png\"\n"
-        "    ip_address: \"127.0.30.1\" # address to vulnserver"
+        "    ip_address: \"192.168.88.3\" # address to vulnserver"
     ;
     return sRet.c_str();
 } //::buffer() 

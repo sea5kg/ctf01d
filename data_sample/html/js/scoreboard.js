@@ -21,6 +21,91 @@ mneu_btn.onclick = function() {
 
 }
 
+const escapeHtml = (unsafe) => {
+    return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+}
+
+function copyToBuffer(elid) {
+    var el = document.getElementById(elid);
+    el.focus();
+    el.select();
+    try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Copying text command was ' + msg);
+    } catch (err) {
+        console.log('Oops, unable to copy');
+    }
+}
+
+var curl_example = document.getElementById("curl_request_send_flag").innerHTML;
+curl_example = curl_example.replace("{JURY_HOST_PORT}", window.location);
+document.getElementById("curl_request_send_flag").innerHTML = curl_example;
+
+var py_example = document.getElementById("python_request_send_flag").innerHTML;
+py_example = py_example.replace("{JURY_HOST_PORT}", window.location);
+document.getElementById("python_request_send_flag").innerHTML = py_example;
+
+
+
+function get_subnet(ip) {
+    var subnet = ip.split(".");
+    subnet.pop();
+    return subnet.join(".");
+}
+
+function updateTeamRequiredFields() {
+    getAjax('/api/v1/myip', function(err, resp){
+        if (err) {
+            console.error("err = ", err, "resp =", resp);
+            return;
+        }
+        window.myip = resp["myip"];
+        console.log("MyIP: " + window.myip);
+        window.found_teamid = undefined;
+        var found_teams = []
+        // search by exact match ip
+        for (var i = 0; i < window.teams.length; i++) {
+            if (window.teams[i].ip_address == window.myip) {
+                found_teams.push(window.teams[i].id)
+            }
+        }
+        if (found_teams.length == 0) {
+            var mysubnet = get_subnet(window.myip)
+            console.log("mysubnet " + mysubnet)
+            // search by subnet match
+            for (var i = 0; i < window.teams.length; i++) {
+                if (get_subnet(window.teams[i].ip_address) == mysubnet) {
+                    found_teams.push(window.teams[i].id)
+                }
+            }
+            if (found_teams.length == 1) {
+                window.found_teamid = found_teams[0];
+                console.log("Detected teamid by subnet: " + window.found_teamid)
+            } else if (found_teams.length > 1) {
+                console.warn("Could not detected teamid by subnetwork found several teams: " + found_teams.join(", "))
+            }
+        } else if (found_teams.length == 1) {
+            window.found_teamid = found_teams[0];
+            console.log("Detected teamid by ip: " + window.found_teamid)
+        }
+
+        if (window.found_teamid) {
+            document.getElementById('team_list').value = window.found_teamid;
+
+            var curl_example = document.getElementById("curl_request_send_flag").innerHTML;
+            curl_example = curl_example.replace("{YOUR_TEAM_ID}", window.found_teamid);
+            document.getElementById("curl_request_send_flag").innerHTML = curl_example;
+
+            var py_example = document.getElementById("python_request_send_flag").innerHTML;
+            py_example = py_example.replace("{YOUR_TEAM_ID}", window.found_teamid);
+            document.getElementById("python_request_send_flag").innerHTML = py_example;
+
+            document.getElementById(window.found_teamid).classList.add('current-team');
+        }
+    })
+}
+
 // post request to server Async
 function getAjax (url, callback) {
     callback = callback || function(){};
@@ -131,6 +216,17 @@ function silentUpdateWithoutAnimation(elid, newValue) {
     }
 }
 
+function silentUpdateWidthWithoutAnimation(elid, newValue) {
+    var el = document.getElementById(elid)
+    if (!el) {
+        console.error("Not found element with id " + elid);
+        return;
+    }
+    if (el.style.width != newValue) {
+        el.style.width = newValue;
+    }
+}
+
 var g_is_showed_authomation = false;
 
 function showActionAutomatization() {
@@ -210,7 +306,13 @@ function updateUIValue(t, teamID, paramName){
                     }
                 }
             }
-            document.getElementById(elem_id).innerHTML = newValue;
+            if (paramName == "place") {
+                if (newValue != '3' && newValue != '2' && newValue != '1') {
+                    document.getElementById(elem_id).innerHTML = newValue;
+                }
+            } else {
+                document.getElementById(elem_id).innerHTML = newValue;
+            }
         } else {
             if (paramName == "tries") {
                 _animateElement(document.getElementById('tries-icon-' + teamID), false);
@@ -476,9 +578,10 @@ function updateScoreboard() {
                 // console.log(sCell);
                 silentUpdate('att-' + sCell, newAttackFlags)
                 // silentUpdate('def-' + sCell, newDefenceFlags)
-                silentUpdate('pt_att-' + sCell, newAttackPoints)
-                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefencePoints)
-                silentUpdate('sla-' + sCell, newSLA + "%")
+                silentUpdate('pt_att-' + sCell, newAttackPoints.toFixed(2))
+                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefencePoints.toFixed(0))
+                silentUpdate('sla-' + sCell, "SLA: " + newSLA + "%")
+                silentUpdateWidthWithoutAnimation('sla-progress-' + sCell, newSLA + "%")
             }
         }
 
@@ -497,7 +600,7 @@ function updateScoreboard() {
             return a.p - b.p;
         });
         for (var i = 0; i < elms2.length; i++) {
-            var expected_top_value = (45 + (i+1)*60) + 'px'
+            var expected_top_value = (60 + (i+1)*50) + 'px'
             elms2[i].e.setAttribute("expected-top", expected_top_value);
             // if (elms2[i].e.style.top == '') {
             //     elms2[i].e.style.top = expected_top_value;
@@ -548,11 +651,12 @@ getAjax('/api/v1/game', function(err, resp){
         console.error("Problem with game info ", err);
         return;
     }
+    window.teams = resp.teams;
     document.getElementById('game_name').innerHTML = resp.game_name;
 
-    // TODO beauty print periods 
+    // TODO beauty print periods
     if (resp.game_has_coffee_break) {
-        document.getElementById('game_time_range').innerHTML = 
+        document.getElementById('game_time_range').innerHTML =
             resp.game_start + ' - ' + resp.game_coffee_break_start + ' (coffee break) '
             + resp.game_coffee_break_end + ' - ' + resp.game_end;
     } else {
@@ -597,15 +701,20 @@ getAjax('/api/v1/game', function(err, resp){
 
     for (var iteam = 0; iteam < resp.teams.length; iteam++) {
         var sTeamId = resp.teams[iteam].id;
+        var team_id = sTeamId;
         document.ctf01d_teams = resp.teams;
         sTeamListSelect += '<option value=' + sTeamId + '>' + sTeamId + '</option>';
         sContent += ""
             + "<div class='tm' id='" + sTeamId + "'>"
-            + '  <div class="place" id="place-' + sTeamId + '" >?</div>'
+            + '  <div class="place" id="place-' + sTeamId + '" ></div>'
             + "  <div class='team-logo'><img class='team-logo' id='team-logo-" + sTeamId + "' logo_last_updated='0' src='" + resp.teams[iteam].logo + "'/></div>"
-            + "  <div class='team'>"
-            + "    <div class='team-name'>" + resp.teams[iteam].name + "</div>"
-            + "    <div class='team-ip'> id: " + sTeamId + ", ip: " + resp.teams[iteam].ip_address + "</div>"
+            + '  <div class="team tooltip">'
+            + '    <div class="team-name">' + escapeHtml(resp.teams[iteam].name) + '</div>'
+            + '    <span class="tooltiptext team-info">'
+            + '     Team Name: ' + escapeHtml(resp.teams[iteam].name) + '<br>'
+            + '     Team ID: <input id="' + team_id + '-copy" value="' + sTeamId + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy\')">copy</button> <br>'
+            + '     Team IP-Address: <input id="' + team_id + '-copy-ip" value="' + resp.teams[iteam].ip_address + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy-ip\')">copy</button>'
+            + '    </span>'
             + "  </div>"
             + '  <div class="score">'
             + '     <div class="points-sum" id="' + sTeamId + '-points">0</div>'
@@ -616,19 +725,24 @@ getAjax('/api/v1/game', function(err, resp){
             var sServiceID = resp.services[i].id;
             sContent += ""
             + "<div class='service'>"
-            + "  <div class='service-status down' id='status-" + sTeamId +  "-" + sServiceID + "'> "
+            + '  <div class="service-status down" id="status-' + sTeamId +  '-' + sServiceID + '"> '
             + '   <div class="service-att-def">'
             + '       <div class="service-att-def-row">'
-            + '           <div class="service-att-def-cell defence-points" id="pt_def-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
-            + '           <div class="service-att-def-cell attack-points" id="pt_att-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
-            + '       </div>'
-            + '       <div class="service-att-def-row">'
-            + '           <div class="service-att-def-cell sla" id="sla-' + sTeamId +  '-' + sServiceID + '">0%</div>'
-            + '           <div class="service-att-def-cell stollen-flags" id="att-' + sTeamId +  '-' + sServiceID + '">0</div>'
+            + '           <div class="service-att-def-cell first-column defence-points" id="pt_def-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
+            + '           <div class="service-att-def-cell attack-points">'
+            + '              <div class="tooltip">'
+            + '                 <div class="attack-points-value" id="pt_att-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
+            + '                 <span class="tooltiptext stollen-flags" id="att-' + sTeamId +  '-' + sServiceID + '">0</span>'
+            + '              </div>'
+            + '           </div>'
             + '       </div>'
             + '   </div>'
             + '  </div>'
-            + "</div>\n";
+            + '  <div class="service-sla-notify-container tooltip">'
+            + '    <div class="service-sla-notify-progress" id="sla-progress-' + sTeamId +  '-' + sServiceID + '"></div>'
+            + '    <span class="tooltiptext sla" id="sla-' + sTeamId +  '-' + sServiceID + '">SLA: 100%</span>'
+            + '  </div>'
+            + '</div>\n';
         }
         sContent += ""
             + '   <div class="activity">'
@@ -643,6 +757,7 @@ getAjax('/api/v1/game', function(err, resp){
     document.getElementById('team_list').innerHTML = sTeamListSelect;
 
     updateScoreboard();
+    setTimeout(updateTeamRequiredFields, 100);
 
     // start poling
     setInterval(function(){

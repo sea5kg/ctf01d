@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_index_html_pathdb6d12::getPackAs() con
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_index_html_pathdb6d12::getBufferSize() const {
-    return 8442;
+    return 9783;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_index_html_pathdb6d12::getBuffer() const {
-    static const std::string sRet = "" // size: 8442
+    static const std::string sRet = "" // size: 9783
         "<html>\n"
         "<head>\n"
         "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n"
@@ -83,7 +83,7 @@ const char *RES___data_sample_html_index_html_pathdb6d12::getBuffer() const {
         "            </div>\n"
         "        </div>\n"
         "        <div class=\"ctf01d-blockinfo\">\n"
-        "            <div class=\"ctf01d-blockinfo-header\">Flag send</div>\n"
+        "            <div class=\"ctf01d-blockinfo-header\">Flag</div>\n"
         "            <div class=\"ctf01d-blockinfo-content\">\n"
         "                <p>The flag format must match the regular expression (uuid):</p>\n"
         "                <div style=\"display: inline-block;\">\n"
@@ -99,13 +99,39 @@ const char *RES___data_sample_html_index_html_pathdb6d12::getBuffer() const {
         "                                            since the start of the game)\n"
         "                    </pre>\n"
         "                </div>\n"
+        "            </div>\n"
+        "        </div>\n"
         "\n"
-        "                <h3>Form for send flag:</h3>\n"
+        "        <div class=\"ctf01d-blockinfo\">\n"
+        "            <div class=\"ctf01d-blockinfo-header\">Form for send flag</div>\n"
+        "            <div class=\"ctf01d-blockinfo-content\">\n"
         "                <form target=\"_blank\" method=\"GET\" action=\"/flag\">\n"
         "                    By Team<select name=\"teamid\" id=\"team_list\"></select>\n"
         "                    <input type=\"text\" size=\"36\" placeholder=\"Flag value\" name=\"flag\">\n"
         "                    <button>Send</button><br>\n"
         "                </form>\n"
+        "            </div>\n"
+        "        </div>\n"
+        "\n"
+        "        <div class=\"ctf01d-blockinfo\">\n"
+        "            <div class=\"ctf01d-blockinfo-header\">Example of send flag use a cURL</div>\n"
+        "            <div class=\"ctf01d-blockinfo-content\">\n"
+        "                <div style=\"display: inline-block;\">\n"
+        "                    <pre class=\"pre-flag-format\" id=\"curl_request_send_flag\">$ curl {JURY_HOST_PORT}flag?teamid={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010</pre>\n"
+        "                </div>\n"
+        "            </div>\n"
+        "        </div>\n"
+        "\n"
+        "        <div class=\"ctf01d-blockinfo\">\n"
+        "            <div class=\"ctf01d-blockinfo-header\">Example of send flag use a python script</div>\n"
+        "            <div class=\"ctf01d-blockinfo-content\">\n"
+        "                <div style=\"display: inline-block;\">\n"
+        "                    <pre class=\"pre-flag-format\" id=\"python_request_send_flag\">import requests\n"
+        "\n"
+        "resp = requests.get(\"{JURY_HOST_PORT}flag?teamid={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010\")\n"
+        "print(resp.status_code)\n"
+        "print(resp.text)</pre>\n"
+        "                </div>\n"
         "            </div>\n"
         "        </div>\n"
         "\n"
@@ -117,6 +143,8 @@ const char *RES___data_sample_html_index_html_pathdb6d12::getBuffer() const {
         "                <p><div class=\"legend service-status mumble\"></div> - service is mumble (so slow)</p>\n"
         "                <p><div class=\"legend service-status corrupt\"></div> - service is corrupt</p>\n"
         "                <p><div class=\"legend service-status shit\"></div> - checker is shit (developer of checker for service must fix this)</p>\n"
+        "                <p><div class=\"legend service-status wait\"></div> - Waiting start game</p>\n"
+        "                <p><div class=\"legend service-status coffeebreak\"></div> - Coffeebreak</p>\n"
         "                <p><div class=\"legend activity\"><div class=\"activity-icon\"></div></div> - activities (how much try send flags by team)</p>\n"
         "\n"
         "                <p><div class=\"legend icon-attack\"><div class=\"activity-icon\"></div></div> - Total number of successful attacks</p>\n"
