@@ -37,7 +37,7 @@ def get_myip():
     print("return", ret)
     if ret is None:
         print("FAILED: cound not get myip from jury")
-        sys.exit(-1)
+        # sys.exit(-1)
     return ret
 
 
@@ -112,6 +112,7 @@ if MY_IP is None:
     copyfile(INTERFACES_BACKUP_PATH, INTERFACES_PATH)
     restart_networking()
 
+MY_IP = get_myip()
 CURRENT_IP = get_current_ip_wait()
 
 while CURRENT_IP != MY_IP:
