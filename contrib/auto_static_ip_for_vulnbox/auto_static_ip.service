@@ -1,0 +1,13 @@
+
+[Unit]
+Description=auto_static_ip
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/auto_static_ip.py
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target

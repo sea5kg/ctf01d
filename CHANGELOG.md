@@ -5,6 +5,13 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.5.4] - (2025 Mar 27)
+
+* Added `contrib/auto_static_ip_for_vulnbox` - Script automaticly set static IP for VULNBOX machine on start
+* Added preinstalled 'bs4', mimesis
+* Added preinstalled 'gem install sqlite && gem install nokogiri'
+* Remember request IP to flag_attempts
+
 ## [v0.5.3] - (2025 Mar 23)
 
 * Add utility ping to docker image

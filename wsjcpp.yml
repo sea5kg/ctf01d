@@ -1,5 +1,5 @@
 name: "ctf01d"
-version: v0.5.3
+version: v0.5.4
 cmake_minimum_required: "3.0"
 cmake_cxx_standard: "17"
 description: "Jury System for a attack-defence ctf games"
@@ -115,27 +115,27 @@ resources:
   - filepath: "./data_sample/checker_example_service4/checker.py"
     filesize: 3151
     pack-as: "text"
-    modified: 1742664069
+    modified: 1742724375
     sha1: "3c2f4bfd7e2c989ae9128026a233b223436016ed"
   - filepath: "./data_sample/checker_example_service1/checker.py"
     filesize: 3151
     pack-as: "text"
-    modified: 1742664069
+    modified: 1742724375
     sha1: "e39cc1007d907ce39ecf95b072cb5e78d5d560e7"
   - filepath: "./data_sample/checker_example_service2/checker.py"
     filesize: 3151
     pack-as: "text"
-    modified: 1742664069
+    modified: 1742724375
     sha1: "e27718ef54cdccbca91385a4acd49380131d9e08"
   - filepath: "./data_sample/checker_example_service3/checker.py"
     filesize: 3151
     pack-as: "text"
-    modified: 1742664069
+    modified: 1742724375
     sha1: "a2f24a3e7472b38197de700f73483c07ee5b6482"
   - filepath: "./data_sample/config.yml"
     filesize: 7337
     pack-as: "text"
-    modified: 1742569836
+    modified: 1742724375
     sha1: "54b035b90c4738e703f0f2cf4cdaf460b578f2c1"
   - filepath: "./data_sample/html/favicon.ico"
     filesize: 16958
@@ -230,7 +230,7 @@ resources:
   - filepath: "./data_sample/html/images/teams/team19.png"
     filesize: 26153
     pack-as: "binary"
-    modified: 1742569476
+    modified: 1742724375
     sha1: "c05898c95c4097048eb7f0aeaf60675daa15589c"
   - filepath: "./data_sample/html/images/teams/team12.png"
     filesize: 6465
@@ -265,12 +265,12 @@ resources:
   - filepath: "./data_sample/html/index.html"
     filesize: 8442
     pack-as: "text"
-    modified: 1742624110
+    modified: 1742724375
     sha1: "71f6fe4b69240f66139f7c7919e27ae53974dcb7"
   - filepath: "./data_sample/html/js/scoreboard.js"
     filesize: 26449
     pack-as: "text"
-    modified: 1742620779
+    modified: 1742724375
     sha1: "293acc4996f2bd00abaf158b4c40a785123b01f8"
   - filepath: "./data_sample/html/images/first-blood.svg"
     filesize: 3653
@@ -280,7 +280,7 @@ resources:
   - filepath: "./data_sample/html/images/attack.svg"
     filesize: 2877
     pack-as: "text"
-    modified: 1704529941
+    modified: 1742724375
     sha1: "09bbff9a684e7a4da9392c84e41d33d1f628e063"
   - filepath: "./data_sample/html/images/points.svg"
     filesize: 2979
@@ -290,7 +290,7 @@ resources:
   - filepath: "./data_sample/html/images/defence-points.svg"
     filesize: 4321
     pack-as: "text"
-    modified: 1704530175
+    modified: 1742724375
     sha1: "fad9c6b04a7846ee95bfb877e21df5bf46ceb790"
   - filepath: "./data_sample/html/images/trend-down.svg"
     filesize: 2357
@@ -305,7 +305,7 @@ resources:
   - filepath: "./data_sample/html/images/attack-points.svg"
     filesize: 4294
     pack-as: "text"
-    modified: 1704530095
+    modified: 1742724375
     sha1: "efa213828889e667f4d9dad81b07b01ae7a11f04"
   - filepath: "./data_sample/html/images/activity.svg"
     filesize: 4918
@@ -330,7 +330,7 @@ resources:
   - filepath: "./data_sample/html/images/defence-flags.svg"
     filesize: 3010
     pack-as: "text"
-    modified: 1704530180
+    modified: 1742724375
     sha1: "38b9bf80ef6fa4ac5be0f406a5aec3a1b5f0a5ba"
   - filepath: "./data_sample/html/images/states/coffeebreak.svg"
     filesize: 16698
@@ -395,63 +395,63 @@ resources:
   - filepath: "./data_sample/html/css/scoreboard.css"
     filesize: 15551
     pack-as: "text"
-    modified: 1742624314
+    modified: 1742724375
     sha1: "ebc6a405b147eb11354c0f7815c8f05e3af4c2bb"
 
   - filepath: "./data_sample/html/images/teams/team30.png"
     filesize: 6052
     pack-as: "binary"
-    modified: 1742569111
+    modified: 1742724375
     sha1: "f7b0cb58015758b39f1b9f379ca0b653660f4f46"
   - filepath: "./data_sample/html/images/teams/team23.png"
     filesize: 6819
     pack-as: "binary"
-    modified: 1742568915
+    modified: 1742724375
     sha1: "507cb14472428e7386cafdb92b5ebb9006c23a00"
   - filepath: "./data_sample/html/images/teams/team25.png"
     filesize: 21485
     pack-as: "binary"
-    modified: 1742569224
+    modified: 1742724375
     sha1: "e245c03cadf69b9b0364a0f95543dbce5789c0c6"
   - filepath: "./data_sample/html/images/teams/team28.png"
     filesize: 24236
     pack-as: "binary"
-    modified: 1742569403
+    modified: 1742724375
     sha1: "86f87d68f770e2ca5856ac602ef948b31c083316"
   - filepath: "./data_sample/html/images/teams/team21.png"
     filesize: 21563
     pack-as: "binary"
-    modified: 1742569305
+    modified: 1742724375
     sha1: "df35d700ff0e7c97d232e618e8c0ec75313f273e"
   - filepath: "./data_sample/html/images/teams/team22.png"
     filesize: 23531
     pack-as: "binary"
-    modified: 1742568848
+    modified: 1742724375
     sha1: "36cf6a2b2c2dff1829bf405ac8a7d0537fe45372"
   - filepath: "./data_sample/html/images/teams/team29.png"
     filesize: 5876
     pack-as: "binary"
-    modified: 1742569088
+    modified: 1742724375
     sha1: "f3d5cf9293b05d3509b25e3b18feb74b420141c6"
   - filepath: "./data_sample/html/images/teams/team24.png"
     filesize: 25937
     pack-as: "binary"
-    modified: 1742569143
+    modified: 1742724375
     sha1: "e86412d730e607b0931a3dc57fd6f28cd9128176"
   - filepath: "./data_sample/html/images/teams/team26.png"
     filesize: 21015
     pack-as: "binary"
-    modified: 1742569248
+    modified: 1742724375
     sha1: "ba93d5fb5eade1b7cd26f2b7efae4d411f935947"
   - filepath: "./data_sample/html/images/teams/team27.png"
     filesize: 20266
     pack-as: "binary"
-    modified: 1742569343
+    modified: 1742724375
     sha1: "cd35d14634e5ca97ac5162ffee14399f6a0f3091"
 
   - filepath: "./data_sample/html/images/details.svg"
     filesize: 7007
     pack-as: "binary"
-    modified: 1742623168
+    modified: 1742724375
     sha1: "24aa81f99e1227810fca3d3293ea5cfde1667009"
 

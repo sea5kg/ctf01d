@@ -93,7 +93,7 @@ services:
     volumes:
       - "./tmp/flags_exploit:/root/flags"
       - "./run_exploit.py:/root/run_exploit.py"
-    command: sh -c "python3 -u /root/run_exploit.py 10.10.100.101:8080"
+    command: sh -c "python3 -u /root/run_exploit.py 10.10.100.100:8080"
     restart: always
     networks:
       - sample_vulnbox_net
