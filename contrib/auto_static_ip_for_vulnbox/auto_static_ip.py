@@ -104,6 +104,14 @@ print("> Wait 15 seconds before start")
 time.sleep(15)
 
 MY_IP = get_myip()
+if MY_IP is None:
+    print("> Could not available jury machine. Try reset interfaces to backup")
+    if not os.path.isfile(INTERFACES_BACKUP_PATH):
+        print("FAILED: Could not find file", INTERFACES_BACKUP_PATH)
+        sys.exit(-1)
+    copyfile(INTERFACES_BACKUP_PATH, INTERFACES_PATH)
+    restart_networking()
+
 CURRENT_IP = get_current_ip_wait()
 
 while CURRENT_IP != MY_IP:
