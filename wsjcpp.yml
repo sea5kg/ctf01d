@@ -1,5 +1,5 @@
 name: "ctf01d"
-version: v0.5.4
+version: v0.5.5
 cmake_minimum_required: "3.0"
 cmake_cxx_standard: "17"
 description: "Jury System for a attack-defence ctf games"
@@ -135,7 +135,7 @@ resources:
   - filepath: "./data_sample/config.yml"
     filesize: 7337
     pack-as: "text"
-    modified: 1742724375
+    modified: 1743008580
     sha1: "54b035b90c4738e703f0f2cf4cdaf460b578f2c1"
   - filepath: "./data_sample/html/favicon.ico"
     filesize: 16958
@@ -265,12 +265,12 @@ resources:
   - filepath: "./data_sample/html/index.html"
     filesize: 8442
     pack-as: "text"
-    modified: 1742724375
+    modified: 1742931026
     sha1: "71f6fe4b69240f66139f7c7919e27ae53974dcb7"
   - filepath: "./data_sample/html/js/scoreboard.js"
     filesize: 26449
     pack-as: "text"
-    modified: 1742724375
+    modified: 1743008580
     sha1: "293acc4996f2bd00abaf158b4c40a785123b01f8"
   - filepath: "./data_sample/html/images/first-blood.svg"
     filesize: 3653
@@ -395,7 +395,7 @@ resources:
   - filepath: "./data_sample/html/css/scoreboard.css"
     filesize: 15551
     pack-as: "text"
-    modified: 1742724375
+    modified: 1743008580
     sha1: "ebc6a405b147eb11354c0f7815c8f05e3af4c2bb"
 
   - filepath: "./data_sample/html/images/teams/team30.png"
