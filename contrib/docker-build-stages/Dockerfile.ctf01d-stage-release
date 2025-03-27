@@ -27,5 +27,4 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
         tzdata \
         bs4 \
         mimesis \
-    && gem install sqlite \
-    && gem install nokogiri
+    && gem install sqlite3
