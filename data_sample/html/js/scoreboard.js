@@ -442,7 +442,7 @@ function updateScoreboard() {
             var newValue = s.first_blood;
             for (var teamN in document.ctf01d_teams) {
                 if (document.ctf01d_teams[teamN].id == s.first_blood) {
-                    newValue = document.ctf01d_teams[teamN].name;
+                    newValue = escapeHtml(document.ctf01d_teams[teamN].name);
                     break;
                 }
             }
