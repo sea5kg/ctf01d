@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Added preinstalled 'ruby-sqlite3'
 * Removed from preinstalled 'nokogiri'
 * Optimize size scoreboard
+* Refactoring README to documentation directory
+* game-simulation moved to test_game_simulation
 
 ## [v0.5.4] - (2025 Mar 27)
 

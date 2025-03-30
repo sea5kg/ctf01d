@@ -9,7 +9,7 @@ game-simulation/vulnbox/service3_php/tmp/*
 data_test/*
 /data_sample/db/*
 ctf01d
-/tmp/*
+/tmp
 tmp/*
 .wsjcpp
 *.log
