@@ -1,6 +1,6 @@
 # ctf01d
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/sea5kg/ctf01d.svg)](https://hub.docker.com/r/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/stars/sea5kg/ctf01d.svg?label=github%20%E2%98%85)](https://github.com/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/contributors/sea5kg/ctf01d.svg)](https://github.com/sea5kg/ctf01d/) [![Github Forks](https://img.shields.io/github/forks/sea5kg/ctf01d.svg?label=github%20forks)](https://github.com/sea5kg/ctf01d/)
+[![ctf01d Version](https://img.shields.io/badge/ctf01d-v0.5.5-yellow.svg)](https://github.com/sea5kg/ctf01d) [![ctf01d ProgrammingLanguage](https://img.shields.io/badge/ProgrammingLanguage-c++-yellow.svg)](https://github.com/sea5kg/ctf01d) [![Docker Pulls](https://img.shields.io/docker/pulls/sea5kg/ctf01d.svg)](https://hub.docker.com/r/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/stars/sea5kg/ctf01d.svg?label=github%20%E2%98%85)](https://github.com/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/contributors/sea5kg/ctf01d.svg)](https://github.com/sea5kg/ctf01d/) [![Github Forks](https://img.shields.io/github/forks/sea5kg/ctf01d.svg?label=github%20forks)](https://github.com/sea5kg/ctf01d/)
 
 Jury System for attack-defence ctf game (ctf-scoreboard).
 Also you can use it for training.
