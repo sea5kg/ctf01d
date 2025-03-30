@@ -88,8 +88,11 @@ int ArgumentProcessorStart::exec(const std::vector<std::string> &vRoutes, const 
     EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
 
     // TODO move to EmployScoreboard::init
+    WsjcppLog::info(TAG, "Restoring states from storage...");
     pEmployConfig->scoreboard()->initStateFromStorage();
+    WsjcppLog::ok(TAG, "Restored state from storage.");
 
+    WsjcppLog::info(TAG, "Starting threads...");
     for (unsigned int iservice = 0; iservice < pEmployConfig->servicesConf().size(); iservice++) {
         for (unsigned int iteam = 0; iteam < pEmployConfig->teamsConf().size(); iteam++) {
             Ctf01dTeamDef teamConf = pEmployConfig->teamsConf()[iteam];
@@ -104,6 +107,7 @@ int ArgumentProcessorStart::exec(const std::vector<std::string> &vRoutes, const 
             m_vThreads.push_back(thr);
         }
     }
+    WsjcppLog::info(TAG, std::to_string(m_vThreads.size()) + " threads started");
 
     WsjcppLog::ok(TAG, "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/");
 

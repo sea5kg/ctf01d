@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Optimize size scoreboard
 * Refactoring README to documentation directory
 * game-simulation moved to test_game_simulation
+* Fix #91 FirstBlood redesign. Fix bug with design. And added hint with information
 
 ## [v0.5.4] - (2025 Mar 27)
 

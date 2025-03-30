@@ -279,6 +279,18 @@ img.team-logo {
   padding-left: 25px;
 }
 
+.first-blood-value {
+  display: inline-block;
+  height: 20px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.first-blood-info-value {
+  font-size: 20px;
+}
+
 @keyframes blinker {
   from { visibility: visible }
   to { visibility: hidden }
@@ -559,7 +571,7 @@ img.team-logo {
 }
 
 .service-att-def-cell.first-blood {
-  color: #971716;
+  color: #bb1919;
   background-image: url("../images/first-blood.svg");
 }
 
@@ -861,6 +873,7 @@ img.team-logo {
 .tooltip {
   position: relative;
   display: inline-block;
+  max-width: 100%;
 }
 
 .tooltip .tooltiptext {
@@ -911,6 +924,18 @@ img.team-logo {
   border: 1px solid #cc5914;
   height: 25px;
   line-height: 25px;
+}
+
+.tooltiptext.first-blood-info {
+  background-image: url("../images/first-blood.svg");
+  background-size: 20px 20px;
+  background-repeat: no-repeat;
+  background-position: 3px 2px;
+  background-size: 25px 25px;
+  color: #bb1919;
+  border: 1px solid #bb1919;
+  border-radius: 5px;
+  padding-top: 5px;
 }
 
 .current-team {

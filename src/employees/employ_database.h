@@ -103,8 +103,8 @@ class EmployDatabase : public WsjcppEmployBase {
         int numberOfFlagsStollen(std::string sTeamId, std::string sServiceId);
         int sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId);
         int numberOfStolenFlagsForService(std::string sServiceId);
-        std::string getFirstbloodFromStolenFlagsForService(std::string sServiceId);
-        void insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints);
+        std::pair<std::string, long> getFirstbloodFromStolenFlagsForService(std::string sServiceId);
+        void insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
         bool isAlreadyStole(Ctf01dFlag flag, std::string sTeamId);
         bool isSomebodyStole(Ctf01dFlag flag);
 

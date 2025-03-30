@@ -51,13 +51,15 @@ class Ctf01dServiceStatistics {
         void setDefenceFlagsForService(int nAllDefenceFlagsForService);
 
         std::string getFirstBloodTeamId();
-        void setFirstBloodTeamId(const std::string &sFirstBlood);
+        long getFirstBloodTime();
+        void setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion);
         void updateJsonServiceStatistics(nlohmann::json &jsonCosts);
 
     private:
         std::string TAG;
         std::string m_sServiceId;
         std::string m_sFirstBloodTeamId;
+        long m_nFirstBloodTimeInSeconds;
 
         int m_nAllStolenFlagsForService;
         int m_nAllDefenceFlagsForService;

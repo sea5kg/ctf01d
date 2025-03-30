@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_css_scoreboard_css_pathc54462::getPack
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_css_scoreboard_css_pathc54462::getBufferSize() const {
-    return 17557;
+    return 18057;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_css_scoreboard_css_pathc54462::getBuffer() const {
-    static const std::string sRet = "" // size: 17557
+    static const std::string sRet = "" // size: 18057
         "body{\n"
         "    background-color: #000;\n"
         "    font: 12pt/10pt Arial;\n"
@@ -303,6 +303,18 @@ const char *RES___data_sample_html_css_scoreboard_css_pathc54462::getBuffer() co
         "  background-size: 20px 20px;\n"
         "  background-repeat: no-repeat;\n"
         "  padding-left: 25px;\n"
+        "}\n"
+        "\n"
+        ".first-blood-value {\n"
+        "  display: inline-block;\n"
+        "  height: 20px;\n"
+        "  overflow: hidden;\n"
+        "  text-overflow: ellipsis;\n"
+        "  max-width: 100%;\n"
+        "}\n"
+        "\n"
+        ".first-blood-info-value {\n"
+        "  font-size: 20px;\n"
         "}\n"
         "\n"
         "@keyframes blinker {\n"
@@ -585,7 +597,7 @@ const char *RES___data_sample_html_css_scoreboard_css_pathc54462::getBuffer() co
         "}\n"
         "\n"
         ".service-att-def-cell.first-blood {\n"
-        "  color: #971716;\n"
+        "  color: #bb1919;\n"
         "  background-image: url(\"../images/first-blood.svg\");\n"
         "}\n"
         "\n"
@@ -887,6 +899,7 @@ const char *RES___data_sample_html_css_scoreboard_css_pathc54462::getBuffer() co
         ".tooltip {\n"
         "  position: relative;\n"
         "  display: inline-block;\n"
+        "  max-width: 100%;\n"
         "}\n"
         "\n"
         ".tooltip .tooltiptext {\n"
@@ -937,6 +950,18 @@ const char *RES___data_sample_html_css_scoreboard_css_pathc54462::getBuffer() co
         "  border: 1px solid #cc5914;\n"
         "  height: 25px;\n"
         "  line-height: 25px;\n"
+        "}\n"
+        "\n"
+        ".tooltiptext.first-blood-info {\n"
+        "  background-image: url(\"../images/first-blood.svg\");\n"
+        "  background-size: 20px 20px;\n"
+        "  background-repeat: no-repeat;\n"
+        "  background-position: 3px 2px;\n"
+        "  background-size: 25px 25px;\n"
+        "  color: #bb1919;\n"
+        "  border: 1px solid #bb1919;\n"
+        "  border-radius: 5px;\n"
+        "  padding-top: 5px;\n"
         "}\n"
         "\n"
         ".current-team {\n"

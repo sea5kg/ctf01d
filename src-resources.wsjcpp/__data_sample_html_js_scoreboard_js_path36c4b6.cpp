@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path36c4b6::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path36c4b6::getBufferSize() const {
-    return 31346;
+    return 32898;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() const {
-    static const std::string sRet = "" // size: 31346
+    static const std::string sRet = "" // size: 32898
         "\n"
         "var mneu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];\n"
         "var tabs_content = document.getElementsByClassName('ctf01d-page-content');\n"
@@ -464,18 +464,29 @@ const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() cons
         "        for (var serviceId in resp.s_sta) {\n"
         "            var s = resp.s_sta[serviceId]\n"
         "            var firstBloodId = serviceId + '-first-blood';\n"
+        "            var firstBloodTeamName = serviceId + '-first-blood-teamname';\n"
+        "            var firstBloodTime = serviceId + '-first-blood-time';\n"
         "            var prevValue = document.getElementById(firstBloodId).innerHTML;\n"
         "            var newValue = s.first_blood;\n"
+        "            var firstBloodTimeFromStartGame = \"-\";\n"
+        "            if (s.first_blood_ts != 0) {\n"
+        "                firstBloodTimeFromStartGame = humanTimeFromSeconds(s.first_blood_ts - resp.game.t0);\n"
+        "            }\n"
+        "\n"
         "            for (var teamN in document.ctf01d_teams) {\n"
         "                if (document.ctf01d_teams[teamN].id == s.first_blood) {\n"
-        "                    newValue = document.ctf01d_teams[teamN].name;\n"
+        "                    newValue = escapeHtml(document.ctf01d_teams[teamN].name);\n"
         "                    break;\n"
         "                }\n"
         "            }\n"
         "            if (prevValue == \"-\") {\n"
         "                silentUpdateWithoutAnimation(firstBloodId, newValue);\n"
+        "                silentUpdateWithoutAnimation(firstBloodTeamName, newValue);\n"
+        "                silentUpdateWithoutAnimation(firstBloodTime, firstBloodTimeFromStartGame);\n"
         "            } else if (prevValue != newValue) {\n"
-        "                silentUpdate(serviceId + '-first-blood', newValue);\n"
+        "                silentUpdate(firstBloodId, newValue);\n"
+        "                silentUpdate(firstBloodTeamName, newValue);\n"
+        "                silentUpdate(firstBloodTime, firstBloodTimeFromStartGame);\n"
         "                showActionFirstblood(s.first_blood);\n"
         "            }\n"
         "            silentUpdateWithoutAnimation(serviceId + '-all-flags-att', s.af_att)\n"
@@ -709,7 +720,20 @@ const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() cons
         "        + '          <div class=\"service-att-def-cell stollen-flags\" id=\"' + serviceId + '-all-flags-att\">0</div>'\n"
         "        + '      </div>'\n"
         "        + '      <div class=\"service-att-def-row\">'\n"
-        "        + '          <div class=\"service-att-def-cell first-blood\" id=\"' + serviceId +  '-first-blood\">-</div>'\n"
+        "        + '          <div class=\"service-att-def-cell first-blood\">'\n"
+        "        + '               <div class=\"tooltip\">'\n"
+        "        + '                   <div class=\"first-blood-value\" id=\"' + serviceId +  '-first-blood\">-</div>'\n"
+        "        + '                   <div class=\"tooltiptext first-blood-info\">'\n"
+        "        + '                     <div class=\"first-blood-info-value\">First Blood!</div><br>'\n"
+        "        + '                     Service:'\n"
+        "        + '                     <div class=\"first-blood-info-value\">' + escapeHtml(resp.services[i].name) + '</div><br>'\n"
+        "        + '                     Team Name: '\n"
+        "        + '                     <div class=\"first-blood-info-value\" id=\"' + serviceId +  '-first-blood-teamname\">-</div><br>'\n"
+        "        + '                     Time of First Blood from Start Game:'\n"
+        "        + '                     <div class=\"first-blood-info-value\" id=\"' + serviceId +  '-first-blood-time\">-</div><br>'\n"
+        "        + '                   </div>'\n"
+        "        + '               </div>'\n"
+        "        + '          </div>'\n"
         "        + '          <div class=\"service-att-def-cell round-time\">' + resp.services[i].round_time_in_sec + 's</div>'\n"
         "        + '      </div>'\n"
         "        + '  </div>'\n"
@@ -744,7 +768,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() cons
         "            + \"  </div>\"\n"
         "            + '  <div class=\"score\">'\n"
         "            + '     <div class=\"points-sum\" id=\"' + sTeamId + '-points\">0</div>'\n"
-        "            + '     <div class=\"points-trend trend-down\" id=\"' + sTeamId + '-points-trend\">??</div>'\n"
+        "            + '     <div class=\"points-trend trend-down\" id=\"' + sTeamId + '-points-trend\">?</div>'\n"
         "            + '  </div>';\n"
         "\n"
         "        for (var i = 0; i < resp.services.length; i++) {\n"

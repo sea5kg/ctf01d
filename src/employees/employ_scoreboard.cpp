@@ -81,14 +81,20 @@ std::string Ctf01dServiceStatistics::getFirstBloodTeamId() {
     return m_sFirstBloodTeamId;
 }
 
+long Ctf01dServiceStatistics::getFirstBloodTime() {
+    return m_nFirstBloodTimeInSeconds;
+}
+
 void Ctf01dServiceStatistics::updateJsonServiceStatistics(nlohmann::json &jsonCosts) {
     jsonCosts["af_att"] = m_nAllStolenFlagsForService;
     jsonCosts["af_def"] = m_nAllDefenceFlagsForService;
     jsonCosts["first_blood"] = m_sFirstBloodTeamId;
+    jsonCosts["first_blood_ts"] = m_nFirstBloodTimeInSeconds;
 }
 
-void Ctf01dServiceStatistics::setFirstBloodTeamId(const std::string &sFirstBlood) {
+void Ctf01dServiceStatistics::setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion) {
     m_sFirstBloodTeamId = sFirstBlood;
+    m_nFirstBloodTimeInSeconds = nDateACtion / 1000;
 }
 
 // ---------------------------------------------------------------------

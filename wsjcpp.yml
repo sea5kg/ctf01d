@@ -135,7 +135,7 @@ resources:
   - filepath: "./data_sample/config.yml"
     filesize: 7371
     pack-as: "text"
-    modified: 1743113210
+    modified: 1743318076
     sha1: "daa2c53f7718db69e26ecc6a30b17f98e4c50411"
   - filepath: "./data_sample/html/favicon.ico"
     filesize: 16958
@@ -265,13 +265,13 @@ resources:
   - filepath: "./data_sample/html/index.html"
     filesize: 9783
     pack-as: "text"
-    modified: 1743113210
+    modified: 1743113506
     sha1: "cd980fdcfa0d34e673209dc203e72d06f66c439c"
   - filepath: "./data_sample/html/js/scoreboard.js"
-    filesize: 31346
+    filesize: 32898
     pack-as: "text"
-    modified: 1743113210
-    sha1: "b65e44d41854f76b7d9b67a06a68b673cfa055ef"
+    modified: 1743317306
+    sha1: "ba1ede3a8019b4028029ef07b51baf0ec2397f9b"
   - filepath: "./data_sample/html/images/first-blood.svg"
     filesize: 3653
     pack-as: "text"
@@ -393,10 +393,10 @@ resources:
     modified: 1700126010
     sha1: "0f591a740f6fe9a7868758935986945b810e3958"
   - filepath: "./data_sample/html/css/scoreboard.css"
-    filesize: 17557
+    filesize: 18057
     pack-as: "text"
-    modified: 1743113317
-    sha1: "f252be96dc6072d44efc4c75b43565ccbb13afa0"
+    modified: 1743317618
+    sha1: "f4b83fb21e71433ca1ae2bfce3ec707b8a5340aa"
 
   - filepath: "./data_sample/html/images/teams/team30.png"
     filesize: 6052

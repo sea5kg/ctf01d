@@ -438,8 +438,15 @@ function updateScoreboard() {
         for (var serviceId in resp.s_sta) {
             var s = resp.s_sta[serviceId]
             var firstBloodId = serviceId + '-first-blood';
+            var firstBloodTeamName = serviceId + '-first-blood-teamname';
+            var firstBloodTime = serviceId + '-first-blood-time';
             var prevValue = document.getElementById(firstBloodId).innerHTML;
             var newValue = s.first_blood;
+            var firstBloodTimeFromStartGame = "-";
+            if (s.first_blood_ts != 0) {
+                firstBloodTimeFromStartGame = humanTimeFromSeconds(s.first_blood_ts - resp.game.t0);
+            }
+
             for (var teamN in document.ctf01d_teams) {
                 if (document.ctf01d_teams[teamN].id == s.first_blood) {
                     newValue = escapeHtml(document.ctf01d_teams[teamN].name);
@@ -448,8 +455,12 @@ function updateScoreboard() {
             }
             if (prevValue == "-") {
                 silentUpdateWithoutAnimation(firstBloodId, newValue);
+                silentUpdateWithoutAnimation(firstBloodTeamName, newValue);
+                silentUpdateWithoutAnimation(firstBloodTime, firstBloodTimeFromStartGame);
             } else if (prevValue != newValue) {
-                silentUpdate(serviceId + '-first-blood', newValue);
+                silentUpdate(firstBloodId, newValue);
+                silentUpdate(firstBloodTeamName, newValue);
+                silentUpdate(firstBloodTime, firstBloodTimeFromStartGame);
                 showActionFirstblood(s.first_blood);
             }
             silentUpdateWithoutAnimation(serviceId + '-all-flags-att', s.af_att)
@@ -683,7 +694,20 @@ getAjax('/api/v1/game', function(err, resp){
         + '          <div class="service-att-def-cell stollen-flags" id="' + serviceId + '-all-flags-att">0</div>'
         + '      </div>'
         + '      <div class="service-att-def-row">'
-        + '          <div class="service-att-def-cell first-blood" id="' + serviceId +  '-first-blood">-</div>'
+        + '          <div class="service-att-def-cell first-blood">'
+        + '               <div class="tooltip">'
+        + '                   <div class="first-blood-value" id="' + serviceId +  '-first-blood">-</div>'
+        + '                   <div class="tooltiptext first-blood-info">'
+        + '                     <div class="first-blood-info-value">First Blood!</div><br>'
+        + '                     Service:'
+        + '                     <div class="first-blood-info-value">' + escapeHtml(resp.services[i].name) + '</div><br>'
+        + '                     Team Name: '
+        + '                     <div class="first-blood-info-value" id="' + serviceId +  '-first-blood-teamname">-</div><br>'
+        + '                     Time of First Blood from Start Game:'
+        + '                     <div class="first-blood-info-value" id="' + serviceId +  '-first-blood-time">-</div><br>'
+        + '                   </div>'
+        + '               </div>'
+        + '          </div>'
         + '          <div class="service-att-def-cell round-time">' + resp.services[i].round_time_in_sec + 's</div>'
         + '      </div>'
         + '  </div>'
@@ -718,7 +742,7 @@ getAjax('/api/v1/game', function(err, resp){
             + "  </div>"
             + '  <div class="score">'
             + '     <div class="points-sum" id="' + sTeamId + '-points">0</div>'
-            + '     <div class="points-trend trend-down" id="' + sTeamId + '-points-trend">??</div>'
+            + '     <div class="points-trend trend-down" id="' + sTeamId + '-points-trend">?</div>'
             + '  </div>';
 
         for (var i = 0; i < resp.services.length; i++) {
