@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * game-simulation moved to test_game_simulation
 * Fix #91 FirstBlood redesign. Fix bug with design. And added hint with information
 * Fix #86 chmod 776 for checker service dicrectory (checker could not write to database)
+* Fix #88 Check on start sames IP and block start
 
 ## [v0.5.4] - (2025 Mar 27)
 
