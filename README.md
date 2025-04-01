@@ -5,7 +5,7 @@
 Jury System for attack-defence ctf game (ctf-scoreboard).
 Also you can use it for training.
 
-![scoreboard](https://raw.githubusercontent.com/sea5kg/ctf01d/master/misc/screens/screen1.png)
+![scoreboard](https://raw.githubusercontent.com/sea5kg/ctf01d/master/documentation/images/screen1.png)
 
 ## Easy way to start/init it (based on docker-compose)
 
