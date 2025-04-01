@@ -222,6 +222,10 @@ bool EmployConfig::init() {
     std::string sLogDir = sWorkDir + "/logs";
     if (!WsjcppCore::dirExists(sLogDir)) {
         WsjcppCore::makeDir(sLogDir);
+        std::string sError;
+        if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x776), sError)) {
+            WsjcppLog::throw_err(TAG, sError);
+        }
     }
     if (!WsjcppCore::dirExists(sLogDir)) {
         std::cout << "Error: Folder '" << sLogDir << "' does not exists and could not created, please check access rights to parent folder.\n";
@@ -385,8 +389,12 @@ Ctf01dScoreboard *EmployConfig::scoreboard(){
 }
 
 void EmployConfig::doExtractFilesIfNotExists() {
+    std::string sError;
     if (!WsjcppCore::dirExists(m_sWorkDir + "/logs")) {
         WsjcppCore::makeDir(m_sWorkDir + "/logs");
+        if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x776), sError)) {
+            WsjcppLog::throw_err(TAG, sError);
+        }
     }
 
     if (!WsjcppCore::fileExists(m_sWorkDir + "/config.yml")) {
@@ -438,7 +446,6 @@ void EmployConfig::doExtractFilesIfNotExists() {
         } else {
             std::cout << "Successfully created file. " << std::endl;
         }
-        // TODO extract yaml and example services files
     }
 
     if (!WsjcppCore::fileExists(m_sWorkDir + "/html/index.html")) {
@@ -648,10 +655,21 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
             WsjcppLog::err(TAG, "Folder " + sServiceScriptDir + " did not exists");
             return false;
         }
+        // set write permissions for all to directory with checker
+        std::string sError;
+        if (!WsjcppCore::setFilePermissions(sServiceScriptDir, WsjcppFilePermissions(0x777), sError)) {
+            WsjcppLog::err(TAG, sError);
+            return false;
+        }
 
         WsjcppLog::info(TAG, "sServiceScriptDir: " + sServiceScriptDir);
         if (!WsjcppCore::fileExists(sServiceScriptDir + sServiceScriptPath)) {
             WsjcppLog::err(TAG, "File " + sServiceScriptPath + " did not exists");
+            return false;
+        }
+        // set write permissions for all to script of checker
+        if (!WsjcppCore::setFilePermissions(sServiceScriptDir + sServiceScriptPath, WsjcppFilePermissions(0x777), sError)) {
+            WsjcppLog::err(TAG, sError);
             return false;
         }
 

@@ -78,18 +78,29 @@ Ctf01dDatabaseFile::Ctf01dDatabaseFile(const std::string &sFilename, const std::
     TAG = "Ctf01dDatabaseFile-" + sFilename;
     m_pDatabaseFile = nullptr;
     m_sFilename = sFilename;
+    std::string sError;
     m_nLastBackupTime = 0;
     m_sSqlCreateTable = sSqlCreateTable;
     EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
     std::string sDatabaseDir = pConfig->getWorkDir() + "/db";
     if (!WsjcppCore::dirExists(sDatabaseDir)) {
-        !WsjcppCore::makeDir(sDatabaseDir);
+        if (!WsjcppCore::makeDir(sDatabaseDir)) {
+            WsjcppLog::throw_err(TAG, "Could not create dir " + sDatabaseDir);
+        }
+        if (!WsjcppCore::setFilePermissions(sDatabaseDir, WsjcppFilePermissions(0x776), sError)) {
+            WsjcppLog::throw_err(TAG, sError);
+        }
     }
     m_sFileFullpath = sDatabaseDir + "/" + m_sFilename;
 
     std::string sDatabaseBackupDir = sDatabaseDir + "/backups";
     if (!WsjcppCore::dirExists(sDatabaseBackupDir)) {
-        !WsjcppCore::makeDir(sDatabaseBackupDir);
+        if (!WsjcppCore::makeDir(sDatabaseBackupDir)) {
+            WsjcppLog::throw_err(TAG, "Could not create dir " + sDatabaseBackupDir);
+        }
+        if (!WsjcppCore::setFilePermissions(sDatabaseBackupDir, WsjcppFilePermissions(0x776), sError)) {
+            WsjcppLog::throw_err(TAG, sError);
+        }
     }
     m_sBaseFileBackupFullpath = sDatabaseBackupDir + "/" + m_sFilename;
 };
