@@ -103,7 +103,7 @@ const char *RES___data_sample_config_yml_path37a5c6::getBuffer() const {
         "    name: \"Team #4\"\n"
         "    active: yes\n"
         "    logo: \"./html/images/teams/team04.png\"\n"
-        "    ip_address: \"127.0.3.1\" # address to vulnserver\n"
+        "    ip_address: \"127.0.4.1\" # address to vulnserver\n"
         "  - id: \"t05\" # must be uniq\n"
         "    name: \"Team #5\"\n"
         "    active: yes\n"

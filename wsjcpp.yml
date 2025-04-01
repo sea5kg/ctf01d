@@ -102,11 +102,6 @@ distribution:
     type: "source-code"
 
 resources:
-  - filepath: "./data_sample/logs/.placeholder"
-    filesize: 0
-    pack-as: "binary"
-    modified: 1599898841
-    sha1: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
   - filepath: "./data_sample/hv_logs/.placeholder"
     filesize: 0
     pack-as: "binary"
@@ -135,323 +130,323 @@ resources:
   - filepath: "./data_sample/config.yml"
     filesize: 7371
     pack-as: "text"
-    modified: 1743318076
-    sha1: "daa2c53f7718db69e26ecc6a30b17f98e4c50411"
+    modified: 1743488634
+    sha1: "6d930c15569cae07c189386614f74f1aa148226c"
   - filepath: "./data_sample/html/favicon.ico"
     filesize: 16958
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "3503009a9c3dd7d7e2ceadd980c071c2c9a53f6b"
   - filepath: "./data_sample/html/favicon-16x16.png"
     filesize: 6187
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "965c5b481710071605deca395e94b874cfbbfedb"
   - filepath: "./data_sample/html/favicon-32x32.png"
     filesize: 8650
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "2d7f066f50806dc694d3df520ae97061d5becfb4"
   - filepath: "./data_sample/html/images/teams/team11.png"
     filesize: 6509
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "6231c90988b8c7aed7e5a3375201a3c8a41a5d79"
   - filepath: "./data_sample/html/images/teams/team13.png"
     filesize: 6326
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "054b16a903b3b6606433cc161d954782e9ce908f"
   - filepath: "./data_sample/html/images/teams/team18.png"
     filesize: 4683
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "e6cc35908ceeb22fb48d24b256eca728f1cb5726"
   - filepath: "./data_sample/html/images/teams/team15.png"
     filesize: 6429
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "060d3b38bd2f541e48cb9b2f29b9b6c5f414c21e"
   - filepath: "./data_sample/html/images/teams/team01.png"
     filesize: 6651
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "9ad70f140ede159cbae6ed0e96a98cc0776b68dc"
   - filepath: "./data_sample/html/images/teams/team08.png"
     filesize: 6097
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "62e8e05f67f46a267c69a13e5fd1afcceba67726"
   - filepath: "./data_sample/html/images/teams/team17.png"
     filesize: 4146
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "fdde5beeaab508c7d7a8ffb91f80df1ceb78d6f7"
   - filepath: "./data_sample/html/images/teams/team02.png"
     filesize: 6591
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "94d0aea89b2aa362891e9b09fd506abc7bc14c33"
   - filepath: "./data_sample/html/images/teams/team20.png"
     filesize: 9930
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "d182b2ca986771ba2c1d0f522e084eabf5016d6d"
   - filepath: "./data_sample/html/images/teams/team10.png"
     filesize: 5997
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "1dda4772fce7a4fbe74a91d34e3f215a03e4f9a5"
   - filepath: "./data_sample/html/images/teams/team09.png"
     filesize: 6238
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "83928ff0174fe16adc50bca74c661c610fe6e0cc"
   - filepath: "./data_sample/html/images/teams/team14.png"
     filesize: 5996
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "52b31a7b166c5b8047ad41f43dc30b0a717dcb71"
   - filepath: "./data_sample/html/images/teams/team05.png"
     filesize: 6459
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "2a6d14448b94c2f06d5514596345e5587129d4dc"
   - filepath: "./data_sample/html/images/teams/team16.png"
     filesize: 4662
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "c8db7d009b701de44a223dd6a9527e1da4871b93"
   - filepath: "./data_sample/html/images/teams/team06.png"
     filesize: 6606
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "2cf0e25c5e9aee373cffe932fb3420d63797d9f0"
   - filepath: "./data_sample/html/images/teams/team19.png"
     filesize: 26153
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "c05898c95c4097048eb7f0aeaf60675daa15589c"
   - filepath: "./data_sample/html/images/teams/team12.png"
     filesize: 6465
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "945b98b11a5d7637c8761190b120c64f2d6e425c"
   - filepath: "./data_sample/html/images/teams/team03.png"
     filesize: 6486
     pack-as: "binary"
-    modified: 1700247630
+    modified: 1743318287
     sha1: "a14e66ba77161ea34fd483f39f01b52550cb08e0"
   - filepath: "./data_sample/html/images/teams/team04.png"
     filesize: 5423
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "026aa2b788dd77b1ae0f3d7837b1398c547d2cd5"
   - filepath: "./data_sample/html/images/teams/team07.png"
     filesize: 5300
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "9a561b683233b4a5e5f6dc8e763962aa9af5d9de"
   - filepath: "./data_sample/html/images/teams/unknown.svg"
     filesize: 5633
     pack-as: "text"
-    modified: 1742569578
+    modified: 1743318287
     sha1: "7726bf6746d80d7ac2c2726d0415487461dfb19c"
   - filepath: "./data_sample/html/images/logo.png"
     filesize: 38137
     pack-as: "binary"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "94bc90a0ba18eb99fa8f8e9830e7bf7bec347119"
   - filepath: "./data_sample/html/index.html"
     filesize: 9783
     pack-as: "text"
-    modified: 1743113506
+    modified: 1743318323
     sha1: "cd980fdcfa0d34e673209dc203e72d06f66c439c"
   - filepath: "./data_sample/html/js/scoreboard.js"
-    filesize: 32898
+    filesize: 32867
     pack-as: "text"
-    modified: 1743317306
-    sha1: "ba1ede3a8019b4028029ef07b51baf0ec2397f9b"
+    modified: 1743485733
+    sha1: "a76ce1c19f7b29359a2690d053b5ac51071c48bc"
   - filepath: "./data_sample/html/images/first-blood.svg"
     filesize: 3653
     pack-as: "text"
-    modified: 1700160983
+    modified: 1743318287
     sha1: "23586917ff26fed596cf9dc791295a2621b6f2da"
   - filepath: "./data_sample/html/images/attack.svg"
     filesize: 2877
     pack-as: "text"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "09bbff9a684e7a4da9392c84e41d33d1f628e063"
   - filepath: "./data_sample/html/images/points.svg"
     filesize: 2979
     pack-as: "text"
-    modified: 1599898841
+    modified: 1743318287
     sha1: "3e21fa62f2d7db8faa5989bb0c6e1675f2b6f04f"
   - filepath: "./data_sample/html/images/defence-points.svg"
     filesize: 4321
     pack-as: "text"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "fad9c6b04a7846ee95bfb877e21df5bf46ceb790"
   - filepath: "./data_sample/html/images/trend-down.svg"
     filesize: 2357
     pack-as: "text"
-    modified: 1700168313
+    modified: 1743318287
     sha1: "da911e610419836e4b60ac1ccf00d55e67e476b3"
   - filepath: "./data_sample/html/images/trend-middle.svg"
     filesize: 2286
     pack-as: "text"
-    modified: 1700168839
+    modified: 1743318287
     sha1: "e322f761583f497a1b10eb5bb6c14f7b34384a56"
   - filepath: "./data_sample/html/images/attack-points.svg"
     filesize: 4294
     pack-as: "text"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "efa213828889e667f4d9dad81b07b01ae7a11f04"
   - filepath: "./data_sample/html/images/activity.svg"
     filesize: 4918
     pack-as: "text"
-    modified: 1698331255
+    modified: 1743318287
     sha1: "ca5dd1067da744bdb6631753ed61c680f4ccd6fc"
   - filepath: "./data_sample/html/images/sla.svg"
     filesize: 2564
     pack-as: "text"
-    modified: 1700160096
+    modified: 1743318287
     sha1: "31935152ea2e051610848d132d349324b6690d85"
   - filepath: "./data_sample/html/images/trend-up.svg"
     filesize: 2359
     pack-as: "text"
-    modified: 1700168282
+    modified: 1743318287
     sha1: "d2d760e6bd7b0dc7eff057f9b77a00d6d2f9f52b"
   - filepath: "./data_sample/html/images/round-time.svg"
     filesize: 7251
     pack-as: "text"
-    modified: 1700160937
+    modified: 1743318287
     sha1: "c67e17c6da9c13673894dc9a1795c201a110b9bf"
   - filepath: "./data_sample/html/images/defence-flags.svg"
     filesize: 3010
     pack-as: "text"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "38b9bf80ef6fa4ac5be0f406a5aec3a1b5f0a5ba"
   - filepath: "./data_sample/html/images/states/coffeebreak.svg"
     filesize: 16698
     pack-as: "text"
-    modified: 1599898841
+    modified: 1743318287
     sha1: "718603272844fe17b6da9ba38c6dcf0b89813f45"
   - filepath: "./data_sample/html/images/states/shit.svg"
     filesize: 2770
     pack-as: "text"
-    modified: 1599898841
+    modified: 1743318287
     sha1: "21a26a3b86067ebb11c2ae5d8fcabf2f4116dc8c"
   - filepath: "./data_sample/html/images/states/corrupt.svg"
     filesize: 3462
     pack-as: "text"
-    modified: 1599898841
+    modified: 1743318287
     sha1: "101264789b14d44af643c92713c9cdbfd2809197"
   - filepath: "./data_sample/html/images/states/wait.svg"
     filesize: 10930
     pack-as: "text"
-    modified: 1599898841
+    modified: 1743318287
     sha1: "31fb01da83e646f8e4f856c14ef3aa06703624f1"
   - filepath: "./data_sample/html/images/states/place-2st.svg"
     filesize: 5473
     pack-as: "text"
-    modified: 1699987631
+    modified: 1743318287
     sha1: "e5397dcd0c96ff3f91dd56d4dce139cf40f05d79"
   - filepath: "./data_sample/html/images/states/place-1st.svg"
     filesize: 4727
     pack-as: "text"
-    modified: 1699987358
+    modified: 1743318287
     sha1: "dd8170bec438db2b51044a1108b3837d3fe2a007"
   - filepath: "./data_sample/html/images/states/place-3st.svg"
     filesize: 5552
     pack-as: "text"
-    modified: 1699987970
+    modified: 1743318287
     sha1: "baf479d37b50ac7daa7f05083ff1befd2617ec97"
   - filepath: "./data_sample/html/images/states/down.svg"
     filesize: 4266
     pack-as: "text"
-    modified: 1699980125
+    modified: 1743318287
     sha1: "932a250c114231eb45a2be6eeaf98d224f4358d8"
   - filepath: "./data_sample/html/images/states/mumble.svg"
     filesize: 3513
     pack-as: "text"
-    modified: 1699775797
+    modified: 1743318287
     sha1: "4b8fb5c05422f84186aa96406e578344888519bd"
   - filepath: "./data_sample/html/images/states/up.svg"
     filesize: 4172
     pack-as: "text"
-    modified: 1699980037
+    modified: 1743318287
     sha1: "eb1a94a650b4fc844f69e9589173493296ba460d"
   - filepath: "./data_sample/html/images/actions/automatization.svg"
     filesize: 18350
     pack-as: "text"
-    modified: 1700172163
+    modified: 1743318287
     sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
   - filepath: "./data_sample/html/images/actions/firstblood.svg"
     filesize: 22032
     pack-as: "text"
-    modified: 1700126010
+    modified: 1743318287
     sha1: "0f591a740f6fe9a7868758935986945b810e3958"
   - filepath: "./data_sample/html/css/scoreboard.css"
     filesize: 18057
     pack-as: "text"
-    modified: 1743317618
+    modified: 1743318339
     sha1: "f4b83fb21e71433ca1ae2bfce3ec707b8a5340aa"
 
   - filepath: "./data_sample/html/images/teams/team30.png"
     filesize: 6052
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "f7b0cb58015758b39f1b9f379ca0b653660f4f46"
   - filepath: "./data_sample/html/images/teams/team23.png"
     filesize: 6819
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "507cb14472428e7386cafdb92b5ebb9006c23a00"
   - filepath: "./data_sample/html/images/teams/team25.png"
     filesize: 21485
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "e245c03cadf69b9b0364a0f95543dbce5789c0c6"
   - filepath: "./data_sample/html/images/teams/team28.png"
     filesize: 24236
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "86f87d68f770e2ca5856ac602ef948b31c083316"
   - filepath: "./data_sample/html/images/teams/team21.png"
     filesize: 21563
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "df35d700ff0e7c97d232e618e8c0ec75313f273e"
   - filepath: "./data_sample/html/images/teams/team22.png"
     filesize: 23531
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "36cf6a2b2c2dff1829bf405ac8a7d0537fe45372"
   - filepath: "./data_sample/html/images/teams/team29.png"
     filesize: 5876
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "f3d5cf9293b05d3509b25e3b18feb74b420141c6"
   - filepath: "./data_sample/html/images/teams/team24.png"
     filesize: 25937
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "e86412d730e607b0931a3dc57fd6f28cd9128176"
   - filepath: "./data_sample/html/images/teams/team26.png"
     filesize: 21015
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "ba93d5fb5eade1b7cd26f2b7efae4d411f935947"
   - filepath: "./data_sample/html/images/teams/team27.png"
     filesize: 20266
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "cd35d14634e5ca97ac5162ffee14399f6a0f3091"
 
   - filepath: "./data_sample/html/images/details.svg"
     filesize: 7007
     pack-as: "binary"
-    modified: 1742724375
+    modified: 1743318287
     sha1: "24aa81f99e1227810fca3d3293ea5cfde1667009"
 

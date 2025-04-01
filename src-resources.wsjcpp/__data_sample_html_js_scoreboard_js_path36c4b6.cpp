@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path36c4b6::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path36c4b6::getBufferSize() const {
-    return 32898;
+    return 32867;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() const {
-    static const std::string sRet = "" // size: 32898
+    static const std::string sRet = "" // size: 32867
         "\n"
         "var mneu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];\n"
         "var tabs_content = document.getElementsByClassName('ctf01d-page-content');\n"
@@ -729,7 +729,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() cons
         "        + '                     <div class=\"first-blood-info-value\">' + escapeHtml(resp.services[i].name) + '</div><br>'\n"
         "        + '                     Team Name: '\n"
         "        + '                     <div class=\"first-blood-info-value\" id=\"' + serviceId +  '-first-blood-teamname\">-</div><br>'\n"
-        "        + '                     Time of First Blood from Start Game:'\n"
+        "        + '                     Time:'\n"
         "        + '                     <div class=\"first-blood-info-value\" id=\"' + serviceId +  '-first-blood-time\">-</div><br>'\n"
         "        + '                   </div>'\n"
         "        + '               </div>'\n"
