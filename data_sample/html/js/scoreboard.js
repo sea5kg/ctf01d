@@ -703,7 +703,7 @@ getAjax('/api/v1/game', function(err, resp){
         + '                     <div class="first-blood-info-value">' + escapeHtml(resp.services[i].name) + '</div><br>'
         + '                     Team Name: '
         + '                     <div class="first-blood-info-value" id="' + serviceId +  '-first-blood-teamname">-</div><br>'
-        + '                     Time of First Blood from Start Game:'
+        + '                     Time:'
         + '                     <div class="first-blood-info-value" id="' + serviceId +  '-first-blood-time">-</div><br>'
         + '                   </div>'
         + '               </div>'
