@@ -3,6 +3,7 @@ tmp
 .wsjcpp
 misc
 data_test
+data_sample
 examples
 documentation
 tests
