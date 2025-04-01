@@ -3,8 +3,9 @@ tmp
 .wsjcpp
 misc
 data_test
+data_sample
 examples
-game-simulation
+documentation
 tests
 contrib
 ctf01d-store

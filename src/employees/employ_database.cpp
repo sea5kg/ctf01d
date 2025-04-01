@@ -78,18 +78,29 @@ Ctf01dDatabaseFile::Ctf01dDatabaseFile(const std::string &sFilename, const std::
     TAG = "Ctf01dDatabaseFile-" + sFilename;
     m_pDatabaseFile = nullptr;
     m_sFilename = sFilename;
+    std::string sError;
     m_nLastBackupTime = 0;
     m_sSqlCreateTable = sSqlCreateTable;
     EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
     std::string sDatabaseDir = pConfig->getWorkDir() + "/db";
     if (!WsjcppCore::dirExists(sDatabaseDir)) {
-        !WsjcppCore::makeDir(sDatabaseDir);
+        if (!WsjcppCore::makeDir(sDatabaseDir)) {
+            WsjcppLog::throw_err(TAG, "Could not create dir " + sDatabaseDir);
+        }
+        if (!WsjcppCore::setFilePermissions(sDatabaseDir, WsjcppFilePermissions(0x776), sError)) {
+            WsjcppLog::throw_err(TAG, sError);
+        }
     }
     m_sFileFullpath = sDatabaseDir + "/" + m_sFilename;
 
     std::string sDatabaseBackupDir = sDatabaseDir + "/backups";
     if (!WsjcppCore::dirExists(sDatabaseBackupDir)) {
-        !WsjcppCore::makeDir(sDatabaseBackupDir);
+        if (!WsjcppCore::makeDir(sDatabaseBackupDir)) {
+            WsjcppLog::throw_err(TAG, "Could not create dir " + sDatabaseBackupDir);
+        }
+        if (!WsjcppCore::setFilePermissions(sDatabaseBackupDir, WsjcppFilePermissions(0x776), sError)) {
+            WsjcppLog::throw_err(TAG, sError);
+        }
     }
     m_sBaseFileBackupFullpath = sDatabaseBackupDir + "/" + m_sFilename;
 };
@@ -466,21 +477,26 @@ int EmployDatabase::numberOfStolenFlagsForService(std::string sServiceId) {
     );
 }
 
-std::string EmployDatabase::getFirstbloodFromStolenFlagsForService(std::string sServiceId) {
-    std::string sQuery = "SELECT thief_teamid FROM flags_stolen WHERE serviceid = '" + sServiceId + "' LIMIT 1";
-    std::string sRet = "?";
+std::pair<std::string, long> EmployDatabase::getFirstbloodFromStolenFlagsForService(std::string sServiceId) {
+    std::string sQuery = "SELECT thief_teamid, date_action FROM flags_stolen WHERE serviceid = '" + sServiceId + "' LIMIT 1";
+    std::pair<std::string, long> pairRet;
+    pairRet.first = "?";
+    pairRet.second = 0;
     Ctf01dDatabaseSelectRows selectRows;
     if (!m_pFlagsStolen->selectRows(sQuery, selectRows)) {
         WsjcppLog::err(TAG, "Error select getFirstbloodFromStolenFlagsForService " + sQuery);
     }
     if (selectRows.next()) {
-        sRet = selectRows.getString(0);
+        pairRet.first = selectRows.getString(0);
+        pairRet.second = selectRows.getLong(1);
     }
-    return sRet;
+    return pairRet;
 }
 
-
-void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints) {
+void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard) {
+    // TODO
+    // nVictimPlaceInScoreBoard
+    // nThiefPlaceInScoreboard
     std::string sQuery = "INSERT INTO flags_stolen(serviceid, teamid, thief_teamid, flag_id, flag,"
         "   date_start, date_end, date_action, flag_cost) VALUES("
         "'" + flag.getServiceId() + "', "
@@ -490,7 +506,7 @@ void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, i
         + "'" + flag.getValue() + "', "
         + std::to_string(flag.getTimeStartInMs()) + ", "
         + std::to_string(flag.getTimeEndInMs()) + ", "
-        + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ", "
+        + std::to_string(nDateAction) + ", "
         + std::to_string(nPoints) + " "
         + ");";
 

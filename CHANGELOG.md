@@ -5,6 +5,17 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.5.5] - (2025 Apr 1)
+
+* Added preinstalled 'ruby-sqlite3'
+* Removed from preinstalled 'nokogiri'
+* Optimize size scoreboard
+* Refactoring README to documentation directory
+* game-simulation moved to test_game_simulation
+* Fix #91 FirstBlood redesign. Fix bug with design. And added hint with information
+* Fix #86 chmod 776 for checker service dicrectory (checker could not write to database)
+* Fix #88 Check on start sames IP and block start
+
 ## [v0.5.4] - (2025 Mar 27)
 
 * Added `contrib/auto_static_ip_for_vulnbox` - Script automaticly set static IP for VULNBOX machine on start

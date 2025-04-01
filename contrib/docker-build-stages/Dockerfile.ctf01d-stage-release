@@ -12,11 +12,11 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
     nano \
     vim \
     ruby-full \
+    ruby-sqlite3 \
     python3 \
     python3-pip \
     python-is-python3 \
     telnet \
-    libsqlite3-dev \
     iputils-ping \
     && python3 -m pip install --break-system-packages \
         requests \
@@ -26,6 +26,4 @@ RUN apt-get -y update && apt-get -y upgrade && apt-get install -y \
         protobuf \
         tzdata \
         bs4 \
-        mimesis \
-    && gem install sqlite \
-    && gem install nokogiri
+        mimesis

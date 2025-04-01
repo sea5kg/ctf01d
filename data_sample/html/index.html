@@ -57,7 +57,7 @@ team_points = team_points + SLA_N * (serviceN_defence_points + serviceN_attack_p
             </div>
         </div>
         <div class="ctf01d-blockinfo">
-            <div class="ctf01d-blockinfo-header">Flag send</div>
+            <div class="ctf01d-blockinfo-header">Flag</div>
             <div class="ctf01d-blockinfo-content">
                 <p>The flag format must match the regular expression (uuid):</p>
                 <div style="display: inline-block;">
@@ -73,13 +73,39 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
                                             since the start of the game)
                     </pre>
                 </div>
+            </div>
+        </div>
 
-                <h3>Form for send flag:</h3>
+        <div class="ctf01d-blockinfo">
+            <div class="ctf01d-blockinfo-header">Form for send flag</div>
+            <div class="ctf01d-blockinfo-content">
                 <form target="_blank" method="GET" action="/flag">
                     By Team<select name="teamid" id="team_list"></select>
                     <input type="text" size="36" placeholder="Flag value" name="flag">
                     <button>Send</button><br>
                 </form>
+            </div>
+        </div>
+
+        <div class="ctf01d-blockinfo">
+            <div class="ctf01d-blockinfo-header">Example of send flag use a cURL</div>
+            <div class="ctf01d-blockinfo-content">
+                <div style="display: inline-block;">
+                    <pre class="pre-flag-format" id="curl_request_send_flag">$ curl {JURY_HOST_PORT}flag?teamid={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="ctf01d-blockinfo">
+            <div class="ctf01d-blockinfo-header">Example of send flag use a python script</div>
+            <div class="ctf01d-blockinfo-content">
+                <div style="display: inline-block;">
+                    <pre class="pre-flag-format" id="python_request_send_flag">import requests
+
+resp = requests.get("{JURY_HOST_PORT}flag?teamid={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010")
+print(resp.status_code)
+print(resp.text)</pre>
+                </div>
             </div>
         </div>
 
@@ -91,6 +117,8 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
                 <p><div class="legend service-status mumble"></div> - service is mumble (so slow)</p>
                 <p><div class="legend service-status corrupt"></div> - service is corrupt</p>
                 <p><div class="legend service-status shit"></div> - checker is shit (developer of checker for service must fix this)</p>
+                <p><div class="legend service-status wait"></div> - Waiting start game</p>
+                <p><div class="legend service-status coffeebreak"></div> - Coffeebreak</p>
                 <p><div class="legend activity"><div class="activity-icon"></div></div> - activities (how much try send flags by team)</p>
 
                 <p><div class="legend icon-attack"><div class="activity-icon"></div></div> - Total number of successful attacks</p>

@@ -207,7 +207,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
     const std::vector<Ctf01dServiceDef> &vServices = pConfig->servicesConf();
     m_nCostDefenceFlagInPoints10 = pConfig->getCostDefenceFlagInPoints10();
 
-    // load flag lives
+    WsjcppLog::info(TAG, "Loading alive flags...");
     std::vector<Ctf01dFlag> vFlagLives = m_pDatabase->listOfLiveFlags();
     for (unsigned int i = 0; i < vFlagLives.size(); i++) {
         Ctf01dFlag flag = vFlagLives[i];
@@ -215,10 +215,12 @@ void Ctf01dScoreboard::initStateFromStorage() {
     }
 
     // load services statistics
+    WsjcppLog::info(TAG, "Loading services statistics...");
     m_nAllDefenceFlags = 0;
     struct FlagsForService {
         std::string sServiceID;
-        std::string sFirstBlood;
+        std::string sFirstBloodTeamID;
+        long nFirstBloodTime;
         int nStolenFlags;
         int nDefenceFlags;
     };
@@ -230,21 +232,25 @@ void Ctf01dScoreboard::initStateFromStorage() {
         f.nStolenFlags = m_pDatabase->numberOfStolenFlagsForService(sServiceID);
         f.nDefenceFlags = m_pDatabase->numberOfDefenceFlagForService(sServiceID);
         if (f.nStolenFlags > 0) {
-            f.sFirstBlood = m_pDatabase->getFirstbloodFromStolenFlagsForService(sServiceID);
+            std::pair<std::string, long> fb = m_pDatabase->getFirstbloodFromStolenFlagsForService(sServiceID);
+            f.sFirstBloodTeamID = fb.first;
+            f.nFirstBloodTime = fb.second;
         }
         m_nAllDefenceFlags += f.nDefenceFlags;
         vFlags.push_back(f);
     }
 
+    WsjcppLog::info(TAG, "Setting services statistics...");
     for (int i = 0; i < vFlags.size(); i++) {
         FlagsForService f = vFlags[i];
         m_mapServiceCostsAndStatistics[f.sServiceID]->setStolenFlagsForService(f.nStolenFlags);
         m_mapServiceCostsAndStatistics[f.sServiceID]->setDefenceFlagsForService(f.nDefenceFlags);
         if (f.nStolenFlags > 0) {
-            m_mapServiceCostsAndStatistics[f.sServiceID]->setFirstBloodTeamId(f.sFirstBlood);
+            m_mapServiceCostsAndStatistics[f.sServiceID]->setFirstBloodTeamId(f.sFirstBloodTeamID, f.nFirstBloodTime);
         }
     }
 
+    WsjcppLog::info(TAG, "Setting teams statistics...");
     std::map<std::string, TeamStatusRow *>::iterator it;
     for (it = m_mapTeamsStatuses.begin(); it != m_mapTeamsStatuses.end(); it++) {
         TeamStatusRow *pRow = it->second;
@@ -278,6 +284,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
         }
     }
 
+    WsjcppLog::info(TAG, "Sorting places and apply to json...");
     {
         std::lock_guard<std::mutex> lock(m_mutexJson);
         sortPlaces();
@@ -292,7 +299,7 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
     // TODO calculate
     // int nFlagPoints = m_mapServiceCostsAndStatistics[sServiceId]->getCostStolenFlag()*10; // one number after dot
     int nFlagPoints = 10;
-
+    int nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
     // victim place in scroreboard
     std::map<std::string,TeamStatusRow *>::iterator it_victim;
     it_victim = m_mapTeamsStatuses.find(flag.getTeamId());
@@ -319,7 +326,7 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
         // WsjcppLog::info(TAG, "nMotivation " + std::to_string(nMotivation));
         // WsjcppLog::info(TAG, "nFlagPoints " + std::to_string(nFlagPoints));
 
-        m_pDatabase->insertToFlagsStolen(flag, sTeamId, nFlagPoints);
+        m_pDatabase->insertToFlagsStolen(flag, sTeamId, nFlagPoints, nDateAction, nVictimPlaceInScoreBoard, nThiefPlaceInScoreboard);
         pRow->incrementAttack(sServiceId, nFlagPoints);
         pRow->updatePoints();
         m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["att"] = pRow->getAttackFlags(sServiceId);
@@ -333,7 +340,7 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
     it2 = m_mapServiceCostsAndStatistics.find(sServiceId);
     if (it2 != m_mapServiceCostsAndStatistics.end()) {
         if (it2->second->getFirstBloodTeamId() == "?") {
-            it2->second->setFirstBloodTeamId(sTeamId);
+            it2->second->setFirstBloodTeamId(sTeamId, nDateAction);
         }
         updateServicesStatistics();
     }
