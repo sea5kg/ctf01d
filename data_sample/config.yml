@@ -77,7 +77,7 @@ teams:
     name: "Team #4"
     active: yes
     logo: "./html/images/teams/team04.png"
-    ip_address: "127.0.3.1" # address to vulnserver
+    ip_address: "127.0.4.1" # address to vulnserver
   - id: "t05" # must be uniq
     name: "Team #5"
     active: yes

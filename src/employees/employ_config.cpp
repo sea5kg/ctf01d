@@ -734,6 +734,8 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
         return false;
     }
 
+    std::vector<std::string> vIPAddresses;
+
     for (int i = 0; i < yamlTeams.size(); i++) {
         WsjcppYamlCursor yamlTeam = yamlTeams[i];
         std::string sTeamId = yamlTeam["id"].valStr();
@@ -762,6 +764,14 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
         std::string sError;
         if (!WsjcppValidators::isValidIPv4(sTeamIpAddress, sError)) {
             WsjcppLog::err(TAG, "Invalid IPv4 address" + sError);
+            return false;
+        }
+
+        // Check duplicate IP addresses
+        if (std::find(vIPAddresses.begin(), vIPAddresses.end(), sTeamIpAddress) == vIPAddresses.end()) {
+            vIPAddresses.push_back(sTeamIpAddress);
+        } else {
+            WsjcppLog::err(TAG, "Found duplicate IP address: " + sTeamIpAddress);
             return false;
         }
 
