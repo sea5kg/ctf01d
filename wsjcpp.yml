@@ -450,3 +450,49 @@ resources:
     modified: 1743318287
     sha1: "24aa81f99e1227810fca3d3293ea5cfde1667009"
 
+  - filepath: "./data_sample/html/font/LICENSE"
+    filesize: 8816
+    pack-as: "binary"
+    modified: 1744111313
+    sha1: "2cba132501cc69b943061ac075153ad475c7e72a"
+  - filepath: "./data_sample/html/font/DejaVuSans.ttf"
+    filesize: 757076
+    pack-as: "binary"
+    modified: 1744111308
+    sha1: "bbf4ffb55ff0245a88e185353c010a4edaca80ea"
+  - filepath: "./data_sample/html/font/DejaVuSans-Oblique.ttf"
+    filesize: 635416
+    pack-as: "binary"
+    modified: 1744111390
+    sha1: "56f8bf8ef3972274f51a4df57789ca870a2e3a43"
+  - filepath: "./data_sample/html/font/AUTHORS"
+    filesize: 842
+    pack-as: "binary"
+    modified: 1744111325
+    sha1: "91839713b3a1bed6bacf5641c466096280b2ced9"
+  - filepath: "./data_sample/html/font/DejaVuSans copy.ttf"
+    filesize: 757076
+    pack-as: "binary"
+    modified: 1744111389
+    sha1: "bbf4ffb55ff0245a88e185353c010a4edaca80ea"
+  - filepath: "./data_sample/html/font/README.md"
+    filesize: 2556
+    pack-as: "binary"
+    modified: 1744111433
+    sha1: "145996bf169c94afce4e9e4c586faa074f6da46c"
+  - filepath: "./data_sample/html/font/DejaVuSans-BoldOblique.ttf"
+    filesize: 643292
+    pack-as: "binary"
+    modified: 1744111389
+    sha1: "b0fb9546c7c63931a94029ce7e4059e3515f4c8c"
+  - filepath: "./data_sample/html/font/DejaVuSans-ExtraLight.ttf"
+    filesize: 355380
+    pack-as: "binary"
+    modified: 1744111389
+    sha1: "f4fbdcf033df7ef625a2fb59a7519f04f67e7e70"
+  - filepath: "./data_sample/html/font/DejaVuSans-Bold.ttf"
+    filesize: 705684
+    pack-as: "binary"
+    modified: 1744111389
+    sha1: "b423ebfc46f18b2344a39e094b80ad750a2740fc"
+
