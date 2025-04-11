@@ -69,6 +69,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
     m_nGameCoffeeBreakEndInSec = nGameCoffeeBreakEndInSec;
     m_nFlagTimeLiveInSec = nFlagTimeLiveInSec;
     m_nAllDefenceFlags = 0;
+    m_nAllTriesActivities = 0;
     m_nCostDefenceFlagInPoints10 = 10;
     m_nTeamCount = vTeamsConf.size();
     m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
@@ -123,6 +124,7 @@ void Ctf01dScoreboard::initJsonScoreboard() {
         jsonServicesStatistics[serviceConf.id()] = serviceStatistics;
     }
     m_jsonScoreboard["s_sta"] = jsonServicesStatistics;
+    m_jsonScoreboard["sum_act"] = m_nAllTriesActivities;
 
     nlohmann::json jsonScoreboard;
     for (unsigned int iteam = 0; iteam < vTeamsConf.size(); iteam++) {
@@ -195,11 +197,13 @@ void Ctf01dScoreboard::setServiceStatus(const std::string &sTeamId, const std::s
 void Ctf01dScoreboard::incrementTries(const std::string &sTeamId) {
     std::lock_guard<std::mutex> lock(m_mutexJson);
     std::map<std::string,TeamStatusRow *>::iterator it;
+    m_nAllTriesActivities++;
     it = m_mapTeamsStatuses.find(sTeamId);
     if (it != m_mapTeamsStatuses.end()) {
         it->second->setTries(it->second->tries() + 1);
         m_jsonScoreboard["scoreboard"][sTeamId]["tries"] = it->second->tries();
     }
+    m_jsonScoreboard["sum_act"] = m_nAllTriesActivities;
 }
 
 void Ctf01dScoreboard::initStateFromStorage() {
@@ -251,11 +255,13 @@ void Ctf01dScoreboard::initStateFromStorage() {
     }
 
     WsjcppLog::info(TAG, "Setting teams statistics...");
+    m_nAllTriesActivities = 0;
     std::map<std::string, TeamStatusRow *>::iterator it;
     for (it = m_mapTeamsStatuses.begin(); it != m_mapTeamsStatuses.end(); it++) {
         TeamStatusRow *pRow = it->second;
 
         int nTries = m_pDatabase->numberOfFlagAttempts(pRow->teamId());
+        m_nAllTriesActivities += nTries;
         pRow->setTries(nTries);
         m_jsonScoreboard["scoreboard"][pRow->teamId()]["tries"] = nTries;
 
@@ -283,6 +289,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
             m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["sla"] = pRow->calculateSLA(sServiceID);
         }
     }
+    m_jsonScoreboard["sum_act"] = m_nAllTriesActivities;
 
     WsjcppLog::info(TAG, "Sorting places and apply to json...");
     {

@@ -303,6 +303,8 @@ function updateUIValue(t, teamID, paramName){
                     _animateElement(document.getElementById('tries-icon-' + teamID), true);
                     if (diff != 0) {
                         newValue += " +" + diff;
+                    } else {
+                        _animateElement(document.getElementById('tries-icon-' + teamID), false);
                     }
                 }
             }
@@ -470,6 +472,25 @@ function updateScoreboard() {
         // game time
         var game_len_time = resp.game.t3 - resp.game.t0;
         var game_passed_time = resp.game.tc - resp.game.t0;
+
+        // all summary tries-activities
+        var all_activities_id = "tries-all-summary-teams"
+        var all_act_el = document.getElementById(all_activities_id);
+        var prev_all_act_val = parseInt(all_act_el.innerHTML, 10);
+        if (prev_all_act_val != resp.sum_act) {
+            if (prev_all_act_val == 0) {
+                silentUpdate("tries-all-summary-teams", resp.sum_act);
+            } else {
+                var diff = resp.sum_act - prev_all_act_val;
+                silentUpdate("tries-all-summary-teams", resp.sum_act + " (+" + diff + ")");
+                _animateElement(document.getElementById('tries-icon-all-summary-teams'), true);
+            }
+        } else {
+            silentUpdate("tries-all-summary-teams", resp.sum_act);
+            _animateElement(document.getElementById('tries-icon-all-summary-teams'), false);
+        }
+
+
         // console.log("game_len_time", game_len_time);
         if (resp.game.tc < resp.game.t0) {
             silentUpdateWithoutAnimation(
@@ -714,7 +735,10 @@ getAjax('/api/v1/game', function(err, resp){
         + "</div>";
     }
     sContent += ''
-        + '        <div class="activity">Activity</div>'
+        + '        <div class="activity">Activity<br>'
+        + '              <div class="activity-value" id="tries-all-summary-teams">0</div>'
+        + '              <div class="activity-icon" id="tries-icon-all-summary-teams"></div>'
+        + '        </div>'
         + '  </div>'
         + "  <div class='hdrs-time'>"
         + "    <div class='hdrs-time-fill' id='game_progress_time'></div>"

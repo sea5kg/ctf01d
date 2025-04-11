@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path36c4b6::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path36c4b6::getBufferSize() const {
-    return 32867;
+    return 34070;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() const {
-    static const std::string sRet = "" // size: 32867
+    static const std::string sRet = "" // size: 34070
         "\n"
         "var mneu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];\n"
         "var tabs_content = document.getElementsByClassName('ctf01d-page-content');\n"
@@ -329,6 +329,8 @@ const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() cons
         "                    _animateElement(document.getElementById('tries-icon-' + teamID), true);\n"
         "                    if (diff != 0) {\n"
         "                        newValue += \" +\" + diff;\n"
+        "                    } else {\n"
+        "                        _animateElement(document.getElementById('tries-icon-' + teamID), false);\n"
         "                    }\n"
         "                }\n"
         "            }\n"
@@ -496,6 +498,25 @@ const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() cons
         "        // game time\n"
         "        var game_len_time = resp.game.t3 - resp.game.t0;\n"
         "        var game_passed_time = resp.game.tc - resp.game.t0;\n"
+        "\n"
+        "        // all summary tries-activities\n"
+        "        var all_activities_id = \"tries-all-summary-teams\"\n"
+        "        var all_act_el = document.getElementById(all_activities_id);\n"
+        "        var prev_all_act_val = parseInt(all_act_el.innerHTML, 10);\n"
+        "        if (prev_all_act_val != resp.sum_act) {\n"
+        "            if (prev_all_act_val == 0) {\n"
+        "                silentUpdate(\"tries-all-summary-teams\", resp.sum_act);\n"
+        "            } else {\n"
+        "                var diff = resp.sum_act - prev_all_act_val;\n"
+        "                silentUpdate(\"tries-all-summary-teams\", resp.sum_act + \" (+\" + diff + \")\");\n"
+        "                _animateElement(document.getElementById('tries-icon-all-summary-teams'), true);\n"
+        "            }\n"
+        "        } else {\n"
+        "            silentUpdate(\"tries-all-summary-teams\", resp.sum_act);\n"
+        "            _animateElement(document.getElementById('tries-icon-all-summary-teams'), false);\n"
+        "        }\n"
+        "\n"
+        "\n"
         "        // console.log(\"game_len_time\", game_len_time);\n"
         "        if (resp.game.tc < resp.game.t0) {\n"
         "            silentUpdateWithoutAnimation(\n"
@@ -740,7 +761,10 @@ const char *RES___data_sample_html_js_scoreboard_js_path36c4b6::getBuffer() cons
         "        + \"</div>\";\n"
         "    }\n"
         "    sContent += ''\n"
-        "        + '        <div class=\"activity\">Activity</div>'\n"
+        "        + '        <div class=\"activity\">Activity<br>'\n"
+        "        + '              <div class=\"activity-value\" id=\"tries-all-summary-teams\">0</div>'\n"
+        "        + '              <div class=\"activity-icon\" id=\"tries-icon-all-summary-teams\"></div>'\n"
+        "        + '        </div>'\n"
         "        + '  </div>'\n"
         "        + \"  <div class='hdrs-time'>\"\n"
         "        + \"    <div class='hdrs-time-fill' id='game_progress_time'></div>\"\n"
