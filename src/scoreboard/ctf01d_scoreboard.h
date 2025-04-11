@@ -92,6 +92,7 @@ class Ctf01dScoreboard {
 
         std::string randomServiceStatus();
         bool m_bRandom;
+        int m_nAllTriesActivities;
         std::map<std::string, TeamStatusRow *> m_mapTeamsStatuses;
 
         std::mutex m_mutexJson;

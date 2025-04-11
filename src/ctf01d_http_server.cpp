@@ -297,6 +297,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
         return 400;
     }
 
+    // TODO test speed of regexp and if will be simple compare every symbol.
     const static std::regex reFlagFormat("c01d[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}[0-9]{8,8}");
     if (!std::regex_match(sFlag, reFlagFormat)) {
         static const std::string sErrorMsg = "Error(-140): flag has wrong format";
