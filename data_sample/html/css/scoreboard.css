@@ -1,4 +1,9 @@
-body{
+@font-face {
+  font-family: 'DejaVuSans';
+  src: url('../font/DejaVuSans.ttf');
+}
+
+body {
     background-color: #000;
     font: 12pt/10pt Arial;
     color: #999;
@@ -6,9 +11,10 @@ body{
     margin: 0px;
     background-color: #202020;
     color: #aaa;
+    font-family: 'DejaVuSans';
 }
 
-body,html{
+body,html {
     height: 100%;
     text-align: center;
 }
