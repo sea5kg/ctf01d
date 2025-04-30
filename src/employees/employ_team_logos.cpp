@@ -45,7 +45,7 @@ REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployTeamLogos)
 EmployTeamLogos::EmployTeamLogos()
 : WsjcppEmployBase(EmployTeamLogos::name(), { EmployConfig::name() }) {
     TAG = EmployTeamLogos::name();
-    m_nLastUpdateWriteTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
+    m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
 }
 
 bool EmployTeamLogos::init() {
@@ -90,11 +90,11 @@ Ctf01dTeamLogo *EmployTeamLogos::findTeamLogo(const std::string &sTeamId) {
     return nullptr;
 }
 
-bool EmployTeamLogos::updateLastWriteTime() {
-    if (WsjcppCore::getCurrentTimeInSeconds() - m_nLastUpdateWriteTimeLogosInSec < 30) {
+bool EmployTeamLogos::updateLastChangeTime() {
+    if (WsjcppCore::getCurrentTimeInSeconds() - m_nLastUpdateChangeTimeLogosInSec < 30) {
         return false;
     }
-    m_nLastUpdateWriteTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
+    m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
     WsjcppLog::info(TAG, "updateLastWriteTime for team's logos");
     bool bHasChanges = false;
     std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();

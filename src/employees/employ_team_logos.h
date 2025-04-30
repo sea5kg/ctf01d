@@ -55,13 +55,13 @@ class EmployTeamLogos : public WsjcppEmployBase {
         virtual bool deinit() override;
         bool loadTeamLogo(const std::string &sTeamId, const std::string &sFilepath);
         Ctf01dTeamLogo *findTeamLogo(const std::string &sTeamId);
-        bool updateLastWriteTime();
+        bool updateLastChangeTime();
         void updateScorebordJson(nlohmann::json &jsonScoreboard);
 
     private:
         std::string TAG;
         std::map<std::string, Ctf01dTeamLogo *> m_mapTeamLogos;
-        int m_nLastUpdateWriteTimeLogosInSec;
+        int m_nLastUpdateChangeTimeLogosInSec;
 };
 
 #endif // EMPLOY_TEAM_LOGOS_H
