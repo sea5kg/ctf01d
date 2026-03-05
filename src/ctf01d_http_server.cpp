@@ -247,7 +247,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
         && nCurrentTimeSec > m_pConfig->gameCoffeeBreakStartUTCInSec()
         && nCurrentTimeSec < m_pConfig->gameCoffeeBreakEndUTCInSec()
     ) {
-        static const std::string sErrorMsg = "Error(-8): Game on coffeebreak now";
+        static const std::string sErrorMsg = "Error(-8): Game on coffee break now";
         WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
@@ -313,8 +313,8 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     Ctf01dFlag flag;
     if (!m_pConfig->scoreboard()->findFlagLive(sFlag, flag)) {
-        static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag alredy stole.";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+        static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag already stole.";
+        WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
@@ -325,20 +325,20 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     if (flag.getTimeEndInMs() < nCurrentTimeMSec) {
         // TODO
         static const std::string sErrorMsg = "Error(-151): flag is too old";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+        WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
 
     // if (flag.teamStole() == sTeamId) {
     //     response.forbidden().sendText("Error(-160): flag already stole by your team");
-    //     WsjcppLog::err(TAG, "Error(-160): Recieved flag {" + sFlag + "} from {" + sTeamId + "} (flag already stole by your team)");
+    //     WsjcppLog::err(TAG, "Error(-160): Received flag {" + sFlag + "} from {" + sTeamId + "} (flag already stole by your team)");
     //     return true;
     // }
 
     if (flag.getTeamId() == sTeamId) {
         static const std::string sErrorMsg = "Error(-180): this is your flag";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+        WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
@@ -349,14 +349,14 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     if (sServiceStatus != ServiceStatusCell::SERVICE_UP) {
         static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+        WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
 
     if (m_pEmployDatabase->isAlreadyStole(flag, sTeamId)) {
-        static const std::string sErrorMsg = "Error(-170): flag already stoled by your";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+        static const std::string sErrorMsg = "Error(-170): flag already stolen by your";
+        WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
@@ -365,7 +365,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     int nPoints = m_pConfig->scoreboard()->incrementAttackScore(flag, sTeamId);
     std::string sPoints = std::to_string(double(nPoints) / 10.0);
 
-    std::string sResponse = "Accepted: Recieved flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
+    std::string sResponse = "Accepted: Received flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
     WsjcppLog::ok(TAG, sResponse + sRequestIP_MsgSuffix);
     resp->Data(
         (void *)(sResponse.c_str()),
