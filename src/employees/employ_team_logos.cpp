@@ -115,7 +115,7 @@ bool EmployTeamLogos::updateLastChangeTime() {
     return bHasChanges;
 }
 
-void EmployTeamLogos::updateScorebordJson(nlohmann::json &jsonScoreboard) {
+void EmployTeamLogos::updateScoreboardJson(nlohmann::json &jsonScoreboard) {
     std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();
     while (it != m_mapTeamLogos.end()) {
         Ctf01dTeamLogo *pTeamLogo = it->second;

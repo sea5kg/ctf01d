@@ -379,7 +379,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 int Ctf01dHttpServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
     m_pTeamLogos->updateLastChangeTime();
     nlohmann::json jsonScoreboard = m_pConfig->scoreboard()->toJson();
-    m_pTeamLogos->updateScorebordJson(jsonScoreboard);
+    m_pTeamLogos->updateScoreboardJson(jsonScoreboard);
     std::string sScoreboardJson = jsonScoreboard.dump();
     resp->Data(
         (void *)(sScoreboardJson.c_str()),

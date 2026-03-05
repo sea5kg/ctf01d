@@ -56,7 +56,7 @@ class EmployTeamLogos : public WsjcppEmployBase {
         bool loadTeamLogo(const std::string &sTeamId, const std::string &sFilepath);
         Ctf01dTeamLogo *findTeamLogo(const std::string &sTeamId);
         bool updateLastChangeTime();
-        void updateScorebordJson(nlohmann::json &jsonScoreboard);
+        void updateScoreboardJson(nlohmann::json &jsonScoreboard);
 
     private:
         std::string TAG;
