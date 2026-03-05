@@ -234,11 +234,11 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     auto now = std::chrono::system_clock::now().time_since_epoch();
     int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
     std::string sRequestIP = req->client_addr.ip;
-    std::string sRequestIP_MsgSuffex = " (" + sRequestIP + ")";
+    std::string sRequestIP_MsgSuffix = " (" + sRequestIP + ")";
 
     if (nCurrentTimeSec < m_pConfig->gameStartUTCInSec()) {
         const std::string sErrorMsg = " Error(-8): Game not started yet";
-        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
     }
@@ -248,14 +248,14 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
         && nCurrentTimeSec < m_pConfig->gameCoffeeBreakEndUTCInSec()
     ) {
         static const std::string sErrorMsg = "Error(-8): Game on coffeebreak now";
-        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
     }
 
     if (nCurrentTimeSec > m_pConfig->gameEndUTCInSec()) {
         static const std::string sErrorMsg = "Error(-9): Game already ended";
-        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
     }
@@ -269,14 +269,14 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     if (sTeamId == "") {
         static const std::string sErrorMsg = "Error(-10): Not found get-parameter 'teamid' or parameter is empty";
-        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
     }
 
     if (sFlag == "") {
         static const std::string sErrorMsg = "Error(-11): Not found get-parameter 'flag' or parameter is empty";
-        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
     }
@@ -292,7 +292,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     if (!bTeamFound) {
         static const std::string sErrorMsg = "Error(-130): this is team not found";
-        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
     }
@@ -301,7 +301,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     const static std::regex reFlagFormat("c01d[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}[0-9]{8,8}");
     if (!std::regex_match(sFlag, reFlagFormat)) {
         static const std::string sErrorMsg = "Error(-140): flag has wrong format";
-        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 400;
     }
@@ -314,7 +314,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     Ctf01dFlag flag;
     if (!m_pConfig->scoreboard()->findFlagLive(sFlag, flag)) {
         static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag alredy stole.";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
@@ -325,7 +325,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     if (flag.getTimeEndInMs() < nCurrentTimeMSec) {
         // TODO
         static const std::string sErrorMsg = "Error(-151): flag is too old";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
@@ -338,7 +338,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     if (flag.getTeamId() == sTeamId) {
         static const std::string sErrorMsg = "Error(-180): this is your flag";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
@@ -349,14 +349,14 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     if (sServiceStatus != ServiceStatusCell::SERVICE_UP) {
         static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
 
     if (m_pEmployDatabase->isAlreadyStole(flag, sTeamId)) {
         static const std::string sErrorMsg = "Error(-170): flag already stoled by your";
-        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffex);
+        WsjcppLog::err(TAG, sErrorMsg + ". Recieved flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
@@ -366,7 +366,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     std::string sPoints = std::to_string(double(nPoints) / 10.0);
 
     std::string sResponse = "Accepted: Recieved flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
-    WsjcppLog::ok(TAG, sResponse + sRequestIP_MsgSuffex);
+    WsjcppLog::ok(TAG, sResponse + sRequestIP_MsgSuffix);
     resp->Data(
         (void *)(sResponse.c_str()),
         sResponse.size(),
