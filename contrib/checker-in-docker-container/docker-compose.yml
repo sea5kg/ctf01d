@@ -1,0 +1,320 @@
+version: '3'
+
+services:
+
+  run_example_checkers:
+    image: python:latest
+    volumes:
+      - "./examples/run_example_checker.py:/root/run.py"
+      - "./examples/example_checker.py:/root/example_checker.py"
+    restart: always
+    command: "sh -c 'cd /root/ && python3 --version && python3 -u run.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service1:
+    image: python:latest
+    volumes:
+      - "./flags/service1:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service2:
+    image: python:latest
+    volumes:
+      - "./flags/service2:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service3:
+    image: python:latest
+    volumes:
+      - "./flags/service3:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  # disabled - status must be down
+  service4:
+    image: python:latest
+    volumes:
+      - "./flags/service4:/root/flags"
+      - "./examples/example_service_down.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service5:
+    image: python:latest
+    volumes:
+      - "./flags/service5:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  # corrupted service
+  service6:
+    image: python:latest
+    volumes:
+      - "./flags/service6:/root/flags"
+      - "./examples/example_service_corrupt.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service7:
+    image: python:latest
+    volumes:
+      - "./flags/service7:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service8:
+    image: python:latest
+    volumes:
+      - "./flags/service8:/root/flags"
+      - "./examples/example_service_mumble.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service9:
+    image: python:latest
+    volumes:
+      - "./flags/service9:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service10:
+    image: python:latest
+    volumes:
+      - "./flags/service10:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service11:
+    image: python:latest
+    volumes:
+      - "./flags/service11:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service12:
+    image: python:latest
+    volumes:
+      - "./flags/service12:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service13:
+    image: python:latest
+    volumes:
+      - "./flags/service13:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service14:
+    image: python:latest
+    volumes:
+      - "./flags/service14:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service15:
+    image: python:latest
+    volumes:
+      - "./flags/service15:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service16:
+    image: python:latest
+    volumes:
+      - "./flags/service16:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service17:
+    image: python:latest
+    volumes:
+      - "./flags/service17:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service18:
+    image: python:latest
+    volumes:
+      - "./flags/service18:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service19:
+    image: python:latest
+    volumes:
+      - "./flags/service19:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service20:
+    image: python:latest
+    volumes:
+      - "./flags/service20:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service21:
+    image: python:latest
+    volumes:
+      - "./flags/service21:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service22:
+    image: python:latest
+    volumes:
+      - "./flags/service22:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  service23:
+    image: python:latest
+    volumes:
+      - "./flags/service23:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+  # skipped
+  # service24:
+  #   image: python:latest
+  #   volumes:
+  #     - "./flags/service24:/root/flags"
+  #     - "./examples/example_service.py:/root/service.py"
+  #   restart: always
+  #   # ports:
+  #   #   - 4101:4101
+  #   command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+  #   networks:
+  #     - ctf01d_checker_as_service
+
+  service25:
+    image: python:latest
+    volumes:
+      - "./flags/service25:/root/flags"
+      - "./examples/example_service.py:/root/service.py"
+    restart: always
+    # ports:
+    #   - 4101:4101
+    command: "sh -c 'cd /root/ && chmod 777 flags && python3 --version && python3 -u service.py'"
+    networks:
+      - ctf01d_checker_as_service
+
+networks:
+  ctf01d_checker_as_service:
+    driver: bridge
