@@ -10,6 +10,7 @@ from constants import MASK_KEY
 from constants import COMMAND_KEY
 from constants import CHECKER_KEY
 from constants import FLAGS_KEY
+from flag_forwarder import forward_flags
 
 logging.basicConfig(
     format="%(asctime)s [name] <thr-%(thread)d> %(levelname)s: %(message)s", level=logging.DEBUG
@@ -23,6 +24,10 @@ def forward(data: dict) -> dict:
     command = data.get(COMMAND_KEY)
     flags = data.get(FLAGS_KEY, [])
     checker_host, checker_port = data.get(CHECKER_KEY)
+
+    if command not in ('put', 'check'):
+        raise NotImplementedError(f'Command {command} is not implemented')
+
     logger.info(
         'Got such data: timeout=%r, mask=%r, command=%r, len(flags)=%d, checker_host=%r, checker_port=%d',
         timeout,
@@ -31,6 +36,14 @@ def forward(data: dict) -> dict:
         len(flags),
         checker_host,
         checker_port,
+    )
+    return forward_flags(
+        timeout=timeout,
+        mask=mask,
+        command=command,
+        checker_host=checker_host,
+        checker_port=checker_port,
+        flags=flags,
     )
 
 
@@ -45,8 +58,8 @@ class ThreadedTCPRequestHandler(socketserver.BaseRequestHandler):
                 data.append(chunk)
             data = b''.join(data)
             data = json.loads(data)
-            forward(data)
-            self.request.sendall(b'gotcha\n')
+            result = forward(data)
+            self.request.sendall(json.dumps(result, sort_keys=True).encode('utf-8'))
         except Exception as exc:
             logger.exception('Unhandled exception')
             error_data = {'error': repr(exc)}

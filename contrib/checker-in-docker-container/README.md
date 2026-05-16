@@ -23,8 +23,8 @@ Example json:
 {
   "timeout": 5,
   "mask": "service{}",
-  "command": "put",
-  "checker": ["checker-in-docker", 4109],
+  "command": "check",
+  "checker": ["localhost", 4109],
   "flags": [
       ["1", "run_test_NukYI5LV6h", "c01d5cab-ff8b-9771-e492-133050588587"],
       ["2", "run_test_gGdVLcCjE7", "c01dad6c-4fc1-5787-4202-417f81383286"],
@@ -72,11 +72,11 @@ for example commands run checkers:
   "1": 101,
   "2": 101,
   "3": 101,
-  "4": 102,
+  "4": 104,
   "5": 101,
-  "6": "103",
+  "6": 102,
   "7": 101,
-  "8": 104,
+  "8": 103,
   "9": 101,
   "10": 101,
   "11": 101,
@@ -99,9 +99,9 @@ for example commands run checkers:
 About states:
 
 - 101 - up - the flag putting/checking into the service is successful
-- 102 - down - service is not available (maybe blocked port or service is down)
-- 103 - corrupt - service is available (available tcp connection) but it's impossible to put/get the flag
-- 104 - mumble - checker-script worked long time than allowed (this state will be set by ctf01d)
+- 102 - corrupt - service is available (available tcp connection) but it's impossible to put/get the flag
+- 103 - mumble - checker-script worked long time than allowed (this state will be set by ctf01d)
+- 104 - down - service is not available (maybe blocked port or service is down)
 - (any) - shit - problems in checker (this state will be set by ctf01d), for checker developers
 - 500? - problems with checker-as-service (notify about inside problems)
 

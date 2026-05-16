@@ -1,5 +1,8 @@
 TIMEOUT_KEY = 'timeout'
 MASK_KEY = 'mask'
-COMMAND_KEY = 'ccommand'
+COMMAND_KEY = 'command'
 CHECKER_KEY = 'checker'
 FLAGS_KEY = 'flags'
+
+CHECKER_SERVICE_DOWN = 103
+CHECKER_SERVICE_ERROR = 500

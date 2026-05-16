@@ -1,34 +1,61 @@
-import socket
 import errno
+import logging
+import socket
 
 from flask import Flask, request, jsonify
 
 
 PORT = 4101
 
+logging.basicConfig(
+    format="%(asctime)s [name] <thr-%(thread)d> %(levelname)s: %(message)s", level=logging.DEBUG
+)
+logger = logging.getLogger(__name__)
+
 
 # put-get flag to service success
 def service_up():
-    print("[service is worked] - 101")
+    logger.info("[service is worked] - 101")
     return jsonify(101)
 
 # service is available (available tcp connect) but protocol wrong could not put/get flag
 def service_corrupt():
-    print("[service is corrupt] - 102")
+    logger.info("[service is corrupt] - 102")
     return jsonify(102)
 
 # waited time (for example: 5 sec) but service did not have time to reply
 def service_mumble():
-    print("[service is mumble] - 103")
+    logger.info("[service is mumble] - 103")
     return jsonify(103)
 
 # service is not available (maybe blocked port or service is down)
 def service_down():
-    print("[service is down] - 104")
+    logger.info("[service is down] - 104")
     return jsonify(104)
 
 
 app = Flask(__name__)
+
+
+@app.before_request
+def log_request():
+    if request.method != 'POST' or request.path not in ('/put', '/check'):
+        return
+    logger.info('Request %s %s: data=%r', request.method, request.path, request.json)
+
+
+@app.after_request
+def log_response(response):
+    if request.method != 'POST' or request.path not in ('/put', '/check'):
+        return response
+    logger.info(
+        'Response %s %s: status=%d body=%s',
+        request.method,
+        request.path,
+        response.status_code,
+        response.get_data(as_text=True),
+    )
+    return response
 
 
 @app.route('/put', methods=['POST'])
@@ -54,10 +81,10 @@ def put():
         if serr.errno == errno.ECONNREFUSED:
             return service_down()
         else:
-            print(serr)
+            logger.exception('Socket error on put: %s', serr)
             return service_corrupt()
     except Exception as e:
-        print(e)
+        logger.exception('Unhandled exception on put: %s', e)
         return service_corrupt()
     return service_up()
 
@@ -89,10 +116,10 @@ def check():
         if serr.errno == errno.ECONNREFUSED:
             return service_down()
         else:
-            print(serr)
+            logger.exception('Socket error on check: %s', serr)
             return service_corrupt()
     except Exception as e:
-        print(e)
+        logger.exception('Unhandled exception on check: %s', e)
         return service_corrupt()
 
     if flag != flag2:
