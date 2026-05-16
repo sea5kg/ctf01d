@@ -1,0 +1,4 @@
+HOST = 'localhost'
+PORT = 4009
+
+DEFAULT_TIMEOUT = 5

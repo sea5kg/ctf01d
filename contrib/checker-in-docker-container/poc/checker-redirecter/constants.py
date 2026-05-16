@@ -1,0 +1,5 @@
+TIMEOUT_KEY = 'timeout'
+MASK_KEY = 'mask'
+COMMAND_KEY = 'ccommand'
+CHECKER_KEY = 'checker'
+FLAGS_KEY = 'flags'
