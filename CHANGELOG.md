@@ -5,6 +5,12 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.5.6] - (2026 ?? ??)
+
+* Fix #93 Add summary activity
+* Added contrib/checker-in-docker-container
+* Updated contrib/docker-build-stages to debian:13
+
 ## [v0.5.5] - (2025 Apr 1)
 
 * Added preinstalled 'ruby-sqlite3'
