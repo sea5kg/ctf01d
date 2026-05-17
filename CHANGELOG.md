@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Fix #93 Add summary activity
 * Added contrib/checker-in-docker-container
 * Updated contrib/docker-build-stages to debian:13
+* Added https://ctf-gameserver.org/submission/#example to documentation/SIMILAR_SOFTWARE.md
+* Added and applied font DejaVuSans
+* Prepare script after game: game_result_calculation.py
+
+Prepare script after game: game_result_calculation.py and added font
 
 ## [v0.5.5] - (2025 Apr 1)
 
