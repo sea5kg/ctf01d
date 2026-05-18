@@ -38,6 +38,7 @@
 #include <employ_flags.h>
 #include <employ_scoreboard.h>
 #include <employ_database.h>
+#include <optional>
 #include <string>
 #include <json.hpp>
 
@@ -58,7 +59,10 @@ class Ctf01dScoreboard {
         void incrementTries(const std::string &sTeamId);
         void initStateFromStorage();
 
-        int incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId);
+        // Returns nFlagPoints if the flag was actually credited (DB UNIQUE accepted the row).
+        // Returns std::nullopt if this flag was already stolen by the same team
+        // (race with a concurrent submission, caught by UNIQUE INDEX).
+        std::optional<int> incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId);
         void incrementDefenceScore(const Ctf01dFlag &flag);
         void incrementFlagsPuttedAndServiceUp(const Ctf01dFlag &flag);
         void insertFlagPutFail(const Ctf01dFlag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus);

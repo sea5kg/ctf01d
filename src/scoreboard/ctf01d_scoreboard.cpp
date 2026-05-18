@@ -299,7 +299,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
     }
 }
 
-int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId) {
+std::optional<int> Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId) {
     std::lock_guard<std::mutex> lock(m_mutexJson);
     std::string sServiceId = flag.getServiceId();
 
@@ -333,7 +333,10 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
         // WsjcppLog::info(TAG, "nMotivation " + std::to_string(nMotivation));
         // WsjcppLog::info(TAG, "nFlagPoints " + std::to_string(nFlagPoints));
 
-        m_pDatabase->insertToFlagsStolen(flag, sTeamId, nFlagPoints, nDateAction, nVictimPlaceInScoreBoard, nThiefPlaceInScoreboard);
+        if (!m_pDatabase->insertToFlagsStolen(flag, sTeamId, nFlagPoints, nDateAction, nVictimPlaceInScoreBoard, nThiefPlaceInScoreboard)) {
+            WsjcppLog::warn(TAG, "Flag already stolen by team " + sTeamId + ": " + flag.getValue());
+            return std::nullopt;
+        }
         pRow->incrementAttack(sServiceId, nFlagPoints);
         pRow->updatePoints();
         m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["att"] = pRow->getAttackFlags(sServiceId);

@@ -146,6 +146,19 @@ bool Ctf01dDatabaseFile::executeQuery(std::string sSqlInsert) {
     return true;
 }
 
+// Returns true iff a row was actually inserted (UNIQUE conflict -> false).
+// Caller is responsible for using INSERT OR IGNORE in the query.
+bool Ctf01dDatabaseFile::insertOrIgnore(std::string sSqlInsertOrIgnore) {
+    copyDatabaseToBackup();
+    char *zErrMsg = 0;
+    int nRet = sqlite3_exec(m_pDatabaseFile, sSqlInsertOrIgnore.c_str(), 0, 0, &zErrMsg);
+    if (nRet != SQLITE_OK) {
+        WsjcppLog::throw_err(TAG, "Problem with insert: " + std::string(zErrMsg) + "\n SQL-query: " + sSqlInsertOrIgnore);
+        return false;
+    }
+    return sqlite3_changes(m_pDatabaseFile) > 0;
+}
+
 int Ctf01dDatabaseFile::selectSumOrCount(std::string sSqlSelectCount) {
     copyDatabaseToBackup();
     sqlite3_stmt* pQuery = nullptr;
@@ -314,6 +327,12 @@ bool EmployDatabase::init() {
     if (!m_pFlagsStolen->open()) {
         return false;
     }
+    if (!m_pFlagsStolen->executeQuery(
+        "CREATE UNIQUE INDEX IF NOT EXISTS ux_flags_stolen "
+        "ON flags_stolen(serviceid, thief_teamid, flag);"
+    )) {
+        return false;
+    }
 
     m_pFlagsLive = new Ctf01dDatabaseFile("flags_live.db",
         "CREATE TABLE IF NOT EXISTS flags_live ( "
@@ -327,6 +346,12 @@ bool EmployDatabase::init() {
         ");"
     );
     if (!m_pFlagsLive->open()) {
+        return false;
+    }
+    if (!m_pFlagsLive->executeQuery(
+        "CREATE UNIQUE INDEX IF NOT EXISTS ux_flags_live_flag "
+        "ON flags_live(flag);"
+    )) {
         return false;
     }
     return true;
@@ -493,11 +518,11 @@ std::pair<std::string, long> EmployDatabase::getFirstbloodFromStolenFlagsForServ
     return pairRet;
 }
 
-void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard) {
+bool EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard) {
     // TODO
     // nVictimPlaceInScoreBoard
     // nThiefPlaceInScoreboard
-    std::string sQuery = "INSERT INTO flags_stolen(serviceid, teamid, thief_teamid, flag_id, flag,"
+    std::string sQuery = "INSERT OR IGNORE INTO flags_stolen(serviceid, teamid, thief_teamid, flag_id, flag,"
         "   date_start, date_end, date_action, flag_cost) VALUES("
         "'" + flag.getServiceId() + "', "
         + "'" + flag.getTeamId() + "', "
@@ -510,22 +535,9 @@ void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, i
         + std::to_string(nPoints) + " "
         + ");";
 
-    if (!m_pFlagsStolen->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagsDefence");
-    }
+    return m_pFlagsStolen->insertOrIgnore(sQuery);
 }
 
-
-bool EmployDatabase::isAlreadyStole(Ctf01dFlag flag, std::string sTeamId) {
-    int nRet = m_pFlagsStolen->selectSumOrCount(
-        "SELECT COUNT(*) as cnt FROM flags_stolen "
-            " WHERE serviceid = '" + flag.getServiceId() + "' "
-            "   AND thief_teamid = '" + sTeamId + "'"
-            "   AND flag_id = '" + flag.getId() + "'"
-            "   AND flag = '" + flag.getValue() + "'"
-    );
-    return nRet > 0;
-}
 
 bool EmployDatabase::isSomebodyStole(Ctf01dFlag flag) {
     int nRet = m_pFlagsStolen->selectSumOrCount(

@@ -60,6 +60,7 @@ class Ctf01dDatabaseFile {
         ~Ctf01dDatabaseFile();
         bool open();
         bool executeQuery(std::string sSqlInsert);
+        bool insertOrIgnore(std::string sSqlInsertOrIgnore);
         int selectSumOrCount(std::string sSqlSelectCount);
         bool selectRows(std::string sSqlSelectRows, Ctf01dDatabaseSelectRows &selectRows);
 
@@ -104,8 +105,7 @@ class EmployDatabase : public WsjcppEmployBase {
         int sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId);
         int numberOfStolenFlagsForService(std::string sServiceId);
         std::pair<std::string, long> getFirstbloodFromStolenFlagsForService(std::string sServiceId);
-        void insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
-        bool isAlreadyStole(Ctf01dFlag flag, std::string sTeamId);
+        bool insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
         bool isSomebodyStole(Ctf01dFlag flag);
 
         // flags live
