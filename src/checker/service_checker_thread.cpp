@@ -186,7 +186,8 @@ void ServiceCheckerThread::run() {
         ) {
             WsjcppLog::info(TAG, "Game on coffeebreak");
             m_pConfig->scoreboard()->setServiceStatus(m_teamConf.getId(), m_serviceConf.id(), ServiceStatusCell::SERVICE_COFFEEBREAK);
-            return;
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            continue;
         }
 
         if (nCurrentTime > m_pConfig->gameEndUTCInSec()) {
