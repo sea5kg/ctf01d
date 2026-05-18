@@ -190,10 +190,19 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
         sRequestPath = "/index.html";
     }
 
-    // TODO
     WsjcppLog::info(TAG, "Request path: " + sRequestPath);
-    std::string sFilePath = sRequestPath = WsjcppCore::doNormalizePath(m_sScoreboardHtmlFolder + "/" + sRequestPath);
-    if (WsjcppCore::fileExists(sFilePath)) { // TODO check the file exists not dir
+    std::string sFilePath = WsjcppCore::doNormalizePath(m_sScoreboardHtmlFolder + "/" + sRequestPath);
+
+    // Path traversal guard: final path must stay inside m_sScoreboardHtmlFolder.
+    // doNormalizePath collapses ".." but does not anchor to the html root, so a
+    // request like "/../db/flags_live.db" would escape into workdir without this check.
+    const std::string sExpectedPrefix = m_sScoreboardHtmlFolder + "/";
+    if (sFilePath.rfind(sExpectedPrefix, 0) != 0) {
+        WsjcppLog::warn(TAG, "Blocked path traversal: " + sOriginalRequestPath);
+        return 403;
+    }
+
+    if (WsjcppCore::fileExists(sFilePath)) {
         return resp->File(sFilePath.c_str());
     }
 
