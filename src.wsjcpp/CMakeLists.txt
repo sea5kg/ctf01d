@@ -206,6 +206,8 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp-resources/__data_sam
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp-resources/__data_sample_html_font_DejaVuSans_ExtraLight_ttf_pathb360f9.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp-resources/__data_sample_html_font_DejaVuSans_Bold_ttf_path2b7ccc.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp-resources/__data_sample_html_font_DejaVuSans_Bold_ttf_path2b7ccc.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp-resources/__data_sample_game_result_calculation_py_path62daa6.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp-resources/__data_sample_game_result_calculation_py_path62daa6.cpp")
 
 # required-libraries
 list (APPEND WSJCPP_LIBRARIES "-lpthread")

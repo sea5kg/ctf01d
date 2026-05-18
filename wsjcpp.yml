@@ -490,3 +490,9 @@ resources:
       modified: 1778985436
       sha1: "b423ebfc46f18b2344a39e094b80ad750a2740fc"
 
+    - filepath: "./data_sample/game_result_calculation.py"
+      size: 12466
+      pack-as: "binary"
+      modified: 1778985436
+      sha1: "7b546100eb13bc262862446f70ec97a110a33465"
+
