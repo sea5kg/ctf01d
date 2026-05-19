@@ -37,7 +37,7 @@
 
 #include <wsjcpp_employees.h>
 #include <wsjcpp_yaml.h>
-#include <ctf01d_scoreboard.h>
+#include "ctf01d/objects/ctf01d_scoreboard.h"
 
 // ----------------------------------------------------------------------
 

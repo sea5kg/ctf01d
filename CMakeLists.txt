@@ -52,7 +52,6 @@ set(EXECUTABLE_OUTPUT_PATH ${ctf01d_SOURCE_DIR})
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/argument_processors")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/checker")
-list (APPEND WSJCPP_INCLUDE_DIRS "src/scoreboard")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/employees")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/third_party/sqlite3/src")
 
@@ -79,12 +78,10 @@ list (APPEND WSJCPP_SOURCES "src/checker/service_checker_thread.cpp")
 # http_server
 list (APPEND WSJCPP_SOURCES "src/ctf01d_http_server.cpp")
 
-# scoreboard
-list (APPEND WSJCPP_SOURCES "src/scoreboard/ctf01d_scoreboard.cpp")
-
 # objects
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_database_file.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_flag.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_scoreboard.cpp")
 
 # main
 list (APPEND WSJCPP_SOURCES "src/main.cpp")

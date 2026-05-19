@@ -35,7 +35,7 @@
 #ifndef SERVICE_CHECKER_THREAD_H
 #define SERVICE_CHECKER_THREAD_H
 
-#include <ctf01d_scoreboard.h>
+#include "ctf01d/objects/ctf01d_scoreboard.h"
 #include <employ_config.h>
 #include <employ_flags.h>
 
