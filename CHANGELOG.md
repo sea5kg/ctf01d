@@ -5,16 +5,29 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [v0.5.6] - (2026 ?? ??)
+## [v0.6.0] - (2026 ?? ??)
 
-* Fix #93 Add summary activity
-* Added contrib/checker-in-docker-container
-* Updated contrib/docker-build-stages to debian:13
-* Added https://ctf-gameserver.org/submission/#example to documentation/SIMILAR_SOFTWARE.md
-* Added and applied font DejaVuSans
-* Prepare script after game: game_result_calculation.py
-
-Prepare script after game: game_result_calculation.py and added font
+- Fixed #93 Add summary activity
+- Fixed #97. (Fixed critical vulnerability: path traversal).
+- Fixed restart after coffebreak (thanks for gpt-5.5)
+- Fixed grammar and wrong in messages
+- Fixed spellings in source code.
+- Added contrib/checker-in-docker-container
+- Added https://ctf-gameserver.org/submission/#example to documentation/SIMILAR_SOFTWARE.md
+- Added and applied font DejaVuSans
+- Added comments for AI-Assistants
+- Added script after game: game_result_calculation.py
+- Added test for path traversal. Updated 'WsjcppCore::doNormalizePath' -> 'wsjcpp::normalizeFilePath'. Fogot wsjcpp.yml update
+- Updated contrib/docker-build-stages to debian:13
+- Updated wsjcpp_core from 0.2.4 to 0.2.5
+- Updated wsjcpp-yaml v0.1.7 -> v0.1.10
+- Updated nlohmann_json v3.9.1 -> v3.12.0 (Reinstalled)
+- Updated sqlite from to 3.49.1 to 3.53.1 from sqlite-amalgamation-3530100.zip (https://www.sqlite.org/download.html)
+- Updated documentation/SIMILAR_SOFTWARE.md
+- Removed distribution section from wsjcpp.yml
+- Redesign pointers to std::shared_ptr.
+- Reorganized source files.
+- Removed unused 'src/store' and subcommands 'teams' and 'services'
 
 ## [v0.5.5] - (2025 Apr 1)
 
