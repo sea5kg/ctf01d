@@ -37,6 +37,7 @@
 #include <employ_flags.h>
 #include <employ_scoreboard.h>
 #include <employ_database.h>
+#include <optional>
 #include <string>
 #include <json.hpp>
 #include "ctf01d_formulas_for_points.h"
@@ -57,7 +58,10 @@ public:
   void incrementTries(const std::string &sTeamId);
   void initStateFromStorage();
 
-  int incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId);
+  // Returns flag points on success; std::nullopt if this team has already
+  // stolen the flag (dedup check happens under the same lock as the insert
+  // so concurrent submissions can't double-credit).
+  std::optional<int> incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId);
   void incrementDefenseScore(const Ctf01dFlag &flag);
   void incrementFlagsPuttedAndServiceUp(const Ctf01dFlag &flag);
   void insertFlagPutFail(const Ctf01dFlag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus);

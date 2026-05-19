@@ -39,6 +39,7 @@
 #include "htime.h"
 #include "hssl.h"
 #include "hlog.h"
+#include <optional>
 #include <regex>
 #include <wsjcpp_core.h>
 
@@ -336,16 +337,17 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
         return 403;
     }
 
-    if (m_pEmployDatabase->isAlreadyStole(flag, sTeamId)) {
-        static const std::string sErrorMsg = "Error(-170): flag already stolen by your";
+    // TODO light update scoreboard
+    // incrementAttackScore performs the dedup check under its own mutex,
+    // so check-then-insert is atomic against concurrent submissions.
+    std::optional<int> oPoints = m_pConfig->scoreboard()->incrementAttackScore(flag, sTeamId);
+    if (!oPoints.has_value()) {
+        static const std::string sErrorMsg = "Error(-170): flag already stolen by your team";
         WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);
         return 403;
     }
-
-    // TODO light update scoreboard
-    int nPoints = m_pConfig->scoreboard()->incrementAttackScore(flag, sTeamId);
-    std::string sPoints = std::to_string(double(nPoints) / 10.0);
+    std::string sPoints = std::to_string(double(oPoints.value()) / 10.0);
 
     std::string sResponse = "Accepted: Received flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
     WsjcppLog::ok(TAG, sResponse + sRequestIP_MsgSuffix);

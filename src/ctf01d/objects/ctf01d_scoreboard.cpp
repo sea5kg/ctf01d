@@ -291,8 +291,11 @@ void Ctf01dScoreboard::initStateFromStorage() {
   }
 }
 
-int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId) {
+std::optional<int> Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId) {
   std::lock_guard<std::mutex> lock(m_mutexJson);
+  if (m_pDatabase->isAlreadyStole(flag, sTeamId)) {
+    return std::nullopt;
+  }
   std::string sServiceId = flag.getServiceId();
 
   // TODO calculate
@@ -332,7 +335,7 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
     }
     updateServicesStatistics();
   }
-  return flag_points;
+  return std::optional<int>(flag_points);
 }
 
 void Ctf01dScoreboard::incrementDefenseScore(const Ctf01dFlag &flag) {
