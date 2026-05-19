@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-#  _______ _________ _______  _______  __    ______
-# (  ____ \\__   __/(  ____ \(  __   )/  \  (  __  \
-# | (    \/   ) (   | (    \/| (  )  |\/) ) | (  \  )
-# | |         | |   | (__    | | /   |  | | | |   ) |
-# | |         | |   |  __)   | (/ /) |  | | | |   | |
-# | |         | |   | (      |   / | |  | | | |   ) |
-# | (____/\   | |   | )      |  (__) |__) (_| (__/  )
-# (_______/   )_(   |/       (_______)\____/(______/
+##################################################################################
+#           Project
+#   _______ _________ _______  _______  __    ______
+#  (  ____ \\__   __/(  ____ \(  __   )/  \  (  __  \
+#  | (    \/   ) (   | (    \/| (  )  |\/) ) | (  \  )
+#  | |         | |   | (__    | | /   |  | | | |   ) |
+#  | |         | |   |  __)   | (/ /) |  | | | |   | |
+#  | |         | |   | (      |   / | |  | | | |   ) |
+#  | (____/\   | |   | )      |  (__) |__) (_| (__/  )
+#  (_______/   )_(   |/       (_______)\____/(______/
 #
 # MIT License
+#
 # Copyright (c) 2018-2026 Evgenii Sopov
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +31,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
+# Original repository: https://github.com/sea5kg/ctf01d
+#
+##################################################################################
 
 import sys
 import math
