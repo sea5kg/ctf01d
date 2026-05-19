@@ -147,7 +147,7 @@ class EmployConfig : public WsjcppEmployBase {
         int gameCoffeeBreakStartUTCInSec();
         int gameCoffeeBreakEndUTCInSec();
 
-        Ctf01dScoreboard *scoreboard();
+        std::shared_ptr<Ctf01dScoreboard> scoreboard();
 
         void doExtractFilesIfNotExists();
 
@@ -162,7 +162,7 @@ class EmployConfig : public WsjcppEmployBase {
         std::string m_sWorkDir;
         bool m_bApplyedConfig;
 
-        Ctf01dScoreboard *m_pScoreboard;
+        std::shared_ptr<Ctf01dScoreboard> m_pScoreboard;
         int m_nScoreboardPort;
         std::string m_sScoreboardHtmlFolder;
         bool m_bScoreboardRandom;

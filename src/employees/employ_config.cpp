@@ -197,9 +197,7 @@ EmployConfig::EmployConfig()
 }
 
 EmployConfig::~EmployConfig() {
-    if (m_pScoreboard != nullptr) {
-        delete m_pScoreboard;
-    }
+    // TODO cleanup
 }
 
 bool EmployConfig::init() {
@@ -250,10 +248,6 @@ bool EmployConfig::init() {
 
 bool EmployConfig::deinit() {
     WsjcppLog::info(TAG, "deinit");
-    if (m_pScoreboard != nullptr) {
-        delete m_pScoreboard;
-    }
-
     return true;
 }
 
@@ -311,7 +305,7 @@ bool EmployConfig::applyConfig() {
     }
 
     // scoreboard
-    m_pScoreboard = new Ctf01dScoreboard(
+    m_pScoreboard = std::make_shared<Ctf01dScoreboard>(
         m_bScoreboardRandom,
         m_nGameStartUTCInSec,
         m_nGameEndUTCInSec,
@@ -384,7 +378,7 @@ int EmployConfig::gameCoffeeBreakEndUTCInSec() {
     return m_nGameCoffeeBreakEndUTCInSec;
 }
 
-Ctf01dScoreboard *EmployConfig::scoreboard(){
+std::shared_ptr<Ctf01dScoreboard> EmployConfig::scoreboard() {
     return m_pScoreboard;
 }
 
