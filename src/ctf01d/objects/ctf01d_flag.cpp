@@ -80,7 +80,7 @@ void Ctf01dFlag::setId(const std::string &sId) {
   m_sId = sId;
 }
 
-std::string Ctf01dFlag::getId() const {
+const std::string &Ctf01dFlag::getId() const {
   return m_sId;
 }
 
@@ -124,7 +124,7 @@ void Ctf01dFlag::setValue(const std::string &sValue) {
   m_sValue = sValue;
 }
 
-std::string Ctf01dFlag::getValue() const {
+const std::string &Ctf01dFlag::getValue() const {
   return m_sValue;
 }
 

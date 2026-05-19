@@ -43,11 +43,11 @@ public:
 
   void generateId();
   void setId(const std::string &sId);
-  std::string getId() const;
+  const std::string &getId() const;
 
   void generateValue(int nGameStartUTCInSec);
   void setValue(const std::string &sValue);
-  std::string getValue() const;
+  const std::string &getValue() const;
 
   void setTeamId(const std::string &sTeamId);
   const std::string &getTeamId() const;
