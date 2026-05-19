@@ -145,7 +145,7 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     } else {
         request_path = sOriginalRequestPath;
     }
-    request_path = WsjcppCore::doNormalizePath(request_path);
+    request_path = wsjcpp::normalizeFilePath(request_path);
 
     // WsjcppLog::info(TAG, "request_path = " + request_path);
     if (request_path == "/flag") { // Public endpoint. Allowed without authorization.
@@ -192,7 +192,7 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
 
     // TODO
     WsjcppLog::info(TAG, "Request path: " + request_path);
-    std::string sFilePath = request_path = WsjcppCore::doNormalizePath(m_sScoreboardHtmlFolder + "/" + request_path);
+    std::string sFilePath = request_path = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder + "/" + request_path);
     if (WsjcppCore::fileExists(sFilePath)) { // TODO check the file exists not dir
         return resp->File(sFilePath.c_str());
     }

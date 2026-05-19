@@ -403,7 +403,7 @@ void EmployConfig::doExtractFilesIfNotExists() {
                 std::string sDirname = vPath[2];
                 vPath.erase (vPath.begin(),vPath.begin()+3);
                 std::string sNewFilepath = WsjcppCore::join(vPath, "/");
-                sNewFilepath = WsjcppCore::doNormalizePath(m_sWorkDir + "/" + sDirname + "/" + sNewFilepath);
+                sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/" + sNewFilepath);
                 if (!WsjcppCore::fileExists(sNewFilepath)) {
                     std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
                 } else {
@@ -412,7 +412,7 @@ void EmployConfig::doExtractFilesIfNotExists() {
                 }
 
                 // prepare folder
-                std::string sFolder = WsjcppCore::doNormalizePath(m_sWorkDir + "/" + sDirname + "/");
+                std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/");
                 if (!WsjcppCore::dirExists(sFolder)) {
                     WsjcppCore::makeDir(sFolder);
                 }
@@ -434,7 +434,7 @@ void EmployConfig::doExtractFilesIfNotExists() {
         }
 
         WsjcppResourceFile* pConfigYml = WsjcppResourcesManager::get("./data_sample/config.yml");
-        std::string sNewFilepath = WsjcppCore::doNormalizePath(m_sWorkDir + "/config.yml");
+        std::string sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/config.yml");
         if (!WsjcppCore::writeFile(sNewFilepath, pConfigYml->getBuffer(), pConfigYml->getBufferSize())) {
             std::cout << "ERROR. Could not write file. " << std::endl;
         } else {
@@ -455,7 +455,7 @@ void EmployConfig::doExtractFilesIfNotExists() {
                 std::vector<std::string> vPath = WsjcppCore::split(sFilepath, "/");
                 vPath.erase (vPath.begin(),vPath.begin()+3);
                 std::string sNewFilepath = WsjcppCore::join(vPath, "/");
-                sNewFilepath = WsjcppCore::doNormalizePath(m_sWorkDir + "/html/" + sNewFilepath);
+                sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/" + sNewFilepath);
                 if (!WsjcppCore::fileExists(sNewFilepath)) {
                     std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
                 } else {
@@ -464,9 +464,9 @@ void EmployConfig::doExtractFilesIfNotExists() {
                 }
 
                 // prepare folders
-                std::string sFolder = WsjcppCore::doNormalizePath(m_sWorkDir + "/html/");
+                std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/");
                 for (int p = 0; p < vPath.size()-1; p++) {
-                    sFolder = WsjcppCore::doNormalizePath(sFolder + "/" + vPath[p]);
+                    sFolder = wsjcpp::normalizeFilePath(sFolder + "/" + vPath[p]);
                     if (!WsjcppCore::dirExists(sFolder)) {
                         WsjcppCore::makeDir(sFolder);
                     }
@@ -607,7 +607,7 @@ bool EmployConfig::applyScoreboardConf(WsjcppYaml &yamlConfig) {
     } else {
         m_sScoreboardHtmlFolder = m_sWorkDir + "/html";
     }
-    m_sScoreboardHtmlFolder = WsjcppCore::doNormalizePath(m_sScoreboardHtmlFolder);
+    m_sScoreboardHtmlFolder = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder);
 
     WsjcppLog::info(TAG, "scoreboard.htmlfolder: " + m_sScoreboardHtmlFolder);
 
@@ -770,7 +770,7 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
         }
 
         std::string sTeamLogo = yamlTeam["logo"].valStr();
-        sTeamLogo = WsjcppCore::doNormalizePath(m_sWorkDir + "/" + sTeamLogo);
+        sTeamLogo = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sTeamLogo);
         if (!pTeamLogos->loadTeamLogo(sTeamId, sTeamLogo)) {
             return false;
         }

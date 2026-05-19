@@ -60,7 +60,7 @@ int main(int argc, const char* argv[]) {
         if (sWorkDir[0] != '/') {
             sWorkDir = WsjcppCore::getCurrentDirectory() + "/" + sWorkDir;
         }
-        sWorkDir = WsjcppCore::doNormalizePath(sWorkDir);
+        sWorkDir = wsjcpp::normalizeFilePath(sWorkDir);
         if (WsjcppCore::fileExists(sWorkDir + "/config.yml")) {
             std::cout << "Automatically detected workdir: " << sWorkDir << std::endl;
             EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
