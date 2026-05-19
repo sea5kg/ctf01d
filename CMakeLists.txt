@@ -54,7 +54,7 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/argument_processors")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/checker")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/scoreboard")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/employees")
-list (APPEND WSJCPP_INCLUDE_DIRS "src/3rdparty/sqlite3/src")
+list (APPEND WSJCPP_INCLUDE_DIRS "src/third_party/sqlite3/src")
 
 # argument processors
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_check.cpp")
@@ -110,18 +110,18 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "")
 # set(WITH_HTTP_CLIENT OFF CACHE BOOL "")
 set(BUILD_SHARED OFF CACHE BOOL "")
 
-add_subdirectory(src/3rdparty/libhv)
+add_subdirectory(src/third_party/libhv)
 list (APPEND WSJCPP_LIBRARIES hv_static)
-list (APPEND WSJCPP_INCLUDE_DIRS "${PROJECT_BINARY_DIR}/src/3rdparty/libhv/include/hv")
+list (APPEND WSJCPP_INCLUDE_DIRS "${PROJECT_BINARY_DIR}/src/third_party/libhv/include/hv")
 
-add_subdirectory(src/3rdparty/sqlite3)
+add_subdirectory(src/third_party/sqlite3)
 # https://www.sqlite.org/threadsafe.html
 # target_compile_definitions(sqlite3-static
 #   PRIVATE
 #     SQLITE_THREADSAFE=0
 # )
 list (APPEND WSJCPP_LIBRARIES sqlite3-static)
-list (APPEND WSJCPP_INCLUDE_DIRS "${PROJECT_BINARY_DIR}/src/3rdparty/sqlite3/src")
+list (APPEND WSJCPP_INCLUDE_DIRS "${PROJECT_BINARY_DIR}/src/third_party/sqlite3/src")
 
 include_directories(${WSJCPP_INCLUDE_DIRS})
 
