@@ -190,14 +190,15 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
         request_path = "/index.html";
     }
 
-    // TODO
-    WsjcppLog::info(TAG, "Request path: " + request_path);
-    std::string sFilePath = request_path = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder + "/" + request_path);
-    if (WsjcppCore::fileExists(sFilePath)) { // TODO check the file exists not dir
-        return resp->File(sFilePath.c_str());
+    std::string filepath = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder + "/" + request_path);
+    if (WsjcppCore::dirExists(filepath)) {
+        return 404;
+    }
+    if (WsjcppCore::fileExists(filepath)) {
+        return resp->File(filepath.c_str());
     }
 
-    std::string sResPath = "./data_sample/html" + request_path;
+    std::string sResPath = wsjcpp::normalizeFilePath("./data_sample/html/" + request_path);
     if (WsjcppResourcesManager::has(sResPath)) {
         WsjcppResourceFile *pFile = WsjcppResourcesManager::get(sResPath);
         resp->Data(
