@@ -205,20 +205,20 @@ RUN sed -i -e "s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen && \\
 
         tag_build = self.__base_tag
         tag_build_today = tag_build + ":build-environment-" + self.__dt_tag
-        # tag_build_latest = tag_build + ":latest"
+        tag_build_latest = tag_build + ":build-environment-latest"
         tag_release = self.__base_tag
         tag_release_today = tag_release + ":release-environment-" + self.__dt_tag
-        # tag_release_latest = tag_release + ":latest"
+        tag_release_latest = tag_release + ":release-environment-latest"
 
         self.__silent_remove_image(tag_build_today)
         self.__build_docker_image(tag_build_today, build_env)
 
-        # self.__silent_remove_image(tag_build_latest)
-        # self.__build_docker_image(tag_build_latest, build_env)
+        self.__silent_remove_image(tag_build_latest)
+        self.__build_docker_image(tag_build_latest, build_env)
 
         self.__silent_remove_image(tag_release_today)
         self.__build_docker_image(tag_release_today, release_env)
 
-        # self.__silent_remove_image(tag_release_latest)
-        # self.__build_docker_image(tag_release_latest, release_env)
+        self.__silent_remove_image(tag_release_latest)
+        self.__build_docker_image(tag_release_latest, release_env)
         sys.exit(0)
