@@ -1,4 +1,3 @@
-.vscode
 jury.d/logs/*.log
 dckr_mysql/*
 __pycache__
@@ -17,7 +16,6 @@ tmp/*
 /.ctf01d
 /.ctf01d-store-cache
 /test-first-start
-/ctfight-test-jury
 
 # Prerequisites
 # *.d
@@ -36,10 +34,6 @@ tmp/*
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
 
 # Compiled Static libraries
 *.lai
