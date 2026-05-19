@@ -74,7 +74,7 @@ $ docker run -it --rm \
   -w /root/ctf01d.dev \
   --name "ctf01d.dev" \
   --network ctf01d_net \
-  sea5kg/ctf01d:stage-build-latest \
+  sea5kg/ctf01d:build-environment-latest \
   bash
 root@604feda3c718:~/ctf01d.dev#
 ```
