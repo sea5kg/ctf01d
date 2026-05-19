@@ -168,7 +168,7 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
             return this->httpApiV1Game(req, resp);
         } else if (sRequestPath == "/api/v1/scoreboard") {
             return this->httpApiV1Scoreboard(req, resp);
-        } else if (sRequestPath == "/api/v1/myip") {
+        } else if (sRequestPath == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
             return this->httpApiV1MyIp(req, resp);
         } else if (sRequestPath == "/api/v1/teams") {
             resp->Data(
