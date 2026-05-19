@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v0.6.0] - (2026 ?? ??)
 
+- Scoring has been moved to a separate class and a test has been added.
 - Fixed #93 Add summary activity
 - Fixed #97. (Fixed critical vulnerability: path traversal).
 - Fixed restart after coffebreak (thanks for gpt-5.5)
