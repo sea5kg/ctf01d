@@ -14,8 +14,9 @@ tmp/*
 .wsjcpp
 *.log
 /.ctf01d
-/.ctf01d-store-cache
 /test-first-start
+/Dockerfile.build-environment
+/Dockerfile.release-environment
 
 # Prerequisites
 # *.d

@@ -46,8 +46,8 @@ We can look for docker status: `docker ps -a`
 
 Or build fresh images for stages:
 ```
-$ cd ~/ctf01d.git/contrib/docker-build-stages/
-$ ./build-stages-images.sh
+$ cd ~/ctf01d.git/
+$ ./pm.py rebuild-environment-images
 ```
 
 You can see them in a list:
