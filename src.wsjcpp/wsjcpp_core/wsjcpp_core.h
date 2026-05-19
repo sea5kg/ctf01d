@@ -29,7 +29,7 @@
 
 #define WSJCPP_CORE_VER_0
 #define WSJCPP_CORE_VER_0_2
-#define WSJCPP_CORE_VER_0_2_4
+#define WSJCPP_CORE_VER_0_2_5
 
 #include <string>
 #include <vector>
@@ -100,7 +100,7 @@ class WsjcppCore {
             const std::string &sLibraryNameForExports
         );
 
-        static std::string doNormalizePath(const std::string &sPath);
+        static std::string doNormalizePath(const std::string &path); // deprecated
         static std::string extractFilename(const std::string &sPath);
         static std::string extractDirpath(const std::string &sFullPath);
         static std::string getCurrentDirectory();
@@ -274,6 +274,8 @@ class Core {
     static const std::string &englishAlphabetBothCaseAndNumbers();
     static std::string randomString(const std::string &alphabet, int length);
 };
+
+std::string normalizeFilePath(const std::string &path);
 
 } // namespace wsjcpp
 

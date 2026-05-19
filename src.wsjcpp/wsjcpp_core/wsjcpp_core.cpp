@@ -300,64 +300,72 @@ bool WsjcppCore::init(
 
 // ---------------------------------------------------------------------
 
-std::string WsjcppCore::doNormalizePath(const std::string & sPath) {
-    // split path by /
-    std::vector<std::string> vNames;
-    std::string s = "";
-    size_t nStrLen = sPath.length();
-    for (size_t i = 0; i < sPath.length(); i++) {
-        if (sPath[i] == '/') {
-            vNames.push_back(s);
-            s = "";
-            if (i == nStrLen-1) {
-                vNames.push_back("");
-            }
-        } else {
-            s += sPath[i];
+std::string WsjcppCore::doNormalizePath(const std::string &path) {
+  // split path by /
+  std::vector<std::string> vNames;
+  bool has_root = false;
+  {
+    std::string fname = "";
+    size_t nStrLen = path.length();
+    for (size_t i = 0; i < path.length(); i++) {
+      if (path[i] == '/') {
+        vNames.push_back(fname);
+        if (i == 0) {
+          has_root = true;
         }
+        fname = "";
+        if (i == nStrLen-1) {
+          vNames.push_back("");
+        }
+      } else {
+        fname += path[i];
+      }
     }
-    if (s != "") {
-         vNames.push_back(s);
+    if (fname != "") {
+        vNames.push_back(fname);
     }
+  }
 
-    // fildered
-    size_t nLen = vNames.size();
-    std::vector<std::string> vNewNames;
-    for (size_t i = 0; i < nLen; i++) {
-        std::string sCurrent = vNames[i];
-        if (sCurrent == "" && i == nLen-1) {
-            vNewNames.push_back(sCurrent);
-            continue;
-        }
-
-        if ((sCurrent == "" || sCurrent == ".") && i != 0) {
-            continue;
-        }
-
-        if (sCurrent == ".." && vNewNames.size() > 0) {
-            std::string sPrev = vNewNames[vNewNames.size()-1];
-            if (sPrev == "") {
-                vNewNames.pop_back();
-                vNewNames.push_back(sCurrent);
-            } else if (sPrev != "." && sPrev != "..") {
-                vNewNames.pop_back();
-            } else {
-                vNewNames.push_back(sCurrent);
-            }
-        } else {
-            vNewNames.push_back(sCurrent);
-        }
+  // filtered
+  size_t nLen = vNames.size();
+  std::vector<std::string> result;
+  for (size_t i = 0; i < nLen; i++) {
+    std::string cur = vNames[i];
+    if (cur == "" && i == nLen-1) {
+      result.push_back(cur);
+      continue;
     }
-    std::string sRet = "";
-    size_t nNewLen = vNewNames.size();
-    size_t nLastNew = nNewLen-1;
-    for (size_t i = 0; i < nNewLen; i++) {
-        sRet += vNewNames[i];
-        if (i != nLastNew) {
-            sRet += "/";
-        }
+    if (cur == ".." && result.size() == 1 && has_root) {
+      continue;
     }
-    return sRet;
+    if ((cur == "" || cur == ".") && i != 0) {
+      continue;
+    }
+    if (cur == ".." && result.size() > 0) {
+      std::string sPrev = result[result.size()-1];
+      if (sPrev == "") {
+        result.pop_back();
+        result.push_back(cur);
+      } else if (sPrev != "." && sPrev != "..") {
+        result.pop_back();
+      } else {
+        result.push_back(cur);
+      }
+    } else {
+      result.push_back(cur);
+    }
+  }
+
+  std::string ret = "";
+  size_t nNewLen = result.size();
+  size_t nLastNew = nNewLen-1;
+  for (size_t i = 0; i < nNewLen; i++) {
+    ret += result[i];
+    if (i != nLastNew) {
+      ret += "/";
+    }
+  }
+  return ret;
 }
 
 // ---------------------------------------------------------------------
@@ -1353,6 +1361,10 @@ std::string Core::randomString(const std::string &alphabet, int length) {
         ret[i] = alphabet[rand() % alphabet_len];
     }
     return ret;
+}
+
+std::string normalizeFilePath(const std::string &path) {
+  return WsjcppCore::doNormalizePath(path);
 }
 
 } // namespace wsjcpp
