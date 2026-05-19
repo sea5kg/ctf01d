@@ -56,7 +56,7 @@ dependencies:
     installation-datetime: "Tue, 19 May 2026 14:18:13 GMT"
 
 resources:
-  output-generation-dir: src/wsjcpp-resources
+  output-generation-dir: src/wsjcpp_resources
   files:
     - filepath: "./data_sample/hv_logs/.placeholder"
       size: 0
@@ -64,25 +64,25 @@ resources:
       modified: 1699775797
       sha1: "da39a3ee5e6b4b0d3255bfef95601890afd80709"
     - filepath: "./data_sample/checker_example_service4/checker.py"
-      size: 3151
+      size: 4953
       pack-as: "text"
-      modified: 1742724375
-      sha1: "3c2f4bfd7e2c989ae9128026a233b223436016ed"
+      modified: 1779212183
+      sha1: "05c386e416f67b9a4e60a83cb04b2523b60cba53"
     - filepath: "./data_sample/checker_example_service1/checker.py"
-      size: 3151
+      size: 4953
       pack-as: "text"
-      modified: 1742724375
-      sha1: "e39cc1007d907ce39ecf95b072cb5e78d5d560e7"
+      modified: 1779212191
+      sha1: "b14e1af5661c36e36150bb3675c5826f278a520b"
     - filepath: "./data_sample/checker_example_service2/checker.py"
-      size: 3151
+      size: 4953
       pack-as: "text"
-      modified: 1742724375
-      sha1: "e27718ef54cdccbca91385a4acd49380131d9e08"
+      modified: 1779212212
+      sha1: "5cc893d1a2332a33bd04c9e2cbbd45f40093034b"
     - filepath: "./data_sample/checker_example_service3/checker.py"
-      size: 3151
+      size: 4953
       pack-as: "text"
-      modified: 1742724375
-      sha1: "a2f24a3e7472b38197de700f73483c07ee5b6482"
+      modified: 1779212198
+      sha1: "888e571c3f5f5611c74d757392c11f5fddf608dc"
     - filepath: "./data_sample/config.yml"
       size: 7371
       pack-as: "text"
@@ -444,8 +444,8 @@ resources:
       modified: 1778985436
       sha1: "b423ebfc46f18b2344a39e094b80ad750a2740fc"
     - filepath: "./data_sample/game_result_calculation.py"
-      size: 12466
+      size: 14267
       pack-as: "binary"
-      modified: 1778985436
-      sha1: "7b546100eb13bc262862446f70ec97a110a33465"
+      modified: 1779212225
+      sha1: "271ee36368b1ccb15a3d4ebb73c4f108bbad1558"
 
