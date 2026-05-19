@@ -1,3 +1,29 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2019-2026 Evgenii Sopov
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+*/
+
+// original source-code: https://github.com/wsjcpp/wsjcpp-core
+
 #include "wsjcpp_core.h"
 
 #ifndef _MSC_VER
@@ -5,7 +31,7 @@
     #include <sys/time.h>
     #include <unistd.h>
     #include <arpa/inet.h>
-#else 
+#else
     #include <direct.h>
     #define PATH_MAX 256
 #endif
@@ -501,7 +527,7 @@ std::vector<std::string> WsjcppCore::getListOfDirs(const std::string &sDirname) 
     for (auto& entry : std::filesystem::directory_iterator(sDirname)) {
         if (entry.is_directory()) {
             std::string sPath = entry.path();
-            sPath = sPath.substr(sDirname.length()+1);
+            sPath.erase(0, sDirname.size() + 1);
             vDirs.push_back(sPath);
         }
     }
@@ -519,6 +545,7 @@ std::vector<std::string> WsjcppCore::getListOfFiles(const std::string &sDirname)
     for (auto& entry: std::filesystem::directory_iterator(sDirname)) {
         if (!entry.is_directory()) {
             std::string sPath = entry.path();
+            sPath.erase(0, sDirname.size() + 1);
             vFiles.push_back(sPath);
         }
     }
@@ -851,8 +878,8 @@ std::string WsjcppCore::encodeUriComponent(const std::string& sValue) {
         char c = sValue[i];
         if (
             c == '-' || c == '_' || c == '.' || c == '!'
-            || c == '~' || c == '*' || c == '\'' 
-            || c == '(' || c == ')' || (c >= '0' && c <= '9') 
+            || c == '~' || c == '*' || c == '\''
+            || c == '(' || c == ')' || (c >= '0' && c <= '9')
             || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
         ) {
             ssRet << c;
@@ -896,7 +923,7 @@ std::string WsjcppCore::getHumanSizeBytes(long nBytes) {
     for (int i = 0; i < 6; i++) {
         if (n0 >= 1 && n0 < 1000) {
             return std::to_string(n0) + arrPrefix[i];
-        }        
+        }
         n0 = nBytes / 1000;
         n1 = nBytes - n0 * 1000;
         n0 += n1 >= 500 ? 1 : 0;
@@ -1024,7 +1051,7 @@ bool WsjcppCore::getFilePermissions(const std::string& sFilePath, WsjcppFilePerm
     filePermissions.setOwnerWriteFlag(m & S_IWUSR);
     filePermissions.setOwnerExecuteFlag(m & S_IXUSR);
 
-    
+
     // group
     filePermissions.setGroupReadFlag(m & S_IRGRP);
     filePermissions.setGroupWriteFlag(m & S_IWGRP);
@@ -1072,7 +1099,6 @@ bool WsjcppCore::endsWith(const std::string& sLine, const std::string& sEnd) {
 // WsjcppLog
 
 WsjcppLogGlobalConf::WsjcppLogGlobalConf() {
-    // 
     logDir = "./";
     logPrefixFile = "";
     logFile = "";
@@ -1080,8 +1106,6 @@ WsjcppLogGlobalConf::WsjcppLogGlobalConf() {
     logStartTime = 0;
     logRotationPeriodInSeconds = 51000;
 }
-
-// ---------------------------------------------------------------------
 
 void WsjcppLogGlobalConf::doLogRotateUpdateFilename(bool bForce) {
     long t = WsjcppCore::getCurrentTimeInSeconds();
@@ -1096,21 +1120,15 @@ void WsjcppLogGlobalConf::doLogRotateUpdateFilename(bool bForce) {
 
 WsjcppLogGlobalConf WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF;
 
-// ---------------------------------------------------------------------
-
 void WsjcppLog::info(const std::string & sTag, const std::string &sMessage) {
     WsjcppColorModifier def(WsjcppColorCode::FG_DEFAULT);
     WsjcppLog::add(def, "INFO", sTag, sMessage);
 }
 
-// ---------------------------------------------------------------------
-
 void WsjcppLog::err(const std::string & sTag, const std::string &sMessage) {
     WsjcppColorModifier red(WsjcppColorCode::FG_RED);
     WsjcppLog::add(red, "ERR", sTag, sMessage);
 }
-
-// ---------------------------------------------------------------------
 
 void WsjcppLog::throw_err(const std::string &sTag, const std::string &sMessage) {
     WsjcppColorModifier red(WsjcppColorCode::FG_RED);
@@ -1118,21 +1136,15 @@ void WsjcppLog::throw_err(const std::string &sTag, const std::string &sMessage) 
     throw std::runtime_error(sMessage);
 }
 
-// ---------------------------------------------------------------------
-
 void WsjcppLog::warn(const std::string & sTag, const std::string &sMessage) {
     WsjcppColorModifier yellow(WsjcppColorCode::FG_YELLOW);
     WsjcppLog::add(yellow, "WARN",sTag, sMessage);
 }
 
-// ---------------------------------------------------------------------
-
 void WsjcppLog::ok(const std::string &sTag, const std::string &sMessage) {
     WsjcppColorModifier green(WsjcppColorCode::FG_GREEN);
     WsjcppLog::add(green, "OK", sTag, sMessage);
 }
-
-// ---------------------------------------------------------------------
 
 std::vector<std::string> WsjcppLog::getLastLogMessages() {
     std::lock_guard<std::mutex> lock(WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.logMutex);
@@ -1142,8 +1154,6 @@ std::vector<std::string> WsjcppLog::getLastLogMessages() {
     }
     return vRet;
 }
-
-// ---------------------------------------------------------------------
 
 void WsjcppLog::setLogDirectory(const std::string &sDirectoryPath) {
     WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.logDir = sDirectoryPath;
@@ -1155,26 +1165,18 @@ void WsjcppLog::setLogDirectory(const std::string &sDirectoryPath) {
     WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.doLogRotateUpdateFilename(true);
 }
 
-// ---------------------------------------------------------------------
-
 void WsjcppLog::setPrefixLogFile(const std::string &sPrefixLogFile) {
     WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.logPrefixFile = sPrefixLogFile;
     WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.doLogRotateUpdateFilename(true);
 }
 
-// ---------------------------------------------------------------------
-
 void WsjcppLog::setEnableLogFile(bool bEnable) {
     WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.enableLogFile = bEnable;
 }
 
-// ---------------------------------------------------------------------
-
 void WsjcppLog::setRotationPeriodInSec(long nRotationPeriodInSec) {
     WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.logRotationPeriodInSeconds = nRotationPeriodInSec;
 }
-
-// ---------------------------------------------------------------------
 
 void WsjcppLog::add(WsjcppColorModifier &clr, const std::string &sType, const std::string &sTag, const std::string &sMessage) {
     WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.doLogRotateUpdateFilename();
@@ -1193,7 +1195,7 @@ void WsjcppLog::add(WsjcppColorModifier &clr, const std::string &sType, const st
         WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.logLastMessages.pop_back();
     }
 
-    // log file 
+    // log file
     if (WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.enableLogFile) {
         std::ofstream logFile(WsjcppLog::g_WSJCPP_LOG_GLOBAL_CONF.logFile, std::ios::app);
         if (!logFile) {
@@ -1202,7 +1204,7 @@ void WsjcppLog::add(WsjcppColorModifier &clr, const std::string &sType, const st
         }
 
         logFile << sLogMessage << std::endl;
-        logFile.close();    
+        logFile.close();
     }
 }
 
@@ -1321,3 +1323,36 @@ bool WsjcppResourcesManager::extractFiles(const std::string &sWorkspace) {
 }
 */
 
+namespace wsjcpp {
+
+const std::string &Core::englishAlphabetLowerCase() {
+    static const std::string ret = "abcdefghijklmnopqrstuvwxyz";
+    return ret;
+}
+
+const std::string &Core::englishAlphabetUpperCase() {
+    static const std::string ret = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    return ret;
+}
+
+const std::string &Core::englishAlphabetBothCase() {
+    static const std::string ret = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    return ret;
+}
+
+const std::string &Core::englishAlphabetBothCaseAndNumbers() {
+    static const std::string ret = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    return ret;
+}
+
+std::string Core::randomString(const std::string &alphabet, int length) {
+    std::string ret = "";
+    ret.resize(length, alphabet[0]);
+    int alphabet_len = alphabet.length();
+    for (int i = 0; i < length; i++) {
+        ret[i] = alphabet[rand() % alphabet_len];
+    }
+    return ret;
+}
+
+} // namespace wsjcpp

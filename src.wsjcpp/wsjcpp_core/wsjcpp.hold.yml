@@ -3,7 +3,7 @@ cmake_cxx_standard: 17
 cmake_minimum_required: 3.0
 
 name: wsjcpp-core
-version: v0.2.3
+version: v0.2.4
 description: Basic Utils for wsjcpp
 issues: https://github.com/wsjcpp/wsjcpp-core/issues
 repositories:
@@ -21,23 +21,23 @@ distribution:
   - source-file: src/wsjcpp_core.cpp
     target-file: wsjcpp_core.cpp
     type: "source-code"
-    sha1: "1683203f11291a04bf771e2ed798a29c9e092bc6"
+    sha1: "602b7a2a8e909e7ba439261f81a6eaf3c87d135f"
   - source-file: src/wsjcpp_core.h
     target-file: wsjcpp_core.h
     type: "source-code" # todo must be header-file
-    sha1: "c2056e306e9cda6b90b764e83709b3c4e0199b8d"
+    sha1: "14a1d9a252631de959962d12c32122e8d8fe5444"
   - source-file: "src/wsjcpp_unit_tests.cpp"
     target-file: "wsjcpp_unit_tests.cpp"
     type: "unit-tests"
-    sha1: "fd5989d1a83c8b90bdc4d5e9bc9c3051eaa1e6d2"
+    sha1: "b96d9d06775069d0777cb168da16d432f019d5e9"
   - source-file: "src/wsjcpp_unit_tests.h"
     target-file: "wsjcpp_unit_tests.h"
     type: "unit-tests"
-    sha1: "83d4b6e046b6b58c42882ccae4be413e03c401c1"
+    sha1: "aa581f5678795a4a6b0ecc488181bb5289a03c6b"
   - source-file: "src/wsjcpp_unit_tests_main.cpp"
     target-file: "wsjcpp_unit_tests_main.cpp"
     type: "unit-tests"
-    sha1: "388ae269b325c5e161f6c3a5c598575714a4bffc"
+    sha1: "cd50e0ba4b0ff7501ad0dc8e6c6ce9f5c735a787"
   - source-file: "scripts.wsjcpp/generate.WsjcppUnitTest.wsjcpp-script"
     target-file: "generate.WsjcppUnitTest.wsjcpp-script"
     type: "safe-scripting-generate"
@@ -45,8 +45,8 @@ distribution:
   - source-file: "scripts.wsjcpp/generate.Class.wsjcpp-script"
     target-file: "generate.Class.wsjcpp-script"
     type: "safe-scripting-generate"
-
     sha1: "de1799907c685d606b93e08b821b540c2faa2db1"
+
 unit-tests:
   cases:
     - name: CoreNormalizePath
