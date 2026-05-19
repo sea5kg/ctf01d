@@ -136,24 +136,24 @@ int Ctf01dHttpServer::httpAdmin(HttpRequest* req, HttpResponse* resp) {
 
 int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     std::string sOriginalRequestPath = req->path;
-    std::string sRequestPath;
+    std::string request_path;
 
     // remove get params from path
     std::size_t nFoundGetParams = sOriginalRequestPath.rfind("?");
     if (nFoundGetParams != std::string::npos) {
-        sRequestPath = sOriginalRequestPath.substr(0, nFoundGetParams);
+        request_path = sOriginalRequestPath.substr(0, nFoundGetParams);
     } else {
-        sRequestPath = sOriginalRequestPath;
+        request_path = sOriginalRequestPath;
     }
-    sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
+    request_path = WsjcppCore::doNormalizePath(request_path);
 
-    // WsjcppLog::info(TAG, "sRequestPath = " + sRequestPath);
-    if (sRequestPath == "/flag") { // Public endpoint. Allowed without authorization.
+    // WsjcppLog::info(TAG, "request_path = " + request_path);
+    if (request_path == "/flag") { // Public endpoint. Allowed without authorization.
         return this->httpApiV1Flag(req, resp);
     }
 
-    if (sRequestPath.rfind(m_sTeamLogoPrefix, 0) == 0) {
-        std::string sTeamId = sRequestPath.substr(m_nTeamLogoPrefixLength, sRequestPath.length() - m_nTeamLogoPrefixLength);
+    if (request_path.rfind(m_sTeamLogoPrefix, 0) == 0) {
+        std::string sTeamId = request_path.substr(m_nTeamLogoPrefixLength, request_path.length() - m_nTeamLogoPrefixLength);
         Ctf01dTeamLogo *pLogo = m_pTeamLogos->findTeamLogo(sTeamId);
         if (pLogo == nullptr) {
             return 404;
@@ -167,14 +167,14 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
         return 200;
     }
 
-    if (sRequestPath.rfind(m_sApiPathPrefix, 0) == 0) {
-        if (sRequestPath == "/api/v1/game") { // Public endpoint. Allowed without authorization.
+    if (request_path.rfind(m_sApiPathPrefix, 0) == 0) {
+        if (request_path == "/api/v1/game") { // Public endpoint. Allowed without authorization.
             return this->httpApiV1Game(req, resp);
-        } else if (sRequestPath == "/api/v1/scoreboard") { // Public endpoint. Allowed without authorization.
+        } else if (request_path == "/api/v1/scoreboard") { // Public endpoint. Allowed without authorization.
             return this->httpApiV1Scoreboard(req, resp);
-        } else if (sRequestPath == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
+        } else if (request_path == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
             return this->httpApiV1MyIp(req, resp);
-        } else if (sRequestPath == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
+        } else if (request_path == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
             resp->Data(
                 (void *)(m_sCacheResponseTeamsJson.c_str()),
                 m_sCacheResponseTeamsJson.length(),
@@ -186,18 +186,18 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
         return this->httpApiV1GetPaths(req, resp);
     }
 
-    if (sRequestPath == "/") {
-        sRequestPath = "/index.html";
+    if (request_path == "/") {
+        request_path = "/index.html";
     }
 
     // TODO
-    WsjcppLog::info(TAG, "Request path: " + sRequestPath);
-    std::string sFilePath = sRequestPath = WsjcppCore::doNormalizePath(m_sScoreboardHtmlFolder + "/" + sRequestPath);
+    WsjcppLog::info(TAG, "Request path: " + request_path);
+    std::string sFilePath = request_path = WsjcppCore::doNormalizePath(m_sScoreboardHtmlFolder + "/" + request_path);
     if (WsjcppCore::fileExists(sFilePath)) { // TODO check the file exists not dir
         return resp->File(sFilePath.c_str());
     }
 
-    std::string sResPath = "./data_sample/html" + sRequestPath;
+    std::string sResPath = "./data_sample/html" + request_path;
     if (WsjcppResourcesManager::has(sResPath)) {
         WsjcppResourceFile *pFile = WsjcppResourcesManager::get(sResPath);
         resp->Data(
@@ -210,29 +210,6 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     }
     return 404; // Not found
 }
-
-// int Ctf01dHttpServer::admin(const std::string &sWorkerId, WsjcppLightWebHttpRequest *pRequest){
-//     std::string _tag = TAG + "-" + sWorkerId;
-//     std::string sRequestPath = pRequest->getRequestPath();
-//     sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
-
-//     WsjcppLightWebHttpResponse response(pRequest->getSockFd());
-
-//     // Log::warn(_tag, pRequest->requestPath());
-
-//     if (sRequestPath == "/") {
-//         sRequestPath = "/index.html";
-//     }
-
-//     std::string sFilePath = m_sWebFolder + sRequestPath;
-
-
-
-//     // Log::warn(_tag, "Response File " + sFilePath);
-//     response.cacheSec(60).ok().sendFile(sFilePath);
-//     return true;
-// }
-
 
 int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     auto now = std::chrono::system_clock::now().time_since_epoch();
