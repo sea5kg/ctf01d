@@ -147,8 +147,8 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     }
     sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
 
-    WsjcppLog::info(TAG, "sRequestPath = " + sRequestPath);
-    if (sRequestPath == "/flag") {
+    // WsjcppLog::info(TAG, "sRequestPath = " + sRequestPath);
+    if (sRequestPath == "/flag") { // Public endpoint. Allowed without authorization.
         return this->httpApiV1Flag(req, resp);
     }
 
@@ -168,13 +168,13 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     }
 
     if (sRequestPath.rfind(m_sApiPathPrefix, 0) == 0) {
-        if (sRequestPath == "/api/v1/game") {
+        if (sRequestPath == "/api/v1/game") { // Public endpoint. Allowed without authorization.
             return this->httpApiV1Game(req, resp);
-        } else if (sRequestPath == "/api/v1/scoreboard") {
+        } else if (sRequestPath == "/api/v1/scoreboard") { // Public endpoint. Allowed without authorization.
             return this->httpApiV1Scoreboard(req, resp);
         } else if (sRequestPath == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
             return this->httpApiV1MyIp(req, resp);
-        } else if (sRequestPath == "/api/v1/teams") {
+        } else if (sRequestPath == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
             resp->Data(
                 (void *)(m_sCacheResponseTeamsJson.c_str()),
                 m_sCacheResponseTeamsJson.length(),
