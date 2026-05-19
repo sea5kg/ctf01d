@@ -81,6 +81,9 @@ list (APPEND WSJCPP_SOURCES "src/ctf01d_http_server.cpp")
 # scoreboard
 list (APPEND WSJCPP_SOURCES "src/scoreboard/ctf01d_scoreboard.cpp")
 
+# objects
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_flag.cpp")
+
 # main
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
 

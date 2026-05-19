@@ -32,24 +32,42 @@
  *
  ***********************************************************************************/
 
-#ifndef EMPLOY_FLAGS_H
-#define EMPLOY_FLAGS_H
+#pragma once
 
-#include <wsjcpp_employees.h>
 #include <string>
-#include <mutex>
-#include <fstream>
-#include "ctf01d/objects/ctf01d_flag.h"
 
-class EmployFlags : public WsjcppEmployBase {
-    public:
-        EmployFlags();
-        static std::string name() { return "EmployFlags"; }
-        virtual bool init() override;
-        virtual bool deinit() override;
+class Ctf01dFlag {
+public:
+  Ctf01dFlag();
+  void generateRandomFlag(int nTimeFlagLifeInMin, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec);
 
-    private:
-        std::string TAG;
+  void generateId();
+  void setId(const std::string &sId);
+  std::string getId() const;
+
+  void generateValue(int nGameStartUTCInSec);
+  void setValue(const std::string &sValue);
+  std::string getValue() const;
+
+  void setTeamId(const std::string &sTeamId);
+  const std::string &getTeamId() const;
+
+  void setServiceId(const std::string &sServiceId);
+  const std::string &getServiceId() const;
+
+  void setTimeStartInMs(long nTimeStart);
+  long getTimeStartInMs() const;
+
+  void setTimeEndInMs(long nTimeEnd);
+  long getTimeEndInMs() const;
+
+  void copyFrom(const Ctf01dFlag &flag);
+
+private:
+  std::string m_sId;
+  std::string m_sValue;
+  std::string m_sTeamId;
+  std::string m_sServiceId;
+  long m_nTimeStartInMs;
+  long m_nTimeEndInMs;
 };
-
-#endif // EMPLOY_FLAGS_H

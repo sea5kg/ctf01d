@@ -9,6 +9,7 @@ list (APPEND WSJCPP_LIBRARIES sqlite3-static)
 list (APPEND WSJCPP_INCLUDE_DIRS "${PROJECT_BINARY_DIR}/../3rdparty/sqlite3/src")
 
 
+list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_flag.cpp")
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../employees/employ_flags.cpp")
 
 # wsjcpp-core
