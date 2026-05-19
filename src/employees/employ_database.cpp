@@ -66,7 +66,7 @@ bool EmployDatabase::init() {
     }
     WsjcppLog::ok(TAG, "Initialize build-in sqlite3 library");
 
-    m_pFlagsCheckerPutsResults = new Ctf01dDatabaseFile("flags_checker_put_results.db",
+    m_pFlagsCheckerPutsResults = std::make_shared<Ctf01dDatabaseFile>("flags_checker_put_results.db",
         "CREATE TABLE IF NOT EXISTS flags_checker_put_results ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -83,7 +83,7 @@ bool EmployDatabase::init() {
         return false;
     }
 
-    m_pFlagsAttempts = new Ctf01dDatabaseFile("flags_attempts.db",
+    m_pFlagsAttempts = std::make_shared<Ctf01dDatabaseFile>("flags_attempts.db",
         "CREATE TABLE IF NOT EXISTS flags_attempts ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  flag VARCHAR(36) NOT NULL, "
@@ -97,7 +97,7 @@ bool EmployDatabase::init() {
         return false;
     }
 
-    m_pFlagsDefense = new Ctf01dDatabaseFile("flags_defense.db",
+    m_pFlagsDefense = std::make_shared<Ctf01dDatabaseFile>("flags_defense.db",
         "CREATE TABLE IF NOT EXISTS flags_defense ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -114,7 +114,7 @@ bool EmployDatabase::init() {
         return false;
     }
 
-    m_pFlagsCheckFails = new Ctf01dDatabaseFile("flags_check_fails.db",
+    m_pFlagsCheckFails = std::make_shared<Ctf01dDatabaseFile>("flags_check_fails.db",
         "CREATE TABLE IF NOT EXISTS flags_check_fails ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -131,7 +131,7 @@ bool EmployDatabase::init() {
         return false;
     }
 
-    m_pFlagsStolen = new Ctf01dDatabaseFile("flags_stolen.db",
+    m_pFlagsStolen = std::make_shared<Ctf01dDatabaseFile>("flags_stolen.db",
         "CREATE TABLE IF NOT EXISTS flags_stolen ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -154,7 +154,7 @@ bool EmployDatabase::init() {
         return false;
     }
 
-    m_pFlagsLive = new Ctf01dDatabaseFile("flags_live.db",
+    m_pFlagsLive = std::make_shared<Ctf01dDatabaseFile>("flags_live.db",
         "CREATE TABLE IF NOT EXISTS flags_live ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -174,12 +174,6 @@ bool EmployDatabase::init() {
 
 bool EmployDatabase::deinit() {
     WsjcppLog::info(TAG, "deinit");
-    delete m_pFlagsAttempts;
-    delete m_pFlagsDefense;
-    delete m_pFlagsCheckFails;
-    delete m_pFlagsStolen;
-    delete m_pFlagsLive;
-    delete m_pFlagsCheckerPutsResults;
     Ctf01dDatabase::shutdownDriverSqlite3();
     return true;
 }

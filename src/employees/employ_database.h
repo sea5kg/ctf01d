@@ -40,50 +40,49 @@
 #include "ctf01d/objects/ctf01d_flag.h"
 
 class EmployDatabase : public WsjcppEmployBase {
-    public:
-        EmployDatabase();
-        static std::string name() { return "EmployDatabase"; }
-        virtual bool init() override;
-        virtual bool deinit() override;
+public:
+  EmployDatabase();
+  static std::string name() { return "EmployDatabase"; }
+  virtual bool init() override;
+  virtual bool deinit() override;
 
-        // flags_checker_put_states
-        void insertToFlagsCheckerPutResult(Ctf01dFlag flag, std::string sResult);
-        int numberOfFlagFlagsCheckerPutAllResults(std::string sTeamId, std::string sServiceId);
-        int numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId, std::string sServiceId);
+  // flags_checker_put_states
+  void insertToFlagsCheckerPutResult(Ctf01dFlag flag, std::string sResult);
+  int numberOfFlagFlagsCheckerPutAllResults(std::string sTeamId, std::string sServiceId);
+  int numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId, std::string sServiceId);
 
-        void insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP);
-        int numberOfFlagAttempts(std::string sTeamId);
+  void insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP);
+  int numberOfFlagAttempts(std::string sTeamId);
 
-        void insertToFlagsDefense(Ctf01dFlag flag, int nPoints);
-        int numberOfFlagsDefense(std::string sTeamId, std::string sServiceId);
-        int sumPointsOfFlagsDefense(std::string sTeamId, std::string sServiceId);
-        int numberOfDefenseFlagForService(std::string sServiceId);
-        void insertFlagCheckFail(Ctf01dFlag flag, std::string sReason);
+  void insertToFlagsDefense(Ctf01dFlag flag, int nPoints);
+  int numberOfFlagsDefense(std::string sTeamId, std::string sServiceId);
+  int sumPointsOfFlagsDefense(std::string sTeamId, std::string sServiceId);
+  int numberOfDefenseFlagForService(std::string sServiceId);
+  void insertFlagCheckFail(Ctf01dFlag flag, std::string sReason);
 
-        // flags_stollen
-        int numberOfFlagsStollen(std::string sTeamId, std::string sServiceId);
-        int sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId);
-        int numberOfStolenFlagsForService(std::string sServiceId);
-        std::pair<std::string, long> getFirstBloodFromStolenFlagsForService(std::string sServiceId);
-        void insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
-        bool isAlreadyStole(Ctf01dFlag flag, std::string sTeamId);
-        bool isSomebodyStole(Ctf01dFlag flag);
+  // flags_stollen
+  int numberOfFlagsStollen(std::string sTeamId, std::string sServiceId);
+  int sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId);
+  int numberOfStolenFlagsForService(std::string sServiceId);
+  std::pair<std::string, long> getFirstBloodFromStolenFlagsForService(std::string sServiceId);
+  void insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
+  bool isAlreadyStole(Ctf01dFlag flag, std::string sTeamId);
+  bool isSomebodyStole(Ctf01dFlag flag);
 
-        // flags live
-        void insertToFlagLive(Ctf01dFlag flag);
-        void deleteFlagLive(Ctf01dFlag flag);
-        std::vector<Ctf01dFlag> listOfLiveFlags();
+  // flags live
+  void insertToFlagLive(Ctf01dFlag flag);
+  void deleteFlagLive(Ctf01dFlag flag);
+  std::vector<Ctf01dFlag> listOfLiveFlags();
 
-    private:
-
-        std::string TAG;
-        std::mutex m_mutexCopyDatabaseToBackup;
-        Ctf01dDatabaseFile *m_pFlagsAttempts;
-        Ctf01dDatabaseFile *m_pFlagsDefense;
-        Ctf01dDatabaseFile *m_pFlagsCheckFails;
-        Ctf01dDatabaseFile *m_pFlagsStolen;
-        Ctf01dDatabaseFile *m_pFlagsLive;
-        Ctf01dDatabaseFile *m_pFlagsCheckerPutsResults;
+private:
+  std::string TAG;
+  std::mutex m_mutexCopyDatabaseToBackup;
+  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsAttempts;
+  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsDefense;
+  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckFails;
+  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsStolen;
+  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsLive;
+  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckerPutsResults;
 };
 
 #endif // EMPLOY_DATABASE_H

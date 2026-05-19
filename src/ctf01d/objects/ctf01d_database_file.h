@@ -35,11 +35,17 @@
 #pragma once
 
 #include <string>
+#include <map>
 #include <mutex>
 #include <memory>
 
+class Ctf01dDatabaseFile;
+
+extern std::map<std::string, Ctf01dDatabaseFile *> *g_pOpenedDatabaseFiles;
+
 class Ctf01dDatabase {
 public:
+  static void addOpenedDatabaseFile(const std::string &name, Ctf01dDatabaseFile *db);
   static bool initDriverSqlite3(int &ret);
   static void shutdownDriverSqlite3();
 };
@@ -56,6 +62,7 @@ public:
   Ctf01dDatabaseFile(const std::string &sFilename, const std::string &sSqlCreateTable);
   ~Ctf01dDatabaseFile();
   bool open();
+  void close();
   bool executeQuery(std::string sSqlInsert);
   int selectSumOrCount(std::string sSqlSelectCount);
   std::shared_ptr<Ctf01dDatabaseSelectRows> selectRows(std::string sqlSelectRows);

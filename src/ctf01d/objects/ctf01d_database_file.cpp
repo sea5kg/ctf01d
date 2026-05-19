@@ -41,6 +41,21 @@
 // ---------------------------------------------------------------------
 // Ctf01dDatabase
 
+std::map<std::string, Ctf01dDatabaseFile *> *g_pOpenedDatabaseFiles = nullptr;
+
+// static
+void Ctf01dDatabase::addOpenedDatabaseFile(const std::string &name, Ctf01dDatabaseFile *db) {
+  if (g_pOpenedDatabaseFiles == nullptr) {
+    // WsjcppLog::info(std::string(), "Create employees map");
+    g_pOpenedDatabaseFiles = new std::map<std::string, Ctf01dDatabaseFile*>();
+  }
+  if (g_pOpenedDatabaseFiles->find(name) != g_pOpenedDatabaseFiles->end()) {
+    WsjcppLog::throw_err("WsjcppEmployees::addService", "Already registered '" + name + "'");
+  } else {
+    g_pOpenedDatabaseFiles->insert(std::pair<std::string, Ctf01dDatabaseFile*>(name, db));
+  }
+}
+
 // static
 bool Ctf01dDatabase::initDriverSqlite3(int &ret) {
   ret = sqlite3_initialize();
@@ -49,6 +64,12 @@ bool Ctf01dDatabase::initDriverSqlite3(int &ret) {
 
 // static
 void Ctf01dDatabase::shutdownDriverSqlite3() {
+  // will be automatilly closed all opened databases
+  if (g_pOpenedDatabaseFiles != nullptr) {
+    for (const auto& pair : *g_pOpenedDatabaseFiles) {
+      pair.second->close();
+    }
+  }
   sqlite3_shutdown();
 }
 
@@ -130,9 +151,7 @@ Ctf01dDatabaseFile::Ctf01dDatabaseFile(const std::string &sFilename, const std::
 };
 
 Ctf01dDatabaseFile::~Ctf01dDatabaseFile() {
-  if (m_pDatabaseFile != nullptr) {
-    sqlite3_close((sqlite3 *)m_pDatabaseFile);
-  }
+  close();
 }
 
 bool Ctf01dDatabaseFile::open() {
@@ -164,7 +183,15 @@ bool Ctf01dDatabaseFile::open() {
   }
   WsjcppLog::ok(TAG, "Opened database file " + m_sFileFullpath);
   copyDatabaseToBackup();
+  Ctf01dDatabase::addOpenedDatabaseFile(m_sFileFullpath, this);
   return true;
+}
+
+void Ctf01dDatabaseFile::close() {
+  if (m_pDatabaseFile != nullptr) {
+    sqlite3_close((sqlite3 *)m_pDatabaseFile);
+    m_pDatabaseFile = nullptr;
+  }
 }
 
 bool Ctf01dDatabaseFile::executeQuery(std::string sSqlInsert) {
