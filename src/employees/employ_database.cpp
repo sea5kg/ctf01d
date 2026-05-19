@@ -43,172 +43,6 @@
 #include <vector>
 
 // ---------------------------------------------------------------------
-// Ctf01dDatabaseSelectRows
-
-Ctf01dDatabaseSelectRows::Ctf01dDatabaseSelectRows() {
-    m_pQuery = nullptr;
-}
-
-Ctf01dDatabaseSelectRows::~Ctf01dDatabaseSelectRows() {
-    if (m_pQuery != nullptr) {
-        sqlite3_finalize(m_pQuery);
-    }
-}
-
-void Ctf01dDatabaseSelectRows::setQuery(sqlite3_stmt* pQuery) {
-    m_pQuery = pQuery;
-}
-
-bool Ctf01dDatabaseSelectRows::next() {
-    return  sqlite3_step(m_pQuery) == SQLITE_ROW;
-}
-
-std::string Ctf01dDatabaseSelectRows::getString(int nColumnNumber) {
-    return std::string((const char *)sqlite3_column_text(m_pQuery, nColumnNumber));
-}
-
-long Ctf01dDatabaseSelectRows::getLong(int nColumnNumber) {
-    return sqlite3_column_int64(m_pQuery, nColumnNumber);
-}
-
-// ---------------------------------------------------------------------
-// Ctf01dDatabaseFile
-
-Ctf01dDatabaseFile::Ctf01dDatabaseFile(const std::string &sFilename, const std::string &sSqlCreateTable) {
-    TAG = "Ctf01dDatabaseFile-" + sFilename;
-    m_pDatabaseFile = nullptr;
-    m_sFilename = sFilename;
-    std::string sError;
-    m_nLastBackupTime = 0;
-    m_sSqlCreateTable = sSqlCreateTable;
-    EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-    std::string sDatabaseDir = pConfig->getWorkDir() + "/db";
-    if (!WsjcppCore::dirExists(sDatabaseDir)) {
-        if (!WsjcppCore::makeDir(sDatabaseDir)) {
-            WsjcppLog::throw_err(TAG, "Could not create dir " + sDatabaseDir);
-        }
-        if (!WsjcppCore::setFilePermissions(sDatabaseDir, WsjcppFilePermissions(0x776), sError)) {
-            WsjcppLog::throw_err(TAG, sError);
-        }
-    }
-    m_sFileFullpath = sDatabaseDir + "/" + m_sFilename;
-
-    std::string sDatabaseBackupDir = sDatabaseDir + "/backups";
-    if (!WsjcppCore::dirExists(sDatabaseBackupDir)) {
-        if (!WsjcppCore::makeDir(sDatabaseBackupDir)) {
-            WsjcppLog::throw_err(TAG, "Could not create dir " + sDatabaseBackupDir);
-        }
-        if (!WsjcppCore::setFilePermissions(sDatabaseBackupDir, WsjcppFilePermissions(0x776), sError)) {
-            WsjcppLog::throw_err(TAG, sError);
-        }
-    }
-    m_sBaseFileBackupFullpath = sDatabaseBackupDir + "/" + m_sFilename;
-};
-
-Ctf01dDatabaseFile::~Ctf01dDatabaseFile() {
-    if (m_pDatabaseFile != nullptr) {
-        sqlite3_close(m_pDatabaseFile);
-    }
-}
-
-bool Ctf01dDatabaseFile::open() {
-    // open connection to a DB
-    int nRet = sqlite3_open_v2(
-        m_sFileFullpath.c_str(),
-        &m_pDatabaseFile,
-        SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
-        NULL
-    );
-    if (nRet != SQLITE_OK) {
-        WsjcppLog::throw_err(TAG, "Failed to open conn: " + std::to_string(nRet));
-        return false;
-    }
-    // Run the SQL (convert the string to a C-String with c_str() )
-    char *zErrMsg = 0;
-    nRet = sqlite3_exec(m_pDatabaseFile, m_sSqlCreateTable.c_str(), 0, 0, &zErrMsg);
-    if (nRet != SQLITE_OK) {
-        WsjcppLog::throw_err(TAG, "Problem with create table: " + std::string(zErrMsg));
-        return false;
-    }
-    WsjcppLog::ok(TAG, "Opened database file " + m_sFileFullpath);
-    copyDatabaseToBackup();
-    return true;
-}
-
-bool Ctf01dDatabaseFile::executeQuery(std::string sSqlInsert) {
-    copyDatabaseToBackup();
-    char *zErrMsg = 0;
-    int nRet = sqlite3_exec(m_pDatabaseFile, sSqlInsert.c_str(), 0, 0, &zErrMsg);
-    if (nRet != SQLITE_OK) {
-        WsjcppLog::throw_err(TAG, "Problem with insert: " + std::string(zErrMsg) + "\n SQL-query: " + sSqlInsert);
-        return false;
-    }
-    return true;
-}
-
-int Ctf01dDatabaseFile::selectSumOrCount(std::string sSqlSelectCount) {
-    copyDatabaseToBackup();
-    sqlite3_stmt* pQuery = nullptr;
-    int ret = sqlite3_prepare_v2(m_pDatabaseFile, sSqlSelectCount.c_str(), -1, &pQuery, NULL);
-    // prepare the statement
-    if (ret != SQLITE_OK) {
-        WsjcppLog::throw_err(TAG, "Failed to prepare select count: " + std::string(sqlite3_errmsg(m_pDatabaseFile)) + "\n SQL-query: " + sSqlSelectCount);
-    }
-    // step to 1st row of data
-    ret = sqlite3_step(pQuery);
-    if (ret != SQLITE_ROW) { // see documentation, this can return more values as success
-        WsjcppLog::throw_err(TAG, "Failed to step for select count or sum: " + std::string(sqlite3_errmsg(m_pDatabaseFile)) + "\n SQL-query: " + sSqlSelectCount);
-    }
-    int nRet = sqlite3_column_int(pQuery, 0);
-    if (pQuery != nullptr) sqlite3_finalize(pQuery);
-    return nRet;
-}
-
-bool Ctf01dDatabaseFile::selectRows(std::string sSqlSelectRows, Ctf01dDatabaseSelectRows &selectRows) {
-    copyDatabaseToBackup();
-    sqlite3_stmt* pQuery = nullptr;
-    int nRet = sqlite3_prepare_v2(m_pDatabaseFile, sSqlSelectRows.c_str(), -1, &pQuery, NULL);
-    // prepare the statement
-    if (nRet != SQLITE_OK) {
-        WsjcppLog::throw_err(TAG, "Failed to prepare select rows: " + std::string(sqlite3_errmsg(m_pDatabaseFile)) + "\n SQL-query: " + sSqlSelectRows);
-        return false;
-    }
-    selectRows.setQuery(pQuery);
-    return true;
-}
-
-void Ctf01dDatabaseFile::copyDatabaseToBackup() {
-    std::lock_guard<std::mutex> lock(m_mutex);
-    // every 1 minutes make backup
-    int nCurrentTime = WsjcppCore::getCurrentTimeInSeconds();
-    if (nCurrentTime - m_nLastBackupTime < 60) {
-        return;
-    }
-    m_nLastBackupTime = nCurrentTime;
-
-    int nMaxBackupsFiles = 9;
-    WsjcppLog::info(TAG, "Start backup for " + m_sFileFullpath);
-    std::string sFilebackup = m_sBaseFileBackupFullpath + "." + std::to_string(nMaxBackupsFiles);
-    if (WsjcppCore::fileExists(sFilebackup)) {
-        WsjcppCore::removeFile(sFilebackup);
-    }
-    for (int i = nMaxBackupsFiles - 1; i >= 0; i--) {
-        std::string sFilebackupFrom = m_sBaseFileBackupFullpath + "." + std::to_string(i);
-        std::string sFilebackupTo = m_sBaseFileBackupFullpath + "." + std::to_string(i+1);
-        if (WsjcppCore::fileExists(sFilebackupFrom)) {
-            if (std::rename(sFilebackupFrom.c_str(), sFilebackupTo.c_str())) {
-                WsjcppLog::throw_err(TAG, "Could not rename from " + sFilebackupFrom + " to " + sFilebackupTo);
-            }
-        }
-    }
-    sFilebackup = m_sBaseFileBackupFullpath + "." + std::to_string(0);
-    if (!WsjcppCore::copyFile(m_sFileFullpath, sFilebackup)) {
-        WsjcppLog::throw_err(TAG, "Failed copy file to backup for " + m_sFileFullpath);
-    }
-    WsjcppLog::info(TAG, "Backup done for " + m_sFileFullpath);
-}
-
-// ---------------------------------------------------------------------
 // EmployDatabase
 
 REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployDatabase)
@@ -225,9 +59,9 @@ EmployDatabase::EmployDatabase()
 }
 
 bool EmployDatabase::init() {
-    int nRet = 0;
-    if (SQLITE_OK != (nRet = sqlite3_initialize())) {
-        WsjcppLog::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(nRet));
+    int driver_init_ret;
+    if (!Ctf01dDatabase::initDriverSqlite3(driver_init_ret)) {
+        WsjcppLog::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
         return false;
     }
     WsjcppLog::ok(TAG, "Initialize build-in sqlite3 library");
@@ -244,6 +78,7 @@ bool EmployDatabase::init() {
         "  result VARCHAR(50) NOT NULL"
         ");"
     );
+    WsjcppLog::info(TAG, "Opening m_pFlagsCheckerPutsResults");
     if (!m_pFlagsCheckerPutsResults->open()) {
         return false;
     }
@@ -257,6 +92,7 @@ bool EmployDatabase::init() {
         "  dt INTEGER NOT NULL"
         ");"
     );
+    WsjcppLog::info(TAG, "Opening m_pFlagsAttempts");
     if (!m_pFlagsAttempts->open()) {
         return false;
     }
@@ -273,6 +109,7 @@ bool EmployDatabase::init() {
         "  flag_cost INTEGER NOT NULL"
         ");"
     );
+    WsjcppLog::info(TAG, "Opening m_pFlagsDefense");
     if (!m_pFlagsDefense->open()) {
         return false;
     }
@@ -289,6 +126,7 @@ bool EmployDatabase::init() {
         "  reason VARCHAR(50) NOT NULL "
         ");"
     );
+    WsjcppLog::info(TAG, "Opening m_pFlagsCheckFails");
     if (!m_pFlagsCheckFails->open()) {
         return false;
     }
@@ -311,6 +149,7 @@ bool EmployDatabase::init() {
     // "  INDEX(`serviceid`), "
     // "  INDEX(`serviceid`, `thief_teamid`), "
     // "  UNIQUE KEY(`serviceid`, `thief_teamid`, `flag_id`, `flag`)"
+    WsjcppLog::info(TAG, "Opening m_pFlagsStolen");
     if (!m_pFlagsStolen->open()) {
         return false;
     }
@@ -326,6 +165,7 @@ bool EmployDatabase::init() {
         "  date_end INTEGER NOT NULL "
         ");"
     );
+    WsjcppLog::info(TAG, "Opening m_pFlagsLive");
     if (!m_pFlagsLive->open()) {
         return false;
     }
@@ -340,7 +180,7 @@ bool EmployDatabase::deinit() {
     delete m_pFlagsStolen;
     delete m_pFlagsLive;
     delete m_pFlagsCheckerPutsResults;
-    sqlite3_shutdown();
+    Ctf01dDatabase::shutdownDriverSqlite3();
     return true;
 }
 
@@ -482,13 +322,14 @@ std::pair<std::string, long> EmployDatabase::getFirstBloodFromStolenFlagsForServ
     std::pair<std::string, long> pairRet;
     pairRet.first = "?";
     pairRet.second = 0;
-    Ctf01dDatabaseSelectRows selectRows;
-    if (!m_pFlagsStolen->selectRows(sQuery, selectRows)) {
+    auto rows = m_pFlagsStolen->selectRows(sQuery);
+    if (rows == nullptr) {
         WsjcppLog::err(TAG, "Error select getFirstBloodFromStolenFlagsForService " + sQuery);
+        return pairRet;
     }
-    if (selectRows.next()) {
-        pairRet.first = selectRows.getString(0);
-        pairRet.second = selectRows.getLong(1);
+    if (rows->next()) {
+        pairRet.first = rows->getString(0);
+        pairRet.second = rows->getLong(1);
     }
     return pairRet;
 }
@@ -573,22 +414,23 @@ std::vector<Ctf01dFlag> EmployDatabase::listOfLiveFlags() {
         ";";
 
     std::vector<Ctf01dFlag> vResult;
-    Ctf01dDatabaseSelectRows selectRows;
-    if (!m_pFlagsLive->selectRows(sQuery, selectRows)) {
+    auto rows = m_pFlagsLive->selectRows(sQuery);
+    if (rows == nullptr) {
         WsjcppLog::err(TAG, "Error select listOfLiveFlags " + sQuery);
+        return vResult;
     }
     int nCounter = 0;
-    while (selectRows.next()) {
+    while (rows->next()) {
         nCounter++;
         Ctf01dFlag flag;
-        std::string sFlagId = selectRows.getString(0);
+        std::string sFlagId = rows->getString(0);
         flag.setId(sFlagId);
-        flag.setServiceId(selectRows.getString(1));
-        flag.setTeamId(selectRows.getString(2));
-        std::string sFlagValue = selectRows.getString(3);
+        flag.setServiceId(rows->getString(1));
+        flag.setTeamId(rows->getString(2));
+        std::string sFlagValue = rows->getString(3);
         flag.setValue(sFlagValue);
-        flag.setTimeStartInMs(selectRows.getLong(4));
-        flag.setTimeEndInMs(selectRows.getLong(5));
+        flag.setTimeStartInMs(rows->getLong(4));
+        flag.setTimeEndInMs(rows->getLong(5));
         WsjcppLog::info(TAG, "Loaded flag from previous session flags_live: id = " + sFlagId + ", value = " + sFlagValue);
         vResult.push_back(flag);
     }

@@ -36,47 +36,8 @@
 #define EMPLOY_DATABASE_H
 
 #include <wsjcpp_employees.h>
-#include <json.hpp>
-#include <employ_flags.h>
-#include <sqlite3.h>
-
-class Ctf01dDatabaseSelectRows {
-    public:
-        Ctf01dDatabaseSelectRows();
-        ~Ctf01dDatabaseSelectRows();
-        void setQuery(sqlite3_stmt* pQuery);
-        bool next();
-        std::string getString(int nColumnNumber);
-        long getLong(int nColumnNumber);
-
-    private:
-        sqlite3_stmt* m_pQuery;
-};
-
-
-class Ctf01dDatabaseFile {
-    public:
-        Ctf01dDatabaseFile(const std::string &sFilename, const std::string &sSqlCreateTable);
-        ~Ctf01dDatabaseFile();
-        bool open();
-        bool executeQuery(std::string sSqlInsert);
-        int selectSumOrCount(std::string sSqlSelectCount);
-        bool selectRows(std::string sSqlSelectRows, Ctf01dDatabaseSelectRows &selectRows);
-
-    private:
-
-        void copyDatabaseToBackup();
-        std::mutex m_mutex;
-
-        std::string TAG;
-        sqlite3* m_pDatabaseFile;
-        std::string m_sFilename;
-        std::string m_sFileFullpath;
-        std::string m_sBaseFileBackupFullpath;
-        std::string m_sSqlCreateTable;
-        int m_nLastBackupTime;
-};
-
+#include "ctf01d/objects/ctf01d_database_file.h"
+#include "ctf01d/objects/ctf01d_flag.h"
 
 class EmployDatabase : public WsjcppEmployBase {
     public:
