@@ -2,8 +2,12 @@
     "cSpell.words": [
         "libhv",
         "libpm",
+        "libpthread",
         "lpthread",
+        "noninteractive",
         "pycache",
-        "THREADSAFE"
+        "pylint",
+        "THREADSAFE",
+        "zlibc"
     ]
 }
