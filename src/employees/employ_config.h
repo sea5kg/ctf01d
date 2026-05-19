@@ -139,7 +139,7 @@ class EmployConfig : public WsjcppEmployBase {
         std::string gameName() const;
         int flagTimeliveInMin() const;
         int getBasicCostsStolenFlagInPoints() const;
-        int getCostDefenceFlagInPoints10() const;
+        int getCostDefenseFlagInPoints10() const;
         int gameStartUTCInSec() const;
         int gameEndUTCInSec() const;
 
@@ -160,7 +160,7 @@ class EmployConfig : public WsjcppEmployBase {
 
         std::string TAG;
         std::string m_sWorkDir;
-        bool m_bApplyedConfig;
+        bool m_bAppliedConfig;
 
         std::shared_ptr<Ctf01dScoreboard> m_pScoreboard;
         int m_nScoreboardPort;
@@ -170,7 +170,7 @@ class EmployConfig : public WsjcppEmployBase {
         // game conf
         int m_nFlagTimeliveInMin;
         int m_nBasicCostsStolenFlagInPoints;
-        int m_nCostDefenceFlagInPoints10;
+        int m_nCostDefenseFlagInPoints10;
         std::string m_sGameId;
         std::string m_sGameName;
         std::string m_sGameStart;

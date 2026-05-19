@@ -179,7 +179,7 @@ REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployConfig)
 EmployConfig::EmployConfig()
 : WsjcppEmployBase(EmployConfig::name(), {}) {
     TAG = EmployConfig::name();
-    m_bApplyedConfig = false;
+    m_bAppliedConfig = false;
     m_nFlagTimeliveInMin = 10;
     m_nScoreboardPort = 8080;
     m_bScoreboardRandom = false;
@@ -193,7 +193,7 @@ EmployConfig::EmployConfig()
     m_nGameCoffeeBreakStartUTCInSec = 0;
     m_nGameCoffeeBreakEndUTCInSec = 0;
     m_nBasicCostsStolenFlagInPoints = 10;
-    m_nCostDefenceFlagInPoints10 = 10; // default 1.0
+    m_nCostDefenseFlagInPoints10 = 10; // default 1.0
 }
 
 EmployConfig::~EmployConfig() {
@@ -202,7 +202,7 @@ EmployConfig::~EmployConfig() {
 
 bool EmployConfig::init() {
 
-    tryLoadFromEnv("CTF01D_WORKDIR", m_sWorkDir, "Work Directory from enviroment");
+    tryLoadFromEnv("CTF01D_WORKDIR", m_sWorkDir, "Work Directory from environment");
 
     WsjcppLog::info(TAG, "Work Directory is " + m_sWorkDir);
 
@@ -264,11 +264,11 @@ std::string EmployConfig::getWorkDir() {
 }
 
 bool EmployConfig::applyConfig() {
-    if (m_bApplyedConfig) {
+    if (m_bAppliedConfig) {
         return true;
     }
 
-    m_bApplyedConfig = false;
+    m_bAppliedConfig = false;
     WsjcppLog::info(TAG, "Loading configuration...");
 
     std::string sConfigFile = m_sWorkDir + "/config.yml";
@@ -314,8 +314,8 @@ bool EmployConfig::applyConfig() {
         m_nFlagTimeliveInMin*60
     );
 
-    m_bApplyedConfig = true;
-    return m_bApplyedConfig;
+    m_bAppliedConfig = true;
+    return m_bAppliedConfig;
 }
 
 std::vector<Ctf01dTeamDef> &EmployConfig::teamsConf() {
@@ -354,8 +354,8 @@ int EmployConfig::getBasicCostsStolenFlagInPoints() const {
     return m_nBasicCostsStolenFlagInPoints;
 }
 
-int EmployConfig::getCostDefenceFlagInPoints10() const {
-    return m_nCostDefenceFlagInPoints10;
+int EmployConfig::getCostDefenseFlagInPoints10() const {
+    return m_nCostDefenseFlagInPoints10;
 }
 
 int EmployConfig::gameStartUTCInSec() const {
@@ -517,8 +517,8 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     m_nBasicCostsStolenFlagInPoints = yamlConfig["game"]["basic_costs_stolen_flag_in_points"].valInt();
     WsjcppLog::info(TAG, "game.basic_costs_stolen_flag_in_points: " + std::to_string(m_nBasicCostsStolenFlagInPoints));
 
-    m_nCostDefenceFlagInPoints10 = std::atof(yamlConfig["game"]["cost_defence_flag_in_points"].valStr().c_str())*10;
-    WsjcppLog::info(TAG, "game.cost_defence_flag_in_points (*10): " + std::to_string(m_nCostDefenceFlagInPoints10));
+    m_nCostDefenseFlagInPoints10 = std::atof(yamlConfig["game"]["cost_defense_flag_in_points"].valStr().c_str())*10;
+    WsjcppLog::info(TAG, "game.cost_defense_flag_in_points (*10): " + std::to_string(m_nCostDefenseFlagInPoints10));
 
     if (m_nGameStartUTCInSec == 0) {
         WsjcppLog::err(TAG, "game.start - not found");
@@ -612,7 +612,7 @@ bool EmployConfig::applyScoreboardConf(WsjcppYaml &yamlConfig) {
     WsjcppLog::info(TAG, "scoreboard.htmlfolder: " + m_sScoreboardHtmlFolder);
 
     if (!WsjcppCore::dirExists(m_sScoreboardHtmlFolder)) {
-        WsjcppLog::err(TAG, "Directory '" + m_sScoreboardHtmlFolder + "' with scorebord does not exists");
+        WsjcppLog::err(TAG, "Directory '" + m_sScoreboardHtmlFolder + "' with scoreboard does not exists");
         return false;
     }
 
@@ -667,10 +667,10 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
             return false;
         }
 
-        int nServiceScritpWait = yamlChecker["script_wait_in_sec"].valInt();
-        WsjcppLog::info(TAG, "script_wait_in_sec = " + std::to_string(nServiceScritpWait));
+        int nServiceScriptWait = yamlChecker["script_wait_in_sec"].valInt();
+        WsjcppLog::info(TAG, "script_wait_in_sec = " + std::to_string(nServiceScriptWait));
 
-        if (nServiceScritpWait < 5) {
+        if (nServiceScriptWait < 5) {
             WsjcppLog::err(TAG, "Could not parse script_wait_in_sec - must be more than 4 sec ");
             return false;
         }
@@ -678,8 +678,8 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
         int nServiceSleepBetweenRun = yamlChecker["time_sleep_between_run_scripts_in_sec"].valInt();
         WsjcppLog::info(TAG, "time_sleep_between_run_scripts_in_sec = " + std::to_string(nServiceSleepBetweenRun));
 
-        if (nServiceSleepBetweenRun < nServiceScritpWait*3) {
-            WsjcppLog::err(TAG, "Could not parse time_sleep_between_run_scripts_in_sec - must be more than " + std::to_string(nServiceScritpWait*3-1) + " sec ");
+        if (nServiceSleepBetweenRun < nServiceScriptWait*3) {
+            WsjcppLog::err(TAG, "Could not parse time_sleep_between_run_scripts_in_sec - must be more than " + std::to_string(nServiceScriptWait*3-1) + " sec ");
             return false;
         }
 
@@ -702,7 +702,7 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
         _serviceConf.setScriptPath(sServiceScriptPath);
         _serviceConf.setScriptDir(sServiceScriptDir);
         _serviceConf.setEnabled(bServiceEnable);
-        _serviceConf.setScriptWaitInSec(nServiceScritpWait);
+        _serviceConf.setScriptWaitInSec(nServiceScriptWait);
         _serviceConf.setTimeSleepBetweenRunScriptsInSec(nServiceSleepBetweenRun);
         m_vServicesConf.push_back(_serviceConf);
 

@@ -59,18 +59,18 @@ Ctf01dScoreboard::Ctf01dScoreboard(
 
     TAG = "Ctf01dScoreboard";
     m_bRandom = bRandom;
-    std::string sScroreboardRandom = "Scoreboard random: ";
-    sScroreboardRandom = sScroreboardRandom + (m_bRandom ? "yes" : "no");
-    WsjcppLog::warn(TAG, sScroreboardRandom);
+    std::string sScoreboardRandom = "Scoreboard random: ";
+    sScoreboardRandom = sScoreboardRandom + (m_bRandom ? "yes" : "no");
+    WsjcppLog::warn(TAG, sScoreboardRandom);
     std::srand(unsigned(std::time(0)));
     m_nGameStartInSec = nGameStartInSec;
     m_nGameEndInSec = nGameEndInSec;
     m_nGameCoffeeBreakStartInSec = nGameCoffeeBreakStartInSec;
     m_nGameCoffeeBreakEndInSec = nGameCoffeeBreakEndInSec;
     m_nFlagTimeLiveInSec = nFlagTimeLiveInSec;
-    m_nAllDefenceFlags = 0;
+    m_nAllDefenseFlags = 0;
     m_nAllTriesActivities = 0;
-    m_nCostDefenceFlagInPoints10 = 10;
+    m_nCostDefenseFlagInPoints10 = 10;
     m_nTeamCount = vTeamsConf.size();
     m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
 
@@ -209,7 +209,7 @@ void Ctf01dScoreboard::incrementTries(const std::string &sTeamId) {
 void Ctf01dScoreboard::initStateFromStorage() {
     EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
     const std::vector<Ctf01dServiceDef> &vServices = pConfig->servicesConf();
-    m_nCostDefenceFlagInPoints10 = pConfig->getCostDefenceFlagInPoints10();
+    m_nCostDefenseFlagInPoints10 = pConfig->getCostDefenseFlagInPoints10();
 
     WsjcppLog::info(TAG, "Loading alive flags...");
     std::vector<Ctf01dFlag> vFlagLives = m_pDatabase->listOfLiveFlags();
@@ -220,13 +220,13 @@ void Ctf01dScoreboard::initStateFromStorage() {
 
     // load services statistics
     WsjcppLog::info(TAG, "Loading services statistics...");
-    m_nAllDefenceFlags = 0;
+    m_nAllDefenseFlags = 0;
     struct FlagsForService {
         std::string sServiceID;
         std::string sFirstBloodTeamID;
         long nFirstBloodTime;
         int nStolenFlags;
-        int nDefenceFlags;
+        int nDefenseFlags;
     };
     std::vector<FlagsForService> vFlags;
     for (unsigned int i = 0; i < vServices.size(); i++) {
@@ -234,13 +234,13 @@ void Ctf01dScoreboard::initStateFromStorage() {
         FlagsForService f;
         f.sServiceID = sServiceID;
         f.nStolenFlags = m_pDatabase->numberOfStolenFlagsForService(sServiceID);
-        f.nDefenceFlags = m_pDatabase->numberOfDefenceFlagForService(sServiceID);
+        f.nDefenseFlags = m_pDatabase->numberOfDefenseFlagForService(sServiceID);
         if (f.nStolenFlags > 0) {
-            std::pair<std::string, long> fb = m_pDatabase->getFirstbloodFromStolenFlagsForService(sServiceID);
+            std::pair<std::string, long> fb = m_pDatabase->getFirstBloodFromStolenFlagsForService(sServiceID);
             f.sFirstBloodTeamID = fb.first;
             f.nFirstBloodTime = fb.second;
         }
-        m_nAllDefenceFlags += f.nDefenceFlags;
+        m_nAllDefenseFlags += f.nDefenseFlags;
         vFlags.push_back(f);
     }
 
@@ -248,7 +248,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
     for (int i = 0; i < vFlags.size(); i++) {
         FlagsForService f = vFlags[i];
         m_mapServiceCostsAndStatistics[f.sServiceID]->setStolenFlagsForService(f.nStolenFlags);
-        m_mapServiceCostsAndStatistics[f.sServiceID]->setDefenceFlagsForService(f.nDefenceFlags);
+        m_mapServiceCostsAndStatistics[f.sServiceID]->setDefenseFlagsForService(f.nDefenseFlags);
         if (f.nStolenFlags > 0) {
             m_mapServiceCostsAndStatistics[f.sServiceID]->setFirstBloodTeamId(f.sFirstBloodTeamID, f.nFirstBloodTime);
         }
@@ -268,12 +268,12 @@ void Ctf01dScoreboard::initStateFromStorage() {
         for (unsigned int i = 0; i < vServices.size(); i++) {
             std::string sServiceID = vServices[i].id();
 
-            // calculate defence
-            int nDefenceFlags = m_pDatabase->numberOfFlagsDefense(pRow->teamId(), sServiceID);
-            int nDefencePoints = m_pDatabase->sumPointsOfFlagsDefense(pRow->teamId(), sServiceID);
-            pRow->setServiceDefenceFlagsAndPoints(sServiceID, nDefenceFlags, nDefencePoints);
-            m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["def"] = nDefenceFlags;
-            m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_def"] = double(nDefencePoints) / 10.0;
+            // calculate defense
+            int nDefenseFlags = m_pDatabase->numberOfFlagsDefense(pRow->teamId(), sServiceID);
+            int nDefensePoints = m_pDatabase->sumPointsOfFlagsDefense(pRow->teamId(), sServiceID);
+            pRow->setServiceDefenseFlagsAndPoints(sServiceID, nDefenseFlags, nDefensePoints);
+            m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["def"] = nDefenseFlags;
+            m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_def"] = double(nDefensePoints) / 10.0;
 
             // calculate attack
             int nAttackFlags = m_pDatabase->numberOfFlagsStollen(pRow->teamId(), sServiceID);
@@ -307,7 +307,7 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
     // int nFlagPoints = m_mapServiceCostsAndStatistics[sServiceId]->getCostStolenFlag()*10; // one number after dot
     int nFlagPoints = 10;
     int nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
-    // victim place in scroreboard
+    // victim place in scoreboard
     std::map<std::string,TeamStatusRow *>::iterator it_victim;
     it_victim = m_mapTeamsStatuses.find(flag.getTeamId());
     int nVictimPlaceInScoreBoard = 0;
@@ -354,21 +354,21 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
     return nFlagPoints;
 }
 
-void Ctf01dScoreboard::incrementDefenceScore(const Ctf01dFlag &flag) {
+void Ctf01dScoreboard::incrementDefenseScore(const Ctf01dFlag &flag) {
     std::lock_guard<std::mutex> lock(m_mutexJson);
 
     std::string sTeamId = flag.getTeamId();
     std::string sServiceId = flag.getServiceId();
-    int nFlagPoints = m_nCostDefenceFlagInPoints10;
-    m_pDatabase->insertToFlagsDefence(flag, nFlagPoints);
+    int nFlagPoints = m_nCostDefenseFlagInPoints10;
+    m_pDatabase->insertToFlagsDefense(flag, nFlagPoints);
 
     std::map<std::string,TeamStatusRow *>::iterator it;
     it = m_mapTeamsStatuses.find(sTeamId);
     if (it != m_mapTeamsStatuses.end()) {
         TeamStatusRow *pRow = it->second;
-        pRow->incrementDefence(sServiceId, nFlagPoints);
-        m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["def"] = pRow->getDefenceFlags(sServiceId);
-        m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["pt_def"] = double(pRow->getDefencePoints(sServiceId)) / 10.0;
+        pRow->incrementDefense(sServiceId, nFlagPoints);
+        m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["def"] = pRow->getDefenseFlags(sServiceId);
+        m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["pt_def"] = double(pRow->getDefensePoints(sServiceId)) / 10.0;
         m_jsonScoreboard["scoreboard"][sTeamId]["points"] = double(pRow->getPoints()) / 10.0;
         sortPlaces();
     }
@@ -376,8 +376,8 @@ void Ctf01dScoreboard::incrementDefenceScore(const Ctf01dFlag &flag) {
     std::map<std::string, Ctf01dServiceStatistics *>::iterator it2;
     it2 = m_mapServiceCostsAndStatistics.find(sServiceId);
     if (it2 != m_mapServiceCostsAndStatistics.end()) {
-        m_nAllDefenceFlags++;
-        it2->second->doIncrementDefenceFlagsForService();
+        m_nAllDefenseFlags++;
+        it2->second->doIncrementDefenseFlagsForService();
         updateServicesStatistics();
     }
 }

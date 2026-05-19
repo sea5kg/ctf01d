@@ -59,7 +59,7 @@ class Ctf01dScoreboard {
         void initStateFromStorage();
 
         int incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId);
-        void incrementDefenceScore(const Ctf01dFlag &flag);
+        void incrementDefenseScore(const Ctf01dFlag &flag);
         void incrementFlagsPuttedAndServiceUp(const Ctf01dFlag &flag);
         void insertFlagPutFail(const Ctf01dFlag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus);
         void updateScore(const std::string &sTeamId, const std::string &sServiceId);
@@ -76,7 +76,7 @@ class Ctf01dScoreboard {
         std::string TAG;
         EmployFlags *m_pEmployFlags;
         EmployDatabase *m_pDatabase;
-        int m_nCostDefenceFlagInPoints10;
+        int m_nCostDefenseFlagInPoints10;
         int m_nGameStartInSec;
         int m_nGameEndInSec;
         int m_nGameCoffeeBreakStartInSec;
@@ -88,7 +88,7 @@ class Ctf01dScoreboard {
         void updateServicesStatistics();
 
         std::map<std::string, Ctf01dServiceStatistics *> m_mapServiceCostsAndStatistics;
-        int m_nAllDefenceFlags;
+        int m_nAllDefenseFlags;
 
         std::string randomServiceStatus();
         bool m_bRandom;
@@ -103,7 +103,7 @@ class Ctf01dScoreboard {
 
         // flags live for fast check
         std::mutex m_mutexFlagsLive;
-        std::map<std::string, Ctf01dFlag> m_mapFlagsLive; // Must be in samewhere in storage
+        std::map<std::string, Ctf01dFlag> m_mapFlagsLive; // Must be in somewhere in storage
 };
 
 #endif // CTF01D_SCOREBOARD_H

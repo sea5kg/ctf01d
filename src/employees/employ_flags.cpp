@@ -31,7 +31,7 @@
  * SOFTWARE.
  *
  ***********************************************************************************/
- 
+
 #include "employ_flags.h"
 #include <employ_config.h>
 #include <wsjcpp_core.h>
@@ -212,18 +212,12 @@ EmployFlags::EmployFlags()
     TAG = EmployFlags::name();
 }
 
-// ---------------------------------------------------------------------
-
 bool EmployFlags::init() {
     WsjcppLog::info(TAG, "init");
     return true;
 }
 
-// ---------------------------------------------------------------------
-
 bool EmployFlags::deinit() {
     WsjcppLog::info(TAG, "deinit");
     return true;
 }
-
-

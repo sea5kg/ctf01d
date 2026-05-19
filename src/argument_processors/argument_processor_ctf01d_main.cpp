@@ -45,7 +45,7 @@
 // ArgumentProcessorCtf01dMain
 
 ArgumentProcessorCtf01dMain::ArgumentProcessorCtf01dMain()
-: WsjcppArgumentProcessor({"ctf01d_main"}, "Jury System for ctf-attack-defence", "Jury System for ctf-attack-defence") {
+: WsjcppArgumentProcessor({"ctf01d_main"}, "Jury System for ctf-attack-defense", "Jury System for ctf-attack-defense") {
     TAG = "ArgumentProcessorCtf01dMain";
     // registrySingleArgument("--single", "What exactly do this single param?");
     registryParameterArgument("-work-dir", "path", "Custom workspace folder with configs, logging, checker scripts and etc. (env: CTF01D_WORKDIR)");

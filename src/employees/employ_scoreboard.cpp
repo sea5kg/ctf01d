@@ -49,7 +49,7 @@ Ctf01dServiceStatistics::Ctf01dServiceStatistics(const std::string &sServiceId) 
     TAG = "Ctf01dServiceStatistics-" + sServiceId;
     m_sServiceId = sServiceId;
     m_nAllStolenFlagsForService = 0;
-    m_nAllDefenceFlagsForService = 0;
+    m_nAllDefenseFlagsForService = 0;
     m_sFirstBloodTeamId = "?";
 }
 
@@ -65,16 +65,16 @@ void Ctf01dServiceStatistics::setStolenFlagsForService(int nStolenFlags) {
     m_nAllStolenFlagsForService = nStolenFlags;
 }
 
-int Ctf01dServiceStatistics::getAllDefenceFlagsForService() {
-    return m_nAllDefenceFlagsForService;
+int Ctf01dServiceStatistics::getAllDefenseFlagsForService() {
+    return m_nAllDefenseFlagsForService;
 }
 
-void Ctf01dServiceStatistics::doIncrementDefenceFlagsForService() {
-    m_nAllDefenceFlagsForService++;
+void Ctf01dServiceStatistics::doIncrementDefenseFlagsForService() {
+    m_nAllDefenseFlagsForService++;
 }
 
-void Ctf01dServiceStatistics::setDefenceFlagsForService(int nAllDefenceFlagsForService) {
-    m_nAllDefenceFlagsForService = nAllDefenceFlagsForService;
+void Ctf01dServiceStatistics::setDefenseFlagsForService(int nAllDefenseFlagsForService) {
+    m_nAllDefenseFlagsForService = nAllDefenseFlagsForService;
 }
 
 std::string Ctf01dServiceStatistics::getFirstBloodTeamId() {
@@ -87,7 +87,7 @@ long Ctf01dServiceStatistics::getFirstBloodTime() {
 
 void Ctf01dServiceStatistics::updateJsonServiceStatistics(nlohmann::json &jsonCosts) {
     jsonCosts["af_att"] = m_nAllStolenFlagsForService;
-    jsonCosts["af_def"] = m_nAllDefenceFlagsForService;
+    jsonCosts["af_def"] = m_nAllDefenseFlagsForService;
     jsonCosts["first_blood"] = m_sFirstBloodTeamId;
     jsonCosts["first_blood_ts"] = m_nFirstBloodTimeInSeconds;
 }
@@ -109,101 +109,72 @@ std::string ServiceStatusCell::SERVICE_SHIT = "shit";
 std::string ServiceStatusCell::SERVICE_WAIT = "wait";
 std::string ServiceStatusCell::SERVICE_COFFEEBREAK = "coffeebreak";
 
-
-// ----------------------------------------------------------------------
-
 ServiceStatusCell::ServiceStatusCell(const std::string &sServiceId) {
     m_nUpPointTimeInSec = WsjcppCore::getCurrentTimeInSeconds();
     TAG = "ServiceStatusCell-" + sServiceId;
     m_sServiceId = sServiceId;
     m_sStatus = ServiceStatusCell::SERVICE_DOWN;
-    m_nDefenceFlags = 0;
+    m_nDefenseFlags = 0;
     m_nAttackFlags = 0;
     m_nAttackPoints = 0;
-    m_nDefencePoints = 0;
+    m_nDefensePoints = 0;
 
 }
-
-// ----------------------------------------------------------------------
 
 const std::string &ServiceStatusCell::serviceId() {
     return m_sServiceId;
 }
 
-// ----------------------------------------------------------------------
-
-void ServiceStatusCell::setDefenceFlags(int nDefenceFlags) {
+void ServiceStatusCell::setDefenseFlags(int nDefenseFlags) {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
-    m_nDefenceFlags = nDefenceFlags;
+    m_nDefenseFlags = nDefenseFlags;
 }
 
-// ----------------------------------------------------------------------
-
-int ServiceStatusCell::getDefenceFlags() {
-    return m_nDefenceFlags;
+int ServiceStatusCell::getDefenseFlags() {
+    return m_nDefenseFlags;
 }
 
-// ----------------------------------------------------------------------
-
-void ServiceStatusCell::incrementDefenceFlags() {
+void ServiceStatusCell::incrementDefenseFlags() {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
-    m_nDefenceFlags++;
+    m_nDefenseFlags++;
 }
 
-// ----------------------------------------------------------------------
-
-void ServiceStatusCell::setDefencePoints(int nDefencePoints) {
+void ServiceStatusCell::setDefensePoints(int nDefensePoints) {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
-    m_nDefencePoints = nDefencePoints;
+    m_nDefensePoints = nDefensePoints;
 }
 
-// ----------------------------------------------------------------------
-
-int ServiceStatusCell::getDefencePoints() {
-    return m_nDefencePoints;
+int ServiceStatusCell::getDefensePoints() {
+    return m_nDefensePoints;
 }
 
-// ----------------------------------------------------------------------
-
-void ServiceStatusCell::addDefencePoints(int nDefencePoints) {
+void ServiceStatusCell::addDefensePoints(int nDefensePoints) {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
-    m_nDefencePoints += nDefencePoints;
+    m_nDefensePoints += nDefensePoints;
 }
-
-// ----------------------------------------------------------------------
 
 void ServiceStatusCell::setAttackFlags(int nAttackFlags) {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
     m_nAttackFlags = nAttackFlags;
 }
 
-// ----------------------------------------------------------------------
-
 int ServiceStatusCell::getAttackFlags() {
     return m_nAttackFlags;
 }
-
-// ----------------------------------------------------------------------
 
 void ServiceStatusCell::incrementAttackFlags() {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
     m_nAttackFlags++;
 }
 
-// ----------------------------------------------------------------------
-
 void ServiceStatusCell::setAttackPoints(int nAttackPoints) {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
     m_nAttackPoints = nAttackPoints;
 }
 
-// ----------------------------------------------------------------------
-
 int ServiceStatusCell::getAttackPoints() {
     return m_nAttackPoints;
 }
-
-// ----------------------------------------------------------------------
 
 void ServiceStatusCell::addAttackPoints(int nAttackPoints) {
     std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
@@ -323,28 +294,28 @@ std::string TeamStatusRow::servicesToString() {
     return sResult;
 }
 
-void TeamStatusRow::incrementDefence(const std::string &sServiceId, int nFlagPoints) {
+void TeamStatusRow::incrementDefense(const std::string &sServiceId, int nFlagPoints) {
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        m_mapServicesStatus[sServiceId]->incrementDefenceFlags();
-        m_mapServicesStatus[sServiceId]->addDefencePoints(nFlagPoints);
+        m_mapServicesStatus[sServiceId]->incrementDefenseFlags();
+        m_mapServicesStatus[sServiceId]->addDefensePoints(nFlagPoints);
     }
     updatePoints();
 }
 
-int TeamStatusRow::getDefenceFlags(const std::string &sServiceId) {
-    return m_mapServicesStatus[sServiceId]->getDefenceFlags();
+int TeamStatusRow::getDefenseFlags(const std::string &sServiceId) {
+    return m_mapServicesStatus[sServiceId]->getDefenseFlags();
 }
 
-int TeamStatusRow::getDefencePoints(const std::string &sServiceId) {
-    return m_mapServicesStatus[sServiceId]->getDefencePoints();
+int TeamStatusRow::getDefensePoints(const std::string &sServiceId) {
+    return m_mapServicesStatus[sServiceId]->getDefensePoints();
 }
 
-void TeamStatusRow::setServiceDefenceFlagsAndPoints(const std::string &sServiceId, int nDefenceFlags, int nDefencePoints) {
+void TeamStatusRow::setServiceDefenseFlagsAndPoints(const std::string &sServiceId, int nDefenseFlags, int nDefensePoints) {
     {
         std::lock_guard<std::mutex> lock(m_mutex);
-        m_mapServicesStatus[sServiceId]->setDefenceFlags(nDefenceFlags);
-        m_mapServicesStatus[sServiceId]->setDefencePoints(nDefencePoints);
+        m_mapServicesStatus[sServiceId]->setDefenseFlags(nDefenseFlags);
+        m_mapServicesStatus[sServiceId]->setDefensePoints(nDefensePoints);
     }
     updatePoints();
 }
@@ -381,12 +352,12 @@ void TeamStatusRow::updatePoints() {
     std::map<std::string, ServiceStatusCell *>::iterator it;
     for (std::map<std::string, ServiceStatusCell *>::iterator it = m_mapServicesStatus.begin(); it != m_mapServicesStatus.end(); ++it) {
         ServiceStatusCell *pCell = it->second;
-        int nSumAttackAndDefencePoints = pCell->getAttackPoints() + pCell->getDefencePoints();
-        nSumAttackAndDefencePoints = nSumAttackAndDefencePoints * pCell->calculateSLA();
-        // WsjcppLog::info(TAG, "nSumAttackAndDefencePoints 1 = " + std::to_string(nSumAttackAndDefencePoints));
-        nSumAttackAndDefencePoints = nSumAttackAndDefencePoints / 100;
-        // WsjcppLog::info(TAG, "nSumAttackAndDefencePoints 2 = " + std::to_string(nSumAttackAndDefencePoints));
-        m_nPoints += nSumAttackAndDefencePoints;
+        int nSumAttackAndDefensePoints = pCell->getAttackPoints() + pCell->getDefensePoints();
+        nSumAttackAndDefensePoints = nSumAttackAndDefensePoints * pCell->calculateSLA();
+        // WsjcppLog::info(TAG, "nSumAttackAndDefensePoints 1 = " + std::to_string(nSumAttackAndDefensePoints));
+        nSumAttackAndDefensePoints = nSumAttackAndDefensePoints / 100;
+        // WsjcppLog::info(TAG, "nSumAttackAndDefensePoints 2 = " + std::to_string(nSumAttackAndDefensePoints));
+        m_nPoints += nSumAttackAndDefensePoints;
     }
 }
 

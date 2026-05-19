@@ -93,17 +93,17 @@ class EmployDatabase : public WsjcppEmployBase {
         void insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP);
         int numberOfFlagAttempts(std::string sTeamId);
 
-        void insertToFlagsDefence(Ctf01dFlag flag, int nPoints);
+        void insertToFlagsDefense(Ctf01dFlag flag, int nPoints);
         int numberOfFlagsDefense(std::string sTeamId, std::string sServiceId);
         int sumPointsOfFlagsDefense(std::string sTeamId, std::string sServiceId);
-        int numberOfDefenceFlagForService(std::string sServiceId);
+        int numberOfDefenseFlagForService(std::string sServiceId);
         void insertFlagCheckFail(Ctf01dFlag flag, std::string sReason);
 
         // flags_stollen
         int numberOfFlagsStollen(std::string sTeamId, std::string sServiceId);
         int sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId);
         int numberOfStolenFlagsForService(std::string sServiceId);
-        std::pair<std::string, long> getFirstbloodFromStolenFlagsForService(std::string sServiceId);
+        std::pair<std::string, long> getFirstBloodFromStolenFlagsForService(std::string sServiceId);
         void insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
         bool isAlreadyStole(Ctf01dFlag flag, std::string sTeamId);
         bool isSomebodyStole(Ctf01dFlag flag);

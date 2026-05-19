@@ -394,7 +394,7 @@ int EmployDatabase::numberOfFlagAttempts(std::string sTeamId) {
     );
 }
 
-void EmployDatabase::insertToFlagsDefence(Ctf01dFlag flag, int nPoints) {
+void EmployDatabase::insertToFlagsDefense(Ctf01dFlag flag, int nPoints) {
     std::string sQuery = "INSERT INTO flags_defense(serviceid, teamid, flag_id, flag, "
         "   date_start, date_end, flag_cost) VALUES("
         "'" + flag.getServiceId() + "', "
@@ -407,7 +407,7 @@ void EmployDatabase::insertToFlagsDefence(Ctf01dFlag flag, int nPoints) {
         + ");";
 
     if (!m_pFlagsDefense->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagsDefence");
+        WsjcppLog::err(TAG, "Error insert insertToFlagsDefense");
     }
 }
 
@@ -429,7 +429,7 @@ int EmployDatabase::sumPointsOfFlagsDefense(std::string sTeamId, std::string sSe
     );
 }
 
-int EmployDatabase::numberOfDefenceFlagForService(std::string sServiceId) {
+int EmployDatabase::numberOfDefenseFlagForService(std::string sServiceId) {
     return m_pFlagsDefense->selectSumOrCount(
         "SELECT COUNT(*) as cnt FROM flags_defense WHERE serviceid = '" + sServiceId + "'"
     );
@@ -448,7 +448,7 @@ void EmployDatabase::insertFlagCheckFail(Ctf01dFlag flag, std::string sReason) {
         + ");";
 
     if (!m_pFlagsCheckFails->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagsDefence");
+        WsjcppLog::err(TAG, "Error insert insertToFlagsDefense");
     }
 }
 
@@ -477,14 +477,14 @@ int EmployDatabase::numberOfStolenFlagsForService(std::string sServiceId) {
     );
 }
 
-std::pair<std::string, long> EmployDatabase::getFirstbloodFromStolenFlagsForService(std::string sServiceId) {
+std::pair<std::string, long> EmployDatabase::getFirstBloodFromStolenFlagsForService(std::string sServiceId) {
     std::string sQuery = "SELECT thief_teamid, date_action FROM flags_stolen WHERE serviceid = '" + sServiceId + "' LIMIT 1";
     std::pair<std::string, long> pairRet;
     pairRet.first = "?";
     pairRet.second = 0;
     Ctf01dDatabaseSelectRows selectRows;
     if (!m_pFlagsStolen->selectRows(sQuery, selectRows)) {
-        WsjcppLog::err(TAG, "Error select getFirstbloodFromStolenFlagsForService " + sQuery);
+        WsjcppLog::err(TAG, "Error select getFirstBloodFromStolenFlagsForService " + sQuery);
     }
     if (selectRows.next()) {
         pairRet.first = selectRows.getString(0);
@@ -511,7 +511,7 @@ void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, i
         + ");";
 
     if (!m_pFlagsStolen->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagsDefence");
+        WsjcppLog::err(TAG, "Error insert insertToFlagsDefense");
     }
 }
 

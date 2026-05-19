@@ -45,10 +45,10 @@ class Ctf01dServiceStatistics {
         void doIncrementStolenFlagsForService(int nAllStolenFlags);
         void setStolenFlagsForService(int nStolenFlags);
 
-        int getAllDefenceFlagsForService();
-        void doIncrementDefenceFlagsForService();
+        int getAllDefenseFlagsForService();
+        void doIncrementDefenseFlagsForService();
 
-        void setDefenceFlagsForService(int nAllDefenceFlagsForService);
+        void setDefenseFlagsForService(int nAllDefenseFlagsForService);
 
         std::string getFirstBloodTeamId();
         long getFirstBloodTime();
@@ -62,7 +62,7 @@ class Ctf01dServiceStatistics {
         long m_nFirstBloodTimeInSeconds;
 
         int m_nAllStolenFlagsForService;
-        int m_nAllDefenceFlagsForService;
+        int m_nAllDefenseFlagsForService;
 };
 
 // ---------------------------------------------------------------------
@@ -81,13 +81,13 @@ class ServiceStatusCell {
         ServiceStatusCell(const std::string &sServiceId);
         const std::string &serviceId();
 
-        void setDefenceFlags(int nDefenceFlags);
-        int getDefenceFlags();
-        void incrementDefenceFlags();
+        void setDefenseFlags(int nDefenseFlags);
+        int getDefenseFlags();
+        void incrementDefenseFlags();
 
-        void setDefencePoints(int nDefencePoints);
-        int getDefencePoints();
-        void addDefencePoints(int nDefencePoints);
+        void setDefensePoints(int nDefensePoints);
+        int getDefensePoints();
+        void addDefensePoints(int nDefensePoints);
 
         void setAttackFlags(int nAttackFlags);
         int getAttackFlags();
@@ -111,10 +111,10 @@ class ServiceStatusCell {
         std::mutex m_mutexServiceStatus;
         std::string m_sServiceId;
         std::string m_sStatus; // may be char[10] ?
-        int m_nDefenceFlags;
+        int m_nDefenseFlags;
         int m_nAttackFlags;
         int m_nAttackPoints;
-        int m_nDefencePoints;
+        int m_nDefensePoints;
         int m_nUpPointTimeInSec;
 
         // for SLA / uptime
@@ -141,10 +141,10 @@ class TeamStatusRow {
 
         std::string servicesToString();
 
-        void incrementDefence(const std::string &sServiceId, int nFlagPoints);
-        int getDefenceFlags(const std::string &sServiceId);
-        int getDefencePoints(const std::string &sServiceId);
-        void setServiceDefenceFlagsAndPoints(const std::string &sServiceId, int nDefenceFlags, int nDefencePoints);
+        void incrementDefense(const std::string &sServiceId, int nFlagPoints);
+        int getDefenseFlags(const std::string &sServiceId);
+        int getDefensePoints(const std::string &sServiceId);
+        void setServiceDefenseFlagsAndPoints(const std::string &sServiceId, int nDefenseFlags, int nDefensePoints);
 
         void incrementAttack(const std::string &sServiceId, int nFlagPoints);
         void setServiceAttackFlagsAndPoints(const std::string &sServiceId, int nAttackFlags, int nAttackPoints);
