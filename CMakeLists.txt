@@ -70,6 +70,7 @@ list (APPEND WSJCPP_SOURCES "./src/employees/employ_flags.cpp")
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_scoreboard.cpp")
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_config.cpp")
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_database.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_alerting.cpp")
 
 # checker
 list (APPEND WSJCPP_SOURCES "src/checker/dorunchecker.cpp")
