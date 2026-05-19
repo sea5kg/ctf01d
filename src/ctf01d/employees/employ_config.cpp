@@ -330,6 +330,9 @@ void EmployConfig::doExtractFilesIfNotExists() {
                     continue;
                 } else {
                     std::cout << "Successfully created file. " << std::endl;
+                    if (!WsjcppCore::setFilePermissions(sNewFilepath, WsjcppFilePermissions(0x776), sError)) {
+                        WsjcppLog::throw_err(TAG, sError);
+                    }
                 }
             }
         }
