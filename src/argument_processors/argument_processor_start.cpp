@@ -112,8 +112,8 @@ int ArgumentProcessorStart::exec(const std::vector<std::string> &vRoutes, const 
     WsjcppLog::ok(TAG, "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/");
 
     Ctf01dHttpServer httpServer;
-    hv::HttpService *pRouter = httpServer.getService();
-    hv::HttpServer server(pRouter);
+    std::shared_ptr<hv::HttpService> pRouter = httpServer.getService();
+    hv::HttpServer server(pRouter.get());
     server.setPort(pEmployConfig->scoreboardPort());
     server.setThreadNum(4);
     server.run();

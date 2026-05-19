@@ -45,7 +45,8 @@
 class Ctf01dHttpServer {
     public:
         Ctf01dHttpServer();
-        hv::HttpService *getService();
+        ~Ctf01dHttpServer();
+        std::shared_ptr<hv::HttpService> getService();
         int httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp);
         int httpAdmin(HttpRequest* req, HttpResponse* resp);
         int httpWebFolder(HttpRequest* req, HttpResponse* resp);
@@ -59,7 +60,7 @@ class Ctf01dHttpServer {
         std::string m_sApiPathPrefix;
         std::string m_sTeamLogoPrefix;
         int m_nTeamLogoPrefixLength;
-        hv::HttpService *m_pHttpService;
+        std::shared_ptr<hv::HttpService> m_pHttpService;
 
         EmployConfig *m_pConfig;
         EmployFlags *m_pEmployFlags;

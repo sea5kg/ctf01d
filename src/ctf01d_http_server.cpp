@@ -105,7 +105,7 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     m_sCacheResponseTeamsJson = m_jsonTeams.dump();
     // m_sCacheResponseServicesJson =
 
-    m_pHttpService = new HttpService();
+    m_pHttpService = std::make_shared<hv::HttpService>();
 
     // static files
     m_pHttpService->document_root = "./html";
@@ -117,7 +117,11 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     // m_pHttpService->GET("/admin*", std::bind(&Ctf01dHttpServer::httpAdmin, this, std::placeholders::_1, std::placeholders::_2));
 }
 
-hv::HttpService *Ctf01dHttpServer::getService() {
+Ctf01dHttpServer::~Ctf01dHttpServer() {
+    // TODO cleanup
+}
+
+std::shared_ptr<hv::HttpService> Ctf01dHttpServer::getService() {
     return m_pHttpService;
 }
 
@@ -143,7 +147,7 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     }
     sRequestPath = WsjcppCore::doNormalizePath(sRequestPath);
 
-    // WsjcppLog::info(TAG, "sRequestPath = " + sRequestPath);
+    WsjcppLog::info(TAG, "sRequestPath = " + sRequestPath);
     if (sRequestPath == "/flag") {
         return this->httpApiV1Flag(req, resp);
     }
