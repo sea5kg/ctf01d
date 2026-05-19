@@ -54,16 +54,13 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/argument_processors")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/checker")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/scoreboard")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/employees")
-list (APPEND WSJCPP_INCLUDE_DIRS "src/store")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/3rdparty/sqlite3/src")
 
 # argument processors
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_check.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_clean.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_ctf01d_main.cpp")
-list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_services.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_start.cpp")
-list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_teams.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_version.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_web_test.cpp")
 
@@ -83,10 +80,6 @@ list (APPEND WSJCPP_SOURCES "src/ctf01d_http_server.cpp")
 
 # scoreboard
 list (APPEND WSJCPP_SOURCES "src/scoreboard/ctf01d_scoreboard.cpp")
-
-# store
-list (APPEND WSJCPP_SOURCES "src/store/ctf01d_store.cpp")
-list (APPEND WSJCPP_SOURCES "src/store/http_downloader.cpp")
 
 # main
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
