@@ -39,6 +39,7 @@
 #include <employ_database.h>
 #include <string>
 #include <json.hpp>
+#include "ctf01d_formulas_for_points.h"
 
 
 class Ctf01dScoreboard {
@@ -102,4 +103,5 @@ private:
   // flags live for fast check
   std::mutex m_mutexFlagsLive;
   std::map<std::string, Ctf01dFlag> m_mapFlagsLive; // Must be in somewhere in storage
+  std::shared_ptr<Ctf01dFormulasForPoints> m_formulas;
 };

@@ -69,6 +69,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   m_nCostDefenseFlagInPoints10 = 10;
   m_nTeamCount = vTeamsConf.size();
   m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
+  m_formulas = std::make_shared<Ctf01dFormulasForPoints_RuCtf>();
 
   m_mapTeamsStatuses.clear(); // possible memory leak
   for (unsigned int iteam = 0; iteam < vTeamsConf.size(); iteam++) {
@@ -296,36 +297,25 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
 
   // TODO calculate
   // int nFlagPoints = m_mapServiceCostsAndStatistics[sServiceId]->getCostStolenFlag()*10; // one number after dot
-  int nFlagPoints = 10;
+  int flag_points = 10;
   int nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
   // victim place in scoreboard
   std::map<std::string,TeamStatusRow *>::iterator it_victim;
   it_victim = m_mapTeamsStatuses.find(flag.getTeamId());
-  int nVictimPlaceInScoreBoard = 0;
+  int victim_place = 0;
   if (it_victim != m_mapTeamsStatuses.end()) {
-    nVictimPlaceInScoreBoard = it_victim->second->getPlace();
+    victim_place = it_victim->second->getPlace();
   }
 
   std::map<std::string,TeamStatusRow *>::iterator it;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
     TeamStatusRow *pRow = it->second;
-    int nThiefPlaceInScoreboard = pRow->getPlace();
+    int thief_place = pRow->getPlace();
+    flag_points = m_formulas->calcStolen(flag_points, victim_place, thief_place, m_nTeamCount);
 
-    // motivation
-    // WsjcppLog::info(TAG, "nVictimPlaceInScoreBoard " + std::to_string(nVictimPlaceInScoreBoard));
-    // WsjcppLog::info(TAG, "nThiefPlaceInScoreboard " + std::to_string(nThiefPlaceInScoreboard));
-    // WsjcppLog::info(TAG, "m_nTeamCount " + std::to_string(m_nTeamCount));
-    float nMotivation = 1.0; // default
-    if (nVictimPlaceInScoreBoard > nThiefPlaceInScoreboard) {
-        nMotivation -= float(nVictimPlaceInScoreBoard - nThiefPlaceInScoreboard) / float(m_nTeamCount - 1);
-    }
-    nFlagPoints = nFlagPoints * nMotivation;
-    // WsjcppLog::info(TAG, "nMotivation " + std::to_string(nMotivation));
-    // WsjcppLog::info(TAG, "nFlagPoints " + std::to_string(nFlagPoints));
-
-    m_pDatabase->insertToFlagsStolen(flag, sTeamId, nFlagPoints, nDateAction, nVictimPlaceInScoreBoard, nThiefPlaceInScoreboard);
-    pRow->incrementAttack(sServiceId, nFlagPoints);
+    m_pDatabase->insertToFlagsStolen(flag, sTeamId, flag_points, nDateAction, victim_place, thief_place);
+    pRow->incrementAttack(sServiceId, flag_points);
     pRow->updatePoints();
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["att"] = pRow->getAttackFlags(sServiceId);
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["pt_att"] = double(pRow->getAttackPoints(sServiceId)) / 10.0;
@@ -342,7 +332,7 @@ int Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::st
     }
     updateServicesStatistics();
   }
-  return nFlagPoints;
+  return flag_points;
 }
 
 void Ctf01dScoreboard::incrementDefenseScore(const Ctf01dFlag &flag) {
