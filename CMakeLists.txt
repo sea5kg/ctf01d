@@ -88,6 +88,7 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_flag.
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_formulas_for_points.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_scoreboard.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_service_def.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_team_def.cpp")
 
 # main
 list (APPEND WSJCPP_SOURCES "src/main.cpp")

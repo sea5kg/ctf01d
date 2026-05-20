@@ -39,38 +39,7 @@
 #include <wsjcpp_yaml.h>
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/objects/ctf01d_service_def.h"
-
-class Ctf01dTeamDef {
-    public:
-        Ctf01dTeamDef();
-
-        void setId(const std::string &sId);
-        std::string getId() const;
-
-        void setName(const std::string &sName);
-        std::string getName() const;
-
-        void setIpAddress(const std::string &sIpAddress);
-        std::string ipAddress() const;
-
-        void setActive(bool bActive);
-        bool isActive() const;
-
-        void setLogo(const std::string &sLogo);
-        std::string logo() const;
-
-        int getLogoLastWriteTime();
-
-    private:
-        bool m_bActive;
-        std::string m_sTeamID;
-        std::string m_sName;
-        std::string m_sIpAddress;
-        std::string m_sLogo;
-        int m_nLogoLastWriteTime;
-};
-
-// ----------------------------------------------------------------------
+#include "ctf01d/objects/ctf01d_team_def.h"
 
 class EmployConfig : public WsjcppEmployBase {
     public:

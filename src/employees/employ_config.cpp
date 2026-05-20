@@ -47,60 +47,6 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
-// ---------------------------------------------------------------------
-// Ctf01dTeamDef
-
-Ctf01dTeamDef::Ctf01dTeamDef() {
-    // nothing
-}
-
-void Ctf01dTeamDef::setId(const std::string &sTeamId){
-    m_sTeamID = sTeamId;
-}
-
-std::string Ctf01dTeamDef::getId() const {
-    return m_sTeamID;
-}
-
-void Ctf01dTeamDef::setName(const std::string &sName){
-    m_sName = sName;
-}
-
-std::string Ctf01dTeamDef::getName() const {
-    return m_sName;
-}
-
-void Ctf01dTeamDef::setIpAddress(const std::string &sIpAddress){
-    m_sIpAddress = sIpAddress;
-}
-
-std::string Ctf01dTeamDef::ipAddress() const {
-    return m_sIpAddress;
-}
-
-void Ctf01dTeamDef::setActive(bool bActive){
-    m_bActive = bActive;
-}
-
-bool Ctf01dTeamDef::isActive() const {
-    return m_bActive;
-}
-
-void Ctf01dTeamDef::setLogo(const std::string &sLogo){
-    m_sLogo = sLogo;
-}
-
-std::string Ctf01dTeamDef::logo() const {
-    return m_sLogo;
-}
-
-int Ctf01dTeamDef::getLogoLastWriteTime() {
-    return m_nLogoLastWriteTime;
-}
-
-// ---------------------------------------------------------------------
-// EmployConfig
-
 REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployConfig)
 
 EmployConfig::EmployConfig()
