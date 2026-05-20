@@ -35,7 +35,6 @@
 
 #include "employ_config.h"
 #include <wsjcpp_core.h>
-#include <wsjcpp_validators.h>
 #include <sstream>
 #include <ctime>
 #include <locale>
@@ -44,7 +43,6 @@
 #include <sstream>
 #include <wsjcpp_core.h>
 #include <wsjcpp_yaml.h>
-#include <wsjcpp_validators.h>
 #include <employ_team_logos.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -756,7 +754,7 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
         std::string sTeamIpAddress = yamlTeam["ip_address"].valStr();
         WsjcppLog::info(TAG, "ip_address = " + sTeamIpAddress);
         std::string sError;
-        if (!WsjcppValidators::isValidIPv4(sTeamIpAddress, sError)) {
+        if (!isValidIPv4(sTeamIpAddress, sError)) {
             WsjcppLog::err(TAG, "Invalid IPv4 address" + sError);
             return false;
         }
@@ -802,4 +800,39 @@ void EmployConfig::tryLoadFromEnv(const std::string &sEnvName, std::string &sVal
             WsjcppLog::info(TAG, sDescription + ": " + sValue);
         }
     }
+}
+
+bool EmployConfig::isValidIPv4(const std::string &sValue, std::string &sError) {
+  int n = 0;
+  std::string s[4] = {"", "", "", ""};
+  for (int i = 0; i < sValue.length(); i++) {
+    char c = sValue[i];
+    if (n > 3) {
+      sError = "Groups number must be less than 5 (like '0.0.0.0')";
+      return false;
+    }
+    if (c >= '0' && c <= '9') {
+      s[n] += c;
+    } else if (c == '.') {
+      n++;
+    } else {
+      sError = "Unexpected character '";
+      sError += c;
+      sError += "'";
+      return false;
+    }
+  }
+  for (int i = 0; i < 4; i++) {
+    if (s[i].length() > 3) {
+      sError =
+          "Value '" + s[i] + "' could not contains more than 3 digits in a row";
+      return false;
+    }
+    int p = std::stoi(s[i]);
+    if (p > 255 || p < 0) {
+      sError = "Value '" + std::to_string(p) + "' must be 0..255";
+      return false;
+    }
+  }
+  return true;
 }
