@@ -67,6 +67,8 @@ class CommandCheck:
             "tmp",
             "data",
             ".wsjcpp",
+            "wsjcpp_resources",
+            "docker-openvpn",
             "src-resources.wsjcpp",
         ]
 
