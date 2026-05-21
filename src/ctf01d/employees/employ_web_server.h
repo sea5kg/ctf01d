@@ -39,8 +39,6 @@
 
 #include <wsjcpp_employees.h>
 #include <string>
-#include <mutex>
-#include <fstream>
 
 class EmployWebServer : public WsjcppEmployBase {
 public:

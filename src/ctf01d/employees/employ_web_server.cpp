@@ -34,7 +34,7 @@
  * Original repository: https://github.com/sea5kg/ctf01d
  *
  ***********************************************************************************/
- 
+
 #include "employ_web_server.h"
 #include <employ_config.h>
 #include <wsjcpp_core.h>
@@ -76,9 +76,9 @@ int EmployWebServer::start() {
   // TODO: stop all threads
 
   /*while(1) {
-      Log::info(TAG, "wait 2 minutes");
-      std::this_thread::sleep_for(std::chrono::minutes(2));
-      Log::info(TAG, "wait ended");
+    Log::info(TAG, "wait 2 minutes");
+    std::this_thread::sleep_for(std::chrono::minutes(2));
+    Log::info(TAG, "wait ended");
   }*/
 
   return 0;
