@@ -175,8 +175,8 @@ class EmployScoreboard : public WsjcppEmployBase {
     public:
         EmployScoreboard();
         static std::string name() { return "EmployScoreboard"; }
-        virtual bool init() override;
-        virtual bool deinit() override;
+        virtual bool init(const std::string &sName, bool bSilent) override;
+        virtual bool deinit(const std::string &sName, bool bSilent) override;
 
 
     private:

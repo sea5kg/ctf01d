@@ -49,10 +49,10 @@
 #include <sys/stat.h>
 #include <stdio.h>
 
-REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployConfig)
+REGISTRY_WSJCPP_EMPLOY(EmployConfig)
 
 EmployConfig::EmployConfig()
-: WsjcppEmployBase(EmployConfig::name(), {}) {
+: WsjcppEmployBase({ EmployConfig::name() }, {}) {
     TAG = EmployConfig::name();
     m_bAppliedConfig = false;
     m_nFlagTimeliveInMin = 10;
@@ -75,7 +75,7 @@ EmployConfig::~EmployConfig() {
     // TODO cleanup
 }
 
-bool EmployConfig::init() {
+bool EmployConfig::init(const std::string &sName, bool bSilent) {
 
     tryLoadFromEnv("CTF01D_WORKDIR", m_sWorkDir, "Work Directory from environment");
 
@@ -121,7 +121,7 @@ bool EmployConfig::init() {
     return true;
 }
 
-bool EmployConfig::deinit() {
+bool EmployConfig::deinit(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "deinit");
     return true;
 }

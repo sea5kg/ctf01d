@@ -45,13 +45,10 @@
 #include <mutex>
 #include <vector>
 
-// ---------------------------------------------------------------------
-// EmployDatabase
-
-REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployDatabase)
+REGISTRY_WSJCPP_EMPLOY(EmployDatabase)
 
 EmployDatabase::EmployDatabase()
-: WsjcppEmployBase(EmployDatabase::name(), {"EmployConfig"}) {
+: WsjcppEmployBase({ EmployDatabase::name() }, { EmployConfig::name() }) {
     TAG = EmployDatabase::name();
     m_pFlagsAttempts = nullptr;
     m_pFlagsDefense = nullptr;
@@ -61,7 +58,7 @@ EmployDatabase::EmployDatabase()
     m_pFlagsCheckerPutsResults = nullptr;
 }
 
-bool EmployDatabase::init() {
+bool EmployDatabase::init(const std::string &sName, bool bSilent) {
     int driver_init_ret;
     if (!Ctf01dDatabase::initDriverSqlite3(driver_init_ret)) {
         WsjcppLog::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
@@ -175,7 +172,7 @@ bool EmployDatabase::init() {
     return true;
 }
 
-bool EmployDatabase::deinit() {
+bool EmployDatabase::deinit(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "deinit");
     Ctf01dDatabase::shutdownDriverSqlite3();
     return true;

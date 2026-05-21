@@ -385,16 +385,16 @@ int TeamStatusRow::calculateSLA(const std::string &sServiceId) {
 // ---------------------------------------------------------------------
 // EmployScoreboard
 
-REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployScoreboard)
+REGISTRY_WSJCPP_EMPLOY(EmployScoreboard)
 
 EmployScoreboard::EmployScoreboard()
-: WsjcppEmployBase(EmployScoreboard::name(), {}) {
+: WsjcppEmployBase({ EmployScoreboard::name() }, {}) {
     TAG = EmployScoreboard::name();
 }
 
 // ---------------------------------------------------------------------
 
-bool EmployScoreboard::init() {
+bool EmployScoreboard::init(const std::string &sName, bool bSilent) {
     EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
     const std::vector<Ctf01dTeamDef> &vTeamsConf = pEmployConfig->teamsConf();
     const std::vector<Ctf01dServiceDef> &vServicesConf = pEmployConfig->servicesConf();
@@ -410,7 +410,7 @@ bool EmployScoreboard::init() {
 
 // ---------------------------------------------------------------------
 
-bool EmployScoreboard::deinit() {
+bool EmployScoreboard::deinit(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "deinit");
     return true;
 }

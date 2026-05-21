@@ -44,19 +44,19 @@
 // ---------------------------------------------------------------------
 // EmployFlags
 
-REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployFlags)
+REGISTRY_WSJCPP_EMPLOY(EmployFlags)
 
 EmployFlags::EmployFlags()
-: WsjcppEmployBase(EmployFlags::name(), { EmployConfig::name() }) {
+: WsjcppEmployBase({ EmployFlags::name() }, { EmployConfig::name() }) {
     TAG = EmployFlags::name();
 }
 
-bool EmployFlags::init() {
+bool EmployFlags::init(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "init");
     return true;
 }
 
-bool EmployFlags::deinit() {
+bool EmployFlags::deinit(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "deinit");
     return true;
 }

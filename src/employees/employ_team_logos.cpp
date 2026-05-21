@@ -43,20 +43,20 @@
 // ---------------------------------------------------------------------
 // EmployTeamLogos
 
-REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployTeamLogos)
+REGISTRY_WSJCPP_EMPLOY(EmployTeamLogos)
 
 EmployTeamLogos::EmployTeamLogos()
-: WsjcppEmployBase(EmployTeamLogos::name(), { EmployConfig::name() }) {
+: WsjcppEmployBase({ EmployTeamLogos::name() }, { EmployConfig::name() }) {
     TAG = EmployTeamLogos::name();
     m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
 }
 
-bool EmployTeamLogos::init() {
+bool EmployTeamLogos::init(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "init");
     return true;
 }
 
-bool EmployTeamLogos::deinit() {
+bool EmployTeamLogos::deinit(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "deinit");
     return true;
 }

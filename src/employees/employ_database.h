@@ -46,8 +46,8 @@ class EmployDatabase : public WsjcppEmployBase {
 public:
   EmployDatabase();
   static std::string name() { return "EmployDatabase"; }
-  virtual bool init() override;
-  virtual bool deinit() override;
+  virtual bool init(const std::string &sName, bool bSilent) override;
+  virtual bool deinit(const std::string &sName, bool bSilent) override;
 
   // flags_checker_put_states
   void insertToFlagsCheckerPutResult(Ctf01dFlag flag, std::string sResult);

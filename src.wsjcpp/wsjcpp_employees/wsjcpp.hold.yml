@@ -1,7 +1,7 @@
 name: "wsjcpp-employees"
-version: "v0.1.2"
-cmake_minimum_required: "3.0"
-cmake_cxx_standard: "11"
+version: v0.2.1
+cmake_minimum_required: "3.5"
+cmake_cxx_standard: "17"
 description: "c++ classes for service-architecture"
 
 authors:
@@ -15,29 +15,25 @@ origins:
 keywords:
   - "c++"
 
-dependencies:
-  - name: "wsjcpp-core"
-    version: "v0.1.7"
-    url: "https://github.com/wsjcpp/wsjcpp-core:master"
-    origin: "https://github.com/"
-    installation-dir: "./src.wsjcpp/wsjcpp_core"
-
 distribution:
   - source-file: "src/wsjcpp_employees.h"
     target-file: "wsjcpp_employees.h"
     type: "source-code"
+    sha1: "42341756c047ac44d6bc01e837932efaa4ffcca4"
   - source-file: "src/wsjcpp_employees.cpp"
     target-file: "wsjcpp_employees.cpp"
     type: "source-code"
-  - source-file: "scripts.wsjcpp/generate.WsjcppEmploy"
-    target-file: "generate.WsjcppEmploy"
+    sha1: "9b728ff8916bde00b4073562515b9e0d94b6ed54"
+  - source-file: "scripts.wsjcpp/generate.WsjcppEmploy.wsjcpp-script"
+    target-file: "generate.WsjcppEmploy.wsjcpp-script"
     type: "safe-scripting-generate"
+    sha1: "7f62654157f72abdedf7eb598249e016f23df035"
 
-unit-tests:
-  cases:
-    - name: "Employ1"
-      description: "Test employ1"
-    - name: "EmployRuntimeGlobalCache"
-      description: "WsjcppEmployRuntimeGlobalCache"
-    - name: "CicleDependency"
-      description: "Test on cicle dependency"
+dependencies:
+  - name: "wsjcpp-core"
+    version: "v0.2.4"
+    url: "https://github.com/wsjcpp/wsjcpp-core:master"
+    origin: "https://github.com/"
+    installation-dir: "./src.wsjcpp/wsjcpp_core"
+    installation-datetime: "Thu, 05 Mar 2026 16:41:29 GMT"
+

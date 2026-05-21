@@ -44,23 +44,23 @@
 // ---------------------------------------------------------------------
 // EmployAlerting
 
-REGISTRY_WJSCPP_SERVICE_LOCATOR(EmployAlerting)
+REGISTRY_WSJCPP_EMPLOY(EmployAlerting)
 
 EmployAlerting::EmployAlerting()
-: WsjcppEmployBase(EmployAlerting::name(), { EmployConfig::name() }) {
+: WsjcppEmployBase({ EmployAlerting::name() }, { EmployConfig::name() }) {
 
 }
 
 // ---------------------------------------------------------------------
 
-bool EmployAlerting::init() {
+bool EmployAlerting::init(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "init");
     return true;
 }
 
 // ---------------------------------------------------------------------
 
-bool EmployAlerting::deinit() {
+bool EmployAlerting::deinit(const std::string &sName, bool bSilent) {
     WsjcppLog::info(TAG, "deinit");
     return true;
 }

@@ -46,8 +46,8 @@ class EmployAlerting : public WsjcppEmployBase {
     public:
         EmployAlerting();
         static std::string name() { return "EmployAlerting"; }
-        virtual bool init() override;
-        virtual bool deinit() override;
+        virtual bool init(const std::string &sName, bool bSilent) override;
+        virtual bool deinit(const std::string &sName, bool bSilent) override;
 
     private:
         std::string TAG;

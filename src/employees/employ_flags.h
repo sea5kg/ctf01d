@@ -47,8 +47,8 @@ class EmployFlags : public WsjcppEmployBase {
 public:
   EmployFlags();
   static std::string name() { return "EmployFlags"; }
-  virtual bool init() override;
-  virtual bool deinit() override;
+  virtual bool init(const std::string &sName, bool bSilent) override;
+  virtual bool deinit(const std::string &sName, bool bSilent) override;
 
 private:
   std::string TAG;

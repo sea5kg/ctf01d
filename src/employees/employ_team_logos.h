@@ -54,8 +54,8 @@ class EmployTeamLogos : public WsjcppEmployBase {
     public:
         EmployTeamLogos();
         static std::string name() { return "EmployTeamLogos"; }
-        virtual bool init() override;
-        virtual bool deinit() override;
+        virtual bool init(const std::string &sName, bool bSilent) override;
+        virtual bool deinit(const std::string &sName, bool bSilent) override;
         bool loadTeamLogo(const std::string &sTeamId, const std::string &sFilepath);
         Ctf01dTeamLogo *findTeamLogo(const std::string &sTeamId);
         bool updateLastChangeTime();

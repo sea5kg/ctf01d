@@ -49,8 +49,8 @@ class EmployConfig : public WsjcppEmployBase {
         EmployConfig();
         ~EmployConfig();
         static std::string name() { return "EmployConfig"; }
-        virtual bool init() override;
-        virtual bool deinit() override;
+        virtual bool init(const std::string &sName, bool bSilent) override;
+        virtual bool deinit(const std::string &sName, bool bSilent) override;
         void setWorkDir(const std::string &sWorkDir);
         std::string getWorkDir();
 
