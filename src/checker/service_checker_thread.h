@@ -40,7 +40,7 @@
 
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include <employ_config.h>
-#include <employ_flags.h>
+#include "ctf01d/employees/employ_flags.h"
 
 // struct 
 

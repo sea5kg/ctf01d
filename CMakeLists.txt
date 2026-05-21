@@ -68,11 +68,11 @@ list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_versio
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_web_test.cpp")
 
 # employees
-list (APPEND WSJCPP_SOURCES "./src/employees/employ_team_logos.cpp")
-list (APPEND WSJCPP_SOURCES "./src/employees/employ_flags.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_team_logos.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_flags.cpp")
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_scoreboard.cpp")
 list (APPEND WSJCPP_SOURCES "./src/employees/employ_config.cpp")
-list (APPEND WSJCPP_SOURCES "./src/employees/employ_database.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_database.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_alerting.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_web_server.cpp")
 

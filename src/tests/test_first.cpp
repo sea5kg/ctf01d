@@ -38,7 +38,7 @@
 #include <vector>
 #include <iostream>
 #include <wsjcpp_core.h>
-#include <employ_flags.h>
+#include "ctf01d/employees/employ_flags.h"
 
 int main() {
     int nTimeFlagLifeInMin = 1;

@@ -37,9 +37,9 @@
 
 #pragma once
 
-#include <employ_flags.h>
-#include <employ_scoreboard.h>
-#include <employ_database.h>
+#include "ctf01d/employees/employ_flags.h"
+#include "employees/employ_scoreboard.h"
+#include "ctf01d/employees/employ_database.h"
 #include <optional>
 #include <string>
 #include <json.hpp>

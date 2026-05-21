@@ -45,7 +45,7 @@
 #include <sstream>
 #include <wsjcpp_core.h>
 #include <wsjcpp_yaml.h>
-#include <employ_team_logos.h>
+#include "ctf01d/employees/employ_team_logos.h"
 #include <sys/stat.h>
 #include <stdio.h>
 
