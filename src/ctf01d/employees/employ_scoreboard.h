@@ -35,41 +35,20 @@
  *
  ***********************************************************************************/
 
-#ifndef SERVICE_CHECKER_THREAD_H
-#define SERVICE_CHECKER_THREAD_H
+#pragma once
 
-#include "ctf01d/objects/ctf01d_scoreboard.h"
-#include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_flags.h"
+#include <wsjcpp_employees.h>
+#include <json.hpp>
+#include "ctf01d/objects/ctf01d_service_statistics.h"
 
-class ServiceCheckerThread {
-	public:
-		// enum for checker return code
-        static int CHECKER_CODE_UP;
-        static int CHECKER_CODE_CORRUPT;
-		static int CHECKER_CODE_MUMBLE;
-		static int CHECKER_CODE_DOWN;
-		static int CHECKER_CODE_SHIT;
+class EmployScoreboard : public WsjcppEmployBase {
+public:
+  EmployScoreboard();
+  static std::string name() { return "EmployScoreboard"; }
+  virtual bool init(const std::string &sName, bool bSilent) override;
+  virtual bool deinit(const std::string &sName, bool bSilent) override;
 
-		ServiceCheckerThread(
-			const Ctf01dTeamDef &teamConf,
-			const Ctf01dServiceDef &serviceConf
-		);
-		void start();
-		void run();
-
-	private:
-		std::string TAG;
-		pthread_t m_checkerThread;
-		EmployConfig *m_pConfig;
-		EmployDatabase *m_pDatabase; // TODO not must be here
-		EmployFlags *m_pEmployFlags;
-		Ctf01dTeamDef m_teamConf;
-		Ctf01dServiceDef m_serviceConf;
-
-		int runChecker(Ctf01dFlag &flag, const std::string &sCommand);
-		// int runChecker(Flag &flag, const std::string &sCommand);
-		// void run();
+private:
+  std::string TAG;
+  std::map<std::string, std::shared_ptr<Ctf01dServiceStatistics>> m_mapServiceStatistics;
 };
-
-#endif // SERVICE_CHECKER_THREAD_H

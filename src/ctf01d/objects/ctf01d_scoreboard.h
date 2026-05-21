@@ -38,13 +38,13 @@
 #pragma once
 
 #include "ctf01d/employees/employ_flags.h"
-#include "employees/employ_scoreboard.h"
+#include "ctf01d/employees/employ_scoreboard.h"
 #include "ctf01d/employees/employ_database.h"
 #include <optional>
 #include <string>
 #include <json.hpp>
 #include "ctf01d_formulas_for_points.h"
-
+#include "ctf01d_team_status_row.h"
 
 class Ctf01dScoreboard {
 public:
@@ -99,7 +99,7 @@ private:
   std::string randomServiceStatus();
   bool m_bRandom;
   int m_nAllTriesActivities;
-  std::map<std::string, TeamStatusRow *> m_mapTeamsStatuses;
+  std::map<std::string, Ctf01dTeamStatusRow *> m_mapTeamsStatuses;
 
   std::mutex m_mutexJson;
   nlohmann::json m_jsonScoreboard; // prepare data for scoreboard

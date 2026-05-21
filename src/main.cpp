@@ -37,7 +37,7 @@
 
 #include <argument_processor_ctf01d_main.h>
 #include <wsjcpp_core.h>
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
 
 int main(int argc, const char* argv[]) {
     std::string TAG = "MAIN";

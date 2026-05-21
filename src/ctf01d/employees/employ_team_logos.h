@@ -35,36 +35,25 @@
  *
  ***********************************************************************************/
 
-#ifndef EMPLOY_TEAM_LOGOS_H
-#define EMPLOY_TEAM_LOGOS_H
+#pragma once
 
 #include <wsjcpp_employees.h>
 #include <json.hpp>
-
-struct Ctf01dTeamLogo {
-    std::string sTeamId;
-    char *pBuffer;
-    int nBufferSize;
-    std::string sFilename;
-    std::string sFilepath;
-    long nLastWriteTime;
-};
+#include "ctf01d/objects/ctf01d_team_logo.h"
 
 class EmployTeamLogos : public WsjcppEmployBase {
-    public:
-        EmployTeamLogos();
-        static std::string name() { return "EmployTeamLogos"; }
-        virtual bool init(const std::string &sName, bool bSilent) override;
-        virtual bool deinit(const std::string &sName, bool bSilent) override;
-        bool loadTeamLogo(const std::string &sTeamId, const std::string &sFilepath);
-        Ctf01dTeamLogo *findTeamLogo(const std::string &sTeamId);
-        bool updateLastChangeTime();
-        void updateScoreboardJson(nlohmann::json &jsonScoreboard);
+public:
+  EmployTeamLogos();
+  static std::string name() { return "EmployTeamLogos"; }
+  virtual bool init(const std::string &sName, bool bSilent) override;
+  virtual bool deinit(const std::string &sName, bool bSilent) override;
+  bool loadTeamLogo(const std::string &sTeamId, const std::string &sFilepath);
+  Ctf01dTeamLogo *findTeamLogo(const std::string &sTeamId);
+  bool updateLastChangeTime();
+  void updateScoreboardJson(nlohmann::json &jsonScoreboard);
 
-    private:
-        std::string TAG;
-        std::map<std::string, Ctf01dTeamLogo *> m_mapTeamLogos;
-        int m_nLastUpdateChangeTimeLogosInSec;
+private:
+  std::string TAG;
+  std::map<std::string, Ctf01dTeamLogo *> m_mapTeamLogos;
+  int m_nLastUpdateChangeTimeLogosInSec;
 };
-
-#endif // EMPLOY_TEAM_LOGOS_H

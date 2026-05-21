@@ -37,7 +37,7 @@
 
 #include "argument_processor_start.h"
 #include <wsjcpp_core.h>
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
 #include "ctf01d/employees/employ_web_server.h"
 
 // ---------------------------------------------------------------------
@@ -101,7 +101,7 @@ int ArgumentProcessorStart::exec(const std::vector<std::string> &vRoutes, const 
             Ctf01dServiceDef serviceConf = pEmployConfig->servicesConf()[iservice];
 
             // reset status to down
-            pEmployConfig->scoreboard()->setServiceStatus(teamConf.getId(), serviceConf.id(), ServiceStatusCell::SERVICE_DOWN);
+            pEmployConfig->scoreboard()->setServiceStatus(teamConf.getId(), serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
             // pConfig->scoreboard()->setTeamTries();
 
             ServiceCheckerThread *thr = new ServiceCheckerThread(teamConf, serviceConf);

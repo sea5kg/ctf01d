@@ -37,7 +37,7 @@
 
 #include "argument_processor_ctf01d_main.h"
 #include <wsjcpp_core.h>
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
 #include <argument_processor_start.h>
 #include <argument_processor_clean.h>
 #include <argument_processor_check.h>

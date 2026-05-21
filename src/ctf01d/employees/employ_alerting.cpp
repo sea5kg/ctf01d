@@ -34,15 +34,12 @@
  * Original repository: https://github.com/sea5kg/ctf01d
  *
  ***********************************************************************************/
- 
+
 #include "employ_alerting.h"
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
 #include <wsjcpp_core.h>
 #include <fstream>
 #include <cstring>
-
-// ---------------------------------------------------------------------
-// EmployAlerting
 
 REGISTRY_WSJCPP_EMPLOY(EmployAlerting)
 
@@ -51,18 +48,12 @@ EmployAlerting::EmployAlerting()
 
 }
 
-// ---------------------------------------------------------------------
-
 bool EmployAlerting::init(const std::string &sName, bool bSilent) {
-    WsjcppLog::info(TAG, "init");
-    return true;
+  WsjcppLog::info(TAG, "init");
+  return true;
 }
-
-// ---------------------------------------------------------------------
 
 bool EmployAlerting::deinit(const std::string &sName, bool bSilent) {
-    WsjcppLog::info(TAG, "deinit");
-    return true;
+  WsjcppLog::info(TAG, "deinit");
+  return true;
 }
-
-

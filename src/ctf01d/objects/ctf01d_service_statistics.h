@@ -35,41 +35,34 @@
  *
  ***********************************************************************************/
 
-#ifndef SERVICE_CHECKER_THREAD_H
-#define SERVICE_CHECKER_THREAD_H
+#pragma once
 
-#include "ctf01d/objects/ctf01d_scoreboard.h"
-#include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_flags.h"
+#include <string>
+#include <json.hpp>
 
-class ServiceCheckerThread {
-	public:
-		// enum for checker return code
-        static int CHECKER_CODE_UP;
-        static int CHECKER_CODE_CORRUPT;
-		static int CHECKER_CODE_MUMBLE;
-		static int CHECKER_CODE_DOWN;
-		static int CHECKER_CODE_SHIT;
+class Ctf01dServiceStatistics {
+public:
+  Ctf01dServiceStatistics(const std::string &sServiceId);
+  int getAllStolenFlagsForService();
+  void doIncrementStolenFlagsForService(int nAllStolenFlags);
+  void setStolenFlagsForService(int nStolenFlags);
 
-		ServiceCheckerThread(
-			const Ctf01dTeamDef &teamConf,
-			const Ctf01dServiceDef &serviceConf
-		);
-		void start();
-		void run();
+  int getAllDefenseFlagsForService();
+  void doIncrementDefenseFlagsForService();
 
-	private:
-		std::string TAG;
-		pthread_t m_checkerThread;
-		EmployConfig *m_pConfig;
-		EmployDatabase *m_pDatabase; // TODO not must be here
-		EmployFlags *m_pEmployFlags;
-		Ctf01dTeamDef m_teamConf;
-		Ctf01dServiceDef m_serviceConf;
+  void setDefenseFlagsForService(int nAllDefenseFlagsForService);
 
-		int runChecker(Ctf01dFlag &flag, const std::string &sCommand);
-		// int runChecker(Flag &flag, const std::string &sCommand);
-		// void run();
+  std::string getFirstBloodTeamId();
+  long getFirstBloodTime();
+  void setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion);
+  void updateJsonServiceStatistics(nlohmann::json &jsonCosts);
+
+private:
+  std::string TAG;
+  std::string m_sServiceId;
+  std::string m_sFirstBloodTeamId;
+  long m_nFirstBloodTimeInSeconds;
+
+  int m_nAllStolenFlagsForService;
+  int m_nAllDefenseFlagsForService;
 };
-
-#endif // SERVICE_CHECKER_THREAD_H

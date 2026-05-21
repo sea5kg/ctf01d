@@ -334,7 +334,7 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     // std::cout << "sServiceStatus: " << sServiceStatus << "\n";
 
-    if (sServiceStatus != ServiceStatusCell::SERVICE_UP) {
+    if (sServiceStatus != Ctf01dServiceStatusCell::SERVICE_UP) {
         static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
         WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
         resp->String(sErrorMsg);

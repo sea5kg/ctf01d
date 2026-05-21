@@ -35,8 +35,7 @@
  *
  ***********************************************************************************/
 
-#ifndef EMPLOY_DATABASE_H
-#define EMPLOY_DATABASE_H
+#pragma once
 
 #include <wsjcpp_employees.h>
 #include "ctf01d/objects/ctf01d_database_file.h"
@@ -87,5 +86,3 @@ private:
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsLive;
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckerPutsResults;
 };
-
-#endif // EMPLOY_DATABASE_H

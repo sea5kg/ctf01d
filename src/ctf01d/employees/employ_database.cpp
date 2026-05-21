@@ -37,7 +37,7 @@
 
 #include "employ_database.h"
 #include <wsjcpp_core.h>
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
 #include <cmath>
 #include <stdio.h>
 #include <string>

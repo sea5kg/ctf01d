@@ -35,41 +35,54 @@
  *
  ***********************************************************************************/
 
-#ifndef SERVICE_CHECKER_THREAD_H
-#define SERVICE_CHECKER_THREAD_H
+#pragma once
 
-#include "ctf01d/objects/ctf01d_scoreboard.h"
-#include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_flags.h"
+#include <string>
+#include <map>
+#include "ctf01d_service_status_cell.h"
 
-class ServiceCheckerThread {
-	public:
-		// enum for checker return code
-        static int CHECKER_CODE_UP;
-        static int CHECKER_CODE_CORRUPT;
-		static int CHECKER_CODE_MUMBLE;
-		static int CHECKER_CODE_DOWN;
-		static int CHECKER_CODE_SHIT;
+class Ctf01dTeamStatusRow {
+public:
+  Ctf01dTeamStatusRow(const std::string &sTeamId, int nGameStartInSec, int nGameEndInSec);
+  const std::string &teamId();
 
-		ServiceCheckerThread(
-			const Ctf01dTeamDef &teamConf,
-			const Ctf01dServiceDef &serviceConf
-		);
-		void start();
-		void run();
+  void setPlace(int nPlace);
+  int getPlace();
 
-	private:
-		std::string TAG;
-		pthread_t m_checkerThread;
-		EmployConfig *m_pConfig;
-		EmployDatabase *m_pDatabase; // TODO not must be here
-		EmployFlags *m_pEmployFlags;
-		Ctf01dTeamDef m_teamConf;
-		Ctf01dServiceDef m_serviceConf;
+  void setPoints(int nPoints);
+  int getPoints();
 
-		int runChecker(Ctf01dFlag &flag, const std::string &sCommand);
-		// int runChecker(Flag &flag, const std::string &sCommand);
-		// void run();
+  void setServiceStatus(const std::string &service_id, std::string sStatus);
+  std::string serviceStatus(const std::string &service_id);
+
+  void setTries(int nScore);
+  int tries();
+
+  std::string servicesToString();
+
+  void incrementDefense(const std::string &service_id, int nFlagPoints);
+  int getDefenseFlags(const std::string &service_id);
+  int getDefensePoints(const std::string &service_id);
+  void setServiceDefenseFlagsAndPoints(const std::string &service_id, int nDefenseFlags, int nDefensePoints);
+
+  void incrementAttack(const std::string &service_id, int nFlagPoints);
+  void setServiceAttackFlagsAndPoints(const std::string &service_id, int nAttackFlags, int nAttackPoints);
+  int getAttackFlags(const std::string &service_id);
+  int getAttackPoints(const std::string &service_id);
+
+  void setServiceFlagsForCalculateSLA(const std::string &service_id, int nPutsFlagsAllResults, int nPutsFlagsSuccessResults);
+  void incrementPutFlagSuccess(const std::string &service_id);
+  void incrementPutFlagFail(const std::string &service_id);
+  int calculateSLA(const std::string &service_id);
+
+  void updatePoints();
+
+private:
+  std::mutex m_mutex;
+  std::string TAG;
+  std::string m_sTeamId;
+  int m_nPlace;
+  int m_nPoints;
+  int m_nTries;
+  std::map<std::string, Ctf01dServiceStatusCell *> m_mapServicesStatus;
 };
-
-#endif // SERVICE_CHECKER_THREAD_H

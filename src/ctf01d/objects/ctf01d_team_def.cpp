@@ -38,49 +38,49 @@
 #include "ctf01d_team_def.h"
 
 Ctf01dTeamDef::Ctf01dTeamDef() {
-    // nothing
+  // nothing
 }
 
 void Ctf01dTeamDef::setId(const std::string &sTeamId){
-    m_sTeamID = sTeamId;
+  m_sTeamID = sTeamId;
 }
 
 const std::string &Ctf01dTeamDef::getId() const {
-    return m_sTeamID;
+  return m_sTeamID;
 }
 
 void Ctf01dTeamDef::setName(const std::string &sName){
-    m_sName = sName;
+  m_sName = sName;
 }
 
 const std::string &Ctf01dTeamDef::getName() const {
-    return m_sName;
+  return m_sName;
 }
 
 void Ctf01dTeamDef::setIpAddress(const std::string &sIpAddress){
-    m_sIpAddress = sIpAddress;
+  m_sIpAddress = sIpAddress;
 }
 
 const std::string &Ctf01dTeamDef::ipAddress() const {
-    return m_sIpAddress;
+  return m_sIpAddress;
 }
 
 void Ctf01dTeamDef::setActive(bool bActive){
-    m_bActive = bActive;
+  m_bActive = bActive;
 }
 
 bool Ctf01dTeamDef::isActive() const {
-    return m_bActive;
+  return m_bActive;
 }
 
 void Ctf01dTeamDef::setLogo(const std::string &sLogo){
-    m_sLogo = sLogo;
+  m_sLogo = sLogo;
 }
 
 const std::string &Ctf01dTeamDef::logo() const {
-    return m_sLogo;
+  return m_sLogo;
 }
 
 int Ctf01dTeamDef::getLogoLastWriteTime() {
-    return m_nLogoLastWriteTime;
+  return m_nLogoLastWriteTime;
 }

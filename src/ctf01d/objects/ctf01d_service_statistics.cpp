@@ -35,41 +35,56 @@
  *
  ***********************************************************************************/
 
-#ifndef SERVICE_CHECKER_THREAD_H
-#define SERVICE_CHECKER_THREAD_H
+#include "ctf01d_service_statistics.h"
 
-#include "ctf01d/objects/ctf01d_scoreboard.h"
-#include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_flags.h"
+Ctf01dServiceStatistics::Ctf01dServiceStatistics(const std::string &sServiceId) {
+  TAG = "Ctf01dServiceStatistics-" + sServiceId;
+  m_sServiceId = sServiceId;
+  m_nAllStolenFlagsForService = 0;
+  m_nAllDefenseFlagsForService = 0;
+  m_sFirstBloodTeamId = "?";
+}
 
-class ServiceCheckerThread {
-	public:
-		// enum for checker return code
-        static int CHECKER_CODE_UP;
-        static int CHECKER_CODE_CORRUPT;
-		static int CHECKER_CODE_MUMBLE;
-		static int CHECKER_CODE_DOWN;
-		static int CHECKER_CODE_SHIT;
+int Ctf01dServiceStatistics::getAllStolenFlagsForService() {
+  return m_nAllStolenFlagsForService;
+}
 
-		ServiceCheckerThread(
-			const Ctf01dTeamDef &teamConf,
-			const Ctf01dServiceDef &serviceConf
-		);
-		void start();
-		void run();
+void Ctf01dServiceStatistics::doIncrementStolenFlagsForService(int nAllStolenFlags) {
+  m_nAllStolenFlagsForService++;
+}
 
-	private:
-		std::string TAG;
-		pthread_t m_checkerThread;
-		EmployConfig *m_pConfig;
-		EmployDatabase *m_pDatabase; // TODO not must be here
-		EmployFlags *m_pEmployFlags;
-		Ctf01dTeamDef m_teamConf;
-		Ctf01dServiceDef m_serviceConf;
+void Ctf01dServiceStatistics::setStolenFlagsForService(int nStolenFlags) {
+  m_nAllStolenFlagsForService = nStolenFlags;
+}
 
-		int runChecker(Ctf01dFlag &flag, const std::string &sCommand);
-		// int runChecker(Flag &flag, const std::string &sCommand);
-		// void run();
-};
+int Ctf01dServiceStatistics::getAllDefenseFlagsForService() {
+  return m_nAllDefenseFlagsForService;
+}
 
-#endif // SERVICE_CHECKER_THREAD_H
+void Ctf01dServiceStatistics::doIncrementDefenseFlagsForService() {
+  m_nAllDefenseFlagsForService++;
+}
+
+void Ctf01dServiceStatistics::setDefenseFlagsForService(int nAllDefenseFlagsForService) {
+  m_nAllDefenseFlagsForService = nAllDefenseFlagsForService;
+}
+
+std::string Ctf01dServiceStatistics::getFirstBloodTeamId() {
+  return m_sFirstBloodTeamId;
+}
+
+long Ctf01dServiceStatistics::getFirstBloodTime() {
+  return m_nFirstBloodTimeInSeconds;
+}
+
+void Ctf01dServiceStatistics::updateJsonServiceStatistics(nlohmann::json &jsonCosts) {
+  jsonCosts["af_att"] = m_nAllStolenFlagsForService;
+  jsonCosts["af_def"] = m_nAllDefenseFlagsForService;
+  jsonCosts["first_blood"] = m_sFirstBloodTeamId;
+  jsonCosts["first_blood_ts"] = m_nFirstBloodTimeInSeconds;
+}
+
+void Ctf01dServiceStatistics::setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion) {
+  m_sFirstBloodTeamId = sFirstBlood;
+  m_nFirstBloodTimeInSeconds = nDateACtion / 1000;
+}

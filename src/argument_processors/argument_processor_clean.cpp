@@ -38,11 +38,12 @@
 #include "argument_processor_clean.h"
 #include <wsjcpp_core.h>
 #include <wsjcpp_employees.h>
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
+
 // ---------------------------------------------------------------------
 // ArgumentProcessorClean
 
-ArgumentProcessorClean::ArgumentProcessorClean() 
+ArgumentProcessorClean::ArgumentProcessorClean()
 : WsjcppArgumentProcessor({"clean"}, "Clean all flags from storage", "Clean all flags from storage") {
     TAG = "ArgumentProcessorClean";
     // registrySingleArgument("--single", "What exactly do this single param?");

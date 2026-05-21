@@ -39,7 +39,7 @@
 #include <sqlite3.h>
 #include <wsjcpp_core.h>
 #include <wsjcpp_employees.h>
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
 
 // ---------------------------------------------------------------------
 // Ctf01dDatabase

@@ -37,7 +37,7 @@
 
 #include "argument_processor_web_test.h"
 #include <wsjcpp_core.h>
-#include <employ_config.h>
+#include "ctf01d/employees/employ_config.h"
 #include "ctf01d/employees/employ_web_server.h"
 
 // ---------------------------------------------------------------------

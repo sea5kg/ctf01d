@@ -38,91 +38,88 @@
 #include "employ_team_logos.h"
 #include <wsjcpp_core.h>
 #include <filesystem>
-#include <employ_config.h>
-
-// ---------------------------------------------------------------------
-// EmployTeamLogos
+#include "ctf01d/employees/employ_config.h"
 
 REGISTRY_WSJCPP_EMPLOY(EmployTeamLogos)
 
 EmployTeamLogos::EmployTeamLogos()
 : WsjcppEmployBase({ EmployTeamLogos::name() }, { EmployConfig::name() }) {
-    TAG = EmployTeamLogos::name();
-    m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
+  TAG = EmployTeamLogos::name();
+  m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
 }
 
 bool EmployTeamLogos::init(const std::string &sName, bool bSilent) {
-    WsjcppLog::info(TAG, "init");
-    return true;
+  WsjcppLog::info(TAG, "init");
+  return true;
 }
 
 bool EmployTeamLogos::deinit(const std::string &sName, bool bSilent) {
-    WsjcppLog::info(TAG, "deinit");
-    return true;
+  WsjcppLog::info(TAG, "deinit");
+  return true;
 }
 
 bool EmployTeamLogos::loadTeamLogo(const std::string &sTeamId, const std::string &sTeamLogoPath) {
-    if (!WsjcppCore::fileExists(sTeamLogoPath)) {
-        WsjcppLog::err(TAG, "File '" + sTeamLogoPath + "' did not found");
-        return false;
-    }
-    Ctf01dTeamLogo *pTeamLogo = new Ctf01dTeamLogo();
-    pTeamLogo->sTeamId = sTeamId;
-    pTeamLogo->pBuffer = nullptr;
-    pTeamLogo->nBufferSize = 0;
-    pTeamLogo->sFilename = WsjcppCore::extractFilename(sTeamLogoPath);
-    pTeamLogo->sFilepath = sTeamLogoPath;
-    if (!WsjcppCore::readFileToBuffer(sTeamLogoPath, &(pTeamLogo->pBuffer), (pTeamLogo->nBufferSize))) {
-        delete pTeamLogo;
-        WsjcppLog::throw_err(TAG, "Could not read file '" + sTeamLogoPath + "'");
-        return false;
-    }
-    std::filesystem::file_time_type ftime = std::filesystem::last_write_time(sTeamLogoPath.c_str());
-    pTeamLogo->nLastWriteTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
-    // add only if file found
-    m_mapTeamLogos[sTeamId] = pTeamLogo;
-    WsjcppLog::info(TAG, "Loaded team logo: " + sTeamLogoPath + " for team " + sTeamId + " (last write time file: " + std::to_string(pTeamLogo->nLastWriteTime) + ")");
-    return true;
+  if (!WsjcppCore::fileExists(sTeamLogoPath)) {
+    WsjcppLog::err(TAG, "File '" + sTeamLogoPath + "' did not found");
+    return false;
+  }
+  Ctf01dTeamLogo *pTeamLogo = new Ctf01dTeamLogo();
+  pTeamLogo->sTeamId = sTeamId;
+  pTeamLogo->pBuffer = nullptr;
+  pTeamLogo->nBufferSize = 0;
+  pTeamLogo->sFilename = WsjcppCore::extractFilename(sTeamLogoPath);
+  pTeamLogo->sFilepath = sTeamLogoPath;
+  if (!WsjcppCore::readFileToBuffer(sTeamLogoPath, &(pTeamLogo->pBuffer), (pTeamLogo->nBufferSize))) {
+    delete pTeamLogo;
+    WsjcppLog::throw_err(TAG, "Could not read file '" + sTeamLogoPath + "'");
+    return false;
+  }
+  std::filesystem::file_time_type ftime = std::filesystem::last_write_time(sTeamLogoPath.c_str());
+  pTeamLogo->nLastWriteTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
+  // add only if file found
+  m_mapTeamLogos[sTeamId] = pTeamLogo;
+  WsjcppLog::info(TAG, "Loaded team logo: " + sTeamLogoPath + " for team " + sTeamId + " (last write time file: " + std::to_string(pTeamLogo->nLastWriteTime) + ")");
+  return true;
 }
 
 Ctf01dTeamLogo *EmployTeamLogos::findTeamLogo(const std::string &sTeamId) {
-    std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.find(sTeamId);
-    if (it != m_mapTeamLogos.end()) {
-        return it->second;
-    }
-    return nullptr;
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.find(sTeamId);
+  if (it != m_mapTeamLogos.end()) {
+    return it->second;
+  }
+  return nullptr;
 }
 
 bool EmployTeamLogos::updateLastChangeTime() {
-    if (WsjcppCore::getCurrentTimeInSeconds() - m_nLastUpdateChangeTimeLogosInSec < 30) {
-        return false;
+  if (WsjcppCore::getCurrentTimeInSeconds() - m_nLastUpdateChangeTimeLogosInSec < 30) {
+    return false;
+  }
+  m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
+  WsjcppLog::info(TAG, "updateLastWriteTime for team's logos");
+  bool bHasChanges = false;
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();
+  while (it != m_mapTeamLogos.end()) {
+    Ctf01dTeamLogo *pTeamLogo = it->second;
+    std::filesystem::file_time_type ftime = std::filesystem::last_write_time(pTeamLogo->sFilepath.c_str());
+    long nLastWriteTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
+    if (nLastWriteTime != pTeamLogo->nLastWriteTime) {
+      bHasChanges = true;
+      delete pTeamLogo->pBuffer;
+      pTeamLogo->pBuffer = nullptr;
+      pTeamLogo->nBufferSize = 0;
+      WsjcppCore::readFileToBuffer(pTeamLogo->sFilepath, &(pTeamLogo->pBuffer), pTeamLogo->nBufferSize);
+      pTeamLogo->nLastWriteTime = nLastWriteTime;
     }
-    m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
-    WsjcppLog::info(TAG, "updateLastWriteTime for team's logos");
-    bool bHasChanges = false;
-    std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();
-    while (it != m_mapTeamLogos.end()) {
-        Ctf01dTeamLogo *pTeamLogo = it->second;
-        std::filesystem::file_time_type ftime = std::filesystem::last_write_time(pTeamLogo->sFilepath.c_str());
-        long nLastWriteTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
-        if (nLastWriteTime != pTeamLogo->nLastWriteTime) {
-            bHasChanges = true;
-            delete pTeamLogo->pBuffer;
-            pTeamLogo->pBuffer = nullptr;
-            pTeamLogo->nBufferSize = 0;
-            WsjcppCore::readFileToBuffer(pTeamLogo->sFilepath, &(pTeamLogo->pBuffer), pTeamLogo->nBufferSize);
-            pTeamLogo->nLastWriteTime = nLastWriteTime;
-        }
-        it++;
-    }
-    return bHasChanges;
+    it++;
+  }
+  return bHasChanges;
 }
 
 void EmployTeamLogos::updateScoreboardJson(nlohmann::json &jsonScoreboard) {
-    std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();
-    while (it != m_mapTeamLogos.end()) {
-        Ctf01dTeamLogo *pTeamLogo = it->second;
-        jsonScoreboard["scoreboard"][pTeamLogo->sTeamId]["logo_last_updated"] = pTeamLogo->nLastWriteTime;
-        it++;
-    }
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();
+  while (it != m_mapTeamLogos.end()) {
+    Ctf01dTeamLogo *pTeamLogo = it->second;
+    jsonScoreboard["scoreboard"][pTeamLogo->sTeamId]["logo_last_updated"] = pTeamLogo->nLastWriteTime;
+    it++;
+  }
 }

@@ -35,8 +35,7 @@
  *
  ***********************************************************************************/
 
-#ifndef EMPLOY_FLAGS_H
-#define EMPLOY_FLAGS_H
+#pragma once
 
 #include <wsjcpp_employees.h>
 #include <string>
@@ -53,5 +52,3 @@ public:
 private:
   std::string TAG;
 };
-
-#endif // EMPLOY_FLAGS_H
