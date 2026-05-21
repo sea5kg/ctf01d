@@ -49,6 +49,30 @@
 using namespace hv;
 
 
+void Ctf01dHttpServer_custom_logger(int level, const char *msg, int len) {
+  std::string TAG = "http";
+  std::string message(msg, len - 1); // remove last '\n' character
+  switch (level) {
+  case LOG_LEVEL_DEBUG:
+    WsjcppLog::info(TAG, "debug: " + message);
+    break;
+  case LOG_LEVEL_INFO:
+    WsjcppLog::info(TAG, message);
+    break;
+  case LOG_LEVEL_WARN:
+    WsjcppLog::warn(TAG, message);
+    break;
+  case LOG_LEVEL_ERROR:
+    WsjcppLog::err(TAG, message);
+    break;
+  case LOG_LEVEL_FATAL:
+    WsjcppLog::throw_err(TAG, message);
+    break;
+  default:
+    WsjcppLog::info(TAG, "Unknow level: " + message);
+  }
+}
+
 Ctf01dHttpServer::Ctf01dHttpServer() {
     TAG = "Ctf01dHttpServer";
     m_pConfig = findWsjcppEmploy<EmployConfig>();
@@ -58,15 +82,24 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     m_sScoreboardHtmlFolder = m_pConfig->scoreboardHtmlFolder();
 
     {
-        logger_t* pLogger = hv_default_logger();
-        // logger_set_max_filesize(pLogger, 102400);
-        std::string sLogDirPath = m_pConfig->getWorkDir() + "/hv_logs";
-        if (!WsjcppCore::dirExists(sLogDirPath)) {
-            WsjcppCore::makeDir(sLogDirPath);
-        }
-        std::string sLogFilePath = sLogDirPath + "/http_" + WsjcppCore::getCurrentTimeForFilename() + ".log";
-        logger_set_file(pLogger, sLogFilePath.c_str());
+        logger_t *pLogger = hv_default_logger();
+        logger_set_handler(pLogger, Ctf01dHttpServer_custom_logger);
+        logger_set_format(pLogger, "%s"); // removing time and log level
+
+        // Test the log
+        hlogi("This is an info message.");
     }
+
+    // {
+    //     logger_t* pLogger = hv_default_logger();
+    //     // logger_set_max_filesize(pLogger, 102400);
+    //     std::string sLogDirPath = m_pConfig->getWorkDir() + "/hv_logs";
+    //     if (!WsjcppCore::dirExists(sLogDirPath)) {
+    //         WsjcppCore::makeDir(sLogDirPath);
+    //     }
+    //     std::string sLogFilePath = sLogDirPath + "/http_" + WsjcppCore::getCurrentTimeForFilename() + ".log";
+    //     logger_set_file(pLogger, sLogFilePath.c_str());
+    // }
 
     m_sApiPathPrefix = "/api/v1/";
     m_sTeamLogoPrefix = "/team-logo/";
