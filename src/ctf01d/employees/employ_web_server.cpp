@@ -84,4 +84,55 @@ int EmployWebServer::start() {
   return 0;
 }
 
+const std::string &EmployWebServer::getJsonGameCache() {
+  updateJsonCache();
+  return m_sCacheResponseGameJson;
+}
 
+const std::string &EmployWebServer::getJsonTeamsCache() {
+  updateJsonCache();
+  return m_sCacheResponseTeamsJson;
+}
+
+void EmployWebServer::updateJsonCache() {
+  auto config = findWsjcppEmploy<EmployConfig>();
+
+  nlohmann::json jsonGame;
+  nlohmann::json jsonTeams;
+
+  jsonGame["game_name"] = config->gameName();
+  jsonGame["game_start"] = WsjcppCore::formatTimeUTC(config->gameStartUTCInSec()) + " (UTC)";
+  jsonGame["game_end"] = WsjcppCore::formatTimeUTC(config->gameEndUTCInSec()) + " (UTC)";
+  jsonGame["game_has_coffee_break"] = config->gameHasCoffeeBreak();
+  jsonGame["game_coffee_break_start"] = WsjcppCore::formatTimeUTC(config->gameCoffeeBreakStartUTCInSec()) + " (UTC)";
+  jsonGame["game_coffee_break_end"] = WsjcppCore::formatTimeUTC(config->gameCoffeeBreakEndUTCInSec()) + " (UTC)";
+  jsonGame["teams"] = nlohmann::json::array();
+  jsonGame["services"] = nlohmann::json::array();
+
+  for (unsigned int i = 0; i < config->servicesConf().size(); i++) {
+      Ctf01dServiceDef serviceConf = config->servicesConf()[i];
+      if (serviceConf.isEnabled()) {
+          nlohmann::json serviceInfo;
+          serviceInfo["id"] = serviceConf.id();
+          serviceInfo["name"] = serviceConf.name();
+          serviceInfo["round_time_in_sec"] = serviceConf.timeSleepBetweenRunScriptsInSec();
+          jsonGame["services"].push_back(serviceInfo);
+      }
+  }
+
+  for (unsigned int i = 0; i < config->teamsConf().size(); i++) {
+      Ctf01dTeamDef teamConf = config->teamsConf()[i];
+      nlohmann::json teamInfo;
+      teamInfo["id"] = teamConf.getId();
+      teamInfo["name"] = teamConf.getName();
+      teamInfo["ip_address"] = teamConf.ipAddress();
+      teamInfo["logo"] = "./team-logo/" + teamConf.getId();
+      teamInfo["logo_last_write_time"] = teamConf.getLogoLastWriteTime();
+
+      jsonGame["teams"].push_back(teamInfo);
+      jsonTeams["teams"].push_back(teamInfo);
+  }
+
+  m_sCacheResponseGameJson = jsonGame.dump();
+  m_sCacheResponseTeamsJson = jsonTeams.dump();
+}

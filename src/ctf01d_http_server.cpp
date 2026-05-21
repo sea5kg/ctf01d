@@ -45,6 +45,7 @@
 #include <optional>
 #include <regex>
 #include <wsjcpp_core.h>
+#include "ctf01d/employees/employ_web_server.h"
 
 using namespace hv;
 
@@ -79,6 +80,7 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
     m_pEmployDatabase = findWsjcppEmploy<EmployDatabase>();
     m_pTeamLogos = findWsjcppEmploy<EmployTeamLogos>();
+    auto webServer = findWsjcppEmploy<EmployWebServer>();
     m_sScoreboardHtmlFolder = m_pConfig->scoreboardHtmlFolder();
 
     {
@@ -105,42 +107,8 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
     m_sTeamLogoPrefix = "/team-logo/";
     m_nTeamLogoPrefixLength = m_sTeamLogoPrefix.size();
 
-    m_jsonGame["game_name"] = m_pConfig->gameName();
-    m_jsonGame["game_start"] = WsjcppCore::formatTimeUTC(m_pConfig->gameStartUTCInSec()) + " (UTC)";
-    m_jsonGame["game_end"] = WsjcppCore::formatTimeUTC(m_pConfig->gameEndUTCInSec()) + " (UTC)";
-    m_jsonGame["game_has_coffee_break"] = m_pConfig->gameHasCoffeeBreak();
-    m_jsonGame["game_coffee_break_start"] = WsjcppCore::formatTimeUTC(m_pConfig->gameCoffeeBreakStartUTCInSec()) + " (UTC)";
-    m_jsonGame["game_coffee_break_end"] = WsjcppCore::formatTimeUTC(m_pConfig->gameCoffeeBreakEndUTCInSec()) + " (UTC)";
-    m_jsonGame["teams"] = nlohmann::json::array();
-    m_jsonGame["services"] = nlohmann::json::array();
-
-    for (unsigned int i = 0; i < m_pConfig->servicesConf().size(); i++) {
-        Ctf01dServiceDef serviceConf = m_pConfig->servicesConf()[i];
-        if (serviceConf.isEnabled()) {
-            nlohmann::json serviceInfo;
-            serviceInfo["id"] = serviceConf.id();
-            serviceInfo["name"] = serviceConf.name();
-            serviceInfo["round_time_in_sec"] = serviceConf.timeSleepBetweenRunScriptsInSec();
-            m_jsonGame["services"].push_back(serviceInfo);
-        }
-    }
-
-    for (unsigned int i = 0; i < m_pConfig->teamsConf().size(); i++) {
-        Ctf01dTeamDef teamConf = m_pConfig->teamsConf()[i];
-        nlohmann::json teamInfo;
-        teamInfo["id"] = teamConf.getId();
-        teamInfo["name"] = teamConf.getName();
-        teamInfo["ip_address"] = teamConf.ipAddress();
-        teamInfo["logo"] = "./team-logo/" + teamConf.getId();
-        teamInfo["logo_last_write_time"] = teamConf.getLogoLastWriteTime();
-
-        m_jsonGame["teams"].push_back(teamInfo);
-        m_jsonTeams["teams"].push_back(teamInfo);
-    }
-
-    m_sCacheResponseGameJson = m_jsonGame.dump();
-    m_sCacheResponseTeamsJson = m_jsonTeams.dump();
-    // m_sCacheResponseServicesJson =
+    m_sCacheResponseGameJson = webServer->getJsonGameCache();
+    m_sCacheResponseTeamsJson = webServer->getJsonTeamsCache();
 
     m_pHttpService = std::make_shared<hv::HttpService>();
 

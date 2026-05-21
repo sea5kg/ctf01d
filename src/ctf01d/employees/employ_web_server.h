@@ -48,6 +48,16 @@ public:
   virtual bool deinit(const std::string &name, bool bSilent) override;
 
   int start();
+
+  // TODO to private
+  const std::string &getJsonGameCache();
+  const std::string &getJsonTeamsCache();
+
 private:
   std::string TAG;
+
+  void updateJsonCache();
+
+  std::string m_sCacheResponseGameJson;
+  std::string m_sCacheResponseTeamsJson;
 };
