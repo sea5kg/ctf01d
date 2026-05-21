@@ -40,9 +40,8 @@
 #include <wsjcpp_core.h>
 #include <fstream>
 #include <cstring>
-
-// ---------------------------------------------------------------------
-// EmployWebServer
+#include <ctf01d_http_server.h>
+#include "WebSocketServer.h"  // libhv
 
 REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
 
@@ -51,18 +50,38 @@ EmployWebServer::EmployWebServer()
 
 }
 
-// ---------------------------------------------------------------------
-
 bool EmployWebServer::init(const std::string &name, bool bSilent) {
-    WsjcppLog::info(TAG, "init");
-    return true;
+  WsjcppLog::info(TAG, "init");
+  return true;
 }
 
-// ---------------------------------------------------------------------
-
 bool EmployWebServer::deinit(const std::string &name, bool bSilent) {
-    WsjcppLog::info(TAG, "deinit");
-    return true;
+  WsjcppLog::info(TAG, "deinit");
+  return true;
+}
+
+int EmployWebServer::start() {
+
+  EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
+
+  WsjcppLog::ok(TAG, "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/");
+
+  Ctf01dHttpServer httpServer;
+  std::shared_ptr<hv::HttpService> pRouter = httpServer.getService();
+  hv::HttpServer server(pRouter.get());
+  server.setPort(pEmployConfig->scoreboardPort());
+  server.setThreadNum(4);
+  server.run();
+
+  // TODO: stop all threads
+
+  /*while(1) {
+      Log::info(TAG, "wait 2 minutes");
+      std::this_thread::sleep_for(std::chrono::minutes(2));
+      Log::info(TAG, "wait ended");
+  }*/
+
+  return 0;
 }
 
 

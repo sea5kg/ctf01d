@@ -49,6 +49,7 @@ public:
   virtual bool init(const std::string &name, bool bSilent) override;
   virtual bool deinit(const std::string &name, bool bSilent) override;
 
+  int start();
 private:
   std::string TAG;
 };

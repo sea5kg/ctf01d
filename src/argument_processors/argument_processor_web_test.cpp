@@ -38,8 +38,7 @@
 #include "argument_processor_web_test.h"
 #include <wsjcpp_core.h>
 #include <employ_config.h>
-#include <ctf01d_http_server.h>
-#include "WebSocketServer.h" // libhv
+#include "ctf01d/employees/employ_web_server.h"
 
 // ---------------------------------------------------------------------
 // ArgumentProcessorWebTest
@@ -80,18 +79,6 @@ int ArgumentProcessorWebTest::exec(const std::vector<std::string> &vRoutes, cons
         return -1;
     }
 
-    EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
-
-    WsjcppLog::ok(TAG, "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/");
-
-    Ctf01dHttpServer httpServer;
-    std::shared_ptr<hv::HttpService> pRouter = httpServer.getService();
-    hv::HttpServer server(pRouter.get());
-    server.setPort(pEmployConfig->scoreboardPort());
-    server.setThreadNum(4);
-    server.run();
-
-    WsjcppLog::err(TAG, "Not implemented");
-    return -1;
+    return findWsjcppEmploy<EmployWebServer>()->start();
 }
 

@@ -38,8 +38,7 @@
 #include "argument_processor_start.h"
 #include <wsjcpp_core.h>
 #include <employ_config.h>
-#include <ctf01d_http_server.h>
-#include "WebSocketServer.h"  // libhv
+#include "ctf01d/employees/employ_web_server.h"
 
 // ---------------------------------------------------------------------
 // ArgumentProcessorStart
@@ -112,23 +111,6 @@ int ArgumentProcessorStart::exec(const std::vector<std::string> &vRoutes, const 
     }
     WsjcppLog::info(TAG, std::to_string(m_vThreads.size()) + " threads started");
 
-    WsjcppLog::ok(TAG, "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/");
-
-    Ctf01dHttpServer httpServer;
-    std::shared_ptr<hv::HttpService> pRouter = httpServer.getService();
-    hv::HttpServer server(pRouter.get());
-    server.setPort(pEmployConfig->scoreboardPort());
-    server.setThreadNum(4);
-    server.run();
-
-    // TODO: stop all threads
-
-    /*while(1) {
-        Log::info(TAG, "wait 2 minutes");
-        std::this_thread::sleep_for(std::chrono::minutes(2));
-        Log::info(TAG, "wait ended");
-    }*/
-
-    return -1;
+    return findWsjcppEmploy<EmployWebServer>()->start();
 }
 
