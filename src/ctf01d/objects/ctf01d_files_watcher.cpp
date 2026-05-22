@@ -35,15 +35,15 @@
  *
  ***********************************************************************************/
 
-#include "ctf01d_watcher_for_files.h"
+#include "ctf01d_files_watcher.h"
 #include <wsjcpp_core.h>
 #include <filesystem>
 
-Ctf01dWatcherForFiles::Ctf01dWatcherForFiles() {
-  TAG = "Ctf01dWatcherForFiles";
+Ctf01dFilesWatcher::Ctf01dFilesWatcher() {
+  TAG = "Ctf01dFilesWatcher";
 }
 
-bool Ctf01dWatcherForFiles::watchFile(const std::string &filepath) {
+bool Ctf01dFilesWatcher::watchFile(const std::string &filepath) {
   if (!WsjcppCore::fileExists(filepath)) {
     WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
     return false;
@@ -60,7 +60,7 @@ bool Ctf01dWatcherForFiles::watchFile(const std::string &filepath) {
   return true;
 }
 
-void Ctf01dWatcherForFiles::stopWatchingFile(const std::string &filepath) {
+void Ctf01dFilesWatcher::stopWatchingFile(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it != m_files.end()) {
@@ -68,7 +68,7 @@ void Ctf01dWatcherForFiles::stopWatchingFile(const std::string &filepath) {
   }
 }
 
-long Ctf01dWatcherForFiles::getLastModifiedTimeFile(const std::string &filepath) {
+long Ctf01dFilesWatcher::getLastModifiedTimeFile(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it == m_files.end()) {
@@ -81,7 +81,7 @@ long Ctf01dWatcherForFiles::getLastModifiedTimeFile(const std::string &filepath)
   return m_files[filepath];
 }
 
-bool Ctf01dWatcherForFiles::isModifiedFile(const std::string &filepath) {
+bool Ctf01dFilesWatcher::isModifiedFile(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it == m_files.end()) {
@@ -100,7 +100,7 @@ bool Ctf01dWatcherForFiles::isModifiedFile(const std::string &filepath) {
   return false;
 }
 
-std::map<std::string, long> Ctf01dWatcherForFiles::getModifiedFiles() {
+std::map<std::string, long> Ctf01dFilesWatcher::getModifiedFiles() {
   std::lock_guard<std::mutex> lock(m_mutex);
   std::map<std::string, long> ret;
   for (auto it = m_files.begin(); it != m_files.end(); ++it) {

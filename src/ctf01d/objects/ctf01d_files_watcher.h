@@ -41,9 +41,9 @@
 #include <map>
 #include <mutex>
 
-class Ctf01dWatcherForFiles {
+class Ctf01dFilesWatcher {
 public:
-  Ctf01dWatcherForFiles();
+  Ctf01dFilesWatcher();
   bool watchFile(const std::string &filepath);
   void stopWatchingFile(const std::string &filepath);
   long getLastModifiedTimeFile(const std::string &filepath);

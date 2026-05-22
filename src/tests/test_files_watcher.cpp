@@ -41,11 +41,11 @@
 #include <memory>
 #include <thread>
 #include <chrono>
-#include "ctf01d_watcher_for_files.h"
+#include "ctf01d_files_watcher.h"
 
 int main() {
 
-  std::shared_ptr<Ctf01dWatcherForFiles> watcher = std::make_shared<Ctf01dWatcherForFiles>();
+  std::shared_ptr<Ctf01dFilesWatcher> watcher = std::make_shared<Ctf01dFilesWatcher>();
 
   if (!WsjcppCore::dirExists("test_file_watcher")) {
     if (!WsjcppCore::makeDir("test_file_watcher")) {

@@ -113,6 +113,9 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
 
     this->doExtractFilesIfNotExists();
 
+    std::string sConfigFile = m_sWorkDir + "/config.yml";
+    m_files_watcher->watchFile(sConfigFile);
+
     if (!this->applyConfig()) {
         WsjcppLog::err(TAG, "Configuration file has some problems");
         return false;

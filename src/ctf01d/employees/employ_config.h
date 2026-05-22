@@ -42,6 +42,7 @@
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/objects/ctf01d_service_def.h"
 #include "ctf01d/objects/ctf01d_team_def.h"
+#include "ctf01d/objects/ctf01d_files_watcher.h"
 
 class EmployConfig : public WsjcppEmployBase {
 public:
@@ -119,4 +120,6 @@ private:
 
   std::vector<Ctf01dTeamDef> m_vTeamsConf;
   std::vector<Ctf01dServiceDef> m_vServicesConf;
+
+  std::shared_ptr<Ctf01dFilesWatcher> m_files_watcher;
 };
