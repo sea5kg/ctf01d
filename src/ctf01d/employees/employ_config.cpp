@@ -54,6 +54,7 @@ REGISTRY_WSJCPP_EMPLOY(EmployConfig)
 EmployConfig::EmployConfig()
 : WsjcppEmployBase({ EmployConfig::name() }, {}) {
     TAG = EmployConfig::name();
+    m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
     m_bAppliedConfig = false;
     m_nFlagTimeliveInMin = 10;
     m_nScoreboardPort = 8080;
@@ -76,52 +77,25 @@ EmployConfig::~EmployConfig() {
 }
 
 bool EmployConfig::init(const std::string &sName, bool bSilent) {
+  if (!initWorkDir()) {
+    return false;
+  }
 
-    tryLoadFromEnv("CTF01D_WORKDIR", m_sWorkDir, "Work Directory from environment");
+  if (!initLogger()) {
+    return false;
+  }
 
-    WsjcppLog::info(TAG, "Work Directory is " + m_sWorkDir);
+  this->doExtractFilesIfNotExists();
 
-    std::string sWorkDir = this->getWorkDir();
-    if (sWorkDir == "") {
-        WsjcppLog::throw_err(TAG, "Work Directory not defined.");
-    }
+  m_sConfigFilepath = m_sWorkDir + "/config.yml";
+  m_files_watcher->watchFile(m_sConfigFilepath);
 
-    if (!WsjcppCore::dirExists(sWorkDir)) {
-        WsjcppLog::err(TAG, "Directory " + sWorkDir + " does not exists");
-        return false;
-    }
+  if (!this->applyConfig()) {
+    WsjcppLog::err(TAG, "Configuration file has some problems");
+    return false;
+  }
 
-    // init logger
-    std::string sLogDir = sWorkDir + "/logs";
-    if (!WsjcppCore::dirExists(sLogDir)) {
-        WsjcppCore::makeDir(sLogDir);
-        std::string sError;
-        if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x776), sError)) {
-            WsjcppLog::throw_err(TAG, sError);
-        }
-    }
-    if (!WsjcppCore::dirExists(sLogDir)) {
-        std::cout << "Error: Folder '" << sLogDir << "' does not exists and could not created, please check access rights to parent folder.\n";
-        return false;
-    }
-    WsjcppLog::setPrefixLogFile("ctf01d");
-    WsjcppLog::setLogDirectory(sLogDir);
-    WsjcppLog::setRotationPeriodInSec(600); // every 10 min  // TODO rotation period must be in config.yml
-    WsjcppLog::setEnableLogFile(true);
-
-    std::cout << "Logger: '" + sWorkDir + "/logs/' \n";
-
-    this->doExtractFilesIfNotExists();
-
-    std::string sConfigFile = m_sWorkDir + "/config.yml";
-    m_files_watcher->watchFile(sConfigFile);
-
-    if (!this->applyConfig()) {
-        WsjcppLog::err(TAG, "Configuration file has some problems");
-        return false;
-    }
-
-    return true;
+  return true;
 }
 
 bool EmployConfig::deinit(const std::string &sName, bool bSilent) {
@@ -134,6 +108,7 @@ void EmployConfig::setWorkDir(const std::string &sWorkDir) {
         std::cout << "Changed work-dir to '" + sWorkDir + "'" << std::endl;
     }
     m_sWorkDir = sWorkDir;
+    m_sConfigFilepath = m_sWorkDir + "/config.yml";
     m_sScoreboardHtmlFolder = m_sWorkDir + "/html"; // default value
 }
 
@@ -714,5 +689,47 @@ bool EmployConfig::isValidIPv4(const std::string &sValue, std::string &sError) {
       return false;
     }
   }
+  return true;
+}
+
+bool EmployConfig::initWorkDir() {
+  // has a more high priority, then a -work-dir from command  line
+  tryLoadFromEnv("CTF01D_WORKDIR", m_sWorkDir, "Work Directory from environment");
+  WsjcppLog::info(TAG, "Work Directory is " + m_sWorkDir);
+  std::string sWorkDir = this->getWorkDir();
+  if (sWorkDir == "") {
+    WsjcppLog::throw_err(TAG, "Work Directory not defined.");
+    return false;
+  }
+  if (!WsjcppCore::dirExists(sWorkDir)) {
+    WsjcppLog::err(TAG, "Directory " + sWorkDir + " does not exists");
+    return false;
+  }
+  return true;
+}
+
+bool EmployConfig::initLogger() {
+  // init logger
+  std::string sLogDir = m_sWorkDir + "/logs/" + WsjcppCore::getCurrentTimeForFilename();
+  sLogDir = wsjcpp::normalizeFilePath(sLogDir);
+  if (!WsjcppCore::dirExists(sLogDir)) {
+    if (!WsjcppCore::makeDirsPath(sLogDir)) {
+      WsjcppLog::err(TAG, "Could not make dirs for logs: " + sLogDir);
+      return false;
+    }
+    std::string sError;
+    if (!WsjcppCore::setFilePermissions(sLogDir, WsjcppFilePermissions(0x776), sError)) {
+      WsjcppLog::throw_err(TAG, sError);
+    }
+  }
+  if (!WsjcppCore::dirExists(sLogDir)) {
+    std::cout << "Error: Folder '" << sLogDir << "' does not exists and could not created, please check access rights to parent folder.\n";
+    return false;
+  }
+  WsjcppLog::setPrefixLogFile("ctf01d");
+  WsjcppLog::setLogDirectory(sLogDir);
+  WsjcppLog::setRotationPeriodInSec(600); // every 10 min  // TODO rotation period must be in config.yml
+  WsjcppLog::setEnableLogFile(true);
+  std::cout << "Logger: '" + sLogDir + "' \n";
   return true;
 }

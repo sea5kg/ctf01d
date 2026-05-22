@@ -91,9 +91,12 @@ private:
   bool readTeamsConf(WsjcppYaml &yamlConfig);
   void tryLoadFromEnv(const std::string &sEnvName, std::string &sValue, const std::string &sDescription);
   bool isValidIPv4(const std::string &sValue, std::string &sError);
+  bool initWorkDir();
+  bool initLogger();
 
   std::string TAG;
   std::string m_sWorkDir;
+  std::string m_sConfigFilepath;
   bool m_bAppliedConfig;
 
   std::shared_ptr<Ctf01dScoreboard> m_pScoreboard;
