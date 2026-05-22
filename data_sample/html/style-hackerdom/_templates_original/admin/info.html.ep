@@ -1,0 +1,16 @@
+% layout 'default';
+% title '[admin] ' . app->ctf_name;
+
+<div class="container">
+  <div>
+    <h1>Game Status <small>on <%= $now %></small></h1>
+    <pre><%= $game_status %></pre>
+  </div>
+
+  % for my $row (@$tables) {
+    <div>
+      <h1><%= $row->{name} %></h1>
+      <pre><%= $row->{data} %></pre>
+    </div>
+  % }
+</div>

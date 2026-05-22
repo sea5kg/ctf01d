@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1" />
+    <link rel="stylesheet" href="/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/default.css">
+    <script src="/mojo/jquery/jquery.js"></script>
+    <title><%= title %></title>
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-static-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="<%= url_for(current_route =~ /admin/ ? 'admin_index' : 'index') %>">
+            <%= app->ctf_name %>
+          </a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            % for my $link (@{app->config->{cs}{links}}) {
+              <li><a href="<%= $link->{ref} %>"><%= $link->{name} %></a></li>
+            % }
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><div id="round" class="navbar-text"><%= content_for 'r' %></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <%= content %>
+    <script>
+      $('img').bind('error', function() { $(this).attr('src', '/logo.png'); });
+    </script>
+  </body>
+</html>

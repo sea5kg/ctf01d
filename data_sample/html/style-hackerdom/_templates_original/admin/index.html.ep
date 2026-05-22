@@ -1,0 +1,8 @@
+% layout 'default';
+% title '[admin] ' . app->ctf_name;
+
+% content_for r => begin
+  Round <%= $round %>
+% end
+
+%= include 'scoreboard';

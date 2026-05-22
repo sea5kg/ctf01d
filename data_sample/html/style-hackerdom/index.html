@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1" />
+  <link rel="stylesheet" href="./css/bootstrap.css">
+  <link rel="stylesheet" href="./css/bootstrap-theme.css">
+  <link rel="stylesheet" href="./css/default.css">
+  <title>ctf01d</title>
+</head>
+<body>
+  <div class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" id="game_name" href="/">ctf01d</a>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><div id="round" class="navbar-text"></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="scoreboard_wrapper">
+    <table class="table table-condensed status_descriptions">
+      <tr class="text-center">
+        <td class="col-md-3 status_up">UP</td>
+        <td class="col-md-3 status_corrupt">CORRUPT</td>
+        <td class="col-md-3 status_mumble">MUMBLE</td>
+        <td class="col-md-3 status_down">DOWN</td>
+      </tr>
+    </table>
+
+    <div id="scoreboard">
+      <table class="table table-bordered table-condensed scoreboard">
+        <thead>
+          <tr class="team">
+            <th class="place">#</th>
+            <th colspan="2">team</th>
+            <th>score</th>
+            <!-- service columns injected by js -->
+          </tr>
+        </thead>
+        <tbody id="scoreboard_body">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="./js/scoreboard.js"></script>
+</body>
+</html>
