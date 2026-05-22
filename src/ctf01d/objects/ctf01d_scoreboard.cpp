@@ -49,8 +49,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   int nGameStartInSec,
   int nGameEndInSec,
   int nGameCoffeeBreakStartInSec,
-  int nGameCoffeeBreakEndInSec,
-  int nFlagTimeLiveInSec
+  int nGameCoffeeBreakEndInSec
 ) {
   TAG = "Ctf01dScoreboard";
   EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
@@ -66,7 +65,6 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   m_nGameEndInSec = nGameEndInSec;
   m_nGameCoffeeBreakStartInSec = nGameCoffeeBreakStartInSec;
   m_nGameCoffeeBreakEndInSec = nGameCoffeeBreakEndInSec;
-  m_nFlagTimeLiveInSec = nFlagTimeLiveInSec;
   m_nAllDefenseFlags = 0;
   m_nAllTriesActivities = 0;
   m_nCostDefenseFlagInPoints10 = 10;
@@ -507,7 +505,7 @@ void Ctf01dScoreboard::updateServicesStatistics() {
 std::vector<Ctf01dFlag> Ctf01dScoreboard::outdatedFlagsLive(const std::string &sTeamId, const std::string &sServiceId) {
   std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
   std::vector<Ctf01dFlag> vResult;
-  long nCurrentTime = WsjcppCore::getCurrentTimeInMilliseconds() - m_nFlagTimeLiveInSec*1000;
+  long nCurrentTime = WsjcppCore::getCurrentTimeInMilliseconds();
   std::map<std::string,Ctf01dFlag>::iterator it;
   for (it = m_mapFlagsLive.begin(); it != m_mapFlagsLive.end(); it++) {
     Ctf01dFlag flag = it->second;

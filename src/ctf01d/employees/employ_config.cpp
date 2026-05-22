@@ -163,8 +163,7 @@ bool EmployConfig::applyConfig() {
         m_nGameStartUTCInSec,
         m_nGameEndUTCInSec,
         m_nGameCoffeeBreakStartUTCInSec,
-        m_nGameCoffeeBreakEndUTCInSec,
-        m_nFlagTimeliveInMin*60
+        m_nGameCoffeeBreakEndUTCInSec
     );
 
     m_bAppliedConfig = true;

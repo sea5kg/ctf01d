@@ -53,8 +53,7 @@ public:
     int nGameStartInSec,
     int nGameEndInSec,
     int nGameCoffeeBreakStartInSec,
-    int nGameCoffeeBreakEndInSec,
-    int nFlagTimeLiveInSec
+    int nGameCoffeeBreakEndInSec
   );
 
   void setServiceStatus(const std::string &sTeamId, const std::string &sServiceId, const std::string &sStatus);
@@ -87,7 +86,6 @@ private:
   int m_nGameEndInSec;
   int m_nGameCoffeeBreakStartInSec;
   int m_nGameCoffeeBreakEndInSec;
-  int m_nFlagTimeLiveInSec;
   int m_nTeamCount;
 
   void sortPlaces(); // TODO merge this function with update costs
