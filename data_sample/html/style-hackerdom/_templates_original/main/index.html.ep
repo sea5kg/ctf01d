@@ -1,0 +1,39 @@
+% layout 'default';
+% title app->ctf_name;
+
+% content_for r => begin
+  Round <%= $round %>
+% end
+
+%= include 'scoreboard';
+
+<script>
+  var attempts = 1;
+  function create_ws() {
+    var wsproto = location.protocol === 'https:' ? 'wss' : 'ws';
+    var ws = new WebSocket(wsproto + '://' + location.host + '<%= url_for('update') %>');
+
+    ws.onopen = function(event) {
+      attempts = 1;
+      ws.onmessage = function(event) {
+        data = JSON.parse(event.data);
+        $('div#round').html(data.round);
+        $('div#scoreboard_wrapper').replaceWith(data.scoreboard);
+      };
+    }
+
+    ws.onclose = function(event) {
+      if (event.code != 1005) {
+        setTimeout(function() { attempts++; create_ws() }, gen_interval(attempts))
+      }
+    }
+  }
+
+  function gen_interval(k) {
+    var interval = (Math.pow(2, k) - 1) * 1000;
+    if (interval > 30 * 1000) { interval = 30 * 1000; }
+    return Math.random() * interval;
+  }
+
+ create_ws();
+</script>
