@@ -360,6 +360,7 @@ void Ctf01dScoreboard::incrementDefenseScore(const Ctf01dFlag &flag) {
     sortPlaces();
   }
 
+  // TODO call Employ Scoreboard
   std::map<std::string, Ctf01dServiceStatistics *>::iterator it2;
   it2 = m_mapServiceCostsAndStatistics.find(sServiceId);
   if (it2 != m_mapServiceCostsAndStatistics.end()) {

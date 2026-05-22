@@ -49,6 +49,9 @@ public:
   virtual bool deinit(const std::string &sName, bool bSilent) override;
 
 private:
+  bool initServicesStats();
+
   std::string TAG;
-  std::map<std::string, std::shared_ptr<Ctf01dServiceStatistics>> m_mapServiceStatistics;
+  std::mutex m_mutex_services_stats;
+  std::map<std::string, std::shared_ptr<Ctf01dServiceStatistics>> m_map_services_stats;
 };

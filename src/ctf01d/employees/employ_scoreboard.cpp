@@ -53,16 +53,9 @@ EmployScoreboard::EmployScoreboard()
 }
 
 bool EmployScoreboard::init(const std::string &sName, bool bSilent) {
-  EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<Ctf01dTeamDef> &vTeamsConf = pEmployConfig->teamsConf();
-  const std::vector<Ctf01dServiceDef> &vServicesConf = pEmployConfig->servicesConf();
-
-  // keep the list of the services ids
-  for (unsigned int i = 0; i < vServicesConf.size(); i++) {
-    std::string service_id = vServicesConf[i].id();
-    m_mapServiceStatistics[service_id] = std::make_shared<Ctf01dServiceStatistics>(service_id);
+  if (!initServicesStats()) {
+    return false;
   }
-
   return true;
 }
 
@@ -71,4 +64,19 @@ bool EmployScoreboard::deinit(const std::string &sName, bool bSilent) {
   return true;
 }
 
+bool EmployScoreboard::initServicesStats() {
+  std::lock_guard<std::mutex> lock(m_mutex_services_stats);
+  m_map_services_stats.clear();
+
+  EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
+  const std::vector<Ctf01dTeamDef> &teams_conf = pEmployConfig->teamsConf();
+  const std::vector<Ctf01dServiceDef> &services_conf = pEmployConfig->servicesConf();
+
+  // keep the list of the services ids
+  for (unsigned int i = 0; i < services_conf.size(); i++) {
+    std::string service_id = services_conf[i].id();
+    m_map_services_stats[service_id] = std::make_shared<Ctf01dServiceStatistics>(service_id);
+  }
+  return true;
+}
 
