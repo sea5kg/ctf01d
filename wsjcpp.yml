@@ -444,4 +444,94 @@ resources:
       pack-as: "binary"
       modified: 1779212225
       sha1: "271ee36368b1ccb15a3d4ebb73c4f108bbad1558"
+    - filepath: "./data_sample/html/style-hackerdom/index.html"
+      size: 1589
+      pack-as: "binary"
+      modified: 1779546228
+      sha1: "092e7e65f7d546e7c106922fd3559b4f7fe35dad"
+    - filepath: "./data_sample/html/style-hackerdom/logo.png"
+      size: 1642
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "6ef12b6e3cee2ac5d6acbda41c4f768f62e188bc"
+    - filepath: "./data_sample/html/style-hackerdom/js/scoreboard.js"
+      size: 5259
+      pack-as: "binary"
+      modified: 1779546299
+      sha1: "ef809a063efacf38f430d923ce73dcd501efd408"
+    - filepath: "./data_sample/html/style-hackerdom/fonts/glyphicons-halflings-regular.eot"
+      size: 20127
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "86b6f62b7853e67d3e635f6512a5a5efc58ea3c3"
+    - filepath: "./data_sample/html/style-hackerdom/fonts/glyphicons-halflings-regular.ttf"
+      size: 45404
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "44bc1850f570972267b169ae18f1cb06b611ffa2"
+    - filepath: "./data_sample/html/style-hackerdom/fonts/glyphicons-halflings-regular.woff2"
+      size: 18028
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "ca35b697d99cae4d1b60f2d60fcd37771987eb07"
+    - filepath: "./data_sample/html/style-hackerdom/fonts/glyphicons-halflings-regular.svg"
+      size: 108738
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "de51a8494180a6db074af2dee2383f0a363c5b08"
+    - filepath: "./data_sample/html/style-hackerdom/fonts/glyphicons-halflings-regular.woff"
+      size: 23424
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "278e49a86e634da6f2a02f3b47dd9d2a8f26210f"
+    - filepath: "./data_sample/html/style-hackerdom/css/default.css"
+      size: 2322
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "1439385df7d229a37dca06d0074581ff1ec41a6c"
+    - filepath: "./data_sample/html/style-hackerdom/css/bootstrap-theme.css"
+      size: 22608
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "a22e254bf086bf442a09344afe0e6cf188f5a1d5"
+    - filepath: "./data_sample/html/style-hackerdom/css/bootstrap.css"
+      size: 141622
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "f2183455571b19311a235bd5aa204e694ade8e94"
+    - filepath: "./data_sample/html/style-hackerdom/_templates_original/scoreboard.html.ep"
+      size: 2771
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "b64de659e93e6edcb9ceb3cd2c8f9f59374dc20c"
+    - filepath: "./data_sample/html/style-hackerdom/_templates_original/main/index.html.ep"
+      size: 957
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "9db36a50787da623ccffa26dfca09cabdddc9e25"
+    - filepath: "./data_sample/html/style-hackerdom/_templates_original/main/team.html.ep"
+      size: 1993
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "ad9749f360822f864d369feb9737fdb17f2c81d0"
+    - filepath: "./data_sample/html/style-hackerdom/_templates_original/layouts/default.html.ep"
+      size: 1228
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "8390d5ef6f12003b84777c095cd0f54dc718a17b"
+    - filepath: "./data_sample/html/style-hackerdom/_templates_original/admin/view.html.ep"
+      size: 2883
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "652ffba45038054f015f0029fcf3219dd553eb2f"
+    - filepath: "./data_sample/html/style-hackerdom/_templates_original/admin/index.html.ep"
+      size: 136
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "2f0b4dc22f44549ffc98891776c4b1fadbfcc345"
+    - filepath: "./data_sample/html/style-hackerdom/_templates_original/admin/info.html.ep"
+      size: 324
+      pack-as: "binary"
+      modified: 1779545914
+      sha1: "aa97060011deac6493bb80c578433a080eaf574c"
 
