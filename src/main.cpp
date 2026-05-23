@@ -39,47 +39,96 @@
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
 
-int main(int argc, const char* argv[]) {
-    std::string TAG = "MAIN";
-    std::string appName = std::string(WSJCPP_APP_NAME);
-    std::string appVersion = std::string(WSJCPP_APP_VERSION);
 
-    // previous logs in current directory
-    if (!WsjcppCore::dirExists(".ctf01d")) {
-        WsjcppCore::makeDir(".ctf01d");
+std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
+  std::vector<std::string> ret;
+  for (int i = 0; i < argc; i++) {
+    ret.push_back(std::string(argv[i]));
+  }
+  return ret;
+}
+
+
+std::string tryResolveRelativePath(const std::string &path) {
+  std::string ret;
+  if (path.size() > 0 && path[0] != '/') {
+      ret = WsjcppCore::getCurrentDirectory() + "/" + path;
+  }
+  return wsjcpp::normalizeFilePath(ret);
+}
+
+bool findWorkDir(std::vector<std::string> &arguments, std::string &workDir) {
+  bool found = false;
+
+  // try find in a program arguments
+  for (int i = 0; i < arguments.size(); i++) {
+    std::string arg = arguments[i];
+    if (arg == "--work-dir" || arg == "-work-dir" || arg == "-w") {
+      if (i + 1 < arguments.size()) {
+        found = true;
+        workDir = tryResolveRelativePath(arguments[i + 1]);
+        arguments.erase(arguments.begin() + i, arguments.begin() + i + 1);
+        break;
+      }
     }
-    WsjcppLog::setPrefixLogFile("ctf01d");
-    WsjcppLog::setLogDirectory(".ctf01d");
+  }
 
-    // try find config.yml
+  // Anyway, try read from environment. And override from args.
+  if (WsjcppCore::getEnv("CTF01D_WORKDIR", workDir)) {
+    std::cout << "Working directory get from environment variable CTF01D_WORKDIR: " << workDir << std::endl;
+    return true;
+  }
+
+  // try find by default paths
+  if (!found) {
     std::vector<std::string> vPossibleFolders = {
-        "./",
-        "./data_sample/",
-        "/root/data/"
+      tryResolveRelativePath("./"),
+      tryResolveRelativePath("./data_sample/"),
+      tryResolveRelativePath("/root/data/")
     };
 
     for (int i = 0; i < vPossibleFolders.size(); i++) {
-        std::string sWorkDir = vPossibleFolders[i];
-        if (sWorkDir[0] != '/') {
-            sWorkDir = WsjcppCore::getCurrentDirectory() + "/" + sWorkDir;
-        }
-        sWorkDir = wsjcpp::normalizeFilePath(sWorkDir);
-        if (WsjcppCore::fileExists(sWorkDir + "/config.yml")) {
-            std::cout << "Automatically detected workdir: " << sWorkDir << std::endl;
-            EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-            pConfig->setWorkDir(sWorkDir);
-            break;
-        }
+      std::string sWorkDir = vPossibleFolders[i];
+      if (WsjcppCore::fileExists(sWorkDir + "/config.yml")) {
+        found = true;
+        workDir = sWorkDir;
+        break;
+      }
     }
+    if (found) {
+      std::cout << "Automatically detected working directory: " << workDir << std::endl;
+    }
+  }
+  return found;
+}
 
-    // websocket_server_t server;
-    // server.service = pRouter;
-    // server.port = 12345;
-    // // server.ws = pWs;
-    // websocket_server_run(&server);
 
-    ArgumentProcessorCtf01dMain *pMain = new ArgumentProcessorCtf01dMain();
-    WsjcppArguments prog(argc, argv, pMain);
-    int nRet = prog.exec();
-    return nRet;
+int main(int argc, const char* argv[]) {
+  std::string TAG = "MAIN";
+  std::string appName = std::string(WSJCPP_APP_NAME);
+  std::string appVersion = std::string(WSJCPP_APP_VERSION);
+
+  // disable log in first
+  WsjcppLog::setEnableLogFile(false);
+  WsjcppLog::setPrefixLogFile("ctf01d");
+
+  // parse arguments
+  std::vector<std::string> arguments = argumentsToVector(argc, argv);
+  std::string programName = arguments[0];
+  arguments.erase(arguments.begin());
+
+  std::string sWorkDir;
+  if (!findWorkDir(arguments, sWorkDir)) {
+    std::cout << "Working directory not found: " << sWorkDir << std::endl;
+    return -1;
+  }
+  std::cout << "WorkDir: " << sWorkDir << std::endl;
+
+  EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
+  pConfig->setWorkDir(sWorkDir);
+
+  ArgumentProcessorCtf01dMain *pMain = new ArgumentProcessorCtf01dMain();
+  WsjcppArguments prog(argc, argv, pMain);
+  int nRet = prog.exec();
+  return nRet;
 }

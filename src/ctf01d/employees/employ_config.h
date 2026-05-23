@@ -89,7 +89,6 @@ private:
   bool applyScoreboardConf(WsjcppYaml &yamlConfig);
   bool applyCheckersConf(WsjcppYaml &yamlConfig);
   bool readTeamsConf(WsjcppYaml &yamlConfig);
-  void tryLoadFromEnv(const std::string &sEnvName, std::string &sValue, const std::string &sDescription);
   bool isValidIPv4(const std::string &sValue, std::string &sError);
   bool initWorkDir();
   bool initLogger();

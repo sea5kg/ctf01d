@@ -651,14 +651,6 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
     return true;
 }
 
-void EmployConfig::tryLoadFromEnv(const std::string &sEnvName, std::string &sValue, const std::string &sDescription) {
-    if (sValue == "") { // only if not define previously (from command line param)
-        if (WsjcppCore::getEnv(sEnvName, sValue)) {
-            WsjcppLog::info(TAG, sDescription + ": " + sValue);
-        }
-    }
-}
-
 bool EmployConfig::isValidIPv4(const std::string &sValue, std::string &sError) {
   int n = 0;
   std::string s[4] = {"", "", "", ""};
@@ -695,8 +687,6 @@ bool EmployConfig::isValidIPv4(const std::string &sValue, std::string &sError) {
 }
 
 bool EmployConfig::initWorkDir() {
-  // has a more high priority, then a -work-dir from command  line
-  tryLoadFromEnv("CTF01D_WORKDIR", m_sWorkDir, "Work Directory from environment");
   WsjcppLog::info(TAG, "Work Directory is " + m_sWorkDir);
   std::string sWorkDir = this->getWorkDir();
   if (sWorkDir == "") {

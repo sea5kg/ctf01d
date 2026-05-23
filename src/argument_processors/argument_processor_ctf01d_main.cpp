@@ -70,9 +70,7 @@ bool ArgumentProcessorCtf01dMain::applyParameterArgument(
     EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
 
     if (sArgumentName == "-work-dir") {
-        std::string sWorkDir = WsjcppCore::getCurrentDirectory() + sValue;
-        sWorkDir = wsjcpp::normalizeFilePath(sWorkDir);
-        pConfig->setWorkDir(sWorkDir);
+        // moved logic to main.cpp
         return true;
     }
 
