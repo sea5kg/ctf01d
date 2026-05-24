@@ -102,6 +102,39 @@ bool findWorkDir(std::vector<std::string> &arguments, std::string &workDir) {
   return found;
 }
 
+bool tryFindSingleArgument(const std::vector<std::string> &argNames, std::vector<std::string> &arguments) {
+  for (int i = 0; i < arguments.size(); i++) {
+    std::string arg = arguments[i];
+    if (std::find(argNames.begin(), argNames.end(), arg) != argNames.end()) {
+      arguments.erase(arguments.begin() + i);
+      return true;
+    }
+  }
+  return false;
+}
+
+void printHelp(const std::string &programName) {
+  std::cout
+    << std::endl
+    << "Usage: " << programName << " [OPTIONS] COMMAND" << std::endl
+    << std::endl
+    << "Jury System for ctf-attack-defense" << std::endl
+    << std::endl
+    << "  example: 'ctf01d -w ./data_test start'" << std::endl
+    << std::endl
+    << "OPTIONS:" << std::endl
+    << "  --work-dir, -work-dir, -w path         Custom workspace folder with configs, logging, " << std::endl
+    << "                                         checker scripts and etc. (env: CTF01D_WORKDIR)" << std::endl
+    << "  --version, -version, -v, version       Print version and exit" << std::endl
+    << "  --help, -help, help, -h                Print help and exit" << std::endl
+    << std::endl
+    << "COMMANDS:" << std::endl
+    << "  web-test                               Start alone http server for test" << std::endl
+    << "  start                                  Start ctf01d attack-defense jury system." << std::endl
+    << std::endl
+  ;
+}
+
 
 int main(int argc, const char* argv[]) {
   std::string TAG = "MAIN";
@@ -116,6 +149,16 @@ int main(int argc, const char* argv[]) {
   std::vector<std::string> arguments = argumentsToVector(argc, argv);
   std::string programName = arguments[0];
   arguments.erase(arguments.begin());
+
+  if (tryFindSingleArgument({"--version", "-version", "version", "-v"}, arguments)) {
+    std::cout << appName << " " << appVersion << std::endl;
+    return 0;
+  }
+
+  if (tryFindSingleArgument({"--help", "-help", "help", "-h"}, arguments)) {
+    printHelp(programName);
+    return -1;
+  }
 
   std::string sWorkDir;
   if (!findWorkDir(arguments, sWorkDir)) {
