@@ -38,7 +38,7 @@
 #include <argument_processor_ctf01d_main.h>
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
-
+#include "ctf01d/employees/employ_web_server.h"
 
 std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
   std::vector<std::string> ret;
@@ -47,7 +47,6 @@ std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
   }
   return ret;
 }
-
 
 std::string tryResolveRelativePath(const std::string &path) {
   std::string ret;
@@ -67,7 +66,7 @@ bool findWorkDir(std::vector<std::string> &arguments, std::string &workDir) {
       if (i + 1 < arguments.size()) {
         found = true;
         workDir = tryResolveRelativePath(arguments[i + 1]);
-        arguments.erase(arguments.begin() + i, arguments.begin() + i + 1);
+        arguments.erase(arguments.begin() + i, arguments.begin() + i + 2);
         break;
       }
     }
@@ -135,7 +134,6 @@ void printHelp(const std::string &programName) {
   ;
 }
 
-
 int main(int argc, const char* argv[]) {
   std::string TAG = "MAIN";
   std::string appName = std::string(WSJCPP_APP_NAME);
@@ -166,9 +164,29 @@ int main(int argc, const char* argv[]) {
     return -1;
   }
   std::cout << "WorkDir: " << sWorkDir << std::endl;
-
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
   pConfig->setWorkDir(sWorkDir);
+
+  if (arguments.size() == 0) {
+    std::cout << "Not found command. Please run '" << programName << " help'" << std::endl;
+    return -1;
+  }
+
+  if (arguments.size() != 1) {
+    std::cout << "Unknown arguments. Please run '" << programName << " help'" << std::endl;
+    return -1;
+  }
+
+  std::string commandName = arguments[0];
+
+  if (commandName == "web-test") {
+    WsjcppLog::info(TAG, "Web Test...");
+    if (!WsjcppEmployees::init({})) {
+        WsjcppLog::err(TAG, "Failed.");
+        return -1;
+    }
+    return findWsjcppEmploy<EmployWebServer>()->start();
+  }
 
   ArgumentProcessorCtf01dMain *pMain = new ArgumentProcessorCtf01dMain();
   WsjcppArguments prog(argc, argv, pMain);
