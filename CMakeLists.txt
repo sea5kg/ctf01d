@@ -59,8 +59,6 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/checker")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/third_party/sqlite3/src")
 
 # argument processors
-list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_check.cpp")
-list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_clean.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_ctf01d_main.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_start.cpp")
 list (APPEND WSJCPP_SOURCES "./src/argument_processors/argument_processor_version.cpp")

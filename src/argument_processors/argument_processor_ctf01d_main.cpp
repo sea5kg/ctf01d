@@ -39,8 +39,6 @@
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
 #include <argument_processor_start.h>
-#include <argument_processor_clean.h>
-#include <argument_processor_check.h>
 #include <argument_processor_version.h>
 #include <argument_processor_web_test.h>
 
@@ -52,10 +50,8 @@ ArgumentProcessorCtf01dMain::ArgumentProcessorCtf01dMain()
     TAG = "ArgumentProcessorCtf01dMain";
     // registrySingleArgument("--single", "What exactly do this single param?");
     registryParameterArgument("-work-dir", "path", "Custom workspace folder with configs, logging, checker scripts and etc. (env: CTF01D_WORKDIR)");
-    registryExample("ctf01d -work-dir ./data_test -db-host localhost start");
+    registryExample("ctf01d -work-dir ./data_test start");
     registryProcessor(new ArgumentProcessorVersion());
-    registryProcessor(new ArgumentProcessorCheck());
-    registryProcessor(new ArgumentProcessorClean());
     registryProcessor(new ArgumentProcessorWebTest());
     registryProcessor(new ArgumentProcessorStart());
 }
