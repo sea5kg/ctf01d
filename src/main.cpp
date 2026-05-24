@@ -35,8 +35,8 @@
  *
  ***********************************************************************************/
 
-#include <argument_processor_ctf01d_main.h>
 #include <wsjcpp_core.h>
+#include "service_checker_thread.h"
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/employees/employ_web_server.h"
 
@@ -177,9 +177,9 @@ int main(int argc, const char* argv[]) {
     return -1;
   }
 
-  std::string commandName = arguments[0];
+  std::string command = arguments[0];
 
-  if (commandName == "web-test") {
+  if (command == "web-test") {
     WsjcppLog::info(TAG, "Web Test...");
     if (!WsjcppEmployees::init({})) {
         WsjcppLog::err(TAG, "Failed.");
@@ -188,8 +188,42 @@ int main(int argc, const char* argv[]) {
     return findWsjcppEmploy<EmployWebServer>()->start();
   }
 
-  ArgumentProcessorCtf01dMain *pMain = new ArgumentProcessorCtf01dMain();
-  WsjcppArguments prog(argc, argv, pMain);
-  int nRet = prog.exec();
-  return nRet;
+  if (command == "start") {
+    WsjcppLog::info(TAG, "Starting...");
+    if (!WsjcppEmployees::init({})) {
+      WsjcppLog::err(TAG, "Start failed on step init configs.");
+      return -1;
+    }
+
+    // signal( SIGINT, quitApp );
+    // signal( SIGTERM, quitApp );
+
+    EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
+
+    // TODO move to hot reload and EmployScoreboard::init
+    WsjcppLog::info(TAG, "Restoring states from storage...");
+    pEmployConfig->scoreboard()->initStateFromStorage();
+    WsjcppLog::ok(TAG, "Restored state from storage.");
+    std::vector<ServiceCheckerThread *> vThreads;
+    WsjcppLog::info(TAG, "Starting threads...");
+    for (unsigned int iservice = 0; iservice < pEmployConfig->servicesConf().size(); iservice++) {
+      for (unsigned int i_team = 0; i_team < pEmployConfig->teamsConf().size(); i_team++) {
+        Ctf01dTeamDef teamConf = pEmployConfig->teamsConf()[i_team];
+        Ctf01dServiceDef serviceConf = pEmployConfig->servicesConf()[iservice];
+
+        // reset status to down
+        pEmployConfig->scoreboard()->setServiceStatus(teamConf.getId(), serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
+        // pConfig->scoreboard()->setTeamTries();
+
+        ServiceCheckerThread *thr = new ServiceCheckerThread(teamConf, serviceConf);
+        thr->start();
+        vThreads.push_back(thr);
+      }
+    }
+    WsjcppLog::info(TAG, std::to_string(vThreads.size()) + " threads started");
+    return findWsjcppEmploy<EmployWebServer>()->start();
+  }
+
+  std::cout << "Unknown command '" << command << "'. Please run '" << programName << " help'" << std::endl;
+  return -1;
 }
