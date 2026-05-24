@@ -530,3 +530,15 @@ resources:
       modified: 1779545914
       sha1: "aa97060011deac6493bb80c578433a080eaf574c"
 
+    - filepath: "./data_sample/checker_example_service5/checker.py"
+      size: 4953
+      pack-as: "binary"
+      modified: 1779212205
+      sha1: "a9b87406711c0eeba69b3e91da440ba5782954d9"
+
+    - filepath: "./data_sample/checker_example_service6/checker.py"
+      size: 4953
+      pack-as: "binary"
+      modified: 1779212219
+      sha1: "ba988adef1e1598a708d4ab5faa851812b4e8d74"
+
