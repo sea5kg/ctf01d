@@ -5,6 +5,27 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.6.1] - (2026 ?? ??)
+
+- Added style-hackerdom scoreboard frontend
+- Moved parse command line to main.cpp and removed unused wsjcpp-arguments
+- remove flag live time and fix script permissions. close #87
+- Set permissions on extracted files #89
+- Added new helper Ctf01dFilesWatcher and unit-tests for it
+- Refactored code
+- Moved part of functionallity from ctf01d_http_server to employ_web_server
+- Moved from 'employees' to 'ctf01d/employees'
+- Fix indents in index.html
+- Added 'DOCTYPE html' to index.html
+- Redesign libhv logs to custom
+- Init empty EmployWebServer and moved start web server to employ_web_server
+- Updated wsjcpp-employees from v0.1.2 to v0.2.1
+- Updated copyrights
+- Moved few objects from different places to src/ctf01d/objects/
+- Removed wsjcpp_validators
+- eliminate flag-submission race by moving dedup check under scoreboard mutex
+- Moved src/wsjcpp-resources -> src/wsjcpp_resources
+
 ## [v0.6.0] - (2026 May 20)
 
 - Scoring has been moved to a separate class and a test has been added.
@@ -178,14 +199,4 @@ Nope
 ### Security
 
 Nope
-
-
-
-
-
-
-
-
-
-
 
