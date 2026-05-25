@@ -39,6 +39,7 @@
 
 #include <wsjcpp_employees.h>
 #include <string>
+#include "HttpService.h" // libhv
 
 class EmployWebServer : public WsjcppEmployBase {
 public:
@@ -50,6 +51,7 @@ public:
   int start();
 
   // TODO to private
+  int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
   const std::string &getJsonGameCache();
   const std::string &getJsonTeamsCache();
 

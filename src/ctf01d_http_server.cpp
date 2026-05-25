@@ -162,7 +162,8 @@ int Ctf01dHttpServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
         } else if (request_path == "/api/v1/scoreboard") { // Public endpoint. Allowed without authorization.
             return this->httpApiV1Scoreboard(req, resp);
         } else if (request_path == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
-            return this->httpApiV1MyIp(req, resp);
+            auto webServer = findWsjcppEmploy<EmployWebServer>();
+            return webServer->httpApiV1MyIp(req, resp);
         } else if (request_path == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
             resp->Data(
                 (void *)(m_sCacheResponseTeamsJson.c_str()),
@@ -370,10 +371,5 @@ int Ctf01dHttpServer::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
         true // nocopy
     );
     resp->SetContentTypeByFilename("game.json");
-    return 200;
-}
-
-int Ctf01dHttpServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
-    resp->json["myip"] = req->client_addr.ip;
     return 200;
 }

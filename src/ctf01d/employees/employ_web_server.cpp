@@ -66,6 +66,8 @@ int EmployWebServer::start() {
 
   WsjcppLog::ok(TAG, "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/");
 
+  updateJsonCache();
+
   Ctf01dHttpServer httpServer;
   std::shared_ptr<hv::HttpService> pRouter = httpServer.getService();
   hv::HttpServer server(pRouter.get());
@@ -92,6 +94,11 @@ const std::string &EmployWebServer::getJsonGameCache() {
 const std::string &EmployWebServer::getJsonTeamsCache() {
   updateJsonCache();
   return m_sCacheResponseTeamsJson;
+}
+
+int EmployWebServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
+    resp->json["myip"] = req->client_addr.ip;
+    return 200;
 }
 
 void EmployWebServer::updateJsonCache() {
