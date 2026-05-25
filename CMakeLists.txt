@@ -70,9 +70,6 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_web
 list (APPEND WSJCPP_SOURCES "src/checker/dorunchecker.cpp")
 list (APPEND WSJCPP_SOURCES "src/checker/service_checker_thread.cpp")
 
-# http_server
-list (APPEND WSJCPP_SOURCES "src/ctf01d_http_server.cpp")
-
 # objects
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_database_file.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_files_watcher.cpp")

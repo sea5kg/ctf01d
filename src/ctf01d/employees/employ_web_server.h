@@ -50,16 +50,26 @@ public:
 
   int start();
 
-  // TODO to private
-  int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
-  const std::string &getJsonGameCache();
-  const std::string &getJsonTeamsCache();
-
 private:
   std::string TAG;
 
   void updateJsonCache();
 
+  int httpWebFolder(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Game(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Teams(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Flag(HttpRequest* req, HttpResponse* resp);
+  int httpTeamLogos(const std::string &request_path, HttpRequest* req, HttpResponse* resp);
+
+  std::shared_ptr<hv::HttpService> m_pHttpService;
+  std::string m_sApiPathPrefix;
+  std::string m_sTeamLogoPrefix;
+  int m_nTeamLogoPrefixLength;
+  std::string m_sIndexHtml;
+  std::string m_sScoreboardHtmlFolder;
   std::string m_sCacheResponseGameJson;
   std::string m_sCacheResponseTeamsJson;
 };
