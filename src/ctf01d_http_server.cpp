@@ -92,17 +92,6 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
         hlogi("This is an info message.");
     }
 
-    // {
-    //     logger_t* pLogger = hv_default_logger();
-    //     // logger_set_max_filesize(pLogger, 102400);
-    //     std::string sLogDirPath = m_pConfig->getWorkDir() + "/hv_logs";
-    //     if (!WsjcppCore::dirExists(sLogDirPath)) {
-    //         WsjcppCore::makeDir(sLogDirPath);
-    //     }
-    //     std::string sLogFilePath = sLogDirPath + "/http_" + WsjcppCore::getCurrentTimeForFilename() + ".log";
-    //     logger_set_file(pLogger, sLogFilePath.c_str());
-    // }
-
     m_sApiPathPrefix = "/api/v1/";
     m_sTeamLogoPrefix = "/team-logo/";
     m_nTeamLogoPrefixLength = m_sTeamLogoPrefix.size();
@@ -114,12 +103,7 @@ Ctf01dHttpServer::Ctf01dHttpServer() {
 
     // static files
     m_pHttpService->document_root = "./html";
-
-    // m_pHttpService->GET("/api/", std::bind(&Ctf01dHttpServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
-    // m_pHttpService->GET("/api/v1/", std::bind(&Ctf01dHttpServer::httpApiV1GetPaths, this, std::placeholders::_1, std::placeholders::_2));
-
     m_pHttpService->GET("*", std::bind(&Ctf01dHttpServer::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
-    // m_pHttpService->GET("/admin*", std::bind(&Ctf01dHttpServer::httpAdmin, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 Ctf01dHttpServer::~Ctf01dHttpServer() {
@@ -270,8 +254,8 @@ int Ctf01dHttpServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
     // TODO optimize
     bool bTeamFound = false;
-    for (unsigned int iteam = 0; iteam < m_pConfig->teamsConf().size(); iteam++) {
-        Ctf01dTeamDef teamConf = m_pConfig->teamsConf()[iteam];
+    for (unsigned int i_team = 0; i_team < m_pConfig->teamsConf().size(); i_team++) {
+        Ctf01dTeamDef teamConf = m_pConfig->teamsConf()[i_team];
         if (teamConf.getId() == sTeamId) {
             bTeamFound = true;
         }
