@@ -54,19 +54,19 @@ class CommandCodeStats:
         self.__log = logging.getLogger("CommandCodeStats")
         self.__log.setLevel(logging.DEBUG)
         self.__config = config
-        self.__subcomamnd_name = "code-stats"
+        self.__subcommand_name = "code-stats"
 
     def get_name(self):
         """ return subcommand name """
-        return self.__subcomamnd_name
+        return self.__subcommand_name
 
     def do_registry(self, subparsers):
-        """ registring sub command """
+        """ registering sub command """
         _parser_code_stats = subparsers.add_parser(
-            name=self.__subcomamnd_name,
+            name=self.__subcommand_name,
             description='Calculate statistics by source code'
         )
-        _parser_code_stats.set_defaults(subparser=self.__subcomamnd_name)
+        _parser_code_stats.set_defaults(subparser=self.__subcommand_name)
 
     def execute(self, _):
         """ executing """

@@ -65,6 +65,7 @@ COMMANDS = [
     libpm.CommandCheck(CONFIG),
     libpm.CommandClangFormat(CONFIG),
     libpm.CommandRebuildEnvironmentImages(CONFIG),
+    libpm.CommandTests(CONFIG)
 ]
 
 class CustomActionHelp(argparse._HelpAction):  # pylint: disable=protected-access

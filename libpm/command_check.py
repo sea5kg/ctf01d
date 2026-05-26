@@ -80,7 +80,7 @@ class CommandCheck:
         """ registering sub command """
         _parser_check = subparsers.add_parser(
             name=self.__subcommand_name,
-            description='Calculate statistics by source code'
+            description='Check copyrights'
         )
         _parser_check.set_defaults(subparser=self.__subcommand_name)
 

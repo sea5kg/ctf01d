@@ -46,6 +46,7 @@ from .command_clang_format import CommandClangFormat
 from .command_clean import CommandClean
 from .command_code_stats import CommandCodeStats
 from .command_py_check import CommandPyCheck
+from .command_tests import CommandTests
 from .utils_copyrights import UtilsCopyrights
 from .utils_log import UtilsLog
 from .utils_files import UtilsFiles
