@@ -39,23 +39,23 @@
 """ subcommand tests for run tests """
 
 import sys
-import os
 import time
+import psutil
 import requests
-from .utils_files import UtilsFiles
 from .utils_log import UtilsLog
-from .utils_ctf01d_config import UtilsCtf01dConfig
+from .utils_tests import UtilsTests
 from .pm_config import PmConfig
 
 
 class CommandTests:
     """ CommandTests """
-    def __init__(self, config: PmConfig):
+    def __init__(self, _: PmConfig):
         self.__log = UtilsLog("CommandTests").get_logger()
-        self.__config = config
+        # self.__config = config
         self.__subcommand_name = "tests"
         self.__tests = {
-            "path_traversal": self.__test_path_traversal
+            "path_traversal": self.__test_path_traversal,
+            "memory_leak": self.__test_memory_leak,
         }
 
     def get_name(self):
@@ -81,31 +81,9 @@ class CommandTests:
         )
         _parser_tests.set_defaults(subparser=self.__subcommand_name)
 
-    def __data_test_tmp_path(self):
-        root_dir = self.__config.get_root_dir()
-        return os.path.join(root_dir, "data_test_tmp")
-
-    def __prepare_data_tmp(self, data_tmp_dir):
-        self.__log.info("Prepare config dir %s", data_tmp_dir)
-        if os.path.isdir(data_tmp_dir):
-            self.__log.info("Removing dir %s", data_tmp_dir)
-            UtilsFiles.recursive_remove_files(data_tmp_dir)
-        os.mkdir(data_tmp_dir)
-        return data_tmp_dir
-
     def __test_path_traversal(self):
         self.__log.info("Run test 'Path Traversal'.")
-
-        _cfg_dir = self.__data_test_tmp_path()
-        self.__prepare_data_tmp(_cfg_dir)
-        # _cfg = UtilsCtf01dConfig.generate_default(count_teams=3, count_services=1)
-        # UtilsCtf01dConfig.write_to_file(_cfg_dir, _cfg)
-        UtilsCtf01dConfig.write_example_config_1x3(_cfg_dir)
-        UtilsCtf01dConfig.write_checker_test(_cfg_dir, "test_service1")
-
-        os.system("killall ctf01d")
-        os.system("./ctf01d -w ./data_test_tmp start &")
-        time.sleep(1)  # wait when started jury
+        _, pid = UtilsTests.start_empty_jury_1x3(self.__log)
         self.__log.info("Try request to jury")
         try:
             url_db_flags_live = 'http://localhost:8080/../db/flags_live.db'
@@ -123,9 +101,60 @@ class CommandTests:
                     "\n"
                 )
                 sys.exit(1)
-            self.__log.info("OK")
+            self.__log.info(">>>> Everything fine!")
         finally:
-            os.system("killall ctf01d")
+            UtilsTests.stop_jury(pid)
+
+    def __test_memory_leak(self):
+        self.__log.info("Run test 'Path Traversal'.")
+        _, pid = UtilsTests.start_empty_jury_1x3(self.__log)
+        self.__log.info("Try request to jury")
+        _proc = psutil.Process(pid)
+        _first_mem_rss_mb = 0
+        for i in range(1, 2):
+            _first_mem_rss_mb = _proc.memory_info().rss / 1024
+            print(_first_mem_rss_mb)
+            time.sleep(0.5)
+
+        _urls = {
+            "http://localhost:8080/api/v1/myip": 200,
+            "http://localhost:8080/flag?teamid=t02&flag=c01d4567-e89b-12d3-a456-426600000010": 403,
+            "http://localhost:8080/api/v1/teams": 200,
+            "http://localhost:8080/api/v1/services": 200,
+            "http://localhost:8080/api/v1/scoreboard": 200,
+            "http://localhost:8080/team-logo/t01": 200,
+            "http://localhost:8080/team-logo/t02": 200,
+            "http://localhost:8080/team-logo/t03": 200,
+            "http://localhost:8080/api/v1/game": 200,
+        }
+        try:
+            for _url, _expected_status_code in _urls.items():
+                print(_url)
+                _before_mem_rss_kb = _proc.memory_info().rss / 1024
+                print("Before:", _before_mem_rss_kb)
+                for i in range(1, 50):
+                    print(i)
+                    _resp = requests.get(_url, timeout=0.2)
+                    if _resp.status_code != _expected_status_code:
+                        self.__log.error(
+                            "\n"
+                            "\n************************************************"
+                            "\n* WTF? %s, expected: %s, but got %s *"
+                            "\n* text: %s"
+                            "\n************************************************"
+                            "\n",
+                            _url,
+                            str(_expected_status_code),
+                            str(_resp.status_code),
+                            str(_resp.text),
+                        )
+                        sys.exit(1)
+                _after_mem_rss_kb = _proc.memory_info().rss / 1024
+                print("After:", _after_mem_rss_kb)
+                print("Diff:", _after_mem_rss_kb - _before_mem_rss_kb)
+            self.__log.info(">>>> Everything fine!")
+        finally:
+            UtilsTests.stop_jury(pid)
 
     def execute(self, args):
         """ executing """
