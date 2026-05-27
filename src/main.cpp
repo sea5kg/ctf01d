@@ -49,9 +49,9 @@ std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
 }
 
 std::string tryResolveRelativePath(const std::string &path) {
-  std::string ret;
-  if (path.size() > 0 && path[0] != '/') {
-      ret = WsjcppCore::getCurrentDirectory() + "/" + path;
+  std::string ret = path;
+  if (ret.size() > 0 && ret[0] != '/') {
+      ret = WsjcppCore::getCurrentDirectory() + "/" + ret;
   }
   return wsjcpp::normalizeFilePath(ret);
 }
@@ -62,7 +62,7 @@ bool findWorkDir(std::vector<std::string> &arguments, std::string &workDir) {
   // try find in a program arguments
   for (int i = 0; i < arguments.size(); i++) {
     std::string arg = arguments[i];
-    if (arg == "--work-dir" || arg == "-work-dir" || arg == "-w") {
+    if (arg == "--work-dir" || arg == "-work-dir" || arg == "-w" || arg == "-wd") {
       if (i + 1 < arguments.size()) {
         found = true;
         workDir = tryResolveRelativePath(arguments[i + 1]);
@@ -122,7 +122,7 @@ void printHelp(const std::string &programName) {
     << "  example: 'ctf01d -w ./data_test start'" << std::endl
     << std::endl
     << "OPTIONS:" << std::endl
-    << "  --work-dir, -work-dir, -w path         Custom workspace folder with configs, logging, " << std::endl
+    << "  --work-dir, -work-dir, -wd, -w path         Custom workspace folder with configs, logging, " << std::endl
     << "                                         checker scripts and etc. (env: CTF01D_WORKDIR)" << std::endl
     << "  --version, -version, -v, version       Print version and exit" << std::endl
     << "  --help, -help, help, -h                Print help and exit" << std::endl
