@@ -48,6 +48,7 @@ from .command_code_stats import CommandCodeStats
 from .command_py_check import CommandPyCheck
 from .command_tests import CommandTests
 from .utils_copyrights import UtilsCopyrights
+from .utils_ctf01d_config import UtilsCtf01dConfig
 from .utils_log import UtilsLog
 from .utils_files import UtilsFiles
 from .utils_shell import UtilsShell

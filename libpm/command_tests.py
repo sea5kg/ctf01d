@@ -40,9 +40,11 @@
 
 import sys
 import os
+import time
 import requests
 from .utils_files import UtilsFiles
 from .utils_log import UtilsLog
+from .utils_ctf01d_config import UtilsCtf01dConfig
 from .pm_config import PmConfig
 
 
@@ -79,9 +81,12 @@ class CommandTests:
         )
         _parser_tests.set_defaults(subparser=self.__subcommand_name)
 
-    def __cleanup_data_tmp(self):
+    def __data_test_tmp_path(self):
         root_dir = self.__config.get_root_dir()
-        data_tmp_dir = os.path.join(root_dir, "data_tmp")
+        return os.path.join(root_dir, "data_test_tmp")
+
+    def __prepare_data_tmp(self, data_tmp_dir):
+        self.__log.info("Prepare config dir %s", data_tmp_dir)
         if os.path.isdir(data_tmp_dir):
             self.__log.info("Removing dir %s", data_tmp_dir)
             UtilsFiles.recursive_remove_files(data_tmp_dir)
@@ -90,22 +95,37 @@ class CommandTests:
 
     def __test_path_traversal(self):
         self.__log.info("Run test 'Path Traversal'.")
-        url_db_flags_live = 'http://localhost:8080/../db/flags_live.db'
-        _session = requests.Session()
-        _req = requests.Request(method='GET', url=url_db_flags_live)
-        _req_prep = _req.prepare()
-        _req_prep.url = url_db_flags_live
-        _resp = _session.send(_req_prep)
-        if _resp.status_code == 200:
-            self.__log.error(
-                "\n"
-                "\n************************************************"
-                "\n* Vulnerability 'Path Traversal' FOUND (!!!!!) *"
-                "\n************************************************"
-                "\n"
-            )
-            sys.exit(1)
-        self.__log.info("OK")
+
+        _cfg_dir = self.__data_test_tmp_path()
+        self.__prepare_data_tmp(_cfg_dir)
+        # _cfg = UtilsCtf01dConfig.generate_default(count_teams=3, count_services=1)
+        # UtilsCtf01dConfig.write_to_file(_cfg_dir, _cfg)
+        UtilsCtf01dConfig.write_example_config_1x3(_cfg_dir)
+        UtilsCtf01dConfig.write_checker_test(_cfg_dir, "test_service1")
+
+        os.system("killall ctf01d")
+        os.system("./ctf01d -w ./data_test_tmp start &")
+        time.sleep(1)  # wait when started jury
+        self.__log.info("Try request to jury")
+        try:
+            url_db_flags_live = 'http://localhost:8080/../db/flags_live.db'
+            _session = requests.Session()
+            _req = requests.Request(method='GET', url=url_db_flags_live)
+            _req_prep = _req.prepare()
+            _req_prep.url = url_db_flags_live
+            _resp = _session.send(_req_prep)
+            if _resp.status_code == 200:
+                self.__log.error(
+                    "\n"
+                    "\n************************************************"
+                    "\n* Vulnerability 'Path Traversal' FOUND (!!!!!) *"
+                    "\n************************************************"
+                    "\n"
+                )
+                sys.exit(1)
+            self.__log.info("OK")
+        finally:
+            os.system("killall ctf01d")
 
     def execute(self, args):
         """ executing """
@@ -121,7 +141,6 @@ class CommandTests:
             )
             sys.exit(1)
         self.__log.info("Running test %s ...", args.test_name)
-        self.__cleanup_data_tmp()
         self.__tests[args.test_name]()
 
         sys.exit(0)

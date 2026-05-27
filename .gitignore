@@ -8,6 +8,7 @@ game-simulation/vulnbox/service3_php/tmp/*
 data_test/*
 /data_sample/db/*
 /data_sample/game_result
+/data_test_tmp
 /ctf01d
 /tmp
 tmp/*

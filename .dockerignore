@@ -3,6 +3,7 @@ tmp
 .wsjcpp
 misc
 data_test
+data_test_tmp
 data_sample
 examples
 documentation
@@ -12,4 +13,3 @@ ctf01d-store
 .ctf01d
 .ctf01d-store-cache
 test-first-start
-ctfight-test-jury

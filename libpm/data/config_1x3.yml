@@ -1,0 +1,37 @@
+game:
+  id: test
+  name: Test First Game
+  start: '2023-11-12 16:00:00'
+  end: '2030-11-12 22:00:00'
+  coffee_break_start: '2023-11-12 20:00:00'
+  coffee_break_end: '2023-11-12 21:00:00'
+  flag_timelive_in_min: 1
+  basic_costs_stolen_flag_in_points: 1
+  cost_defence_flag_in_points: 1.0
+scoreboard:
+  port: 8080
+  htmlfolder: ./html
+  random: false
+checkers:
+  - id: test_service1
+    service_name: Service1
+    enabled: true
+    script_path: ./checker.py
+    script_wait_in_sec: 5
+    time_sleep_between_run_scripts_in_sec: 15
+teams:
+  - id: t01
+    name: 'Team #1'
+    active: true
+    logo: ./html/images/teams/team01.png
+    ip_address: 127.0.1.1
+  - id: t02
+    name: 'Team #2'
+    active: true
+    logo: ./html/images/teams/team02.png
+    ip_address: 127.0.2.1
+  - id: t03
+    name: 'Team #3'
+    active: true
+    logo: ./html/images/teams/team03.png
+    ip_address: 127.0.3.1
