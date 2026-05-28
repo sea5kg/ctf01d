@@ -73,7 +73,10 @@ EmployConfig::EmployConfig()
     m_sGameCoffeeBreakEnd = "";
     m_nGameCoffeeBreakStartUTCInSec = 0;
     m_nGameCoffeeBreakEndUTCInSec = 0;
+
     m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
+    m_flag_cost_in_points->set_minimum(1);
+    m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
 }
 
 EmployConfig::~EmployConfig() {
@@ -140,6 +143,10 @@ bool EmployConfig::applyConfig() {
     std::string sError;
     if (!yamlConfig.loadFromFile(sConfigFile, sError)) {
         WsjcppLog::err(TAG, "Could not parse " + sConfigFile + ", reason: " + sError);
+        return false;
+    }
+
+    if (!checkYamlMainKeys(yamlConfig)) {
         return false;
     }
 
@@ -338,6 +345,32 @@ void EmployConfig::doExtractFilesIfNotExists() {
     }
 }
 
+bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
+  // check main keys
+  auto cur = yamlConfig.getCursor();
+  // TODO list from vars
+  std::vector<std::string> expected_keys = {
+    "scoreboard",
+    "game",
+    "checkers",
+    "teams",
+  };
+  std::vector<std::string> main_keys = cur.keys();
+  for (int i = 0; i < main_keys.size(); i++) {
+    if (std::find(expected_keys.begin(), expected_keys.end(), main_keys[i]) == expected_keys.end()) {
+      WsjcppLog::err(TAG, "Got unexpected key in main: '" + main_keys[i] + "'");
+      return false;
+    }
+  }
+  for (int i = 0; i < expected_keys.size(); i++) {
+    if (std::find(main_keys.begin(), main_keys.end(), expected_keys[i]) == main_keys.end()) {
+      WsjcppLog::err(TAG, "Not found expected key in config: '" + expected_keys[i] + "'");
+      return false;
+    }
+  }
+  return true;
+}
+
 bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     auto cur = yamlConfig.getCursor();
     if (!cur.hasKey("game")) {
@@ -355,7 +388,7 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
         "coffee_break_end",
         "flag_lifetime_in_min",
         "basic_costs_stolen_flag_in_points",
-        "cost_defence_flag_in_points",
+        "cost_defense_flag_in_points",
     };
     // for (int i = 0; i < keys.size(); ++i) {
     //     std::string key = keys[i];
@@ -367,11 +400,11 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     //  name: Test First Game
     //  start_utc: '2023-11-12 16:00:00'
     //  end_utc: '2030-11-12 22:00:00'
-
-    m_game_id->read(yamlConfig);
+    std::string err;
+    m_game_id->read(yamlConfig, err);
     WsjcppLog::info(TAG, m_game_id->name() + ": " + m_game_id->value());
 
-    m_game_name->read(yamlConfig);
+    m_game_name->read(yamlConfig, err);
     WsjcppLog::info(TAG, m_game_name->name() + ": " + m_game_name->value());
 
     m_sGameStart = cur["start_utc"].valStr();
@@ -398,7 +431,9 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     m_nFlagLifetimeInMin = yamlConfig["game"]["flag_lifetime_in_min"].valInt();
     WsjcppLog::info(TAG, "game.flag_lifetime_in_min: " + std::to_string(m_nFlagLifetimeInMin));
 
-    m_flag_cost_in_points->read(yamlConfig);
+    if (!m_flag_cost_in_points->read(yamlConfig, err)) {
+        return false;
+    }
     WsjcppLog::info(TAG, m_flag_cost_in_points->name() + ": " + std::to_string(m_flag_cost_in_points->value()));
 
     if (m_nGameStartUTCInSec == 0) {
@@ -453,16 +488,6 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     ) {
         WsjcppLog::info(TAG, "Oh! Game has coffee break! nice!");
         m_bHasCoffeeBreak = true;
-    }
-
-    if (m_flag_cost_in_points->value() <= 0) {
-        WsjcppLog::err(TAG, "game.flag_cost_in_points could not be less than 0");
-        return false;
-    }
-
-    if (m_flag_cost_in_points->value() > MAX_FLAG_COST_IN_POINTS) {
-        WsjcppLog::err(TAG, "game.flag_cost_in_points could not be gather than 500");
-        return false;
     }
 
     return true;

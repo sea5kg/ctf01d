@@ -61,6 +61,7 @@ teams:
     name: "Team #1"
     active: yes
     logo: "./html/images/teams/team01.png"
+    big-logo: "./html/images/teams/team01.png"
     ip_address: "127.0.1.1" # address to vulnserver
   - id: "t02" # must be uniq
     name: "Team #2"

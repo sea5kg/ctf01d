@@ -63,12 +63,12 @@ ctf01d::var_type var::type() const {
   return m_t;
 }
 
-bool var::read(WsjcppYaml &yaml) {
+bool var::read(WsjcppYaml &yaml, std::string &err) {
   // will be overriden by type
   return false;
 }
 
-WsjcppYamlCursor var::cursorByPath(WsjcppYaml &yaml) {
+WsjcppYamlCursor var::cursorByPath(WsjcppYaml &yaml, std::string &err) {
   auto cur = yaml.getCursor();
   for (int i = 0; i < m_path_name.size(); ++i) {
     std::string key = m_path_name[i];
@@ -84,7 +84,13 @@ WsjcppYamlCursor var::cursorByPath(WsjcppYaml &yaml) {
 // ctf01d::var_int
 
 var_int::var_int(const std::vector<std::string> &path_name, int default_value)
-: ctf01d::var(path_name, ctf01d::var_type::INTEGER), m_value_init(false), m_default_value(default_value) {
+: ctf01d::var(path_name, ctf01d::var_type::INTEGER)
+  ,m_value_init(false)
+  ,m_default(default_value)
+  ,m_check_minimum(false)
+  ,m_check_maximum(false)
+{
+
 }
 
 // static
@@ -93,25 +99,46 @@ std::shared_ptr<var_int> var_int::create(const std::vector<std::string> &path_na
 }
 
 int var_int::defaultValue() const {
-  return m_default_value;
+  return m_default;
 }
 
 int var_int::value() const {
-  return m_value_init ? m_value : m_default_value;
+  return m_value_init ? m_value : m_default;
 }
 
-void var_int::setValue(int val) {
-  m_value_init = true;
-  m_value = val;
-}
-
-bool var_int::read(WsjcppYaml &yaml) {
-  auto cur = cursorByPath(yaml);
-  if (cur.isValue()) {
-    setValue(cur.valInt());
-    return true;
+bool var_int::set_value(int val, std::string &err) {
+  if (m_check_minimum && val < m_minimum) {
+    err = "Value '" + name() + "' must be equal or more than " + std::to_string(m_minimum);
+    WsjcppLog::err("var_int", err);
+    return false;
   }
-  return false;
+  if (m_check_maximum && val > m_maximum) {
+    err = "Value '" + name() + "' must be less or equal than " + std::to_string(m_maximum);
+    WsjcppLog::err("var_int", err);
+    return false;
+  }
+  m_value = val;
+  m_value_init = true;
+  return true;
+}
+
+void var_int::set_minimum(int val) {
+  m_minimum = val;
+  m_check_minimum = true;
+}
+
+void var_int::set_maximum(int val) {
+  m_maximum = val;
+  m_check_maximum = true;
+}
+
+bool var_int::read(WsjcppYaml &yaml, std::string &err) {
+  auto cursor = cursorByPath(yaml, err);
+  if (!cursor.isValue()) {
+    err = "Not found '" + name() + "'";
+    return false;
+  }
+  return set_value(cursor.valInt(), err);
 }
 
 // ---------------------------------------------------------------------
@@ -126,8 +153,8 @@ std::shared_ptr<var_string> var_string::create(const std::vector<std::string> &p
   return std::make_shared<var_string>(path_name, default_value);
 }
 
-bool var_string::read(WsjcppYaml &yaml) {
-  auto cur = cursorByPath(yaml);
+bool var_string::read(WsjcppYaml &yaml, std::string &err) {
+  auto cur = cursorByPath(yaml, err);
   if (cur.isValue()) {
     setValue(cur.valStr());
     return true;
@@ -161,8 +188,8 @@ std::shared_ptr<var_bool> var_bool::create(const std::vector<std::string> &path_
   return std::make_shared<var_bool>(path_name, default_value);
 }
 
-bool var_bool::read(WsjcppYaml &yaml) {
-  auto cursor = cursorByPath(yaml);
+bool var_bool::read(WsjcppYaml &yaml, std::string &err) {
+  auto cursor = cursorByPath(yaml, err);
   if (cursor.isValue()) {
     setValue(cursor.valBool());
     return true;

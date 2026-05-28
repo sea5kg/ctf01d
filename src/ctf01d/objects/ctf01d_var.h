@@ -59,10 +59,10 @@ public:
   var(const std::vector<std::string> &path_name, ctf01d::var_type t);
   std::string name() const;
   ctf01d::var_type type() const;
-  virtual bool read(WsjcppYaml &yaml);
+  virtual bool read(WsjcppYaml &yaml, std::string &err);
 
 protected:
-  WsjcppYamlCursor cursorByPath(WsjcppYaml &yaml);
+  WsjcppYamlCursor cursorByPath(WsjcppYaml &yaml, std::string &err);
 
   std::vector<std::string> m_path_name;
   std::string m_name;
@@ -73,22 +73,28 @@ class var_int : public ctf01d::var {
 public:
   var_int(const std::vector<std::string> &path_name, int default_value);
   static std::shared_ptr<var_int> create(const std::vector<std::string> &path_name, int default_value);
-  virtual bool read(WsjcppYaml &yaml) override;
+  virtual bool read(WsjcppYaml &yaml, std::string &err) override;
   int defaultValue() const;
   int value() const;
-  void setValue(int val);
+  bool set_value(int val, std::string &err);
+  void set_minimum(int val);
+  void set_maximum(int val);
 
 private:
-  int m_default_value;
+  int m_default;
   bool m_value_init;
   int m_value;
+  int m_minimum;
+  bool m_check_minimum;
+  int m_maximum;
+  bool m_check_maximum;
 };
 
 class var_string : public ctf01d::var {
 public:
     var_string(const std::vector<std::string> &path_name, const std::string &default_value);
     static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value);
-    virtual bool read(WsjcppYaml &yaml) override;
+    virtual bool read(WsjcppYaml &yaml, std::string &err) override;
     std::string defaultValue() const;
     std::string value() const;
     void setValue(const std::string &val);
@@ -103,7 +109,7 @@ class var_bool : public ctf01d::var {
 public:
   var_bool(const std::vector<std::string> &path_name, bool default_value);
   static std::shared_ptr<var_bool> create(const std::vector<std::string> &path_name, bool default_value);
-  virtual bool read(WsjcppYaml &yaml) override;
+  virtual bool read(WsjcppYaml &yaml, std::string &err) override;
   bool defaultValue() const;
   bool value() const;
   void setValue(bool val);

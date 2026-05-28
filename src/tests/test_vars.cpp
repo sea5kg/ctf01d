@@ -51,10 +51,10 @@ int main() {
   ;
 
   WsjcppYaml yaml;
-  std::string sError;
+  std::string err;
 
-  if (!yaml.loadFromString("test_config.yaml", sTestYaml, sError)) {
-    std::cerr << "Error parsing " << sError << std::endl;
+  if (!yaml.loadFromString("test_config.yaml", sTestYaml, err)) {
+    std::cerr << "Error parsing " << err << std::endl;
     return -1;
   }
 
@@ -73,12 +73,18 @@ int main() {
       std::cerr << "FAILED: Expected value 10 but got " << std::to_string(varCost.value()) << "'" << std::endl;
       return -1;
     }
-    varCost.setValue(12);
+    if (!varCost.set_value(12, err)) {
+      std::cerr << "FAILED: Problem with set value" << std::endl;
+      return -1;
+    }
     if (varCost.value() != 12) {
       std::cerr << "FAILED: Expected value 12 but got " << std::to_string(varCost.value()) << "'" << std::endl;
       return -1;
     }
-    varCost.read(yaml);
+    if (!varCost.read(yaml, err)) {
+      std::cerr << "FAILED: Could not read from yaml" << std::endl;
+      return -1;
+    }
     if (varCost.value() != 3) {
       std::cerr << "FAILED: Expected value 3 but got " << std::to_string(varCost.value()) << "'" << std::endl;
       return -1;
@@ -105,7 +111,10 @@ int main() {
       std::cerr << "FAILED: Expected value 'hello' but got " << varGameId->value() << "'" << std::endl;
       return -1;
     }
-    varGameId->read(yaml);
+    if (!varGameId->read(yaml, err)) {
+      std::cerr << "FAILED: Could not read from yaml" << std::endl;
+      return -1;
+    }
     if (varGameId->value() != "my_game") {
       std::cerr << "FAILED: Expected value 'my_game' but got " << varGameId->value() << "'" << std::endl;
       return -1;

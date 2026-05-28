@@ -85,6 +85,7 @@ public:
   void doExtractFilesIfNotExists();
 
 private:
+  bool checkYamlMainKeys(WsjcppYaml &yamlConfig);
   bool applyGameConf(WsjcppYaml &yamlConfig);
   bool applyScoreboardConf(WsjcppYaml &yamlConfig);
   bool applyCheckersConf(WsjcppYaml &yamlConfig);
