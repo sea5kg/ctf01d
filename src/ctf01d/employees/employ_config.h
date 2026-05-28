@@ -104,7 +104,7 @@ private:
   bool m_bScoreboardRandom;
 
   // game conf
-  int m_nFlagTimeliveInMin;
+  int m_nFlagLifetimeInMin;
   int m_nBasicCostsStolenFlagInPoints;
   int m_nCostDefenseFlagInPoints10;
   std::string m_sGameId;

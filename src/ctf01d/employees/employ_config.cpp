@@ -56,7 +56,7 @@ EmployConfig::EmployConfig()
     TAG = EmployConfig::name();
     m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
     m_bAppliedConfig = false;
-    m_nFlagTimeliveInMin = 10;
+    m_nFlagLifetimeInMin = 10;
     m_nScoreboardPort = 8080;
     m_bScoreboardRandom = false;
     m_pScoreboard = nullptr;
@@ -199,7 +199,7 @@ std::string EmployConfig::gameName() const  {
 }
 
 int EmployConfig::flagTimeliveInMin() const  {
-    return m_nFlagTimeliveInMin;
+    return m_nFlagLifetimeInMin;
 }
 
 int EmployConfig::getBasicCostsStolenFlagInPoints() const {
@@ -366,8 +366,8 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     }
     WsjcppLog::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_nGameEndUTCInSec));
 
-    m_nFlagTimeliveInMin = yamlConfig["game"]["flag_lifetime_in_min"].valInt();
-    WsjcppLog::info(TAG, "game.flag_lifetime_in_min: " + std::to_string(m_nFlagTimeliveInMin));
+    m_nFlagLifetimeInMin = yamlConfig["game"]["flag_lifetime_in_min"].valInt();
+    WsjcppLog::info(TAG, "game.flag_lifetime_in_min: " + std::to_string(m_nFlagLifetimeInMin));
 
     m_nBasicCostsStolenFlagInPoints = yamlConfig["game"]["basic_costs_stolen_flag_in_points"].valInt();
     WsjcppLog::info(TAG, "game.basic_costs_stolen_flag_in_points: " + std::to_string(m_nBasicCostsStolenFlagInPoints));
@@ -390,12 +390,12 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
         return false;
     }
 
-    if (m_nFlagTimeliveInMin <= 0) {
+    if (m_nFlagLifetimeInMin <= 0) {
         WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be less than 0");
         return false;
     }
 
-    if (m_nFlagTimeliveInMin > 25) {
+    if (m_nFlagLifetimeInMin > 25) {
         WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be gather than 25");
         return false;
     }
