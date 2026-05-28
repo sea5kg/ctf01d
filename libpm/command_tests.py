@@ -40,6 +40,7 @@
 
 import sys
 import time
+import random
 import psutil
 import requests
 from .utils_log import UtilsLog
@@ -56,6 +57,7 @@ class CommandTests:
         self.__tests = {
             "path_traversal": self.__test_path_traversal,
             "memory_leak": self.__test_memory_leak,
+            "send_random_flags": self.__test_send_random_flags,
         }
 
     def get_name(self):
@@ -136,23 +138,72 @@ class CommandTests:
                     print(i)
                     _resp = requests.get(_url, timeout=0.2)
                     if _resp.status_code != _expected_status_code:
-                        self.__log.error(
-                            "\n"
-                            "\n************************************************"
-                            "\n* WTF? %s, expected: %s, but got %s *"
-                            "\n* text: %s"
-                            "\n************************************************"
-                            "\n",
-                            _url,
-                            str(_expected_status_code),
-                            str(_resp.status_code),
-                            str(_resp.text),
-                        )
-                        sys.exit(1)
+                        err_msg = _url + " response: " + str(_resp.text)
+                        err_msg += "Expected: " + str(_expected_status_code)
+                        err_msg += ", but got " + str(_resp.status_code)
+                        UtilsTests.print_error_and_exit(self.__log, err_msg)
                 _after_mem_rss_kb = _proc.memory_info().rss / 1024
                 print("After:", _after_mem_rss_kb)
                 print("Diff:", _after_mem_rss_kb - _before_mem_rss_kb)
             self.__log.info(">>>> Everything fine!")
+        except requests.exceptions.Timeout:
+            UtilsTests.print_error_and_exit(self.__log, "Timed out")
+        finally:
+            UtilsTests.stop_jury(pid)
+
+    def __test_send_random_flags(self):
+        self.__log.info("Run test 'Path Traversal'.")
+        _, pid = UtilsTests.start_empty_jury_1x3(self.__log)
+        self.__log.info("Try request to jury")
+        _teams = []
+        try:
+            _resp = requests.get("http://localhost:8080/api/v1/teams", timeout=0.2)
+            if _resp.status_code != 200:
+                UtilsTests.print_error_and_exit(self.__log, "Could not get info about teams")
+            _teams = _resp.json()["teams"]
+        except requests.exceptions.Timeout:
+            UtilsTests.print_error_and_exit(self.__log, "Timed out api/v1/teams")
+        i = 0
+        try:
+            for _team in _teams:
+                _team["activity"] = 0
+            # for _team in _teams:
+            #     print(_team)
+            sended_flags = 0
+            while i < 140:
+                i = i + 1
+                sended_flags += 1
+                team_i = random.randint(0, len(_teams)-1)
+                team_id = _teams[team_i]["id"]
+                _teams[team_i]["activity"] += 1
+                _fl_url = 'http://localhost:8080/flag?teamid=' + str(team_id)
+                _fl_url += '&flag=' + UtilsTests.random_flag()
+
+                # print("Request " + http_get_url)
+                _resp = requests.get(_fl_url, timeout=0.2)
+                if _resp.status_code not in [403, 200]:
+                    UtilsTests.print_error_and_exit(
+                        self.__log,
+                        "Shit happen " + str(_resp.status_code)
+                    )
+            _resp = requests.get("http://localhost:8080/api/v1/scoreboard", timeout=0.2)
+            if _resp.status_code != 200:
+                UtilsTests.print_error_and_exit(self.__log, "Could not get info about teams")
+            _score = _resp.json()
+            if _score["sum_act"] != sended_flags:
+                UtilsTests.print_error_and_exit(self.__log, "Wrong sum_act")
+            self.__log.info("sum_act %s OK", str(_score["sum_act"]))
+            for _team in _teams:
+                team_id = _team["id"]
+                if _score['scoreboard'][team_id]['tries'] != _team["activity"]:
+                    UtilsTests.print_error_and_exit(
+                        self.__log,
+                        "Wrong tries for " + team_id
+                    )
+                self.__log.info("%s tries %s OK", team_id, str(_team["activity"]))
+            self.__log.info(">>>> Everything fine!")
+        except requests.exceptions.Timeout:
+            UtilsTests.print_error_and_exit(self.__log, "Timed out on " + str(i))
         finally:
             UtilsTests.stop_jury(pid)
 

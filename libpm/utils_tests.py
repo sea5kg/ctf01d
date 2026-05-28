@@ -41,6 +41,8 @@
 import os
 import sys
 import signal
+import random
+import uuid
 import subprocess
 import psutil
 from .utils_files import UtilsFiles
@@ -49,6 +51,16 @@ from .utils_ctf01d_config import UtilsCtf01dConfig
 
 class UtilsTests:
     """ UtilsTests """
+
+    @staticmethod
+    def random_flag():
+        """ random flag """
+        flag = str(uuid.uuid4())
+        flag = flag[4:]
+        flag = 'c01d' + flag
+        flag = flag[:-8]
+        flag += str(random.randint(1, 99999999)).rjust(8, '0')
+        return flag
 
     @staticmethod
     def get_root_dir():
@@ -144,12 +156,19 @@ class UtilsTests:
         UtilsTests.stop_any_jury()
         pid = UtilsTests.start_jury(_cfg_dir)
         if pid is None:
-            _log.error(
-                "\n"
-                "\n************************************************"
-                "\n* Could not run ctf01d (!!!!!) *"
-                "\n************************************************"
-                "\n"
-            )
-            sys.exit(1)
+            UtilsTests.print_error_and_exit(_log, "Could not run ctf01d (!!!!!)")
         return _cfg_dir, pid
+
+    @staticmethod
+    def print_error_and_exit(_log, msg):
+        """ print_error_and_exit """
+        _log.error(
+            "\n"
+            "\n************************************************"
+            "\n* %s *"
+            "\n************************************************"
+            "\n",
+            msg
+        )
+        UtilsTests.stop_any_jury()
+        sys.exit(1)
