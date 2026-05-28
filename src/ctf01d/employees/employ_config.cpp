@@ -341,14 +341,43 @@ void EmployConfig::doExtractFilesIfNotExists() {
 }
 
 bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
+    auto cur = yamlConfig.getCursor();
+    if (!cur.hasKey("game")) {
+        WsjcppLog::err(TAG, "Missing 'game'");
+        return false;
+    }
+    cur = cur["game"];
+    // auto keys = cur.keys();
+    std::vector<std::string> expected_keys = {
+        "id",
+        "name",
+        "start_utc",
+        "end_utc",
+        "coffee_break_start",
+        "coffee_break_end",
+        "flag_lifetime_in_min",
+        "basic_costs_stolen_flag_in_points",
+        "cost_defence_flag_in_points",
+    };
+    // for (int i = 0; i < keys.size(); ++i) {
+    //     std::string key = keys[i];
+    //     if (key == "id") {
+    //     }
+    // }
 
-    m_sGameId = yamlConfig["game"]["id"].valStr();
+    //  id: test
+    //  name: Test First Game
+    //  start_utc: '2023-11-12 16:00:00'
+    //  end_utc: '2030-11-12 22:00:00'
+
+    m_sGameId = cur["id"].valStr();
     WsjcppLog::info(TAG, "game.id: " + m_sGameId);
-    m_sGameName = yamlConfig["game"]["name"].valStr();
+
+    m_sGameName = cur["name"].valStr();
     WsjcppLog::info(TAG, "game.name: " + m_sGameName);
 
-    m_sGameStart = yamlConfig["game"]["start"].valStr();
-    WsjcppLog::info(TAG, "game.start: " + m_sGameStart);
+    m_sGameStart = cur["start_utc"].valStr();
+    WsjcppLog::info(TAG, "game.start_utc: " + m_sGameStart);
     {
         std::istringstream in{m_sGameStart.c_str()};
         date::sys_seconds tp;
@@ -358,8 +387,8 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
 
     WsjcppLog::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_nGameStartUTCInSec));
 
-    m_sGameEnd = yamlConfig["game"]["end"].valStr();
-    WsjcppLog::info(TAG, "game.end: " + m_sGameEnd);
+    m_sGameEnd = yamlConfig["game"]["end_utc"].valStr();
+    WsjcppLog::info(TAG, "game.end_utc: " + m_sGameEnd);
     {
         std::istringstream in{m_sGameEnd.c_str()};
         date::sys_seconds tp;
@@ -378,7 +407,7 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     WsjcppLog::info(TAG, "game.cost_defense_flag_in_points (*10): " + std::to_string(m_nCostDefenseFlagInPoints10));
 
     if (m_nGameStartUTCInSec == 0) {
-        WsjcppLog::err(TAG, "game.start - not found");
+        WsjcppLog::err(TAG, "game.start_utc - not found");
         return false;
     }
 

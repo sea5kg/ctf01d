@@ -17,24 +17,24 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 7371;
+  return 7113;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 7371
+  static const std::string sRet = "" // size: 7113
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
     "game:\n"
     "  id: \"test\" # uniq gameid must be regexp [a-z0-9]+\n"
     "  name: \"Test First Game\" # visible game name in scoreboard\n"
-    "  start: \"2023-11-12 16:00:00\" # start time of game (UTC)\n"
-    "  end: \"2030-11-12 22:00:00\" # end time of game (UTC)\n"
-    "  coffee_break_start: \"2023-11-12 20:00:00\" # start time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end\n"
-    "  coffee_break_end: \"2023-11-12 21:00:00\" # end time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end\n"
-    "  flag_lifetime_in_min: 1 # you can change flag lifetime (in minutes)\n"
+    "  start_utc: \"2023-11-12 16:00:00\"\n"
+    "  end_utc: \"2030-11-12 22:00:00\"\n"
+    "  coffee_break_start: \"2023-11-12 20:00:00\"\n"
+    "  coffee_break_end: \"2023-11-12 21:00:00\"\n"
+    "  flag_lifetime_in_min: 1 # you can change flag time live (in minutes)\n"
     "  basic_costs_stolen_flag_in_points: 1 # basic costs stolen (attack) flag in points for adaptive scoreboard\n"
     "  cost_defence_flag_in_points: 1.0 # cost defences flag in points\n"
     "\n"
