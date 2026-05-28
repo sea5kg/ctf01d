@@ -46,6 +46,8 @@
 #include <wsjcpp_core.h>
 #include <wsjcpp_yaml.h>
 #include "ctf01d/employees/employ_team_logos.h"
+#include "ctf01d/include/ctf01d_globals.h"
+
 #include <sys/stat.h>
 #include <stdio.h>
 
@@ -395,8 +397,8 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
         return false;
     }
 
-    if (m_nFlagLifetimeInMin > 25) {
-        WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be gather than 25");
+    if (m_nFlagLifetimeInMin > MAX_FLAG_LIFETIME_MINUTES) {
+        WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be gather than " + std::to_string(MAX_FLAG_LIFETIME_MINUTES));
         return false;
     }
 

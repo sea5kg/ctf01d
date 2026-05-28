@@ -111,14 +111,14 @@ private:
   std::string m_sGameName;
   std::string m_sGameStart;
   std::string m_sGameEnd;
-  int m_nGameStartUTCInSec; // UTC in seconds
-  int m_nGameEndUTCInSec; // UTC in seconds
+  int m_nGameStartUTCInSec;
+  int m_nGameEndUTCInSec;
 
   bool m_bHasCoffeeBreak;
   std::string m_sGameCoffeeBreakStart;
   std::string m_sGameCoffeeBreakEnd;
-  int m_nGameCoffeeBreakStartUTCInSec; // UTC in seconds
-  int m_nGameCoffeeBreakEndUTCInSec; // UTC in seconds
+  int m_nGameCoffeeBreakStartUTCInSec;
+  int m_nGameCoffeeBreakEndUTCInSec;
 
   std::vector<Ctf01dTeamDef> m_vTeamsConf;
   std::vector<Ctf01dServiceDef> m_vServicesConf;

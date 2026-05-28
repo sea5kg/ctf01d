@@ -188,8 +188,8 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
 ### 1. Basic
 
 flag_lifetime_in_min:
-  - EN: flag lifetime (default: 1 minutes)
-  - RU: время жизни флага (поумолчанию: 1 минут)
+  - EN: flag lifetime (default: 1 minutes, but not more then 25 minutes)
+  - RU: время жизни флага (по-умолчанию: 1 минута, но не более 25 минут)
 
 basic_costs_stolen_flag_in_points:
   - EN: Basic cost of stolen flag (default: 1 point)
