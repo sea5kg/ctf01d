@@ -72,7 +72,7 @@ def get_myip():
             continue
     print("return", ret)
     if ret is None:
-        print("FAILED: cound not get myip from jury")
+        print("FAILED: could not get myip from jury")
         # sys.exit(-1)
     return ret
 
