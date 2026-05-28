@@ -45,6 +45,7 @@
 #include <json.hpp>
 #include "ctf01d_formulas_for_points.h"
 #include "ctf01d_team_status_row.h"
+#include "ctf01d_var.h"
 
 class Ctf01dScoreboard {
 public:
@@ -81,7 +82,7 @@ private:
   std::string TAG;
   EmployFlags *m_pEmployFlags;
   EmployDatabase *m_pDatabase;
-  int m_nCostDefenseFlagInPoints10;
+  std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   int m_nGameStartInSec;
   int m_nGameEndInSec;
   int m_nGameCoffeeBreakStartInSec;

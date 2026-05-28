@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 7113;
+  return 6986;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 7113
+  static const std::string sRet = "" // size: 6986
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -35,8 +35,7 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "  coffee_break_start: \"2023-11-12 20:00:00\"\n"
     "  coffee_break_end: \"2023-11-12 21:00:00\"\n"
     "  flag_lifetime_in_min: 1 # you can change flag time live (in minutes)\n"
-    "  basic_costs_stolen_flag_in_points: 1 # basic costs stolen (attack) flag in points for adaptive scoreboard\n"
-    "  cost_defence_flag_in_points: 1.0 # cost defences flag in points\n"
+    "  flag_cost_in_points: 100 # use a real number\n"
     "\n"
     "scoreboard:\n"
     "  port: 8080 # http port for scoreboard\n"

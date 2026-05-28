@@ -39,6 +39,7 @@
 
 #include <wsjcpp_employees.h>
 #include <wsjcpp_yaml.h>
+#include "ctf01d/objects/ctf01d_var.h"
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/objects/ctf01d_service_def.h"
 #include "ctf01d/objects/ctf01d_team_def.h"
@@ -71,8 +72,7 @@ public:
   std::string gameId() const;
   std::string gameName() const;
   int flagTimeliveInMin() const;
-  int getBasicCostsStolenFlagInPoints() const;
-  int getCostDefenseFlagInPoints10() const;
+  std::shared_ptr<ctf01d::var_int> get_flag_cost_in_points() const;
   int gameStartUTCInSec() const;
   int gameEndUTCInSec() const;
 
@@ -105,10 +105,10 @@ private:
 
   // game conf
   int m_nFlagLifetimeInMin;
-  int m_nBasicCostsStolenFlagInPoints;
-  int m_nCostDefenseFlagInPoints10;
-  std::string m_sGameId;
-  std::string m_sGameName;
+  std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
+  std::shared_ptr<ctf01d::var_string> m_game_id;
+  std::shared_ptr<ctf01d::var_string> m_game_name;
+
   std::string m_sGameStart;
   std::string m_sGameEnd;
   int m_nGameStartUTCInSec;

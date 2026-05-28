@@ -9,8 +9,7 @@ game:
   coffee_break_start: "2023-11-12 20:00:00"
   coffee_break_end: "2023-11-12 21:00:00"
   flag_lifetime_in_min: 1 # you can change flag time live (in minutes)
-  basic_costs_stolen_flag_in_points: 1 # basic costs stolen (attack) flag in points for adaptive scoreboard
-  cost_defence_flag_in_points: 1.0 # cost defences flag in points
+  flag_cost_in_points: 100 # use a real number
 
 scoreboard:
   port: 8080 # http port for scoreboard

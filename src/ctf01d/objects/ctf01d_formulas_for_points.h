@@ -41,10 +41,10 @@
 
 class Ctf01dFormulasForPoints {
 public:
-  virtual float calcStolen(float base_points, int victim_place, int thief_place, int team_count) = 0;
+  virtual int calcStolen(int base_points, int victim_place, int thief_place, int team_count) = 0;
 };
 
 class Ctf01dFormulasForPoints_RuCtf : public Ctf01dFormulasForPoints {
 public:
-  virtual float calcStolen(float base_points, int victim_place, int thief_place, int team_count) override;
+  virtual int calcStolen(int base_points, int victim_place, int thief_place, int team_count) override;
 };

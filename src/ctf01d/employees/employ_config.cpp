@@ -57,6 +57,9 @@ EmployConfig::EmployConfig()
 : WsjcppEmployBase({ EmployConfig::name() }, {}) {
     TAG = EmployConfig::name();
     m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
+    m_game_id = ctf01d::var_string::create({"game", "id"}, "test");
+    m_game_name = ctf01d::var_string::create({"game", "name"}, "Test");
+
     m_bAppliedConfig = false;
     m_nFlagLifetimeInMin = 10;
     m_nScoreboardPort = 8080;
@@ -70,8 +73,7 @@ EmployConfig::EmployConfig()
     m_sGameCoffeeBreakEnd = "";
     m_nGameCoffeeBreakStartUTCInSec = 0;
     m_nGameCoffeeBreakEndUTCInSec = 0;
-    m_nBasicCostsStolenFlagInPoints = 10;
-    m_nCostDefenseFlagInPoints10 = 10; // default 1.0
+    m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
 }
 
 EmployConfig::~EmployConfig() {
@@ -193,23 +195,19 @@ bool EmployConfig::scoreboardRandom() const {
 }
 
 std::string EmployConfig::gameId() const {
-    return m_sGameId;
+    return m_game_id->value();
 }
 
 std::string EmployConfig::gameName() const  {
-    return m_sGameName;
+    return m_game_name->value();
 }
 
 int EmployConfig::flagTimeliveInMin() const  {
     return m_nFlagLifetimeInMin;
 }
 
-int EmployConfig::getBasicCostsStolenFlagInPoints() const {
-    return m_nBasicCostsStolenFlagInPoints;
-}
-
-int EmployConfig::getCostDefenseFlagInPoints10() const {
-    return m_nCostDefenseFlagInPoints10;
+std::shared_ptr<ctf01d::var_int> EmployConfig::get_flag_cost_in_points() const {
+    return m_flag_cost_in_points;
 }
 
 int EmployConfig::gameStartUTCInSec() const {
@@ -370,11 +368,11 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     //  start_utc: '2023-11-12 16:00:00'
     //  end_utc: '2030-11-12 22:00:00'
 
-    m_sGameId = cur["id"].valStr();
-    WsjcppLog::info(TAG, "game.id: " + m_sGameId);
+    m_game_id->read(yamlConfig);
+    WsjcppLog::info(TAG, m_game_id->name() + ": " + m_game_id->value());
 
-    m_sGameName = cur["name"].valStr();
-    WsjcppLog::info(TAG, "game.name: " + m_sGameName);
+    m_game_name->read(yamlConfig);
+    WsjcppLog::info(TAG, m_game_name->name() + ": " + m_game_name->value());
 
     m_sGameStart = cur["start_utc"].valStr();
     WsjcppLog::info(TAG, "game.start_utc: " + m_sGameStart);
@@ -400,11 +398,8 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     m_nFlagLifetimeInMin = yamlConfig["game"]["flag_lifetime_in_min"].valInt();
     WsjcppLog::info(TAG, "game.flag_lifetime_in_min: " + std::to_string(m_nFlagLifetimeInMin));
 
-    m_nBasicCostsStolenFlagInPoints = yamlConfig["game"]["basic_costs_stolen_flag_in_points"].valInt();
-    WsjcppLog::info(TAG, "game.basic_costs_stolen_flag_in_points: " + std::to_string(m_nBasicCostsStolenFlagInPoints));
-
-    m_nCostDefenseFlagInPoints10 = std::atof(yamlConfig["game"]["cost_defense_flag_in_points"].valStr().c_str())*10;
-    WsjcppLog::info(TAG, "game.cost_defense_flag_in_points (*10): " + std::to_string(m_nCostDefenseFlagInPoints10));
+    m_flag_cost_in_points->read(yamlConfig);
+    WsjcppLog::info(TAG, m_flag_cost_in_points->name() + ": " + std::to_string(m_flag_cost_in_points->value()));
 
     if (m_nGameStartUTCInSec == 0) {
         WsjcppLog::err(TAG, "game.start_utc - not found");
@@ -460,13 +455,13 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
         m_bHasCoffeeBreak = true;
     }
 
-    if (m_nBasicCostsStolenFlagInPoints <= 0) {
-        WsjcppLog::err(TAG, "game.basic_costs_stolen_flag_in_points could not be less than 0");
+    if (m_flag_cost_in_points->value() <= 0) {
+        WsjcppLog::err(TAG, "game.flag_cost_in_points could not be less than 0");
         return false;
     }
 
-    if (m_nBasicCostsStolenFlagInPoints > 500) {
-        WsjcppLog::err(TAG, "game.basic_costs_stolen_flag_in_points could not be gather than 500");
+    if (m_flag_cost_in_points->value() > MAX_FLAG_COST_IN_POINTS) {
+        WsjcppLog::err(TAG, "game.flag_cost_in_points could not be gather than 500");
         return false;
     }
 

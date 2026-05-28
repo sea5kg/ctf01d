@@ -423,7 +423,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
       resp->String(sErrorMsg);
       return 403;
   }
-  std::string sPoints = std::to_string(double(oPoints.value()) / 10.0);
+  std::string sPoints = std::to_string(oPoints.value());
 
   std::string sResponse = "Accepted: Received flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
   WsjcppLog::ok(TAG, sResponse + sRequestIP_MsgSuffix);

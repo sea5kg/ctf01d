@@ -39,7 +39,7 @@
 
 #include <string>
 
-float Ctf01dFormulasForPoints_RuCtf::calcStolen(float base_points, int victim_place, int thief_place, int team_count) {
+int Ctf01dFormulasForPoints_RuCtf::calcStolen(int base_points, int victim_place, int thief_place, int team_count) {
   if (team_count == 1 || victim_place > team_count || thief_place > team_count) {
     return 0.0;
   }

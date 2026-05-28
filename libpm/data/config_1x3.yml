@@ -6,8 +6,7 @@ game:
   coffee_break_start: '2023-11-12 20:00:00'
   coffee_break_end: '2023-11-12 21:00:00'
   flag_lifetime_in_min: 1
-  basic_costs_stolen_flag_in_points: 1
-  cost_defence_flag_in_points: 1.0
+  flag_cost_in_points: 100
 scoreboard:
   port: 8080
   htmlfolder: ./html
