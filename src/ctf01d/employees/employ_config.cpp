@@ -366,8 +366,8 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     }
     WsjcppLog::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_nGameEndUTCInSec));
 
-    m_nFlagTimeliveInMin = yamlConfig["game"]["flag_timelive_in_min"].valInt();
-    WsjcppLog::info(TAG, "game.flag_timelive_in_min: " + std::to_string(m_nFlagTimeliveInMin));
+    m_nFlagTimeliveInMin = yamlConfig["game"]["flag_lifetime_in_min"].valInt();
+    WsjcppLog::info(TAG, "game.flag_lifetime_in_min: " + std::to_string(m_nFlagTimeliveInMin));
 
     m_nBasicCostsStolenFlagInPoints = yamlConfig["game"]["basic_costs_stolen_flag_in_points"].valInt();
     WsjcppLog::info(TAG, "game.basic_costs_stolen_flag_in_points: " + std::to_string(m_nBasicCostsStolenFlagInPoints));
@@ -391,12 +391,12 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     }
 
     if (m_nFlagTimeliveInMin <= 0) {
-        WsjcppLog::err(TAG, "game.flag_timelive_in_min could not be less than 0");
+        WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be less than 0");
         return false;
     }
 
     if (m_nFlagTimeliveInMin > 25) {
-        WsjcppLog::err(TAG, "game.flag_timelive_in_min could not be gather than 25");
+        WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be gather than 25");
         return false;
     }
 

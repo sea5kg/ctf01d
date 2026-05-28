@@ -34,7 +34,7 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "  end: \"2030-11-12 22:00:00\" # end time of game (UTC)\n"
     "  coffee_break_start: \"2023-11-12 20:00:00\" # start time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end\n"
     "  coffee_break_end: \"2023-11-12 21:00:00\" # end time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end\n"
-    "  flag_timelive_in_min: 1 # you can change flag time live (in minutes)\n"
+    "  flag_lifetime_in_min: 1 # you can change flag lifetime (in minutes)\n"
     "  basic_costs_stolen_flag_in_points: 1 # basic costs stolen (attack) flag in points for adaptive scoreboard\n"
     "  cost_defence_flag_in_points: 1.0 # cost defences flag in points\n"
     "\n"

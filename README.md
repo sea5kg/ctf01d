@@ -187,7 +187,7 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
 
 ### 1. Basic
 
-flag_timelive_in_min:
+flag_lifetime_in_min:
   - EN: flag lifetime (default: 1 minutes)
   - RU: время жизни флага (поумолчанию: 1 минут)
 
