@@ -104,8 +104,10 @@ private:
   std::string m_sScoreboardHtmlFolder;
   bool m_bScoreboardRandom;
 
+  std::vector<std::shared_ptr<ctf01d::var>> m_vars;
+
   // game conf
-  int m_nFlagLifetimeInMin;
+  std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_min;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   std::shared_ptr<ctf01d::var_string> m_game_id;
   std::shared_ptr<ctf01d::var_string> m_game_name;

@@ -54,12 +54,11 @@ enum class var_type {
 
 class var {
 public:
-  
-
   var(const std::vector<std::string> &path_name, ctf01d::var_type t);
   std::string name() const;
   ctf01d::var_type type() const;
   virtual bool read(WsjcppYaml &yaml, std::string &err);
+  virtual std::string to_string();
 
 protected:
   WsjcppYamlCursor cursorByPath(WsjcppYaml &yaml, std::string &err);
@@ -74,7 +73,8 @@ public:
   var_int(const std::vector<std::string> &path_name, int default_value);
   static std::shared_ptr<var_int> create(const std::vector<std::string> &path_name, int default_value);
   virtual bool read(WsjcppYaml &yaml, std::string &err) override;
-  int defaultValue() const;
+  virtual std::string to_string() override;
+  int default_value() const;
   int value() const;
   bool set_value(int val, std::string &err);
   void set_minimum(int val);
@@ -95,6 +95,7 @@ public:
     var_string(const std::vector<std::string> &path_name, const std::string &default_value);
     static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value);
     virtual bool read(WsjcppYaml &yaml, std::string &err) override;
+    virtual std::string to_string() override;
     std::string defaultValue() const;
     std::string value() const;
     void setValue(const std::string &val);
@@ -110,6 +111,7 @@ public:
   var_bool(const std::vector<std::string> &path_name, bool default_value);
   static std::shared_ptr<var_bool> create(const std::vector<std::string> &path_name, bool default_value);
   virtual bool read(WsjcppYaml &yaml, std::string &err) override;
+  virtual std::string to_string() override;
   bool defaultValue() const;
   bool value() const;
   void setValue(bool val);

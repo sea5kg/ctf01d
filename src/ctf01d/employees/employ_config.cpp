@@ -55,28 +55,37 @@ REGISTRY_WSJCPP_EMPLOY(EmployConfig)
 
 EmployConfig::EmployConfig()
 : WsjcppEmployBase({ EmployConfig::name() }, {}) {
-    TAG = EmployConfig::name();
-    m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
-    m_game_id = ctf01d::var_string::create({"game", "id"}, "test");
-    m_game_name = ctf01d::var_string::create({"game", "name"}, "Test");
+  TAG = EmployConfig::name();
+  m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
 
-    m_bAppliedConfig = false;
-    m_nFlagLifetimeInMin = 10;
-    m_nScoreboardPort = 8080;
-    m_bScoreboardRandom = false;
-    m_pScoreboard = nullptr;
+  m_game_id = ctf01d::var_string::create({"game", "id"}, "test");
+  m_vars.push_back(m_game_id);
 
-    m_nGameStartUTCInSec = 0;
-    m_nGameEndUTCInSec = 0;
-    m_bHasCoffeeBreak = false;
-    m_sGameCoffeeBreakStart = "";
-    m_sGameCoffeeBreakEnd = "";
-    m_nGameCoffeeBreakStartUTCInSec = 0;
-    m_nGameCoffeeBreakEndUTCInSec = 0;
+  m_game_name = ctf01d::var_string::create({"game", "name"}, "Test");
+  m_vars.push_back(m_game_name);
 
-    m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
-    m_flag_cost_in_points->set_minimum(1);
-    m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
+  m_bAppliedConfig = false;
+  m_flag_lifetime_in_min = ctf01d::var_int::create({"game", "flag_lifetime_in_min"}, 10);
+  m_flag_lifetime_in_min->set_minimum(1);
+  m_flag_lifetime_in_min->set_maximum(MAX_FLAG_LIFETIME_MINUTES);
+  m_vars.push_back(m_flag_lifetime_in_min);
+
+  m_nScoreboardPort = 8080;
+  m_bScoreboardRandom = false;
+  m_pScoreboard = nullptr;
+
+  m_nGameStartUTCInSec = 0;
+  m_nGameEndUTCInSec = 0;
+  m_bHasCoffeeBreak = false;
+  m_sGameCoffeeBreakStart = "";
+  m_sGameCoffeeBreakEnd = "";
+  m_nGameCoffeeBreakStartUTCInSec = 0;
+  m_nGameCoffeeBreakEndUTCInSec = 0;
+
+  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
+  m_flag_cost_in_points->set_minimum(1);
+  m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
+  m_vars.push_back(m_flag_cost_in_points);
 }
 
 EmployConfig::~EmployConfig() {
@@ -124,121 +133,135 @@ std::string EmployConfig::getWorkDir() {
 }
 
 bool EmployConfig::applyConfig() {
-    if (m_bAppliedConfig) {
-        return true;
+  if (m_bAppliedConfig) {
+    return true;
+  }
+
+  m_bAppliedConfig = false;
+  WsjcppLog::info(TAG, "Loading configuration...");
+
+  std::string sConfigFile = m_sWorkDir + "/config.yml";
+  WsjcppLog::info(TAG, "Reading config: " + sConfigFile);
+
+  if (!WsjcppCore::fileExists(sConfigFile)) {
+    WsjcppLog::err(TAG, "File " + sConfigFile + " does not exists");
+    return false;
+  }
+
+  WsjcppYaml yamlConfig;
+  std::string sError;
+  if (!yamlConfig.loadFromFile(sConfigFile, sError)) {
+    WsjcppLog::err(TAG, "Could not parse " + sConfigFile + ", reason: " + sError);
+    return false;
+  }
+
+  if (!checkYamlMainKeys(yamlConfig)) {
+    return false;
+  }
+
+  bool var_errors = false;
+  for (int i = 0; i < m_vars.size(); ++i) {
+    std::shared_ptr<ctf01d::var> _var = m_vars[i];
+    std::string err;
+    if (!_var->read(yamlConfig, err)) {
+      var_errors = true;
+      continue;
     }
+    WsjcppLog::info(TAG, _var->name() + ": " + _var->to_string());
+  }
+  if (var_errors) {
+    return false;
+  }
 
-    m_bAppliedConfig = false;
-    WsjcppLog::info(TAG, "Loading configuration...");
+  // apply the game config
+  if (!this->applyGameConf(yamlConfig)) {
+    return false;
+  }
 
-    std::string sConfigFile = m_sWorkDir + "/config.yml";
-    WsjcppLog::info(TAG, "Reading config: " + sConfigFile);
+  if (!this->applyCheckersConf(yamlConfig)) {
+    return false;
+  }
 
-    if (!WsjcppCore::fileExists(sConfigFile)) {
-        WsjcppLog::err(TAG, "File " + sConfigFile + " does not exists");
-        return false;
-    }
+  if (!this->readTeamsConf(yamlConfig)) {
+    return false;
+  }
 
-    WsjcppYaml yamlConfig;
-    std::string sError;
-    if (!yamlConfig.loadFromFile(sConfigFile, sError)) {
-        WsjcppLog::err(TAG, "Could not parse " + sConfigFile + ", reason: " + sError);
-        return false;
-    }
+  // apply the scoreboard config
+  if (!this->applyScoreboardConf(yamlConfig)) {
+    return false;
+  }
 
-    if (!checkYamlMainKeys(yamlConfig)) {
-        return false;
-    }
+  // scoreboard
+  m_pScoreboard = std::make_shared<Ctf01dScoreboard>(
+    m_bScoreboardRandom,
+    m_nGameStartUTCInSec,
+    m_nGameEndUTCInSec,
+    m_nGameCoffeeBreakStartUTCInSec,
+    m_nGameCoffeeBreakEndUTCInSec
+  );
 
-    // apply the game config
-    if (!this->applyGameConf(yamlConfig)) {
-        return false;
-    }
-
-    if (!this->applyCheckersConf(yamlConfig)) {
-        return false;
-    }
-
-    if (!this->readTeamsConf(yamlConfig)) {
-        return false;
-    }
-
-    // apply the scoreboard config
-    if (!this->applyScoreboardConf(yamlConfig)) {
-        return false;
-    }
-
-    // scoreboard
-    m_pScoreboard = std::make_shared<Ctf01dScoreboard>(
-        m_bScoreboardRandom,
-        m_nGameStartUTCInSec,
-        m_nGameEndUTCInSec,
-        m_nGameCoffeeBreakStartUTCInSec,
-        m_nGameCoffeeBreakEndUTCInSec
-    );
-
-    m_bAppliedConfig = true;
-    return m_bAppliedConfig;
+  m_bAppliedConfig = true;
+  return m_bAppliedConfig;
 }
 
 std::vector<Ctf01dTeamDef> &EmployConfig::teamsConf() {
-    return m_vTeamsConf;
+  return m_vTeamsConf;
 }
 
 std::vector<Ctf01dServiceDef> &EmployConfig::servicesConf() {
-    return m_vServicesConf;
+  return m_vServicesConf;
 }
 
 int EmployConfig::scoreboardPort() const {
-    return m_nScoreboardPort;
+  return m_nScoreboardPort;
 }
 
 std::string EmployConfig::scoreboardHtmlFolder() const {
-    return m_sScoreboardHtmlFolder;
+  return m_sScoreboardHtmlFolder;
 }
 
 bool EmployConfig::scoreboardRandom() const {
-    return m_bScoreboardRandom;
+  return m_bScoreboardRandom;
 }
 
 std::string EmployConfig::gameId() const {
-    return m_game_id->value();
+  return m_game_id->value();
 }
 
 std::string EmployConfig::gameName() const  {
-    return m_game_name->value();
+  return m_game_name->value();
 }
 
 int EmployConfig::flagTimeliveInMin() const  {
-    return m_nFlagLifetimeInMin;
+  return m_flag_lifetime_in_min->value();
 }
 
 std::shared_ptr<ctf01d::var_int> EmployConfig::get_flag_cost_in_points() const {
-    return m_flag_cost_in_points;
+  return m_flag_cost_in_points;
 }
 
 int EmployConfig::gameStartUTCInSec() const {
-    return m_nGameStartUTCInSec;
+  return m_nGameStartUTCInSec;
 }
 
 int EmployConfig::gameEndUTCInSec() const {
-    return m_nGameEndUTCInSec;
+  return m_nGameEndUTCInSec;
 }
 
 bool EmployConfig::gameHasCoffeeBreak() {
-    return m_bHasCoffeeBreak;
+  return m_bHasCoffeeBreak;
 }
 
 int EmployConfig::gameCoffeeBreakStartUTCInSec() {
-    return m_nGameCoffeeBreakStartUTCInSec;
+  return m_nGameCoffeeBreakStartUTCInSec;
 }
 
 int EmployConfig::gameCoffeeBreakEndUTCInSec() {
-    return m_nGameCoffeeBreakEndUTCInSec;
+  return m_nGameCoffeeBreakEndUTCInSec;
 }
 
 std::shared_ptr<Ctf01dScoreboard> EmployConfig::scoreboard() {
-    return m_pScoreboard;
+  return m_pScoreboard;
 }
 
 void EmployConfig::doExtractFilesIfNotExists() {
@@ -372,334 +395,302 @@ bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
 }
 
 bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
-    auto cur = yamlConfig.getCursor();
-    if (!cur.hasKey("game")) {
-        WsjcppLog::err(TAG, "Missing 'game'");
-        return false;
-    }
-    cur = cur["game"];
-    // auto keys = cur.keys();
-    std::vector<std::string> expected_keys = {
-        "id",
-        "name",
-        "start_utc",
-        "end_utc",
-        "coffee_break_start",
-        "coffee_break_end",
-        "flag_lifetime_in_min",
-        "basic_costs_stolen_flag_in_points",
-        "cost_defense_flag_in_points",
-    };
-    // for (int i = 0; i < keys.size(); ++i) {
-    //     std::string key = keys[i];
-    //     if (key == "id") {
-    //     }
-    // }
+  auto cur = yamlConfig.getCursor();
+  if (!cur.hasKey("game")) {
+      WsjcppLog::err(TAG, "Missing 'game'");
+      return false;
+  }
+  cur = cur["game"];
+  // auto keys = cur.keys();
+  std::vector<std::string> expected_keys = {
+    "id",
+    "name",
+    "start_utc",
+    "end_utc",
+    "coffee_break_start",
+    "coffee_break_end",
+    "flag_lifetime_in_min",
+    "basic_costs_stolen_flag_in_points",
+    "cost_defense_flag_in_points",
+  };
 
-    //  id: test
-    //  name: Test First Game
-    //  start_utc: '2023-11-12 16:00:00'
-    //  end_utc: '2030-11-12 22:00:00'
-    std::string err;
-    m_game_id->read(yamlConfig, err);
-    WsjcppLog::info(TAG, m_game_id->name() + ": " + m_game_id->value());
+  std::string err;
 
-    m_game_name->read(yamlConfig, err);
-    WsjcppLog::info(TAG, m_game_name->name() + ": " + m_game_name->value());
+  m_sGameStart = cur["start_utc"].valStr();
+  WsjcppLog::info(TAG, "game.start_utc: " + m_sGameStart);
+  {
+    std::istringstream in{m_sGameStart.c_str()};
+    date::sys_seconds tp;
+    in >> date::parse("%Y-%m-%d %T", tp);
+    m_nGameStartUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
+  }
 
-    m_sGameStart = cur["start_utc"].valStr();
-    WsjcppLog::info(TAG, "game.start_utc: " + m_sGameStart);
-    {
-        std::istringstream in{m_sGameStart.c_str()};
-        date::sys_seconds tp;
-        in >> date::parse("%Y-%m-%d %T", tp);
-        m_nGameStartUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-    }
+  WsjcppLog::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_nGameStartUTCInSec));
 
-    WsjcppLog::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_nGameStartUTCInSec));
+  m_sGameEnd = yamlConfig["game"]["end_utc"].valStr();
+  WsjcppLog::info(TAG, "game.end_utc: " + m_sGameEnd);
+  {
+    std::istringstream in{m_sGameEnd.c_str()};
+    date::sys_seconds tp;
+    in >> date::parse("%Y-%m-%d %T", tp);
+    m_nGameEndUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
+  }
+  WsjcppLog::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_nGameEndUTCInSec));
 
-    m_sGameEnd = yamlConfig["game"]["end_utc"].valStr();
-    WsjcppLog::info(TAG, "game.end_utc: " + m_sGameEnd);
-    {
-        std::istringstream in{m_sGameEnd.c_str()};
-        date::sys_seconds tp;
-        in >> date::parse("%Y-%m-%d %T", tp);
-        m_nGameEndUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-    }
-    WsjcppLog::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_nGameEndUTCInSec));
+  if (m_nGameStartUTCInSec == 0) {
+    WsjcppLog::err(TAG, "game.start_utc - not found");
+    return false;
+  }
 
-    m_nFlagLifetimeInMin = yamlConfig["game"]["flag_lifetime_in_min"].valInt();
-    WsjcppLog::info(TAG, "game.flag_lifetime_in_min: " + std::to_string(m_nFlagLifetimeInMin));
+  if (m_nGameEndUTCInSec == 0) {
+    WsjcppLog::err(TAG, "game.end - not found");
+    return false;
+  }
 
-    if (!m_flag_cost_in_points->read(yamlConfig, err)) {
-        return false;
-    }
-    WsjcppLog::info(TAG, m_flag_cost_in_points->name() + ": " + std::to_string(m_flag_cost_in_points->value()));
+  if (m_nGameEndUTCInSec < m_nGameStartUTCInSec) {
+    WsjcppLog::err(TAG, "game.end must be gather then game.start");
+    return false;
+  }
 
-    if (m_nGameStartUTCInSec == 0) {
-        WsjcppLog::err(TAG, "game.start_utc - not found");
-        return false;
-    }
+  m_sGameCoffeeBreakStart = yamlConfig["game"]["coffee_break_start"].valStr();
+  WsjcppLog::info(TAG, "game.coffee_break_start: " + m_sGameCoffeeBreakStart);
+  {
+    std::istringstream in{m_sGameCoffeeBreakStart.c_str()};
+    date::sys_seconds tp;
+    in >> date::parse("%Y-%m-%d %T", tp);
+    m_nGameCoffeeBreakStartUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
+  }
+  WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_nGameCoffeeBreakStartUTCInSec));
 
-    if (m_nGameEndUTCInSec == 0) {
-        WsjcppLog::err(TAG, "game.end - not found");
-        return false;
-    }
+  m_sGameCoffeeBreakEnd = yamlConfig["game"]["coffee_break_end"].valStr();
+  WsjcppLog::info(TAG, "game.coffee_break_end: " + m_sGameCoffeeBreakEnd);
+  {
+    std::istringstream in{m_sGameCoffeeBreakEnd.c_str()};
+    date::sys_seconds tp;
+    in >> date::parse("%Y-%m-%d %T", tp);
+    m_nGameCoffeeBreakEndUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
+  }
+  WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_nGameCoffeeBreakEndUTCInSec));
 
-    if (m_nGameEndUTCInSec < m_nGameStartUTCInSec) {
-        WsjcppLog::err(TAG, "game.end must be gather then game.start");
-        return false;
-    }
+  if (m_nGameStartUTCInSec < m_nGameCoffeeBreakStartUTCInSec
+    && m_nGameCoffeeBreakStartUTCInSec < m_nGameEndUTCInSec
+    && m_nGameStartUTCInSec < m_nGameCoffeeBreakEndUTCInSec
+    && m_nGameCoffeeBreakEndUTCInSec < m_nGameEndUTCInSec
+  ) {
+    WsjcppLog::info(TAG, "Oh! Game has coffee break! nice!");
+    m_bHasCoffeeBreak = true;
+  }
 
-    if (m_nFlagLifetimeInMin <= 0) {
-        WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be less than 0");
-        return false;
-    }
-
-    if (m_nFlagLifetimeInMin > MAX_FLAG_LIFETIME_MINUTES) {
-        WsjcppLog::err(TAG, "game.flag_lifetime_in_min could not be gather than " + std::to_string(MAX_FLAG_LIFETIME_MINUTES));
-        return false;
-    }
-
-    m_sGameCoffeeBreakStart = yamlConfig["game"]["coffee_break_start"].valStr();
-    WsjcppLog::info(TAG, "game.coffee_break_start: " + m_sGameCoffeeBreakStart);
-    {
-        std::istringstream in{m_sGameCoffeeBreakStart.c_str()};
-        date::sys_seconds tp;
-        in >> date::parse("%Y-%m-%d %T", tp);
-        m_nGameCoffeeBreakStartUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-    }
-    WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_nGameCoffeeBreakStartUTCInSec));
-
-    m_sGameCoffeeBreakEnd = yamlConfig["game"]["coffee_break_end"].valStr();
-    WsjcppLog::info(TAG, "game.coffee_break_end: " + m_sGameCoffeeBreakEnd);
-    {
-        std::istringstream in{m_sGameCoffeeBreakEnd.c_str()};
-        date::sys_seconds tp;
-        in >> date::parse("%Y-%m-%d %T", tp);
-        m_nGameCoffeeBreakEndUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-    }
-    WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_nGameCoffeeBreakEndUTCInSec));
-
-    if (m_nGameStartUTCInSec < m_nGameCoffeeBreakStartUTCInSec
-        && m_nGameCoffeeBreakStartUTCInSec < m_nGameEndUTCInSec
-        && m_nGameStartUTCInSec < m_nGameCoffeeBreakEndUTCInSec
-        && m_nGameCoffeeBreakEndUTCInSec < m_nGameEndUTCInSec
-    ) {
-        WsjcppLog::info(TAG, "Oh! Game has coffee break! nice!");
-        m_bHasCoffeeBreak = true;
-    }
-
-    return true;
+  return true;
 }
 
 bool EmployConfig::applyScoreboardConf(WsjcppYaml &yamlConfig) {
 
-    m_nScoreboardPort = yamlConfig["scoreboard"]["port"].valInt();
-    if (m_nScoreboardPort <= 10 || m_nScoreboardPort > 65536) {
-        WsjcppLog::err(TAG, "wrong scoreboard.port (expected value od 11..65535)");
-        return false;
+  m_nScoreboardPort = yamlConfig["scoreboard"]["port"].valInt();
+  if (m_nScoreboardPort <= 10 || m_nScoreboardPort > 65536) {
+    WsjcppLog::err(TAG, "wrong scoreboard.port (expected value od 11..65535)");
+    return false;
+  }
+  WsjcppLog::info(TAG, "scoreboard.port: " + std::to_string(m_nScoreboardPort));
+
+  m_bScoreboardRandom = yamlConfig["scoreboard"]["random"].valBool();
+  WsjcppLog::info(TAG, "scoreboard.random: " + std::string(m_bScoreboardRandom == true ? "yes" : "no"));
+
+  m_sScoreboardHtmlFolder = yamlConfig["scoreboard"]["htmlfolder"].valStr();
+  if (m_sScoreboardHtmlFolder.length() > 0) {
+    if (m_sScoreboardHtmlFolder[0] != '/') {
+      m_sScoreboardHtmlFolder = m_sWorkDir + "/" + m_sScoreboardHtmlFolder;
     }
-    WsjcppLog::info(TAG, "scoreboard.port: " + std::to_string(m_nScoreboardPort));
+  } else {
+    m_sScoreboardHtmlFolder = m_sWorkDir + "/html";
+  }
+  m_sScoreboardHtmlFolder = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder);
 
-    m_bScoreboardRandom = yamlConfig["scoreboard"]["random"].valBool();
-    WsjcppLog::info(TAG, "scoreboard.random: " + std::string(m_bScoreboardRandom == true ? "yes" : "no"));
+  WsjcppLog::info(TAG, "scoreboard.htmlfolder: " + m_sScoreboardHtmlFolder);
 
-    m_sScoreboardHtmlFolder = yamlConfig["scoreboard"]["htmlfolder"].valStr();
-    if (m_sScoreboardHtmlFolder.length() > 0) {
-        if (m_sScoreboardHtmlFolder[0] != '/') {
-            m_sScoreboardHtmlFolder = m_sWorkDir + "/" + m_sScoreboardHtmlFolder;
-        }
-    } else {
-        m_sScoreboardHtmlFolder = m_sWorkDir + "/html";
-    }
-    m_sScoreboardHtmlFolder = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder);
+  if (!WsjcppCore::dirExists(m_sScoreboardHtmlFolder)) {
+    WsjcppLog::err(TAG, "Directory '" + m_sScoreboardHtmlFolder + "' with scoreboard does not exists");
+    return false;
+  }
 
-    WsjcppLog::info(TAG, "scoreboard.htmlfolder: " + m_sScoreboardHtmlFolder);
-
-    if (!WsjcppCore::dirExists(m_sScoreboardHtmlFolder)) {
-        WsjcppLog::err(TAG, "Directory '" + m_sScoreboardHtmlFolder + "' with scoreboard does not exists");
-        return false;
-    }
-
-    return true;
+  return true;
 }
 
 bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
-    m_vServicesConf.clear();
+  m_vServicesConf.clear();
 
-    WsjcppYamlCursor yamlCheckers = yamlConfig["checkers"];
+  WsjcppYamlCursor yamlCheckers = yamlConfig["checkers"];
 
-    if (yamlCheckers.size() == 0) {
-        WsjcppLog::err(TAG, "Checkers does not defined");
+  if (yamlCheckers.size() == 0) {
+    WsjcppLog::err(TAG, "Checkers does not defined");
+    return false;
+  }
+
+  for (int i = 0; i < yamlCheckers.size(); i++) {
+    WsjcppYamlCursor yamlChecker = yamlCheckers[i];
+    std::string sServiceId = yamlChecker["id"].valStr();
+
+
+    // std::string sServiceConfPath = m_sWorkspaceDir + "/checker_" + sServiceId + "/service.conf";
+
+    std::string sServiceName = yamlChecker["service_name"].valStr();
+    WsjcppLog::info(TAG, "service_name = " + sServiceName);
+
+    bool bServiceEnable = yamlChecker["enabled"].valBool();
+    WsjcppLog::info(TAG, "enabled = " + std::string(bServiceEnable ? "yes" : "no"));
+
+    std::string sServiceScriptPath = yamlChecker["script_path"].valStr();
+    WsjcppLog::info(TAG, "script_path = " + sServiceScriptPath);
+    std::string sServiceScriptDir = m_sWorkDir + "/checker_" + sServiceId + "/";
+    if (!WsjcppCore::dirExists(sServiceScriptDir)) {
+      WsjcppLog::err(TAG, "Folder " + sServiceScriptDir + " did not exists");
+      return false;
+    }
+    // set write permissions for all to directory with checker
+    std::string sError;
+    if (!WsjcppCore::setFilePermissions(sServiceScriptDir, WsjcppFilePermissions(0x777), sError)) {
+      WsjcppLog::err(TAG, sError);
+      return false;
+    }
+
+    WsjcppLog::info(TAG, "sServiceScriptDir: " + sServiceScriptDir);
+    if (!WsjcppCore::fileExists(sServiceScriptDir + sServiceScriptPath)) {
+      WsjcppLog::err(TAG, "File " + sServiceScriptPath + " did not exists");
+      return false;
+    }
+    // set write permissions for all to script of checker
+    if (!WsjcppCore::setFilePermissions(sServiceScriptDir + sServiceScriptPath, WsjcppFilePermissions(0x777), sError)) {
+      WsjcppLog::err(TAG, sError);
+      return false;
+    }
+
+    int nServiceScriptWait = yamlChecker["script_wait_in_sec"].valInt();
+    WsjcppLog::info(TAG, "script_wait_in_sec = " + std::to_string(nServiceScriptWait));
+
+    if (nServiceScriptWait < 5) {
+      WsjcppLog::err(TAG, "Could not parse script_wait_in_sec - must be more than 4 sec ");
+      return false;
+    }
+
+    int nServiceSleepBetweenRun = yamlChecker["time_sleep_between_run_scripts_in_sec"].valInt();
+    WsjcppLog::info(TAG, "time_sleep_between_run_scripts_in_sec = " + std::to_string(nServiceSleepBetweenRun));
+
+    if (nServiceSleepBetweenRun < nServiceScriptWait*3) {
+      WsjcppLog::err(TAG, "Could not parse time_sleep_between_run_scripts_in_sec - must be more than " + std::to_string(nServiceScriptWait*3-1) + " sec ");
+      return false;
+    }
+
+    if (!bServiceEnable) {
+      WsjcppLog::warn(TAG, "Checker for service " + sServiceId + " - disabled ");
+      continue;
+    }
+
+    for (unsigned int i = 0; i < m_vServicesConf.size(); i++) {
+      if (m_vServicesConf[i].id() == sServiceId) {
+        WsjcppLog::err(TAG, "Already registered checker for service " + sServiceId);
         return false;
+      }
     }
 
-    for (int i = 0; i < yamlCheckers.size(); i++) {
-        WsjcppYamlCursor yamlChecker = yamlCheckers[i];
-        std::string sServiceId = yamlChecker["id"].valStr();
+    // default values of service config
+    Ctf01dServiceDef _serviceConf;
+    _serviceConf.setId(sServiceId);
+    _serviceConf.setName(sServiceName);
+    _serviceConf.setScriptPath(sServiceScriptPath);
+    _serviceConf.setScriptDir(sServiceScriptDir);
+    _serviceConf.setEnabled(bServiceEnable);
+    _serviceConf.setScriptWaitInSec(nServiceScriptWait);
+    _serviceConf.setTimeSleepBetweenRunScriptsInSec(nServiceSleepBetweenRun);
+    m_vServicesConf.push_back(_serviceConf);
 
+    WsjcppLog::ok(TAG, "Registered checker for service " + sServiceId);
+  }
 
-        // std::string sServiceConfPath = m_sWorkspaceDir + "/checker_" + sServiceId + "/service.conf";
+  if (m_vServicesConf.size() == 0) {
+    WsjcppLog::err(TAG, "No one defined checkers in config");
+    return false;
+  }
 
-        std::string sServiceName = yamlChecker["service_name"].valStr();
-        WsjcppLog::info(TAG, "service_name = " + sServiceName);
-
-        bool bServiceEnable = yamlChecker["enabled"].valBool();
-        WsjcppLog::info(TAG, "enabled = " + std::string(bServiceEnable ? "yes" : "no"));
-
-        std::string sServiceScriptPath = yamlChecker["script_path"].valStr();
-        WsjcppLog::info(TAG, "script_path = " + sServiceScriptPath);
-        std::string sServiceScriptDir = m_sWorkDir + "/checker_" + sServiceId + "/";
-        if (!WsjcppCore::dirExists(sServiceScriptDir)) {
-            WsjcppLog::err(TAG, "Folder " + sServiceScriptDir + " did not exists");
-            return false;
-        }
-        // set write permissions for all to directory with checker
-        std::string sError;
-        if (!WsjcppCore::setFilePermissions(sServiceScriptDir, WsjcppFilePermissions(0x777), sError)) {
-            WsjcppLog::err(TAG, sError);
-            return false;
-        }
-
-        WsjcppLog::info(TAG, "sServiceScriptDir: " + sServiceScriptDir);
-        if (!WsjcppCore::fileExists(sServiceScriptDir + sServiceScriptPath)) {
-            WsjcppLog::err(TAG, "File " + sServiceScriptPath + " did not exists");
-            return false;
-        }
-        // set write permissions for all to script of checker
-        if (!WsjcppCore::setFilePermissions(sServiceScriptDir + sServiceScriptPath, WsjcppFilePermissions(0x777), sError)) {
-            WsjcppLog::err(TAG, sError);
-            return false;
-        }
-
-        int nServiceScriptWait = yamlChecker["script_wait_in_sec"].valInt();
-        WsjcppLog::info(TAG, "script_wait_in_sec = " + std::to_string(nServiceScriptWait));
-
-        if (nServiceScriptWait < 5) {
-            WsjcppLog::err(TAG, "Could not parse script_wait_in_sec - must be more than 4 sec ");
-            return false;
-        }
-
-        int nServiceSleepBetweenRun = yamlChecker["time_sleep_between_run_scripts_in_sec"].valInt();
-        WsjcppLog::info(TAG, "time_sleep_between_run_scripts_in_sec = " + std::to_string(nServiceSleepBetweenRun));
-
-        if (nServiceSleepBetweenRun < nServiceScriptWait*3) {
-            WsjcppLog::err(TAG, "Could not parse time_sleep_between_run_scripts_in_sec - must be more than " + std::to_string(nServiceScriptWait*3-1) + " sec ");
-            return false;
-        }
-
-        if (!bServiceEnable) {
-            WsjcppLog::warn(TAG, "Checker for service " + sServiceId + " - disabled ");
-            continue;
-        }
-
-        for (unsigned int i = 0; i < m_vServicesConf.size(); i++) {
-            if (m_vServicesConf[i].id() == sServiceId) {
-                WsjcppLog::err(TAG, "Already registered checker for service " + sServiceId);
-                return false;
-            }
-        }
-
-        // default values of service config
-        Ctf01dServiceDef _serviceConf;
-        _serviceConf.setId(sServiceId);
-        _serviceConf.setName(sServiceName);
-        _serviceConf.setScriptPath(sServiceScriptPath);
-        _serviceConf.setScriptDir(sServiceScriptDir);
-        _serviceConf.setEnabled(bServiceEnable);
-        _serviceConf.setScriptWaitInSec(nServiceScriptWait);
-        _serviceConf.setTimeSleepBetweenRunScriptsInSec(nServiceSleepBetweenRun);
-        m_vServicesConf.push_back(_serviceConf);
-
-        WsjcppLog::ok(TAG, "Registered checker for service " + sServiceId);
-    }
-
-    if (m_vServicesConf.size() == 0) {
-        WsjcppLog::err(TAG, "No one defined checkers in config");
-        return false;
-    }
-
-    return true;
+  return true;
 }
 
 bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
-    m_vTeamsConf.clear();
-    EmployTeamLogos *pTeamLogos = findWsjcppEmploy<EmployTeamLogos>();
+  m_vTeamsConf.clear();
+  EmployTeamLogos *pTeamLogos = findWsjcppEmploy<EmployTeamLogos>();
 
-    WsjcppYamlCursor yamlTeams = yamlConfig["teams"];
+  WsjcppYamlCursor yamlTeams = yamlConfig["teams"];
 
-    if (yamlTeams.size() == 0) {
-        WsjcppLog::err(TAG, "Teams does not defined");
+  if (yamlTeams.size() == 0) {
+    WsjcppLog::err(TAG, "Teams does not defined");
+    return false;
+  }
+
+  std::vector<std::string> vIPAddresses;
+
+  for (int i = 0; i < yamlTeams.size(); i++) {
+    WsjcppYamlCursor yamlTeam = yamlTeams[i];
+    std::string sTeamId = yamlTeam["id"].valStr();
+    // TODO check sTeamId format
+
+    WsjcppLog::info(TAG, "id = " + sTeamId);
+    bool bTeamActive = yamlTeam["active"].valBool();
+    WsjcppLog::info(TAG, "active = " + std::string(bTeamActive ? "yes" : "no"));
+    if (!bTeamActive) {
+      WsjcppLog::warn(TAG, "Team " + sTeamId + " - deactivated");
+      continue;
+    }
+
+    for (unsigned int i = 0; i < m_vTeamsConf.size(); i++) {
+      if (m_vTeamsConf[i].getId() == sTeamId) {
+        WsjcppLog::err(TAG, "Already registered team with id " + sTeamId);
         return false;
+      }
     }
 
-    std::vector<std::string> vIPAddresses;
+    std::string sTeamName = yamlTeam["name"].valStr();
+    WsjcppLog::info(TAG, "name = " + sTeamName);
 
-    for (int i = 0; i < yamlTeams.size(); i++) {
-        WsjcppYamlCursor yamlTeam = yamlTeams[i];
-        std::string sTeamId = yamlTeam["id"].valStr();
-        // TODO check sTeamId format
-
-        WsjcppLog::info(TAG, "id = " + sTeamId);
-        bool bTeamActive = yamlTeam["active"].valBool();
-        WsjcppLog::info(TAG, "active = " + std::string(bTeamActive ? "yes" : "no"));
-        if (!bTeamActive) {
-            WsjcppLog::warn(TAG, "Team " + sTeamId + " - deactivated");
-            continue;
-        }
-
-        for (unsigned int i = 0; i < m_vTeamsConf.size(); i++) {
-            if (m_vTeamsConf[i].getId() == sTeamId) {
-                WsjcppLog::err(TAG, "Already registered team with id " + sTeamId);
-                return false;
-            }
-        }
-
-        std::string sTeamName = yamlTeam["name"].valStr();
-        WsjcppLog::info(TAG, "name = " + sTeamName);
-
-        std::string sTeamIpAddress = yamlTeam["ip_address"].valStr();
-        WsjcppLog::info(TAG, "ip_address = " + sTeamIpAddress);
-        std::string sError;
-        if (!isValidIPv4(sTeamIpAddress, sError)) {
-            WsjcppLog::err(TAG, "Invalid IPv4 address" + sError);
-            return false;
-        }
-
-        // Check duplicate IP addresses
-        if (std::find(vIPAddresses.begin(), vIPAddresses.end(), sTeamIpAddress) == vIPAddresses.end()) {
-            vIPAddresses.push_back(sTeamIpAddress);
-        } else {
-            WsjcppLog::err(TAG, "Found duplicate IP address: " + sTeamIpAddress);
-            return false;
-        }
-
-        std::string sTeamLogo = yamlTeam["logo"].valStr();
-        sTeamLogo = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sTeamLogo);
-        if (!pTeamLogos->loadTeamLogo(sTeamId, sTeamLogo)) {
-            return false;
-        }
-        WsjcppLog::info(TAG, "logo = " + sTeamLogo);
-
-        // default values of service config
-        Ctf01dTeamDef _teamConf;
-        _teamConf.setId(sTeamId);
-        _teamConf.setName(sTeamName);
-        _teamConf.setActive(true);
-        _teamConf.setIpAddress(sTeamIpAddress);
-        _teamConf.setLogo(sTeamLogo);
-
-        m_vTeamsConf.push_back(_teamConf);
-        WsjcppLog::ok(TAG, "Registered team " + sTeamId);
+    std::string sTeamIpAddress = yamlTeam["ip_address"].valStr();
+    WsjcppLog::info(TAG, "ip_address = " + sTeamIpAddress);
+    std::string sError;
+    if (!isValidIPv4(sTeamIpAddress, sError)) {
+      WsjcppLog::err(TAG, "Invalid IPv4 address" + sError);
+      return false;
     }
 
-    if (m_vTeamsConf.size() == 0) {
-        WsjcppLog::err(TAG, "No one defined team in config");
-        return false;
+    // Check duplicate IP addresses
+    if (std::find(vIPAddresses.begin(), vIPAddresses.end(), sTeamIpAddress) == vIPAddresses.end()) {
+      vIPAddresses.push_back(sTeamIpAddress);
+    } else {
+      WsjcppLog::err(TAG, "Found duplicate IP address: " + sTeamIpAddress);
+      return false;
     }
 
-    return true;
+    std::string sTeamLogo = yamlTeam["logo"].valStr();
+    sTeamLogo = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sTeamLogo);
+    if (!pTeamLogos->loadTeamLogo(sTeamId, sTeamLogo)) {
+      return false;
+    }
+    WsjcppLog::info(TAG, "logo = " + sTeamLogo);
+
+    // default values of service config
+    Ctf01dTeamDef _teamConf;
+    _teamConf.setId(sTeamId);
+    _teamConf.setName(sTeamName);
+    _teamConf.setActive(true);
+    _teamConf.setIpAddress(sTeamIpAddress);
+    _teamConf.setLogo(sTeamLogo);
+
+    m_vTeamsConf.push_back(_teamConf);
+    WsjcppLog::ok(TAG, "Registered team " + sTeamId);
+  }
+
+  if (m_vTeamsConf.size() == 0) {
+    WsjcppLog::err(TAG, "No one defined team in config");
+    return false;
+  }
+
+  return true;
 }
 
 bool EmployConfig::isValidIPv4(const std::string &sValue, std::string &sError) {

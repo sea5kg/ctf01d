@@ -68,6 +68,10 @@ bool var::read(WsjcppYaml &yaml, std::string &err) {
   return false;
 }
 
+std::string var::to_string() {
+  return "unknown";
+}
+
 WsjcppYamlCursor var::cursorByPath(WsjcppYaml &yaml, std::string &err) {
   auto cur = yaml.getCursor();
   for (int i = 0; i < m_path_name.size(); ++i) {
@@ -98,7 +102,20 @@ std::shared_ptr<var_int> var_int::create(const std::vector<std::string> &path_na
   return std::make_shared<var_int>(path_name, default_value);
 }
 
-int var_int::defaultValue() const {
+bool var_int::read(WsjcppYaml &yaml, std::string &err) {
+  auto cursor = cursorByPath(yaml, err);
+  if (!cursor.isValue()) {
+    err = "Not found '" + name() + "'";
+    return false;
+  }
+  return set_value(cursor.valInt(), err);
+}
+
+std::string var_int::to_string() {
+  return std::to_string(value());
+}
+
+int var_int::default_value() const {
   return m_default;
 }
 
@@ -132,15 +149,6 @@ void var_int::set_maximum(int val) {
   m_check_maximum = true;
 }
 
-bool var_int::read(WsjcppYaml &yaml, std::string &err) {
-  auto cursor = cursorByPath(yaml, err);
-  if (!cursor.isValue()) {
-    err = "Not found '" + name() + "'";
-    return false;
-  }
-  return set_value(cursor.valInt(), err);
-}
-
 // ---------------------------------------------------------------------
 // ctf01d::var_string
 
@@ -160,6 +168,10 @@ bool var_string::read(WsjcppYaml &yaml, std::string &err) {
     return true;
   }
   return false;
+}
+
+std::string var_string::to_string() {
+  return "'" +  value() + "'";
 }
 
 std::string var_string::defaultValue() const {
@@ -197,6 +209,10 @@ bool var_bool::read(WsjcppYaml &yaml, std::string &err) {
 
   m_value_init = true;
   return true;
+}
+
+std::string var_bool::to_string() {
+  return value() ? "yes" : "no";
 }
 
 bool var_bool::defaultValue() const {
