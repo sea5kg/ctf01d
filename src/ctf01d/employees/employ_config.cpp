@@ -70,8 +70,17 @@ EmployConfig::EmployConfig()
   m_flag_lifetime_in_min->set_maximum(MAX_FLAG_LIFETIME_MINUTES);
   m_vars.push_back(m_flag_lifetime_in_min);
 
-  m_nScoreboardPort = 8080;
-  m_bScoreboardRandom = false;
+  m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080);
+  m_scoreboard_port->set_minimum(MIN_TCP_PORT);
+  m_scoreboard_port->set_maximum(MAX_TCP_PORT);
+  m_vars.push_back(m_scoreboard_port);
+
+  m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false);
+  m_vars.push_back(m_scoreboard_random);
+
+  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "htmlfolder"}, "./html", m_sWorkDir);
+  m_vars.push_back(m_scoreboard_html_folder);
+
   m_pScoreboard = nullptr;
 
   m_nGameStartUTCInSec = 0;
@@ -120,12 +129,12 @@ bool EmployConfig::deinit(const std::string &sName, bool bSilent) {
 }
 
 void EmployConfig::setWorkDir(const std::string &sWorkDir) {
-    if (m_sWorkDir != "" && m_sWorkDir != sWorkDir) {
-        std::cout << "Changed work-dir to '" + sWorkDir + "'" << std::endl;
-    }
-    m_sWorkDir = sWorkDir;
-    m_sConfigFilepath = m_sWorkDir + "/config.yml";
-    m_sScoreboardHtmlFolder = m_sWorkDir + "/html"; // default value
+  if (m_sWorkDir != "" && m_sWorkDir != sWorkDir) {
+    std::cout << "Changed work-dir to '" + sWorkDir + "'" << std::endl;
+  }
+  m_sWorkDir = sWorkDir;
+  m_sConfigFilepath = m_sWorkDir + "/config.yml";
+  m_scoreboard_html_folder->set_root_dir(m_sWorkDir);
 }
 
 std::string EmployConfig::getWorkDir() {
@@ -186,14 +195,9 @@ bool EmployConfig::applyConfig() {
     return false;
   }
 
-  // apply the scoreboard config
-  if (!this->applyScoreboardConf(yamlConfig)) {
-    return false;
-  }
-
   // scoreboard
   m_pScoreboard = std::make_shared<Ctf01dScoreboard>(
-    m_bScoreboardRandom,
+    m_scoreboard_random->value(),
     m_nGameStartUTCInSec,
     m_nGameEndUTCInSec,
     m_nGameCoffeeBreakStartUTCInSec,
@@ -213,15 +217,15 @@ std::vector<Ctf01dServiceDef> &EmployConfig::servicesConf() {
 }
 
 int EmployConfig::scoreboardPort() const {
-  return m_nScoreboardPort;
+  return m_scoreboard_port->value();
 }
 
 std::string EmployConfig::scoreboardHtmlFolder() const {
-  return m_sScoreboardHtmlFolder;
+  return m_scoreboard_html_folder->value();
 }
 
 bool EmployConfig::scoreboardRandom() const {
-  return m_bScoreboardRandom;
+  return m_scoreboard_random->value();
 }
 
 std::string EmployConfig::gameId() const {
@@ -479,38 +483,6 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
   ) {
     WsjcppLog::info(TAG, "Oh! Game has coffee break! nice!");
     m_bHasCoffeeBreak = true;
-  }
-
-  return true;
-}
-
-bool EmployConfig::applyScoreboardConf(WsjcppYaml &yamlConfig) {
-
-  m_nScoreboardPort = yamlConfig["scoreboard"]["port"].valInt();
-  if (m_nScoreboardPort <= 10 || m_nScoreboardPort > 65536) {
-    WsjcppLog::err(TAG, "wrong scoreboard.port (expected value od 11..65535)");
-    return false;
-  }
-  WsjcppLog::info(TAG, "scoreboard.port: " + std::to_string(m_nScoreboardPort));
-
-  m_bScoreboardRandom = yamlConfig["scoreboard"]["random"].valBool();
-  WsjcppLog::info(TAG, "scoreboard.random: " + std::string(m_bScoreboardRandom == true ? "yes" : "no"));
-
-  m_sScoreboardHtmlFolder = yamlConfig["scoreboard"]["htmlfolder"].valStr();
-  if (m_sScoreboardHtmlFolder.length() > 0) {
-    if (m_sScoreboardHtmlFolder[0] != '/') {
-      m_sScoreboardHtmlFolder = m_sWorkDir + "/" + m_sScoreboardHtmlFolder;
-    }
-  } else {
-    m_sScoreboardHtmlFolder = m_sWorkDir + "/html";
-  }
-  m_sScoreboardHtmlFolder = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder);
-
-  WsjcppLog::info(TAG, "scoreboard.htmlfolder: " + m_sScoreboardHtmlFolder);
-
-  if (!WsjcppCore::dirExists(m_sScoreboardHtmlFolder)) {
-    WsjcppLog::err(TAG, "Directory '" + m_sScoreboardHtmlFolder + "' with scoreboard does not exists");
-    return false;
   }
 
   return true;

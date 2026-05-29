@@ -92,18 +92,18 @@ private:
 
 class var_string : public ctf01d::var {
 public:
-    var_string(const std::vector<std::string> &path_name, const std::string &default_value);
-    static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value);
-    virtual bool read(WsjcppYaml &yaml, std::string &err) override;
-    virtual std::string to_string() override;
-    std::string defaultValue() const;
-    std::string value() const;
-    void setValue(const std::string &val);
+  var_string(const std::vector<std::string> &path_name, const std::string &default_value);
+  static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value);
+  virtual bool read(WsjcppYaml &yaml, std::string &err) override;
+  virtual std::string to_string() override;
+  std::string defaultValue() const;
+  std::string value() const;
+  void setValue(const std::string &val);
 
 private:
-    std::string m_default_value;
-    bool m_value_init;
-    std::string m_value;
+  std::string m_default_value;
+  bool m_value_init;
+  std::string m_value;
 };
 
 class var_bool : public ctf01d::var {
@@ -112,14 +112,35 @@ public:
   static std::shared_ptr<var_bool> create(const std::vector<std::string> &path_name, bool default_value);
   virtual bool read(WsjcppYaml &yaml, std::string &err) override;
   virtual std::string to_string() override;
-  bool defaultValue() const;
+  bool default_value() const;
   bool value() const;
-  void setValue(bool val);
+  bool set_value(bool val, std::string &err);
 
 private:
-  bool m_default_value;
+  bool m_default;
   bool m_value_init;
   bool m_value;
+};
+
+class var_dir : public ctf01d::var {
+public:
+  var_dir(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir);
+  static std::shared_ptr<var_dir> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir);
+  virtual bool read(WsjcppYaml &yaml, std::string &err) override;
+  virtual std::string to_string() override;
+  void set_root_dir(const std::string &val);
+  std::string default_value() const;
+  std::string value() const;
+  bool set_value(const std::string &val, std::string &err);
+
+private:
+  std::string to_absolute_path(const std::string &val);
+  std::string m_default;
+  std::string m_absolute_path_default;
+  bool m_value_init;
+  std::string m_value;
+  std::string m_absolute_path_value;
+  std::string m_root_dir;
 };
 
 } // namespace ctf01d

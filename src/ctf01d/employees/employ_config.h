@@ -87,7 +87,6 @@ public:
 private:
   bool checkYamlMainKeys(WsjcppYaml &yamlConfig);
   bool applyGameConf(WsjcppYaml &yamlConfig);
-  bool applyScoreboardConf(WsjcppYaml &yamlConfig);
   bool applyCheckersConf(WsjcppYaml &yamlConfig);
   bool readTeamsConf(WsjcppYaml &yamlConfig);
   bool isValidIPv4(const std::string &sValue, std::string &sError);
@@ -99,14 +98,15 @@ private:
   std::string m_sConfigFilepath;
   bool m_bAppliedConfig;
 
+  // scoreboard config
   std::shared_ptr<Ctf01dScoreboard> m_pScoreboard;
-  int m_nScoreboardPort;
-  std::string m_sScoreboardHtmlFolder;
-  bool m_bScoreboardRandom;
+  std::shared_ptr<ctf01d::var_int> m_scoreboard_port;
+  std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
+  std::shared_ptr<ctf01d::var_bool> m_scoreboard_random;
 
   std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 
-  // game conf
+  // game conf config
   std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_min;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   std::shared_ptr<ctf01d::var_string> m_game_id;

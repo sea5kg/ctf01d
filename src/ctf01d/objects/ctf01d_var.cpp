@@ -191,7 +191,7 @@ void var_string::setValue(const std::string &val) {
 // ctf01d::var_bool
 
 var_bool::var_bool(const std::vector<std::string> &path_name, bool default_value)
-: ctf01d::var(path_name, ctf01d::var_type::BOOLEAN), m_default_value(default_value), m_value_init(false) {
+: ctf01d::var(path_name, ctf01d::var_type::BOOLEAN), m_default(default_value), m_value_init(false) {
 
 }
 
@@ -203,11 +203,8 @@ std::shared_ptr<var_bool> var_bool::create(const std::vector<std::string> &path_
 bool var_bool::read(WsjcppYaml &yaml, std::string &err) {
   auto cursor = cursorByPath(yaml, err);
   if (cursor.isValue()) {
-    setValue(cursor.valBool());
-    return true;
+    return set_value(cursor.valBool(), err);
   }
-
-  m_value_init = true;
   return true;
 }
 
@@ -215,17 +212,79 @@ std::string var_bool::to_string() {
   return value() ? "yes" : "no";
 }
 
-bool var_bool::defaultValue() const {
-  return m_default_value;
+bool var_bool::default_value() const {
+  return m_default;
 }
 
 bool var_bool::value() const {
-  return m_value_init ? m_value : m_default_value;
+  return m_value_init ? m_value : m_default;
 }
 
-void var_bool::setValue(bool val) {
+bool var_bool::set_value(bool val, std::string &err) {
   m_value = val;
   m_value_init = true;
+  return true;
+}
+
+// ---------------------------------------------------------------------
+// ctf01d::var_dir
+
+var_dir::var_dir(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir)
+: ctf01d::var(path_name, ctf01d::var_type::STRING), m_value_init(false) {
+  m_root_dir = root_dir;
+  m_default = to_absolute_path(default_value);
+}
+
+// static
+std::shared_ptr<var_dir> var_dir::create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir) {
+  return std::make_shared<var_dir>(path_name, default_value, root_dir);
+}
+
+bool var_dir::read(WsjcppYaml &yaml, std::string &err) {
+  auto cur = cursorByPath(yaml, err);
+  if (cur.isValue()) {
+    return set_value(cur.valStr(), err);
+  }
+  return false;
+}
+
+std::string var_dir::to_string() {
+  return "'" +  value() + "'";
+}
+
+void var_dir::set_root_dir(const std::string &val) {
+  m_root_dir = val;
+  m_value = to_absolute_path(m_value);
+  m_default = to_absolute_path(m_value);
+}
+
+std::string var_dir::default_value() const {
+  return m_default;
+}
+
+std::string var_dir::value() const {
+  return m_value_init ? m_value : m_default;
+}
+
+bool var_dir::set_value(const std::string &val, std::string &err) {
+  std::string new_val = to_absolute_path(val);
+
+  if (!WsjcppCore::dirExists(new_val)) {
+    err = "Directory '" + new_val + "' does not exists";
+    WsjcppLog::err("var_dir", err);
+    return false;
+  }
+  m_value = new_val;
+  m_value_init = true;
+  return true;
+}
+
+std::string var_dir::to_absolute_path(const std::string &val) {
+  std::string ret = val;
+  if (ret.size() > 0 && ret[0] != '/') {
+    ret = m_root_dir + "/" + ret;
+  }
+  return wsjcpp::normalizeFilePath(ret);
 }
 
 } // namespace ctf01d
