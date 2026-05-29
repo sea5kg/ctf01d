@@ -106,25 +106,23 @@ private:
 
   std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 
-  // game conf config
+  // game config
   std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_min;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   std::shared_ptr<ctf01d::var_string> m_game_id;
   std::shared_ptr<ctf01d::var_string> m_game_name;
-
-  std::string m_sGameStart;
-  std::string m_sGameEnd;
-  int m_nGameStartUTCInSec;
-  int m_nGameEndUTCInSec;
-
+  std::shared_ptr<ctf01d::var_datetime> m_game_start_utc;
+  std::shared_ptr<ctf01d::var_datetime> m_game_end_utc;
   bool m_bHasCoffeeBreak;
-  std::string m_sGameCoffeeBreakStart;
-  std::string m_sGameCoffeeBreakEnd;
-  int m_nGameCoffeeBreakStartUTCInSec;
-  int m_nGameCoffeeBreakEndUTCInSec;
+  std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_start_utc;
+  std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_end_utc;
 
+  // teams config
   std::vector<Ctf01dTeamDef> m_vTeamsConf;
+
+  // services config
   std::vector<Ctf01dServiceDef> m_vServicesConf;
 
+  // hot-reload: for reload config in runtime
   std::shared_ptr<Ctf01dFilesWatcher> m_files_watcher;
 };

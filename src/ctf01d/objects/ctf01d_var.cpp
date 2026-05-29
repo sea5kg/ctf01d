@@ -38,6 +38,7 @@
 #include "ctf01d_var.h"
 #include <wsjcpp_core.h>
 #include <cstring>
+#include <date.h> // HowardHinnant_date
 
 namespace ctf01d {
 
@@ -254,8 +255,8 @@ std::string var_dir::to_string() {
 
 void var_dir::set_root_dir(const std::string &val) {
   m_root_dir = val;
-  m_value = to_absolute_path(m_value);
-  m_default = to_absolute_path(m_value);
+  m_absolute_path_value = to_absolute_path(m_value);
+  m_absolute_path_default = to_absolute_path(m_default);
 }
 
 std::string var_dir::default_value() const {
@@ -263,7 +264,7 @@ std::string var_dir::default_value() const {
 }
 
 std::string var_dir::value() const {
-  return m_value_init ? m_value : m_default;
+  return m_value_init ? m_absolute_path_value : m_absolute_path_default;
 }
 
 bool var_dir::set_value(const std::string &val, std::string &err) {
@@ -274,7 +275,8 @@ bool var_dir::set_value(const std::string &val, std::string &err) {
     WsjcppLog::err("var_dir", err);
     return false;
   }
-  m_value = new_val;
+  m_value = val;
+  m_absolute_path_value = new_val;
   m_value_init = true;
   return true;
 }
@@ -285,6 +287,60 @@ std::string var_dir::to_absolute_path(const std::string &val) {
     ret = m_root_dir + "/" + ret;
   }
   return wsjcpp::normalizeFilePath(ret);
+}
+
+
+// ---------------------------------------------------------------------
+// ctf01d::var_datetime
+
+var_datetime::var_datetime(const std::vector<std::string> &path_name, const std::string &default_value)
+: ctf01d::var(path_name, ctf01d::var_type::STRING), m_value_init(false) {
+  m_default = default_value;
+  m_default_in_seconds = convert_to_seconds(m_default);
+}
+
+// static
+std::shared_ptr<var_datetime> var_datetime::create(const std::vector<std::string> &path_name, const std::string &default_value) {
+  return std::make_shared<var_datetime>(path_name, default_value);
+}
+
+bool var_datetime::read(WsjcppYaml &yaml, std::string &err) {
+  auto cur = cursorByPath(yaml, err);
+  if (cur.isValue()) {
+    return set_value(cur.valStr(), err);
+  }
+  return false;
+}
+
+std::string var_datetime::to_string() {
+  return "'" +  value() + "'";
+}
+
+std::string var_datetime::default_value() const {
+  return m_default;
+}
+
+std::string var_datetime::value() const {
+  return m_value_init ? m_value : m_default;
+}
+
+int var_datetime::value_in_seconds() const {
+  return m_value_init ? m_value_in_seconds : m_default_in_seconds;
+}
+
+bool var_datetime::set_value(const std::string &val, std::string &err) {
+  m_value = val;
+  m_value_in_seconds = convert_to_seconds(m_value);
+  m_value_init = true;
+  return true;
+}
+
+int var_datetime::convert_to_seconds(const std::string &val)
+{
+  std::istringstream in{val.c_str()};
+  date::sys_seconds tp;
+  in >> date::parse("%Y-%m-%d %T", tp);
+  return std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
 }
 
 } // namespace ctf01d

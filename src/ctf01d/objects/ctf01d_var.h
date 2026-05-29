@@ -143,4 +143,24 @@ private:
   std::string m_root_dir;
 };
 
+class var_datetime : public ctf01d::var {
+public:
+  var_datetime(const std::vector<std::string> &path_name, const std::string &default_value);
+  static std::shared_ptr<var_datetime> create(const std::vector<std::string> &path_name, const std::string &default_value);
+  virtual bool read(WsjcppYaml &yaml, std::string &err) override;
+  virtual std::string to_string() override;
+  std::string default_value() const;
+  std::string value() const;
+  int value_in_seconds() const;
+  bool set_value(const std::string &val, std::string &err);
+
+private:
+  int convert_to_seconds(const std::string &val);
+  std::string m_default;
+  int m_default_in_seconds;
+  bool m_value_init;
+  std::string m_value;
+  int m_value_in_seconds;
+};
+
 } // namespace ctf01d

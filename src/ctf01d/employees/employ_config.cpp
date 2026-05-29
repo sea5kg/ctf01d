@@ -58,6 +58,7 @@ EmployConfig::EmployConfig()
   TAG = EmployConfig::name();
   m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
 
+  // game options
   m_game_id = ctf01d::var_string::create({"game", "id"}, "test");
   m_vars.push_back(m_game_id);
 
@@ -69,6 +70,27 @@ EmployConfig::EmployConfig()
   m_flag_lifetime_in_min->set_minimum(1);
   m_flag_lifetime_in_min->set_maximum(MAX_FLAG_LIFETIME_MINUTES);
   m_vars.push_back(m_flag_lifetime_in_min);
+
+  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
+  m_flag_cost_in_points->set_minimum(1);
+  m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
+  m_vars.push_back(m_flag_cost_in_points);
+
+  m_game_start_utc = ctf01d::var_datetime::create({"game", "start_utc"}, "2023-11-12 16:00:00");
+  m_vars.push_back(m_game_start_utc);
+
+  m_game_end_utc = ctf01d::var_datetime::create({"game", "end_utc"}, "2030-11-12 22:00:00");
+  m_vars.push_back(m_game_end_utc);
+
+  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee_break_start"}, "2023-11-12 20:00:00");
+  m_vars.push_back(m_game_coffee_break_start_utc);
+
+  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee_break_end"}, "2023-11-12 21:00:00");
+  m_vars.push_back(m_game_coffee_break_end_utc);
+
+  m_bHasCoffeeBreak = false;
+
+  // scoreboard config
 
   m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080);
   m_scoreboard_port->set_minimum(MIN_TCP_PORT);
@@ -82,23 +104,11 @@ EmployConfig::EmployConfig()
   m_vars.push_back(m_scoreboard_html_folder);
 
   m_pScoreboard = nullptr;
-
-  m_nGameStartUTCInSec = 0;
-  m_nGameEndUTCInSec = 0;
-  m_bHasCoffeeBreak = false;
-  m_sGameCoffeeBreakStart = "";
-  m_sGameCoffeeBreakEnd = "";
-  m_nGameCoffeeBreakStartUTCInSec = 0;
-  m_nGameCoffeeBreakEndUTCInSec = 0;
-
-  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
-  m_flag_cost_in_points->set_minimum(1);
-  m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
-  m_vars.push_back(m_flag_cost_in_points);
 }
 
 EmployConfig::~EmployConfig() {
-    // TODO cleanup
+  // TODO cleanup
+  m_vars.clear();
 }
 
 bool EmployConfig::init(const std::string &sName, bool bSilent) {
@@ -198,10 +208,10 @@ bool EmployConfig::applyConfig() {
   // scoreboard
   m_pScoreboard = std::make_shared<Ctf01dScoreboard>(
     m_scoreboard_random->value(),
-    m_nGameStartUTCInSec,
-    m_nGameEndUTCInSec,
-    m_nGameCoffeeBreakStartUTCInSec,
-    m_nGameCoffeeBreakEndUTCInSec
+    m_game_start_utc->value_in_seconds(),
+    m_game_end_utc->value_in_seconds(),
+    m_game_coffee_break_start_utc->value_in_seconds(),
+    m_game_coffee_break_end_utc->value_in_seconds()
   );
 
   m_bAppliedConfig = true;
@@ -245,11 +255,13 @@ std::shared_ptr<ctf01d::var_int> EmployConfig::get_flag_cost_in_points() const {
 }
 
 int EmployConfig::gameStartUTCInSec() const {
-  return m_nGameStartUTCInSec;
+  // TODO return var
+  return m_game_start_utc->value_in_seconds();
 }
 
 int EmployConfig::gameEndUTCInSec() const {
-  return m_nGameEndUTCInSec;
+  // TODO return var
+  return m_game_end_utc->value_in_seconds();
 }
 
 bool EmployConfig::gameHasCoffeeBreak() {
@@ -257,11 +269,11 @@ bool EmployConfig::gameHasCoffeeBreak() {
 }
 
 int EmployConfig::gameCoffeeBreakStartUTCInSec() {
-  return m_nGameCoffeeBreakStartUTCInSec;
+  return m_game_coffee_break_start_utc->value_in_seconds();
 }
 
 int EmployConfig::gameCoffeeBreakEndUTCInSec() {
-  return m_nGameCoffeeBreakEndUTCInSec;
+  return m_game_coffee_break_end_utc->value_in_seconds();
 }
 
 std::shared_ptr<Ctf01dScoreboard> EmployConfig::scoreboard() {
@@ -269,107 +281,108 @@ std::shared_ptr<Ctf01dScoreboard> EmployConfig::scoreboard() {
 }
 
 void EmployConfig::doExtractFilesIfNotExists() {
-    std::string sError;
-    if (!WsjcppCore::dirExists(m_sWorkDir + "/logs")) {
-        WsjcppCore::makeDir(m_sWorkDir + "/logs");
-        if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x776), sError)) {
-            WsjcppLog::throw_err(TAG, sError);
-        }
+  std::string sError;
+  if (!WsjcppCore::dirExists(m_sWorkDir + "/logs")) {
+    WsjcppCore::makeDir(m_sWorkDir + "/logs");
+    if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x776), sError)) {
+      WsjcppLog::throw_err(TAG, sError);
     }
+  }
 
-    if (!WsjcppCore::fileExists(m_sWorkDir + "/config.yml")) {
-        WsjcppLog::warn(TAG, "Extracting config.yml and files");
-        WsjcppLog::warn(TAG, "Extracting checker_example_*");
-        const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
-        std::vector<std::string> vExecutableFiles;
-        for (int i = 0; i < vFiles.size(); i++) {
-            std::string sFilepath = vFiles[i]->getFilename();
-            if (sFilepath.rfind("./data_sample/checker_example_", 0) == 0) {
-                std::vector<std::string> vPath = WsjcppCore::split(sFilepath, "/");
-                std::string sDirname = vPath[2];
-                vPath.erase (vPath.begin(),vPath.begin()+3);
-                std::string sNewFilepath = WsjcppCore::join(vPath, "/");
-                sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/" + sNewFilepath);
-                if (!WsjcppCore::fileExists(sNewFilepath)) {
-                    std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
-                } else {
-                    std::cout << "File '" << sNewFilepath << "' already exists. Skip." << std::endl;
-                    continue;
-                }
-
-                // prepare folder
-                std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/");
-                if (!WsjcppCore::dirExists(sFolder)) {
-                    WsjcppCore::makeDir(sFolder);
-                }
-
-                if (!WsjcppCore::writeFile(sNewFilepath, vFiles[i]->getBuffer(), vFiles[i]->getBufferSize())) {
-                    std::cout << "ERROR. Could not write file. " << std::endl;
-                    continue;
-                } else {
-                    std::cout << "Successfully created file. " << std::endl;
-                    if (chmod(sNewFilepath.c_str(), S_IRWXU|S_IRWXG) != 0) {
-                        std::cout << "ERROR. Could not change permissions for. " << std::endl;
-                    } else {
-                        struct stat info;
-                        stat(sNewFilepath.c_str(), &info);
-                        printf("after chmod(), permissions are: %08x\n", info.st_mode);
-                    }
-                }
-            }
-        }
-
-        WsjcppResourceFile* pConfigYml = WsjcppResourcesManager::get("./data_sample/config.yml");
-        std::string sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/config.yml");
-        if (!WsjcppCore::writeFile(sNewFilepath, pConfigYml->getBuffer(), pConfigYml->getBufferSize())) {
-            std::cout << "ERROR. Could not write file. " << std::endl;
+  if (!WsjcppCore::fileExists(m_sWorkDir + "/config.yml")) {
+    WsjcppLog::warn(TAG, "Extracting config.yml and files");
+    WsjcppLog::warn(TAG, "Extracting checker_example_*");
+    const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
+    std::vector<std::string> vExecutableFiles;
+    for (int i = 0; i < vFiles.size(); i++) {
+      std::string sFilepath = vFiles[i]->getFilename();
+      if (sFilepath.rfind("./data_sample/checker_example_", 0) == 0) {
+        std::vector<std::string> vPath = WsjcppCore::split(sFilepath, "/");
+        std::string sDirname = vPath[2];
+        vPath.erase (vPath.begin(),vPath.begin()+3);
+        std::string sNewFilepath = WsjcppCore::join(vPath, "/");
+        sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/" + sNewFilepath);
+        if (!WsjcppCore::fileExists(sNewFilepath)) {
+          std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
         } else {
-            std::cout << "Successfully created file. " << std::endl;
+          std::cout << "File '" << sNewFilepath << "' already exists. Skip." << std::endl;
+          continue;
         }
+
+        // prepare folder
+        std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/");
+        if (!WsjcppCore::dirExists(sFolder)) {
+          WsjcppCore::makeDir(sFolder);
+        }
+
+        if (!WsjcppCore::writeFile(sNewFilepath, vFiles[i]->getBuffer(), vFiles[i]->getBufferSize())) {
+          std::cout << "ERROR. Could not write file. " << std::endl;
+          continue;
+        } else {
+          std::cout << "Successfully created file. " << std::endl;
+          // TODO redesign set permission via wsjcpp
+          if (chmod(sNewFilepath.c_str(), S_IRWXU|S_IRWXG) != 0) {
+            std::cout << "ERROR. Could not change permissions for. " << sNewFilepath << std::endl;
+          } else {
+            struct stat info;
+            stat(sNewFilepath.c_str(), &info);
+            printf("after chmod(), permissions are: %08x\n", info.st_mode);
+          }
+        }
+      }
     }
 
-    if (!WsjcppCore::fileExists(m_sWorkDir + "/html/index.html")) {
-        if (!WsjcppCore::dirExists(m_sWorkDir + "/html")) {
-            WsjcppCore::makeDir(m_sWorkDir + "/html");
-        }
-
-        WsjcppLog::warn(TAG, "Extracting html/index.html and files");
-        const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
-        for (int i = 0; i < vFiles.size(); i++) {
-            std::string sFilepath = vFiles[i]->getFilename();
-            if (sFilepath.rfind("./data_sample/html/", 0) == 0) {
-                std::vector<std::string> vPath = WsjcppCore::split(sFilepath, "/");
-                vPath.erase (vPath.begin(),vPath.begin()+3);
-                std::string sNewFilepath = WsjcppCore::join(vPath, "/");
-                sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/" + sNewFilepath);
-                if (!WsjcppCore::fileExists(sNewFilepath)) {
-                    std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
-                } else {
-                    std::cout << "File '" << sNewFilepath << "' already exists. Skip." << std::endl;
-                    continue;
-                }
-
-                // prepare folders
-                std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/");
-                for (int p = 0; p < vPath.size()-1; p++) {
-                    sFolder = wsjcpp::normalizeFilePath(sFolder + "/" + vPath[p]);
-                    if (!WsjcppCore::dirExists(sFolder)) {
-                        WsjcppCore::makeDir(sFolder);
-                    }
-                }
-
-                if (!WsjcppCore::writeFile(sNewFilepath, vFiles[i]->getBuffer(), vFiles[i]->getBufferSize())) {
-                    std::cout << "ERROR. Could not write file. " << std::endl;
-                    continue;
-                } else {
-                    std::cout << "Successfully created file. " << std::endl;
-                    if (!WsjcppCore::setFilePermissions(sNewFilepath, WsjcppFilePermissions(0x776), sError)) {
-                        WsjcppLog::throw_err(TAG, sError);
-                    }
-                }
-            }
-        }
+    WsjcppResourceFile* pConfigYml = WsjcppResourcesManager::get("./data_sample/config.yml");
+    std::string sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/config.yml");
+    if (!WsjcppCore::writeFile(sNewFilepath, pConfigYml->getBuffer(), pConfigYml->getBufferSize())) {
+      std::cout << "ERROR. Could not write file. " << std::endl;
+    } else {
+      std::cout << "Successfully created file. " << std::endl;
     }
+  }
+
+  if (!WsjcppCore::fileExists(m_sWorkDir + "/html/index.html")) {
+    if (!WsjcppCore::dirExists(m_sWorkDir + "/html")) {
+      WsjcppCore::makeDir(m_sWorkDir + "/html");
+    }
+
+    WsjcppLog::warn(TAG, "Extracting html/index.html and files");
+    const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
+    for (int i = 0; i < vFiles.size(); i++) {
+      std::string sFilepath = vFiles[i]->getFilename();
+      if (sFilepath.rfind("./data_sample/html/", 0) == 0) {
+        std::vector<std::string> vPath = WsjcppCore::split(sFilepath, "/");
+        vPath.erase (vPath.begin(),vPath.begin()+3);
+        std::string sNewFilepath = WsjcppCore::join(vPath, "/");
+        sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/" + sNewFilepath);
+        if (!WsjcppCore::fileExists(sNewFilepath)) {
+          std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
+        } else {
+          std::cout << "File '" << sNewFilepath << "' already exists. Skip." << std::endl;
+          continue;
+        }
+
+        // prepare folders
+        std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/");
+        for (int p = 0; p < vPath.size()-1; p++) {
+          sFolder = wsjcpp::normalizeFilePath(sFolder + "/" + vPath[p]);
+          if (!WsjcppCore::dirExists(sFolder)) {
+            WsjcppCore::makeDir(sFolder);
+          }
+        }
+
+        if (!WsjcppCore::writeFile(sNewFilepath, vFiles[i]->getBuffer(), vFiles[i]->getBufferSize())) {
+          std::cout << "ERROR. Could not write file. " << std::endl;
+          continue;
+        } else {
+          std::cout << "Successfully created file. " << std::endl;
+          if (!WsjcppCore::setFilePermissions(sNewFilepath, WsjcppFilePermissions(0x776), sError)) {
+            WsjcppLog::throw_err(TAG, sError);
+          }
+        }
+      }
+    }
+  }
 }
 
 bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
@@ -405,81 +418,29 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
       return false;
   }
   cur = cur["game"];
-  // auto keys = cur.keys();
-  std::vector<std::string> expected_keys = {
-    "id",
-    "name",
-    "start_utc",
-    "end_utc",
-    "coffee_break_start",
-    "coffee_break_end",
-    "flag_lifetime_in_min",
-    "basic_costs_stolen_flag_in_points",
-    "cost_defense_flag_in_points",
-  };
 
   std::string err;
 
-  m_sGameStart = cur["start_utc"].valStr();
-  WsjcppLog::info(TAG, "game.start_utc: " + m_sGameStart);
-  {
-    std::istringstream in{m_sGameStart.c_str()};
-    date::sys_seconds tp;
-    in >> date::parse("%Y-%m-%d %T", tp);
-    m_nGameStartUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-  }
+  WsjcppLog::info(TAG, "Game start: " + m_game_start_utc->value());
+  WsjcppLog::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_game_start_utc->value_in_seconds()));
+  WsjcppLog::info(TAG, "Game end: " + m_game_end_utc->value());
+  WsjcppLog::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_game_end_utc->value_in_seconds()));
 
-  WsjcppLog::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_nGameStartUTCInSec));
-
-  m_sGameEnd = yamlConfig["game"]["end_utc"].valStr();
-  WsjcppLog::info(TAG, "game.end_utc: " + m_sGameEnd);
-  {
-    std::istringstream in{m_sGameEnd.c_str()};
-    date::sys_seconds tp;
-    in >> date::parse("%Y-%m-%d %T", tp);
-    m_nGameEndUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-  }
-  WsjcppLog::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_nGameEndUTCInSec));
-
-  if (m_nGameStartUTCInSec == 0) {
-    WsjcppLog::err(TAG, "game.start_utc - not found");
-    return false;
-  }
-
-  if (m_nGameEndUTCInSec == 0) {
-    WsjcppLog::err(TAG, "game.end - not found");
-    return false;
-  }
-
-  if (m_nGameEndUTCInSec < m_nGameStartUTCInSec) {
+  if (m_game_end_utc->value_in_seconds() <= m_game_start_utc->value_in_seconds()) {
     WsjcppLog::err(TAG, "game.end must be gather then game.start");
     return false;
   }
 
-  m_sGameCoffeeBreakStart = yamlConfig["game"]["coffee_break_start"].valStr();
-  WsjcppLog::info(TAG, "game.coffee_break_start: " + m_sGameCoffeeBreakStart);
-  {
-    std::istringstream in{m_sGameCoffeeBreakStart.c_str()};
-    date::sys_seconds tp;
-    in >> date::parse("%Y-%m-%d %T", tp);
-    m_nGameCoffeeBreakStartUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-  }
-  WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_nGameCoffeeBreakStartUTCInSec));
+  WsjcppLog::info(TAG, "game.coffee_break_start: " + m_game_coffee_break_start_utc->value());
+  WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_game_coffee_break_start_utc->value_in_seconds()));
 
-  m_sGameCoffeeBreakEnd = yamlConfig["game"]["coffee_break_end"].valStr();
-  WsjcppLog::info(TAG, "game.coffee_break_end: " + m_sGameCoffeeBreakEnd);
-  {
-    std::istringstream in{m_sGameCoffeeBreakEnd.c_str()};
-    date::sys_seconds tp;
-    in >> date::parse("%Y-%m-%d %T", tp);
-    m_nGameCoffeeBreakEndUTCInSec = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
-  }
-  WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_nGameCoffeeBreakEndUTCInSec));
+  WsjcppLog::info(TAG, "game.coffee_break_end: " + m_game_coffee_break_end_utc->value());
+  WsjcppLog::info(TAG, "Game coffee break end (UNIX timestamp): " + std::to_string(m_game_coffee_break_end_utc->value_in_seconds()));
 
-  if (m_nGameStartUTCInSec < m_nGameCoffeeBreakStartUTCInSec
-    && m_nGameCoffeeBreakStartUTCInSec < m_nGameEndUTCInSec
-    && m_nGameStartUTCInSec < m_nGameCoffeeBreakEndUTCInSec
-    && m_nGameCoffeeBreakEndUTCInSec < m_nGameEndUTCInSec
+  if (m_game_start_utc->value_in_seconds() < m_game_coffee_break_start_utc->value_in_seconds()
+    && m_game_coffee_break_start_utc->value_in_seconds() < m_game_end_utc->value_in_seconds()
+    && m_game_start_utc->value_in_seconds() < m_game_coffee_break_end_utc->value_in_seconds()
+    && m_game_coffee_break_end_utc->value_in_seconds() < m_game_end_utc->value_in_seconds()
   ) {
     WsjcppLog::info(TAG, "Oh! Game has coffee break! nice!");
     m_bHasCoffeeBreak = true;
