@@ -2,7 +2,7 @@
 
 [![ctf01d Version](https://img.shields.io/badge/ctf01d-v0.6.1-yellow.svg)](https://github.com/sea5kg/ctf01d) [![ctf01d ProgrammingLanguage](https://img.shields.io/badge/ProgrammingLanguage-c++-yellow.svg)](https://github.com/sea5kg/ctf01d) [![Docker Pulls](https://img.shields.io/docker/pulls/sea5kg/ctf01d.svg)](https://hub.docker.com/r/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/stars/sea5kg/ctf01d.svg?label=github%20%E2%98%85)](https://github.com/sea5kg/ctf01d/) [![Github Stars](https://img.shields.io/github/contributors/sea5kg/ctf01d.svg)](https://github.com/sea5kg/ctf01d/) [![Github Forks](https://img.shields.io/github/forks/sea5kg/ctf01d.svg?label=github%20forks)](https://github.com/sea5kg/ctf01d/)
 
-Jury System for attack-defence ctf game (ctf-scoreboard).
+Jury System for attack-defense ctf game (ctf-scoreboard).
 Also you can use it for training.
 
 ![scoreboard](https://raw.githubusercontent.com/sea5kg/ctf01d/master/documentation/images/screen1.png)
@@ -128,7 +128,7 @@ Where
 
 * {HOST} - host or ip at which the jury is available
 * {PORT} - configured scoreboard/flag port of the jury system
-* {TEAMID} - number, your unique teamid (see scoreboard)
+* {TEAMID} - number, your unique team-id (see scoreboard)
 * {FLAG} - uuid, so that the jury knows that this is a flag from an enemy server
 
 Example of sending a flag (via curl):

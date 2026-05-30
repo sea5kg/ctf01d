@@ -115,11 +115,11 @@ def put_flag():
         s.close()
     except socket.timeout:
         service_down()
-    except socket.error as serr:
-        if serr.errno == errno.ECONNREFUSED:
+    except socket.error as _err:
+        if _err.errno == errno.ECONNREFUSED:
             service_down()
         else:
-            debug(serr)
+            debug(_err)
             service_corrupt()
     except Exception as e:
         debug(e)
@@ -150,11 +150,11 @@ def check_flag():
         s.close()
     except socket.timeout:
         service_down()
-    except socket.error as serr:
-        if serr.errno == errno.ECONNREFUSED:
+    except socket.error as _err:
+        if _err.errno == errno.ECONNREFUSED:
             service_down()
         else:
-            debug(serr)
+            debug(_err)
             service_corrupt()
     except Exception as e:
         debug(e)

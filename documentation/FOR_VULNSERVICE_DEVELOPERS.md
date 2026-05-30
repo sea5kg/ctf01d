@@ -11,36 +11,43 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
                                             since the start of the game)
 ```
 
-## Service
+## Vuln-Service
 
-Serivece can be write on any language and any technoligies.
+Vuln-Service can be write on any language and any technologies.
 
 Use a best praxis: pack service like a dockerfile and docker-compose.yml
 
-or you can also distrib only image to target culnserver:
+or you can also distrib only image to target vuln-server:
 
 1. Build your docker image
 
 ```
 $ cd your_service_dirs
-$ docker build --file "Dockerfile" --tag "somegame/your_server:0.0.1" .
+$ docker build --file "Dockerfile" --tag "game_name/your_server:0.0.1" .
 ```
 
 2. Export your server as a "tar" archive (for distribution)
 
 ```
-$ docker save "somegame/your_server:0.0.1" > somegame-your_server-0.0.1.tar
+$ docker save "game_name/your_server:0.0.1" > game_name-your_server-0.0.1.tar
 ```
 
 3. Import your server on vulnbox side (for a hacker's team)
 
 ```
-$ docker load -i ./somegame-your_server-0.0.1.tar
+$ docker load -i ./game_name-your_server-0.0.1.tar
 ```
 
-## Checker-script
+see example in [vuln_example_service.py](../libpm/data/vuln_example_service.py)
 
-**IF YOU USING SOME DATABSE FOR A KEEPING A SESSIONS DON'T REMEBER THAT SCRIPT RUNNING IN PARALLEL PROCESSES**
+For run example:
+```
+$ python3 -u vuln_example_service.py 4101
+```
+
+## Checker-Script
+
+**IF YOU USING SOME DATABASE FOR A KEEPING A SESSIONS DON'T REMEMBER THAT SCRIPT RUNNING IN PARALLEL PROCESSES**
 
 Preinstalled packages for checker-script:
 - python3: `requests faker grpcio grpcio-tools protobuf tzdata bs4 mimesis`
@@ -82,89 +89,139 @@ Don't allowed but scripts can return:
 
 ### For example checker script (in python):
 
+see in [checker_example_service.py](../libpm/data/checker_example_service.py)
+
 ```python
 #!/usr/bin/env python3
 
 import sys
-import math
 import socket
-import random
-import time
 import errno
-import requests
 
-# the flag putting/checking into the service is successful
+
+# put-get flag to service success
 def service_up():
     print("[service is worked] - 101")
     exit(101)
 
-# service is available (available tcp connection) but it's impossible to put/get the flag
+
+# service is available (available tcp connect) but protocol wrong could not put/get flag
 def service_corrupt():
     print("[service is corrupt] - 102")
     exit(102)
+
+
+# waited time (for example: 5 sec) but service did not have time to reply
+def service_mumble():
+    print("[service is mumble] - 103")
+    exit(103)
+
 
 # service is not available (maybe blocked port or service is down)
 def service_down():
     print("[service is down] - 104")
     exit(104)
 
+
 if len(sys.argv) != 5:
-    print("\nUsage:\n\t" + sys.argv[0] + " <host> (put|check) <flag_id> <flag>\n")
-    print("Example:\n\t" + sys.argv[0] + " \"127.0.0.1\" put \"abcdifghr\" \"c01d4567-e89b-12d3-a456-426600000010\" \n")
-    print("\n")
+    _fl_id = "abcdifghr"
+    _fl = "123e4567-e89b-12d3-a456-426655440000"
+    print(
+        "\n"
+        "Usage:\n"
+        "\t" + sys.argv[0] + " <host> (put|check) <flag_id> <flag>\n"
+        "Example:\n"
+        "\t" + sys.argv[0] + " \"127.0.0.1\" put \"" + _fl_id + "\" \"" + _fl + "\" \n"
+        "\n"
+    )
     exit(0)
 
+
+def debug(err):
+    pass
+    # if isinstance(err, str):
+    #     err = Exception(err)
+    # traceback.print_exc()
+    # raise err
+
+
 host = sys.argv[1]
-port = 4102
+port = 4101
 command = sys.argv[2]
 f_id = sys.argv[3]
 flag = sys.argv[4]
 
-# will be mumbled (2) - for test jury
+# will be mumble (2) - for test jury
 # while True: time.sleep(10);
+
 
 def put_flag():
     global host, port, f_id, flag
     # try put
     try:
-        r = requests.post('http://' + host + ':' + str(port) + '/api/flags/' + f_id + '/' + flag)
-        if r.status_code != 200:
-            service_corrupt()
+        # print("try connect " + host + ":" + str(port))
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        s.connect((host, port))
+        s.recv(1024)
+        s.send(("put" + "\n").encode("utf-8"))
+        s.recv(1024)
+        s.send((f_id + "\n").encode("utf-8"))
+        s.recv(1024)
+        s.send((flag + "\n").encode("utf-8"))
+        s.recv(1024)
+        s.close()
     except socket.timeout:
         service_down()
-    except socket.error as serr:
-        if serr.errno == errno.ECONNREFUSED:
+    except socket.error as _err:
+        if _err.errno == errno.ECONNREFUSED:
             service_down()
         else:
-            print(serr)
+            debug(_err)
             service_corrupt()
     except Exception as e:
-        print(e)
+        debug(e)
         service_corrupt()
+
 
 def check_flag():
     global host, port, f_id, flag
     # try get
     flag2 = ""
     try:
-        r = requests.get('http://' + host + ':' + str(port) + '/api/flags/' + f_id)
-        if r.status_code != 200:
-            service_corrupt()
-        flag2 = r.json()['Flag']
+        # print("try connect " + host + ":" + str(port))
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        s.connect((host, port))
+        s.recv(1024)
+        s.send(("get\n").encode("utf-8"))
+        s.recv(1024)
+        s.send((f_id + "\n").encode("utf-8"))
+        result = s.recv(1024)
+        result = result.decode("utf-8", "ignore")
+        flag2 = result.strip()
+        flag2 = flag2.split("FOUND FLAG: ")
+        if len(flag2) == 2:
+            flag2 = flag2[1]
+        else:
+            flag2 = ''
+        s.close()
     except socket.timeout:
         service_down()
-    except socket.error as serr:
-        if serr.errno == errno.ECONNREFUSED:
+    except socket.error as _err:
+        if _err.errno == errno.ECONNREFUSED:
             service_down()
         else:
-            print(serr)
+            debug(_err)
             service_corrupt()
     except Exception as e:
-        print(e)
+        debug(e)
         service_corrupt()
 
     if flag != flag2:
+        debug('flag: [' + flag + '] flag2: [' + str(flag2) + ']')
         service_corrupt()
+
 
 if command == "put":
     put_flag()

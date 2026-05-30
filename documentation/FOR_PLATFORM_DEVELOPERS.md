@@ -95,6 +95,6 @@ Now you can see scoreboard on http://localhost:8081
 ## Build release docker
 
 ```
-docker build . -t sea5kg/ctf01d:v0.5.2
-docker tag sea5kg/ctf01d:v0.5.2 sea5kg/ctf01d:latest
+docker build . -t sea5kg/ctf01d:v0.6.x
+docker tag sea5kg/ctf01d:v0.6.x sea5kg/ctf01d:latest
 ```
