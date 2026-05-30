@@ -25,6 +25,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Removed wsjcpp_validators
 - eliminate flag-submission race by moving dedup check under scoreboard mutex
 - Moved src/wsjcpp-resources -> src/wsjcpp_resources
+- Added new sub command for make test sample game './pm.py make-test-game -t 3 -s 5
+- Redesign game vars to var_*
+- Renamed 'start' to 'start_utc', 'end' to 'end_utc'
+- Fixed magic numbers in check m_nFlagLifetimeInMin
+- Renamed 'm_nFlagTimeLiveInMin' to 'm_nFlagLifetimeInMin'
+- Renamed parameter 'flag_timelive_in_min' -> 'flag_lifetime_in_min'
+- Moved 'send_random_flags.py' to './pm.py tests -r send_random_flags'
+- Removed outdated tests/test_ram
+- Simplify run jury for tests. Added new test for find memory leaks
+- Fix absolute path for work-dir via argument command line
+- Redesign test_path_traversal/test.sh to ./pm.py tests -r path_traversal
+- Redesign ctf01d_http_server -> employ_web_server
+- Fixed unpack resources
+
 
 ## [v0.6.0] - (2026 May 20)
 
