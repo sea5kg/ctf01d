@@ -128,6 +128,7 @@ class CommandTests:
                 "http://localhost:8080/team-logo/t02": 200,
                 "http://localhost:8080/team-logo/t03": 200,
                 "http://localhost:8080/api/v1/game": 200,
+                "http://localhost:8080/api/v1/game/current-time": 200,
             }
             try:
                 for _url, _expected_status_code in _urls.items():

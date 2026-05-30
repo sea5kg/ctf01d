@@ -204,6 +204,8 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
   if (request_path.rfind(m_sApiPathPrefix, 0) == 0) {
     if (request_path == "/api/v1/game") { // Public endpoint. Allowed without authorization.
       return this->httpApiV1Game(req, resp);
+    } else if (request_path == "/api/v1/game/current-time") { // Public endpoint. Allowed without authorization.
+      return this->httpApiGameCurrentTime(req, resp);
     } else if (request_path == "/api/v1/scoreboard") { // Public endpoint. Allowed without authorization.
       return this->httpApiV1Scoreboard(req, resp);
     } else if (request_path == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
@@ -251,6 +253,23 @@ int EmployWebServer::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
   return 200;
 }
 
+int EmployWebServer::httpApiGameCurrentTime(HttpRequest* req, HttpResponse* resp) {
+  // TODO maybe need optimization keep json response for every second.
+  auto config = findWsjcppEmploy<EmployConfig>();
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+  nlohmann::json current_time;
+  current_time["current-time"] = nCurrentTimeSec - config->gameStartUTCInSec();
+  std::string json_str = current_time.dump();
+  resp->Data(
+      (void *)(json_str.c_str()),
+      json_str.length(),
+      false // force copy
+  );
+  resp->SetContentTypeByFilename("current-time.json");
+  return 200;
+}
+
 int EmployWebServer::httpApiV1Teams(HttpRequest* req, HttpResponse* resp) {
   resp->Data(
     (void *)(m_sCacheResponseTeamsJson.c_str()),
@@ -286,7 +305,6 @@ int EmployWebServer::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
   // TODO
   return resp->Json(m_pHttpService->Paths());
 }
-
 
 int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   auto config = findWsjcppEmploy<EmployConfig>();

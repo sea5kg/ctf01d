@@ -57,6 +57,7 @@ private:
 
   int httpWebFolder(HttpRequest* req, HttpResponse* resp);
   int httpApiV1Game(HttpRequest* req, HttpResponse* resp);
+  int httpApiGameCurrentTime(HttpRequest* req, HttpResponse* resp);
   int httpApiV1Teams(HttpRequest* req, HttpResponse* resp);
   int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
   int httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp);

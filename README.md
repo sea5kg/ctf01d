@@ -174,13 +174,12 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
 
  * `http://{HOST}:{PORT}/flag` - send flag
  * `http://{HOST}:{PORT}/api/v1/game` - info about the game
+ * `http://{HOST}:{PORT}/api/v1/game/current-time` - info about the game
  * `http://{HOST}:{PORT}/api/v1/teams` - list of teams
  * `http://{HOST}:{PORT}/api/v1/services` - list of services
  * `http://{HOST}:{PORT}/api/v1/scoreboard` - scoreboard table teams-services
  * `http://{HOST}:{PORT}/team-logo/{TEAMID}` - team logos
  * `http://{HOST}:{PORT}/api/v1/myip` - client ip
-
-
 
 
 ## Rules

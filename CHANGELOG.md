@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v0.6.2] - (2026 ?? ??)
 
+- Fixed #84: Added /api/v1/game/current-time
 
 
 ## [v0.6.1] - (2026 May 30)
@@ -17,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Set permissions on extracted files #89
 - Added new helper Ctf01dFilesWatcher and unit-tests for it
 - Refactored code
-- Moved part of functionallity from ctf01d_http_server to employ_web_server
+- Moved part of functionality from ctf01d_http_server to employ_web_server
 - Moved from 'employees' to 'ctf01d/employees'
 - Fix indents in index.html
 - Added 'DOCTYPE html' to index.html
