@@ -25,6 +25,180 @@ const escapeHtml = (unsafe) => {
     return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
 
+function getSafeClassName(value) {
+  return ('' + value).replace(/[^a-zA-Z0-9_-]/g, '');
+}
+
+function getTeamByID(teamID) {
+  if (!document.ctf01d_teams) {
+    return null;
+  }
+  for (var i = 0; i < document.ctf01d_teams.length; i++) {
+    if (document.ctf01d_teams[i].id == teamID) {
+      return document.ctf01d_teams[i];
+    }
+  }
+  return null;
+}
+
+function getTeamOrderIndex(teamID) {
+  if (!document.ctf01d_teams) {
+    return 0;
+  }
+  for (var i = 0; i < document.ctf01d_teams.length; i++) {
+    if (document.ctf01d_teams[i].id == teamID) {
+      return i;
+    }
+  }
+  return 0;
+}
+
+function getTeamBigLogoUrl(team) {
+  if (!team || !team.logo) {
+    return '';
+  }
+  return team.logo.replace('_100x100.', '_500x500.');
+}
+
+function hideTeamSlider() {
+  if (document.ctf01d_team_slider_timer) {
+    clearTimeout(document.ctf01d_team_slider_timer);
+    document.ctf01d_team_slider_timer = null;
+  }
+
+  var el = document.getElementById('team-slider-overlay');
+  if (el && el.parentNode) {
+    el.parentNode.removeChild(el);
+  }
+}
+
+function showTeamSlider(slides) {
+  if (!slides || slides.length == 0) {
+    return;
+  }
+
+  hideTeamSlider();
+
+  var slideDuration = 3600;
+  var totalDuration = (slides.length * slideDuration) + 900;
+  var html = '<div class="team-slider-stage">';
+  for (var i = 0; i < slides.length; i++) {
+    var slide = slides[i];
+    var slideType = getSafeClassName(slide.type || 'team');
+    var delay = i * slideDuration;
+    var title = escapeHtml('' + (slide.title || ''));
+    var teamName = escapeHtml('' + (slide.teamName || ''));
+    var subtitle = escapeHtml('' + (slide.subtitle || ''));
+    var logo = escapeHtml('' + (slide.logo || ''));
+    html += ''
+        + '<div class="team-slider-slide team-slider-slide-' + slideType + '" style="animation-delay:' + delay + 'ms;animation-duration:' + slideDuration + 'ms;">'
+        + '  <div class="team-slider-logo-wrap"><img class="team-slider-logo" src="' + logo + '" onerror="this.style.display=\'none\';"></div>'
+        + '  <div class="team-slider-info">'
+        + '    <div class="team-slider-kicker">' + title + '</div>'
+        + '    <div class="team-slider-name">' + teamName + '</div>';
+    if (slide.points != undefined) {
+        html += '<div class="team-slider-points"><span>' + escapeHtml('' + slide.points) + '</span> points</div>';
+    }
+    if (subtitle != '') {
+        html += '<div class="team-slider-subtitle">' + subtitle + '</div>';
+    }
+    html += ''
+      + '  </div>'
+      + '</div>';
+  }
+
+  html += '</div>';
+
+  var overlay = document.createElement('div');
+  overlay.id = 'team-slider-overlay';
+  overlay.className = 'team-slider-overlay';
+  overlay.style.animationDuration = totalDuration + 'ms';
+  overlay.innerHTML = html;
+  overlay.onclick = function() {
+    hideTeamSlider();
+  };
+  document.body.appendChild(overlay);
+  document.ctf01d_team_slider_timer = setTimeout(function() {
+    hideTeamSlider();
+  }, totalDuration + 100);
+}
+
+function getTopTeamSliderSlides(limit) {
+  var teams = [];
+  if (document.ctf01d_last_scoreboard) {
+    for (var teamID in document.ctf01d_last_scoreboard) {
+      var score = document.ctf01d_last_scoreboard[teamID];
+      var team = getTeamByID(teamID);
+      if (!team) {
+        continue;
+      }
+      var place = parseInt(score.place, 10);
+      var points = parseFloat(score.points);
+      if (isNaN(place)) {
+        place = getTeamOrderIndex(teamID) + 1;
+      }
+      if (isNaN(points)) {
+        points = 0;
+      }
+      teams.push({
+        team: team,
+        place: place,
+        points: points,
+        order: getTeamOrderIndex(teamID)
+      });
+    }
+  } else if (document.ctf01d_teams) {
+    for (var i = 0; i < document.ctf01d_teams.length; i++) {
+      teams.push({
+        team: document.ctf01d_teams[i],
+        place: i + 1,
+        points: 0,
+        order: i
+      });
+    }
+  }
+
+  teams.sort(function(a, b) {
+    if (a.place != b.place) {
+      return a.place - b.place;
+    }
+    if (a.points != b.points) {
+      return b.points - a.points;
+    }
+    return a.order - b.order;
+  });
+
+  var slides = [];
+  for (var i = 0; i < teams.length && i < limit; i++) {
+    slides.push({
+      type: 'team',
+      title: 'PLACE #' + (i + 1),
+      teamName: teams[i].team.name,
+      logo: getTeamBigLogoUrl(teams[i].team),
+      points: teams[i].points.toFixed(1)
+    });
+  }
+  return slides;
+}
+
+function showTopTeamsSlider() {
+  showTeamSlider(getTopTeamSliderSlides(3));
+}
+
+function showTeamEventSlider(teamID, title, subtitle, type) {
+  var team = getTeamByID(teamID);
+  if (!team) {
+    return;
+  }
+  showTeamSlider([{
+    type: type || 'event',
+    title: title,
+    teamName: team.name,
+    subtitle: subtitle,
+    logo: getTeamBigLogoUrl(team)
+  }]);
+}
+
 function copyToBuffer(elid) {
     var el = document.getElementById(elid);
     el.focus();
@@ -267,18 +441,7 @@ function showActionFirstblood(teamId) {
         }, 2500, teamId);
     }
 
-    var new_first_blood_id = "mass_action_" + Math.random()*10000;
-    var gm = document.getElementById('game_scoreboard')
-    gm.innerHTML +=
-        '<div id="' + new_first_blood_id + '" class="mass-action mass-action-firstblood" '
-        + ' style="top: 0px; left: 0px; width: 10%; height: 1%;"'
-        + '></div>';
-
-    var timer_first_blood_1 = setTimeout(function(new_first_blood_id) {
-        var node = document.getElementById(new_first_blood_id);
-        gm.removeChild(node);
-        clearTimeout(timer_first_blood_1);
-    }, 5000, new_first_blood_id);
+    showTeamEventSlider(teamId, 'FIRST BLOOD', 'first flag captured', 'firstblood');
 }
 
 function updateUIValue(t, teamID, paramName){
@@ -703,7 +866,7 @@ getAjax('/api/v1/game', function(err, resp){
         + "    <div class='hdrs'>"
         + "        <div class='place'>#</div>"
         + "        <div class='team-logo'></div>"
-        + "        <div class='team'>Team</div>"
+        + "        <div class='team'>Team <button class='team-slider-button' title='Show top teams' onclick='showTopTeamsSlider()'>&#9654;</button></div>"
         + "        <div class='score'><div class='hdr-text'>points</div></div>";
     for (var i = 0; i < resp.services.length; i++) {
         var serviceId = resp.services[i].id;
