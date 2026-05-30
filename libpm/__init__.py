@@ -45,6 +45,7 @@ from .command_rebuild_environment_images import CommandRebuildEnvironmentImages
 from .command_clang_format import CommandClangFormat
 from .command_clean import CommandClean
 from .command_code_stats import CommandCodeStats
+from .command_make_test_game import CommandMakeTestGame
 from .command_py_check import CommandPyCheck
 from .command_tests import CommandTests
 from .utils_copyrights import UtilsCopyrights
@@ -78,6 +79,20 @@ def print_custom_help(parser):
             # print(subparser.format_help())
     print("")
     parser.exit()
+
+
+def make_commands(config):
+    """ prepare list of commands """
+    return [
+        CommandClean(config),
+        CommandCodeStats(config),
+        CommandPyCheck(config),
+        CommandCheck(config),
+        CommandClangFormat(config),
+        CommandRebuildEnvironmentImages(config),
+        CommandTests(config),
+        CommandMakeTestGame(config),
+    ]
 
 
 def run_main(root_dir):

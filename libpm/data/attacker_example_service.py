@@ -37,7 +37,7 @@
 ##################################################################################
 
 """
-Auto detect subnetwork and start attack in whle infiniy
+Auto detect subnetwork and start attack in infinite while
 """
 
 import socket
@@ -49,7 +49,7 @@ import traceback
 import requests
 
 if len(sys.argv) < 2:
-    sys.exit("Expeceted parameter <juryhost> like 10.10.100.101:8080")
+    sys.exit("Expected parameter <juryhost> like 10.10.100.101:8080")
 
 JURYHOST = sys.argv[1]
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -235,12 +235,12 @@ def start_exploit(your_teamnum, ip_address, port):
 
 
 SERVICES_PORTS = {
-    'example_service1': 4101,
-    'example_service2': 4102,
-    'example_service3': 4103,
-    'example_service4': 4104,
-    'example_service5': 4105,
-    'example_service6': 4106,
+    'service1': 4101,
+    'service2': 4102,
+    'service3': 4103,
+    'service4': 4104,
+    'service5': 4105,
+    'service6': 4106,
 }
 
 while True:
@@ -272,7 +272,7 @@ while True:
                 FOUND_TEAM = team
 
     if not FOUND_TEAM:
-        print("ERROR: Could not detect team number - please hardcode")
+        print("ERROR: Could not detect team number - please hardcode (" + myip + ")")
         time.sleep(5)
         continue
 
@@ -294,9 +294,11 @@ while True:
         # print(team_scoreboard.keys())
 
         if team_id != my_teamid:
-            # print (" >>>> it's your time " + team_name + " now  <<<< ")
-            for serviceid, servioceport in SERVICES_PORTS.items():
-                if team_scoreboard[serviceid]['status'] != 'down':
+            for serviceid in team_scoreboard:
+                servioceport = SERVICES_PORTS[serviceid]
+                service_info = team_scoreboard[serviceid]
+                # print(service_info)
+                if service_info['status'] != 'down':
                     ATTACKED_SERVICES += 1
                     start_exploit(my_teamid, team_ip_address, servioceport)
     if ATTACKED_SERVICES < 6:

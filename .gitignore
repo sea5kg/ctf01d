@@ -9,6 +9,7 @@ data_test/*
 /data_sample/db/*
 /data_sample/game_result
 /data_test_tmp
+/test_game_config
 /ctf01d
 /tmp
 tmp/*

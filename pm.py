@@ -58,15 +58,7 @@ libpm.run_main(ROOT_DIR)
 
 CONFIG = libpm.PmConfig(ROOT_DIR)
 
-COMMANDS = [
-    libpm.CommandClean(CONFIG),
-    libpm.CommandCodeStats(CONFIG),
-    libpm.CommandPyCheck(CONFIG),
-    libpm.CommandCheck(CONFIG),
-    libpm.CommandClangFormat(CONFIG),
-    libpm.CommandRebuildEnvironmentImages(CONFIG),
-    libpm.CommandTests(CONFIG)
-]
+COMMANDS = libpm.make_commands(CONFIG)
 
 class CustomActionHelp(argparse._HelpAction):  # pylint: disable=protected-access
     """ custom help action """

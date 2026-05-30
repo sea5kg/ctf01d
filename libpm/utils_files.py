@@ -40,6 +40,8 @@
 
 import sys
 import os
+import shutil
+import logging
 
 
 class UtilsFiles:
@@ -89,6 +91,12 @@ class UtilsFiles:
         return _lines
 
     @staticmethod
+    def write_file(_filepath, _lines, _join_lines_sep="\n"):
+        """ write lines to file  """
+        with open(_filepath, "wt", encoding="utf-8", newline="\n") as _file:
+            _file.write(_join_lines_sep.join(_lines))
+
+    @staticmethod
     def recursive_remove_files(_dir):
         """ recursive_remove_files """
         for _file in os.listdir(_dir):
@@ -115,3 +123,19 @@ class UtilsFiles:
                 _ret = False
             _idx += 1
         return _ret
+
+    @staticmethod
+    def extract_file_from_res(res_path, filepath_target):
+        """ copy file from res/ to some path """
+        res_dir = os.path.dirname(os.path.abspath(__file__))
+        res_dir = os.path.join(res_dir, "data")
+        config_res_path = os.path.join(res_dir, res_path)
+        if not os.path.isfile(config_res_path):
+            logging.error("Not found file: %s", config_res_path)
+            sys.exit(1)
+        if os.path.isfile(filepath_target):
+            os.remove(filepath_target)
+        if os.path.isfile(filepath_target):
+            logging.error("Could not remove file: %s", filepath_target)
+            sys.exit(1)
+        shutil.copy2(config_res_path, filepath_target)

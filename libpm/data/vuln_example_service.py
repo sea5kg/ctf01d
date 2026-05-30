@@ -37,7 +37,7 @@
 ##################################################################################
 
 """
-Sample service for testing ctf01d
+Sample vuln-service for testing ctf01d
 """
 
 import socket
@@ -50,10 +50,10 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 FLAGS_DIR = os.path.join(SCRIPT_DIR, 'flags')
 
 if len(sys.argv) < 2:
-    sys.exit("Expeceted parameter <port>")
+    sys.exit("Expected parameter <port>")
 
 PORT = int(sys.argv[1])  # 4101
-thrs = []
+CLIENT_THREADS = []
 
 
 class Connect(threading.Thread):
@@ -181,7 +181,7 @@ class Connect(threading.Thread):
         # it's will be corrapt service
         # self.__sock.send("bye!\n".encode())
         self.__sock.close()
-        thrs.remove(self)
+        CLIENT_THREADS.remove(self)
 
     def kill(self):
         """ kill thread client """
@@ -189,7 +189,7 @@ class Connect(threading.Thread):
             return
         self.__is_kill = True
         self.__sock.close()
-        # thrs.remove(self)
+        # CLIENT_THREADS.remove(self)
 
 
 SERVER_SOCKET = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -206,10 +206,10 @@ try:
     while True:
         sock_client, addr_client = SERVER_SOCKET.accept()
         thr = Connect(sock_client, addr_client)
-        thrs.append(thr)
+        CLIENT_THREADS.append(thr)
         thr.start()
 except KeyboardInterrupt:
     print('Bye! Write me letters!')
     SERVER_SOCKET.close()
-    for thr in thrs:
+    for thr in CLIENT_THREADS:
         thr.kill()
