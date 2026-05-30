@@ -5,6 +5,10 @@ All notable changes to ctf01d project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [v0.6.2] - (2026 ?? ??)
+
+
+
 ## [v0.6.1] - (2026 May 30)
 
 - Added style-hackerdom scoreboard frontend
