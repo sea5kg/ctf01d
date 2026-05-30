@@ -556,14 +556,14 @@ img.team-logo {
   border-radius: 5px;
 }
 
-.service-att-def-cell.defence-points {
+.service-att-def-cell.defense-points {
   color: #ffe600;
-  background-image: url("../images/defence-points.svg");
+  background-image: url("../images/defense-points.svg");
 }
 
 .service-att-def-cell.defence-flags {
   color: #00b100;
-  background-image: url("../images/defence-flags.svg");
+  background-image: url("../images/defense-flags.svg");
 }
 
 .service-att-def-cell.attack-points {
@@ -679,8 +679,8 @@ img.team-logo {
   background-image: url("../images/defence-flags.svg");
 }
 
-.icon-defence-points {
-  background-image: url("../images/defence-points.svg");
+.icon-defense-points {
+  background-image: url("../images/defense-points.svg");
 }
 
 .icon-first-blood {
