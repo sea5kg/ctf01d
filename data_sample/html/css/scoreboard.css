@@ -722,8 +722,6 @@ img.team-logo {
   animation: mass-action-anim 1.2s cubic-bezier(0, 0.3, 0.6, 1.0) infinite;
 }
 
-
-
 @keyframes mass-action-anim {
   0% {
     opacity: 0.0;
@@ -753,128 +751,6 @@ img.team-logo {
     transform: rotate(-10deg);
   }
 }
-
-.mass-action-firstblood {
-  background-image: url("../images/actions/firstblood.svg");
-  animation: mass-action-first-blood 5.2s cubic-bezier(0, 0.6, 0.7, 1.0) infinite;
-}
-
-@keyframes mass-action-first-blood {
-  0% {
-    opacity: 0.0;
-    background-size: 10%;
-    -ms-transform: rotate(-180deg);
-    -moz-transform: rotate(-180deg);
-    -webkit-transform: rotate(-180deg);
-    -o-transform: rotate(-180deg);
-    transform: rotate(-180deg);
-    top: 0px;
-    width: 0%;
-    height: 0%;
-  }
-  50% {
-    opacity: 1.0;
-    background-size: 50%;
-    -ms-transform: rotate(180deg);
-    -moz-transform: rotate(180deg);
-    -webkit-transform: rotate(180deg);
-    -o-transform: rotate(180deg);
-    transform: rotate(180deg);
-    top: 0px;
-    width: 70%;
-    height: 70%;
-  }
-  90% {
-    opacity: 1.0;
-    background-size: 100%;
-    -ms-transform: rotate(0deg);
-    -moz-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-    top: 0px;
-    width: 100%;
-    height: 100%;
-  }
-  100%  {
-    opacity: 0.0;
-    background-size: 100%;
-    -ms-transform: rotate(-180deg);
-    -moz-transform: rotate(-180deg);
-    -webkit-transform: rotate(-180deg);
-    -o-transform: rotate(-180deg);
-    transform: rotate(-180deg);
-    top: 0px;
-    width: 100%;
-    height: 100%;
-  }
-}
-
-@keyframes team-first-blood {
-  0% {
-    background-color: rgba(255.0, 0, 0, 0.0);
-    -ms-transform: rotate(-5deg);
-    -moz-transform: rotate(-5deg);
-    -webkit-transform: rotate(-5deg);
-    -o-transform: rotate(-5deg);
-    transform: rotate(-5deg);
-  }
-  50% {
-    background-color: rgba(255.0, 0, 0, 0.5);
-    -ms-transform: rotate(5deg);
-    -moz-transform: rotate(5deg);
-    -webkit-transform: rotate(5deg);
-    -o-transform: rotate(5deg);
-    transform: rotate(5deg);
-  }
-  100%  {
-    background-color: rgba(255.0, 0, 0, 1.0);
-    -ms-transform: rotate(-5deg);
-    -moz-transform: rotate(-5deg);
-    -webkit-transform: rotate(-5deg);
-    -o-transform: rotate(-5deg);
-    transform: rotate(-5deg);
-  }
-}
-
-
-/*
-@-webkit-keyframes rotating {
-  from {
-    -webkit-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -webkit-transform: rotate(360deg);
-    -o-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-@keyframes rotating {
-  from {
-    -ms-transform: rotate(0deg);
-    -moz-transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
-    transform: rotate(0deg);
-  }
-  to {
-    -ms-transform: rotate(360deg);
-    -moz-transform: rotate(360deg);
-    -webkit-transform: rotate(360deg);
-    -o-transform: rotate(360deg);
-    transform: rotate(360deg);
-  }
-}
-.rotating {
-  -webkit-animation: rotating 2s linear infinite;
-  -moz-animation: rotating 2s linear infinite;
-  -ms-animation: rotating 2s linear infinite;
-  -o-animation: rotating 2s linear infinite;
-  animation: rotating 2s linear infinite;
-}
-*/
 
 .tooltip {
   position: relative;
@@ -1117,13 +993,13 @@ img.team-logo {
   line-height: 1.25;
 }
 
-.team-slider-slide-firstblood .team-slider-kicker {
+.team-slider-slide-first-blood .team-slider-kicker {
   color: #ff283a;
   font-size: 2.9rem;
   text-shadow: 0 0 18px rgba(255,0,0,0.82),0 3px 0 #000;
 }
 
-.team-slider-slide-firstblood .team-slider-name {
+.team-slider-slide-first-blood .team-slider-name {
   font-size: 3.45rem;
 }
 
@@ -1201,10 +1077,10 @@ img.team-logo {
   .team-slider-points span {
     font-size: 1.75rem;
   }
-  .team-slider-slide-firstblood .team-slider-kicker {
+  .team-slider-slide-first-blood .team-slider-kicker {
     font-size: 2rem;
   }
-  .team-slider-slide-firstblood .team-slider-name {
+  .team-slider-slide-first-blood .team-slider-name {
     font-size:2.1rem;
   }
 }

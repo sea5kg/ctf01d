@@ -324,11 +324,6 @@ resources:
       pack-as: "text"
       modified: 1779675189
       sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
-    - filepath: "./data_sample/html/images/actions/firstblood.svg"
-      size: 22032
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "0f591a740f6fe9a7868758935986945b810e3958"
     - filepath: "./data_sample/html/css/scoreboard.css"
       size: 18174
       pack-as: "text"

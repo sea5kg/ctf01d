@@ -401,13 +401,13 @@ function silentUpdateWidthWithoutAnimation(elid, newValue) {
     }
 }
 
-var g_is_showed_authomation = false;
+var g_is_showed_automation = false;
 
 function showActionAutomatization() {
-    if (g_is_showed_authomation) {
+    if (g_is_showed_automation) {
         return;
     }
-    g_is_showed_authomation = true;
+    g_is_showed_automation = true;
     var w = window.innerWidth;
     var h = window.innerHeight;
     var size_min_persent = 0.25;
@@ -427,21 +427,8 @@ function showActionAutomatization() {
         var node = document.getElementById(new_id);
         node.parentNode.removeChild(node);
         clearTimeout(timer_automatization_2);
-        g_is_showed_authomation = false;
+        g_is_showed_automation = false;
     }, 2400, new_id);
-}
-
-function showActionFirstblood(teamId) {
-    var el = document.getElementById(teamId);
-    if (el) {
-        el.style.animation = "team-first-blood 0.8s cubic-bezier(0, 0.6, 0.7, 1.0) infinite";
-        var timer_first_blood_2 = setTimeout(function(teamId1) {
-            document.getElementById(teamId1).style.animation = "";
-            clearTimeout(timer_first_blood_2);
-        }, 2500, teamId);
-    }
-
-    showTeamEventSlider(teamId, 'FIRST BLOOD', 'first flag captured', 'firstblood');
 }
 
 function updateUIValue(t, teamID, paramName){
@@ -626,7 +613,7 @@ function updateScoreboard() {
                 silentUpdate(firstBloodId, newValue);
                 silentUpdate(firstBloodTeamName, newValue);
                 silentUpdate(firstBloodTime, firstBloodTimeFromStartGame);
-                showActionFirstblood(s.first_blood);
+                showTeamEventSlider(s.first_blood, 'FIRST BLOOD', 'first flag captured', 'first-blood');
             }
             silentUpdateWithoutAnimation(serviceId + '-all-flags-att', s.af_att)
             silentUpdateWithoutAnimation(serviceId + '-all-flags-def', s.af_def)
