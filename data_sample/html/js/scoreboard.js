@@ -1,4 +1,27 @@
 
+function parsePageParams() {
+  var loc = location.search.slice(1);
+  var arr = loc.split("&");
+  var result = {};
+  var regex = new RegExp("(.*)=([^&#]*)");
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i].trim() != "") {
+      var p = regex.exec(arr[i].trim());
+      // console.log("results: " + JSON.stringify(p));
+      if (p == null) {
+        result[decodeURIComponent(arr[i].trim().replace(/\+/g, " "))] = '';
+      } else {
+        result[decodeURIComponent(p[1].replace(/\+/g, " "))] = decodeURIComponent(p[2].replace(/\+/g, " "));
+      }
+    }
+  }
+  console.log(JSON.stringify(result));
+  return result;
+}
+
+g_pageParams = parsePageParams();
+g_iconAnimation = g_pageParams.hasOwnProperty("animation");
+
 var mneu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];
 var tabs_content = document.getElementsByClassName('ctf01d-page-content');
 
@@ -312,71 +335,80 @@ var scoreboard_content = document.getElementById('scoreboard_content');
 var loader_content = document.getElementById('loader_content');
 
 function _animateElement(el, enable) {
-    if (el == null) {
-        console.error("_animateElement el is null");
-        return;
-    }
-    el.style.animation = enable ? "blinking 0.8s reverse infinite" : '';
+  if (!g_iconAnimation) {
+    return false;
+  }
+  if (el == null) {
+    console.error("_animateElement el is null");
+    return;
+  }
+  el.style.animation = enable ? "blinking 0.8s reverse infinite" : '';
 }
 
-function _animateElementOneTime(elid) {
-    var el = document.getElementById(elid)
-    if (el == null) {
-        console.error("_animateElementOneTime el is null by id ", elid);
-        return;
+function _animateElementOneTime(element_id) {
+  if (!g_iconAnimation) {
+    return false;
+  }
+  var el = document.getElementById(element_id)
+  if (el == null) {
+    console.error("_animateElementOneTime el is null by id ", element_id);
+    return;
+  }
+  el.style.animation = "fastblinking 0.8s reverse infinite";
+  var timer2 = setTimeout(function(element_id) {
+    var el1 = document.getElementById(element_id);
+    if (!el1) {
+      console.err("el1 = ", el1, "element_id = ", element_id);
     }
-    el.style.animation = "fastblinking 0.8s reverse infinite";
-    var timer2 = setTimeout(function(elid) {
-        var el1 = document.getElementById(elid);
-        if (!el1) {
-            console.err("el1 = ", el1, "elid = ", elid);
-        }
-        document.getElementById(elid).style.animation = '';
-        clearTimeout(timer2);
-    },800, elid);
+    document.getElementById(element_id).style.animation = '';
+    clearTimeout(timer2);
+  }, 800, element_id);
 }
 
-function _animateElementServiceCell(elid) {
-    var el = document.getElementById(elid)
-    if (el == null) {
-        console.error("_animateElementServiceCell el is null by id ", elid);
-        return;
+function _animateElementServiceCell(element_id) {
+  if (!g_iconAnimation) {
+    return false;
+  }
+  var el = document.getElementById(element_id)
+  if (el == null) {
+    console.error("_animateElementServiceCell el is null by id ", element_id);
+    return;
+  }
+  var scale_val = 1.0;
+  var scale_max_val = 2.0;
+  var scale_diff = 0.4;
+  // el.style.animation = "fastblinking 0.8s reverse infinite";
+  var inter2 = setInterval(function(_el) {
+    if (scale_diff > 0) {
+      if (scale_val < scale_max_val) {
+        scale_val += scale_diff;
+        _el.style.transform = 'scale(1, ' + scale_val + ')';
+      } else {
+        scale_diff = -(scale_diff) / 2.0;
+      }
+    } else {
+      if (scale_val > 1.0) {
+        scale_val += scale_diff;
+        _el.style.transform = 'scale(1, ' + scale_val + ')';
+      } else {
+        _el.style.transform = '';
+        clearInterval(inter2);
+      }
     }
-    var scale_val = 1.0;
-    var scale_max_val = 2.0;
-    var scale_diff = 0.4;
-    // el.style.animation = "fastblinking 0.8s reverse infinite";
-    var inter2 = setInterval(function(_el) {
-        if (scale_diff > 0) {
-            if (scale_val < scale_max_val) {
-                scale_val += scale_diff;
-                _el.style.transform = 'scale(1, ' + scale_val + ')';
-            } else {
-                scale_diff = -(scale_diff) / 2.0;
-            }
-        } else {
-            if (scale_val > 1.0) {
-                scale_val += scale_diff;
-                _el.style.transform = 'scale(1, ' + scale_val + ')';
-            } else {
-                _el.style.transform = '';
-                clearInterval(inter2);
-            }
-        }
-    }, 40, el);
+  }, 40, el);
 }
 
-function silentUpdate(elid, newValue) {
-    var el = document.getElementById(elid)
-    if (!el) {
-        console.error("Not found element with id " + elid);
-        return;
-    }
-    if (el.innerHTML != newValue) {
-        el.innerHTML = newValue;
-        _animateElementOneTime(elid);
-        // TODO make simple anim
-    }
+function silentUpdate(element_id, newValue) {
+  var el = document.getElementById(element_id)
+  if (!el) {
+    console.error("Not found element with id " + element_id);
+    return;
+  }
+  if (el.innerHTML != newValue) {
+    el.innerHTML = newValue;
+    _animateElementOneTime(element_id);
+    // TODO make simple anim
+  }
 }
 
 function silentUpdateWithoutAnimation(elid, newValue) {
