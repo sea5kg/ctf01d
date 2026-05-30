@@ -2,6 +2,13 @@
     "cSpell.words": [
         "hlogi",
         "killall",
-        "libpm"
-    ]
+        "libpm",
+        "REUSEADDR",
+        "vulnbox"
+    ],
+    "github.copilot.chat.mcp.enabled": false,
+    "github.copilot.enable": {
+        "mcp": false,
+        "*": true
+    }
 }
