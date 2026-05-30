@@ -235,7 +235,7 @@ img.team-logo {
   height: 100%;
   vertical-align: top;
   text-align: center;
-  width: 100px;
+  width: 130px;
   line-height: 35px;
   border-left: 1px solid #444;
 }
@@ -447,6 +447,8 @@ img.team-logo {
 .service-status {
   display: inline-block;
   height: 35px;
+  width: 105px;
+  margin-left: 3px;
   padding-left: 44px;
   background-repeat: no-repeat;
   background-size: 32px 32px;
@@ -456,6 +458,7 @@ img.team-logo {
 
 .service-status.down {
 	background-image: url("../images/states/down.svg");
+  background-color: rgba(87,59,0,0.4);
 }
 
 .service-status.corrupt {
@@ -468,6 +471,7 @@ img.team-logo {
 
 .service-status.up {
 	background-image: url("../images/states/up.svg");
+  background-color: rgba(70,95,55,0.4);
 }
 
 .service-status.shit {
@@ -537,7 +541,7 @@ img.team-logo {
   font-size: 12px;
   font-weight: bold;
   position: relative;
-  left: -161px;
+  left: -151px;
   top: -5px;
   vertical-align: bottom;
   background-color: #213350;
@@ -866,6 +870,11 @@ img.team-logo {
   animation: team-slider-overlay ease-in-out both;
   cursor: pointer;
 }
+
+/*
+background: rgba(70,95,55,0.72);
+*/
+
 
 .team-slider-overlay:before {
   content:"";
