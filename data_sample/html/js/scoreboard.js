@@ -760,8 +760,8 @@ getAjax('/api/v1/game', function(err, resp){
             + '    <div class="team-name">' + escapeHtml(resp.teams[iteam].name) + '</div>'
             + '    <span class="tooltiptext team-info">'
             + '     Team Name: ' + escapeHtml(resp.teams[iteam].name) + '<br>'
-            + '     Team ID: <input id="' + team_id + '-copy" value="' + sTeamId + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy\')">copy</button> <br>'
-            + '     Team IP-Address: <input id="' + team_id + '-copy-ip" value="' + resp.teams[iteam].ip_address + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy-ip\')">copy</button>'
+            + '     Team ID: <input readonly id="' + team_id + '-copy" value="' + sTeamId + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy\')">copy</button> <br>'
+            + '     Team IP-Address: <input readonly id="' + team_id + '-copy-ip" value="' + resp.teams[iteam].ip_address + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy-ip\')">copy</button>'
             + '    </span>'
             + "  </div>"
             + '  <div class="score">'
