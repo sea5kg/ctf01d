@@ -44,7 +44,7 @@ import random
 import psutil
 import requests
 from .utils_log import UtilsLog
-from .utils_tests import UtilsTests
+from .utils_tests import UtilsTests, StartJuryTest
 from .pm_config import PmConfig
 
 
@@ -77,135 +77,126 @@ class CommandTests:
             action='store_true',
         )
         _parser_tests.add_argument(
+            '-nrj', '--no-run-jury',
+            dest='run_jury',
+            help='No run jury',
+            default=True,
+            action='store_false',
+        )
+        _parser_tests.add_argument(
             '-r', '--run',
             dest='test_name',
             help='Specify name of test'
         )
         _parser_tests.set_defaults(subparser=self.__subcommand_name)
 
-    def __test_path_traversal(self):
+    def __test_path_traversal(self, run_jury):
         self.__log.info("Run test 'Path Traversal'.")
-        _, pid = UtilsTests.start_empty_jury_1x3(self.__log)
-        self.__log.info("Try request to jury")
-        try:
-            url_db_flags_live = 'http://localhost:8080/../db/flags_live.db'
-            _session = requests.Session()
-            _req = requests.Request(method='GET', url=url_db_flags_live)
-            _req_prep = _req.prepare()
-            _req_prep.url = url_db_flags_live
-            _resp = _session.send(_req_prep)
-            if _resp.status_code == 200:
-                self.__log.error(
-                    "\n"
-                    "\n************************************************"
-                    "\n* Vulnerability 'Path Traversal' FOUND (!!!!!) *"
-                    "\n************************************************"
-                    "\n"
-                )
-                sys.exit(1)
-            self.__log.info(">>>> Everything fine!")
-        finally:
-            UtilsTests.stop_jury(pid)
+        with StartJuryTest(run_jury, self.__log) as _test:
+            try:
+                url_db_flags_live = 'http://localhost:8080/../db/flags_live.db'
+                _session = requests.Session()
+                _req = requests.Request(method='GET', url=url_db_flags_live)
+                _req_prep = _req.prepare()
+                _req_prep.url = url_db_flags_live
+                _resp = _session.send(_req_prep)
+                if _resp.status_code == 200:
+                    _test.err_exit("Vulnerability 'Path Traversal' FOUND (!!!!!)")
+                self.__log.info(">>>> Everything fine!")
+            except requests.exceptions.Timeout:
+                _test.err_exit("Timed out")
+            # finally:
+            #     UtilsTests.stop_jury(run_jury, pid)
 
-    def __test_memory_leak(self):
-        self.__log.info("Run test 'Path Traversal'.")
-        _, pid = UtilsTests.start_empty_jury_1x3(self.__log)
-        self.__log.info("Try request to jury")
-        _proc = psutil.Process(pid)
-        _first_mem_rss_mb = 0
-        for i in range(1, 2):
-            _first_mem_rss_mb = _proc.memory_info().rss / 1024
-            print(_first_mem_rss_mb)
-            time.sleep(0.5)
+    def __test_memory_leak(self, run_jury):
+        self.__log.info("Run test 'Memory Leak'.")
+        with StartJuryTest(run_jury, self.__log) as _test:
+            _proc = psutil.Process(_test.get_pid())
+            _first_mem_rss_mb = 0
+            for i in range(1, 2):
+                _first_mem_rss_mb = _proc.memory_info().rss / 1024
+                print(_first_mem_rss_mb)
+                time.sleep(0.5)
 
-        _urls = {
-            "http://localhost:8080/api/v1/myip": 200,
-            "http://localhost:8080/flag?teamid=t02&flag=c01d4567-e89b-12d3-a456-426600000010": 403,
-            "http://localhost:8080/api/v1/teams": 200,
-            "http://localhost:8080/api/v1/services": 200,
-            "http://localhost:8080/api/v1/scoreboard": 200,
-            "http://localhost:8080/team-logo/t01": 200,
-            "http://localhost:8080/team-logo/t02": 200,
-            "http://localhost:8080/team-logo/t03": 200,
-            "http://localhost:8080/api/v1/game": 200,
-        }
-        try:
-            for _url, _expected_status_code in _urls.items():
-                print(_url)
-                _before_mem_rss_kb = _proc.memory_info().rss / 1024
-                print("Before:", _before_mem_rss_kb)
-                for i in range(1, 50):
-                    print(i)
-                    _resp = requests.get(_url, timeout=0.2)
-                    if _resp.status_code != _expected_status_code:
-                        err_msg = _url + " response: " + str(_resp.text)
-                        err_msg += "Expected: " + str(_expected_status_code)
-                        err_msg += ", but got " + str(_resp.status_code)
-                        UtilsTests.print_error_and_exit(self.__log, err_msg)
-                _after_mem_rss_kb = _proc.memory_info().rss / 1024
-                print("After:", _after_mem_rss_kb)
-                print("Diff:", _after_mem_rss_kb - _before_mem_rss_kb)
-            self.__log.info(">>>> Everything fine!")
-        except requests.exceptions.Timeout:
-            UtilsTests.print_error_and_exit(self.__log, "Timed out")
-        finally:
-            UtilsTests.stop_jury(pid)
+            _urls = {
+                "http://localhost:8080/api/v1/myip": 200,
+                "http://localhost:8080/flag?teamid=t02&flag=" + UtilsTests.random_flag(): 403,
+                "http://localhost:8080/api/v1/teams": 200,
+                "http://localhost:8080/api/v1/services": 200,
+                "http://localhost:8080/api/v1/scoreboard": 200,
+                "http://localhost:8080/team-logo/t01": 200,
+                "http://localhost:8080/team-logo/t02": 200,
+                "http://localhost:8080/team-logo/t03": 200,
+                "http://localhost:8080/api/v1/game": 200,
+            }
+            try:
+                for _url, _expected_status_code in _urls.items():
+                    print(_url)
+                    _before_mem_rss_kb = _proc.memory_info().rss / 1024
+                    print("Before:", _before_mem_rss_kb)
+                    for i in range(1, 50):
+                        print(i)
+                        _resp = requests.get(_url, timeout=0.2)
+                        if _resp.status_code != _expected_status_code:
+                            err_msg = _url + " response: " + str(_resp.text)
+                            err_msg += "Expected: " + str(_expected_status_code)
+                            err_msg += ", but got " + str(_resp.status_code)
+                            _test.err_exit(err_msg)
+                    _after_mem_rss_kb = _proc.memory_info().rss / 1024
+                    print("After:", _after_mem_rss_kb)
+                    print("Diff:", _after_mem_rss_kb - _before_mem_rss_kb)
+                self.__log.info(">>>> Everything fine!")
+            except requests.exceptions.Timeout:
+                _test.err_exit("Timed out")
+            # finally:
+            #     UtilsTests.stop_jury(run_jury, pid)
 
-    def __test_send_random_flags(self):
-        self.__log.info("Run test 'Path Traversal'.")
-        _, pid = UtilsTests.start_empty_jury_1x3(self.__log)
-        self.__log.info("Try request to jury")
-        _teams = []
-        try:
-            _resp = requests.get("http://localhost:8080/api/v1/teams", timeout=0.2)
-            if _resp.status_code != 200:
-                UtilsTests.print_error_and_exit(self.__log, "Could not get info about teams")
-            _teams = _resp.json()["teams"]
-        except requests.exceptions.Timeout:
-            UtilsTests.print_error_and_exit(self.__log, "Timed out api/v1/teams")
-        i = 0
-        try:
-            for _team in _teams:
-                _team["activity"] = 0
-            # for _team in _teams:
-            #     print(_team)
-            sended_flags = 0
-            while i < 140:
-                i = i + 1
-                sended_flags += 1
-                team_i = random.randint(0, len(_teams)-1)
-                team_id = _teams[team_i]["id"]
-                _teams[team_i]["activity"] += 1
-                _fl_url = 'http://localhost:8080/flag?teamid=' + str(team_id)
-                _fl_url += '&flag=' + UtilsTests.random_flag()
+    def __test_send_random_flags(self, run_jury):
+        self.__log.info("Run test 'Send Random Flags'.")
+        with StartJuryTest(run_jury, self.__log) as _test:
+            _teams = _test.req_teams()
+            i = 0
+            try:
+                _score = _test.req_scoreboard()
+                _expected_sum_act = _score["sum_act"]
+                _team_tries = {}
+                for _team in _teams:
+                    team_id = _team["id"]
+                    # remember previous team activity
+                    _team_tries[team_id] = _score['scoreboard'][team_id]['tries']
 
-                # print("Request " + http_get_url)
-                _resp = requests.get(_fl_url, timeout=0.2)
-                if _resp.status_code not in [403, 200]:
-                    UtilsTests.print_error_and_exit(
-                        self.__log,
-                        "Shit happen " + str(_resp.status_code)
+                sended_flags = 0
+                send_flags = 1000
+                self.__log.info("Trying send flags: %s", str(send_flags))
+                while i < send_flags:
+                    i = i + 1
+                    sended_flags += 1
+                    _expected_sum_act += 1
+                    team_id = list(_team_tries)[random.randint(0, len(list(_team_tries))-1)]
+                    _team_tries[team_id] += 1
+                    _resp = _test.req_flag(team_id, UtilsTests.random_flag())
+                    if _resp["code"] not in [403, 200]:
+                        _test.err_exit("Shit happen " + str(_resp["code"]))
+                self.__log.info("Sended flags: %s", str(sended_flags))
+                _score = _test.req_scoreboard()
+                if _score["sum_act"] != _expected_sum_act:
+                    _test.err_exit(
+                        "Wrong sum_act expected " + str(_expected_sum_act) + ", but got " +
+                        str(_score["sum_act"])
                     )
-            _resp = requests.get("http://localhost:8080/api/v1/scoreboard", timeout=0.2)
-            if _resp.status_code != 200:
-                UtilsTests.print_error_and_exit(self.__log, "Could not get info about teams")
-            _score = _resp.json()
-            if _score["sum_act"] != sended_flags:
-                UtilsTests.print_error_and_exit(self.__log, "Wrong sum_act")
-            self.__log.info("sum_act %s OK", str(_score["sum_act"]))
-            for _team in _teams:
-                team_id = _team["id"]
-                if _score['scoreboard'][team_id]['tries'] != _team["activity"]:
-                    UtilsTests.print_error_and_exit(
-                        self.__log,
-                        "Wrong tries for " + team_id
-                    )
-                self.__log.info("%s tries %s OK", team_id, str(_team["activity"]))
-            self.__log.info(">>>> Everything fine!")
-        except requests.exceptions.Timeout:
-            UtilsTests.print_error_and_exit(self.__log, "Timed out on " + str(i))
-        finally:
-            UtilsTests.stop_jury(pid)
+                self.__log.info("sum_act %s OK", str(_score["sum_act"]))
+                for _team_id, _team_tries in _team_tries.items():
+                    _tries = _score['scoreboard'][_team_id]['tries']
+                    if _tries != _team_tries:
+                        _test.err_exit("Wrong tries for " + _team_id)
+                    self.__log.info("%s tries %s OK", team_id, str(_tries))
+                self.__log.info(">>>> Everything fine!")
+            except requests.exceptions.Timeout:
+                _test.err_exit("Timed out on " + str(i))
+            # finally:
+            #     _test.stop
+            #     if run_jury:
+            #         UtilsTests.stop_jury(run_jury, pid)
 
     def execute(self, args):
         """ executing """
@@ -221,6 +212,6 @@ class CommandTests:
             )
             sys.exit(1)
         self.__log.info("Running test %s ...", args.test_name)
-        self.__tests[args.test_name]()
+        self.__tests[args.test_name](args.run_jury)
 
         sys.exit(0)

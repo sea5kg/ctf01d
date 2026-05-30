@@ -37,7 +37,9 @@
 ##################################################################################
 
 """ Config for a pm """
+
 import re
+import os
 
 
 class PmConfig:
@@ -56,3 +58,27 @@ class PmConfig:
     def get_re_uuid(self):
         """ return regular expression for a search uuid in string """
         return self.__re_uuid
+
+
+class FolderSwitcher:
+    """
+        Change work directory to specify folder
+        And on exit change back work directory
+    """
+    def __init__(self, _log, new_dir):
+        self.__prev = os.getcwd()
+        self.__new_dir = new_dir
+        self.__log = _log
+        os.chdir(self.__new_dir)
+        self.__log.debug(
+            "FolderSwitcher (begin): %s -> %s", self.__prev, self.__new_dir
+        )
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        os.chdir(self.__prev)
+        self.__log.debug(
+            "FolderSwitcher (end): %s -> %s", self.__new_dir, self.__prev
+        )

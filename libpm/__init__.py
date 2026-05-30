@@ -39,7 +39,7 @@
 """ init module for libpm (Project Manager) helper lib for a handling processes in project """
 
 import argparse
-from .pm_config import PmConfig
+from .pm_config import PmConfig, FolderSwitcher
 from .command_check import CommandCheck
 from .command_rebuild_environment_images import CommandRebuildEnvironmentImages
 from .command_clang_format import CommandClangFormat
@@ -53,6 +53,7 @@ from .utils_log import UtilsLog
 from .utils_files import UtilsFiles
 from .utils_shell import UtilsShell
 from .utils_strings import UtilsStrings
+from .utils_tests import UtilsTests, StartJuryTest
 
 
 def print_custom_help(parser):

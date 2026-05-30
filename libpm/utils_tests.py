@@ -45,6 +45,7 @@ import random
 import uuid
 import subprocess
 import psutil
+import requests
 from .utils_files import UtilsFiles
 from .utils_ctf01d_config import UtilsCtf01dConfig
 
@@ -138,31 +139,69 @@ class UtilsTests:
                 pass
 
     @staticmethod
-    def stop_jury(pid):
+    def stop_jury(run_jury, pid):
         """ stop_jury """
+        if not run_jury:
+            return
         os.kill(pid, signal.SIGKILL)
 
-    @staticmethod
-    def start_empty_jury_1x3(_log):
-        """ start_empty_jury_1x3 """
-        _cfg_dir = UtilsTests.data_test_tmp_path()
-        UtilsTests.prepare_data_test_tmp(_cfg_dir, _log)
 
-        # _cfg = UtilsCtf01dConfig.generate_default(count_teams=3, count_services=1)
-        # UtilsCtf01dConfig.write_to_file(_cfg_dir, _cfg)
-        UtilsCtf01dConfig.write_example_config_1x3(_cfg_dir)
-        UtilsCtf01dConfig.write_checker_test(_cfg_dir, "test_service1")
+class StartJuryTest:
+    """
+        Star test jury
+    """
+    def __init__(self, run_jury, _log):
+        self.__run_jury = run_jury
+        self.__log = _log
+        self.__cfg_dir = None
+        self.__pid = None
+        if not self.__run_jury:
+            self.__log.info("Start test without run jury")
+        else:
+            self.__cfg_dir = UtilsTests.data_test_tmp_path()
+            UtilsTests.prepare_data_test_tmp(self.__cfg_dir, self.__log)
+            # _cfg = UtilsCtf01dConfig.generate_default(count_teams=3, count_services=1)
+            # UtilsCtf01dConfig.write_to_file(_cfg_dir, _cfg)
+            UtilsCtf01dConfig.write_example_config_1x3(self.__cfg_dir)
+            UtilsCtf01dConfig.write_checker_test(self.__cfg_dir, "test_service1")
+            UtilsTests.stop_any_jury()
+            self.__pid = UtilsTests.start_jury(self.__cfg_dir)
+            if self.__pid is None:
+                self.err_exit("Could not run ctf01d (!!!!!)")
+            self.__log.info("Start test with jury '" + str(self.__pid) + "'")
 
-        UtilsTests.stop_any_jury()
-        pid = UtilsTests.start_jury(_cfg_dir)
-        if pid is None:
-            UtilsTests.print_error_and_exit(_log, "Could not run ctf01d (!!!!!)")
-        return _cfg_dir, pid
+    def __enter__(self):
+        return self
 
-    @staticmethod
-    def print_error_and_exit(_log, msg):
-        """ print_error_and_exit """
-        _log.error(
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.__run_jury and self.__pid is not None:
+            self.__log.info("End test. And kill jury '" + str(self.__pid) + "'")
+            os.kill(self.__pid, signal.SIGKILL)
+        else:
+            self.__log.info("End test without start jury")
+
+    def get_data_path(self):
+        """ return data path """
+        return self.__cfg_dir
+
+    def get_pid(self):
+        """ return pid of jury """
+        if self.__run_jury and self.__pid is not None:
+            return self.__pid
+        # find pid
+        if not self.__run_jury:
+            for proc in psutil.process_iter():
+                try:
+                    # Check if process name contains the given name string.
+                    if "ctf01d" in proc.name().lower():
+                        return proc.pid
+                except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                    pass
+        return None
+
+    def err_exit(self, msg):
+        """ print error and exit """
+        self.__log.error(
             "\n"
             "\n************************************************"
             "\n* %s *"
@@ -170,5 +209,36 @@ class UtilsTests:
             "\n",
             msg
         )
-        UtilsTests.stop_any_jury()
+        if self.__run_jury:
+            UtilsTests.stop_any_jury()
         sys.exit(1)
+
+    def req_teams(self):
+        """ request to jury list of teams """
+        _teams = []
+        try:
+            _resp = requests.get("http://localhost:8080/api/v1/teams", timeout=0.2)
+            if _resp.status_code != 200:
+                self.err_exit("Could not get info about teams")
+            _teams = _resp.json()["teams"]
+        except requests.exceptions.Timeout:
+            self.err_exit("Timed out api/v1/teams")
+        return _teams
+
+    def req_scoreboard(self):
+        """ request scoreboard """
+        _resp = requests.get("http://localhost:8080/api/v1/scoreboard", timeout=0.2)
+        if _resp.status_code != 200:
+            self.err_exit("Could not get scoreboard")
+        return _resp.json()
+
+    def req_flag(self, team_id, flag_val):
+        """ request flag """
+        url = "http://localhost:8080/flag?teamid=" + team_id
+        url += "&flag=" + flag_val
+        _resp = requests.get(url, timeout=0.2)
+        # print(_resp.text)
+        return {
+            "code": _resp.status_code,
+            "msg": _resp.text
+        }
