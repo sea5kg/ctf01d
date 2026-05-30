@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 6986;
+  return 7033;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 6986
+  static const std::string sRet = "" // size: 7033
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -87,6 +87,7 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "    name: \"Team #1\"\n"
     "    active: yes\n"
     "    logo: \"./html/images/teams/team01.png\"\n"
+    "    big-logo: \"./html/images/teams/team01.png\"\n"
     "    ip_address: \"127.0.1.1\" # address to vulnserver\n"
     "  - id: \"t02\" # must be uniq\n"
     "    name: \"Team #2\"\n"
