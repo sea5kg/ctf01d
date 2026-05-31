@@ -7,14 +7,14 @@ WORKDIR /go/src/app
 COPY ./src/ /go/src/app
 
 # Better use a localfolders
-RUN go get github.com/go-sql-driver/mysql
-RUN go get github.com/jmoiron/sqlx
-RUN go get github.com/gorilla/mux
+RUN go mod init service2_go \
+    && go get github.com/go-sql-driver/mysql@v1.6.0 \
+    && go get github.com/jmoiron/sqlx@v1.3.5 \
+    && go get github.com/gorilla/mux@v1.8.0
 
-EXPOSE 4202
+EXPOSE 4102
 
 CMD exec go run server.go
 
 # CMD ["go","run","server.go"]
-
 
