@@ -38,7 +38,7 @@
 #include "ctf01d_service_checker_thread.h"
 #include <unistd.h>
 
-#include <dorunchecker.h>
+#include "ctf01d_do_run_checker.h"
 
 #include <iostream>
 #include <sstream>
@@ -150,8 +150,6 @@ int service_checker_thread::runChecker(Ctf01dFlag &flag, const std::string &sCom
 
   return nExitCode;
 }
-
-// ---------------------------------------------------------------------
 
 void service_checker_thread::run() {
   // TODO: BUG: so here can be problem with mysql connection after 7-8 hours (terminate connection on MySQL side)
