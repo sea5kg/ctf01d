@@ -180,13 +180,14 @@ bool EmployConfig::applyConfig() {
 
   bool var_errors = false;
   for (int i = 0; i < m_vars.size(); ++i) {
-    std::shared_ptr<ctf01d::var> _var = m_vars[i];
+    std::shared_ptr<ctf01d::var> var = m_vars[i];
     std::string err;
-    if (!_var->read(yamlConfig, err)) {
+    auto cursor = yamlConfig.getCursor();
+    if (!var->read(cursor, err)) {
       var_errors = true;
       continue;
     }
-    WsjcppLog::info(TAG, _var->name() + ": " + _var->to_string());
+    WsjcppLog::info(TAG, var->name() + ": " + var->to_string());
   }
   if (var_errors) {
     return false;
@@ -222,7 +223,7 @@ std::vector<Ctf01dTeamDef> &EmployConfig::teamsConf() {
   return m_vTeamsConf;
 }
 
-std::vector<Ctf01dServiceDef> &EmployConfig::servicesConf() {
+std::vector<ctf01d::service_def> &EmployConfig::servicesConf() {
   return m_vServicesConf;
 }
 
@@ -526,14 +527,19 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
     }
 
     // default values of service config
-    Ctf01dServiceDef _serviceConf;
+    ctf01d::service_def _serviceConf;
+    std::string err;
+
     _serviceConf.setId(sServiceId);
     _serviceConf.setName(sServiceName);
     _serviceConf.setScriptPath(sServiceScriptPath);
     _serviceConf.setScriptDir(sServiceScriptDir);
     _serviceConf.setEnabled(bServiceEnable);
     _serviceConf.setScriptWaitInSec(nServiceScriptWait);
-    _serviceConf.set_round_in_seconds(nRoundInSeconds);
+    if (!_serviceConf.read(yamlChecker, err)) {
+      WsjcppLog::err(TAG, err);
+      return false;
+    }
     m_vServicesConf.push_back(_serviceConf);
 
     WsjcppLog::ok(TAG, "Registered checker for service " + sServiceId);

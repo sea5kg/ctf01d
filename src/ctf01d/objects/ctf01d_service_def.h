@@ -38,12 +38,18 @@
 #pragma once
 
 #include <string>
+#include <memory>
+#include <vector>
+#include <wsjcpp_yaml.h>
+#include "ctf01d_var.h"
 
-class Ctf01dServiceDef {
+namespace ctf01d {
+
+class service_def {
 public:
-  Ctf01dServiceDef();
+  service_def();
 
-  // bool read(WsjcppYaml &yaml, std::string &err);
+  bool read(WsjcppYamlCursor &cursor, std::string &err);
 
   void setId(const std::string &sServiceId);
   const std::string &id() const;
@@ -62,17 +68,19 @@ public:
 
   void setScriptWaitInSec(int nSec);
   int scriptWaitInSec() const;
-
-  void set_round_in_seconds(int nSec);
   int round_in_seconds() const;
 
 private:
+  std::string TAG;
   int m_nNum;
   bool m_bEnabled;
   int m_nScriptWaitInSec;
-  int m_round_in_seconds;
+  std::shared_ptr<ctf01d::var_int> m_round_in_seconds;
   std::string m_sID;
   std::string m_sName;
   std::string m_sScriptPath;
   std::string m_sScriptDir;
+  std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 };
+
+} // namespace ctf01d

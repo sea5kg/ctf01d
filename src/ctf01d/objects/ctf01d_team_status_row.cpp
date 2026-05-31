@@ -46,14 +46,14 @@ Ctf01dTeamStatusRow::Ctf01dTeamStatusRow(
   int nGameEndInSec
 ) {
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<Ctf01dServiceDef> &vServicesConf = pConfig->servicesConf();
+  const std::vector<ctf01d::service_def> &vServicesConf = pConfig->servicesConf();
   TAG = "Ctf01dTeamStatusRow-" + team_id;
   m_sTeamId = team_id;
   m_nPlace = 0;
   m_nPoints = 0;
 
   for (unsigned int i = 0; i < vServicesConf.size(); i++) {
-    Ctf01dServiceDef serviceConf = vServicesConf[i];
+    ctf01d::service_def serviceConf = vServicesConf[i];
     std::string service_id = serviceConf.id();
     m_mapServicesStatus[service_id] = new Ctf01dServiceStatusCell(serviceConf.id());
   }

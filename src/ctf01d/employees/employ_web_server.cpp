@@ -152,14 +152,14 @@ void EmployWebServer::updateJsonCache() {
   jsonGame["services"] = nlohmann::json::array();
 
   for (unsigned int i = 0; i < config->servicesConf().size(); i++) {
-      Ctf01dServiceDef serviceConf = config->servicesConf()[i];
-      if (serviceConf.isEnabled()) {
-          nlohmann::json serviceInfo;
-          serviceInfo["id"] = serviceConf.id();
-          serviceInfo["name"] = serviceConf.name();
-          serviceInfo["round_time_in_sec"] = serviceConf.round_in_seconds();
-          jsonGame["services"].push_back(serviceInfo);
-      }
+    ctf01d::service_def serviceConf = config->servicesConf()[i];
+    if (serviceConf.isEnabled()) {
+      nlohmann::json serviceInfo;
+      serviceInfo["id"] = serviceConf.id();
+      serviceInfo["name"] = serviceConf.name();
+      serviceInfo["round_time_in_sec"] = serviceConf.round_in_seconds();
+      jsonGame["services"].push_back(serviceInfo);
+    }
   }
 
   for (unsigned int i = 0; i < config->teamsConf().size(); i++) {

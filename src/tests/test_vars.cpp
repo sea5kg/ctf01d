@@ -81,7 +81,8 @@ int main() {
       std::cerr << "FAILED: Expected value 12 but got " << std::to_string(varCost.value()) << "'" << std::endl;
       return -1;
     }
-    if (!varCost.read(yaml, err)) {
+    auto cursor = yaml.getCursor();
+    if (!varCost.read(cursor, err)) {
       std::cerr << "FAILED: Could not read from yaml" << std::endl;
       return -1;
     }
@@ -111,7 +112,8 @@ int main() {
       std::cerr << "FAILED: Expected value 'hello' but got " << varGameId->value() << "'" << std::endl;
       return -1;
     }
-    if (!varGameId->read(yaml, err)) {
+    auto cursor = yaml.getCursor();
+    if (!varGameId->read(cursor, err)) {
       std::cerr << "FAILED: Could not read from yaml" << std::endl;
       return -1;
     }

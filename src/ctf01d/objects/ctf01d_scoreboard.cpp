@@ -55,7 +55,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   auto *config = findWsjcppEmploy<EmployConfig>();
   m_pDatabase = findWsjcppEmploy<EmployDatabase>();
   const std::vector<Ctf01dTeamDef> &vTeamsConf = config->teamsConf();
-  const std::vector<Ctf01dServiceDef> &vServicesConf = config->servicesConf();
+  const std::vector<ctf01d::service_def> &vServicesConf = config->servicesConf();
   m_bRandom = bRandom;
   std::string sScoreboardRandom = "Scoreboard random: ";
   sScoreboardRandom = sScoreboardRandom + (m_bRandom ? "yes" : "no");
@@ -84,7 +84,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
         m_mapTeamsStatuses[sTeamId]->setPoints(nPoints);
     }
     for (unsigned int iservice = 0; iservice < vServicesConf.size(); iservice++) {
-      Ctf01dServiceDef service = vServicesConf[iservice];
+      ctf01d::service_def service = vServicesConf[iservice];
       m_mapTeamsStatuses[sTeamId]->setServiceStatus(service.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
       // random states of service for testing
       if (m_bRandom) {
@@ -108,11 +108,11 @@ void Ctf01dScoreboard::initJsonScoreboard() {
   m_jsonScoreboard.clear();
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
   const std::vector<Ctf01dTeamDef> &vTeamsConf = pConfig->teamsConf();
-  const std::vector<Ctf01dServiceDef> &vServices = pConfig->servicesConf();
+  const std::vector<ctf01d::service_def> &vServices = pConfig->servicesConf();
 
   nlohmann::json jsonServicesStatistics;
   for (unsigned int iservice = 0; iservice < vServices.size(); iservice++) {
-    Ctf01dServiceDef serviceConf = vServices[iservice];
+    ctf01d::service_def serviceConf = vServices[iservice];
     nlohmann::json serviceStatistics;
     m_mapServiceCostsAndStatistics[serviceConf.id()]->updateJsonServiceStatistics(serviceStatistics);
     jsonServicesStatistics[serviceConf.id()] = serviceStatistics;
@@ -131,7 +131,7 @@ void Ctf01dScoreboard::initJsonScoreboard() {
     teamData["logo_last_updated"] = 0;
     nlohmann::json jsonServices;
     for (unsigned int iservice = 0; iservice < vServices.size(); iservice++) {
-      Ctf01dServiceDef serviceConf = vServices[iservice];
+      ctf01d::service_def serviceConf = vServices[iservice];
       nlohmann::json serviceData;
       serviceData["def"] = 0;
       serviceData["pt_def"] = 0;
@@ -201,7 +201,7 @@ void Ctf01dScoreboard::incrementTries(const std::string &sTeamId) {
 
 void Ctf01dScoreboard::initStateFromStorage() {
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<Ctf01dServiceDef> &vServices = pConfig->servicesConf();
+  const std::vector<ctf01d::service_def> &vServices = pConfig->servicesConf();
 
   WsjcppLog::info(TAG, "Loading alive flags...");
   std::vector<Ctf01dFlag> vFlagLives = m_pDatabase->listOfLiveFlags();

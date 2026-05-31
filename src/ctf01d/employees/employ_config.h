@@ -58,7 +58,7 @@ public:
   bool applyConfig();
 
   // services configuration
-  std::vector<Ctf01dServiceDef> &servicesConf();
+  std::vector<ctf01d::service_def> &servicesConf();
 
   // teams configuration
   std::vector<Ctf01dTeamDef> &teamsConf();
@@ -121,7 +121,7 @@ private:
   std::vector<Ctf01dTeamDef> m_vTeamsConf;
 
   // services config
-  std::vector<Ctf01dServiceDef> m_vServicesConf;
+  std::vector<ctf01d::service_def> m_vServicesConf;
 
   // hot-reload: for reload config in runtime
   std::shared_ptr<Ctf01dFilesWatcher> m_files_watcher;

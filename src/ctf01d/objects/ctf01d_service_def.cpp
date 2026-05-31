@@ -36,71 +36,95 @@
  ***********************************************************************************/
 
 #include "ctf01d_service_def.h"
+#include <wsjcpp_core.h>
 
-Ctf01dServiceDef::Ctf01dServiceDef(){
+namespace ctf01d {
+
+service_def::service_def() {
+    TAG = "ctf01d::service_def";
     m_nScriptWaitInSec = 10;
     m_bEnabled = true;
-    m_round_in_seconds = 15;
+    m_round_in_seconds = ctf01d::var_int::create({"round_in_seconds"}, 15);
+    m_round_in_seconds->set_minimum(1);
+    m_vars.push_back(m_round_in_seconds);
+    // m_round_in_seconds->set_maximum(1);
 }
 
-void Ctf01dServiceDef::setId(const std::string &sServiceID){
+bool service_def::read(WsjcppYamlCursor &cursor, std::string &err) {
+  bool var_errors = false;
+  for (int i = 0; i < m_vars.size(); ++i) {
+    std::shared_ptr<ctf01d::var> var = m_vars[i];
+    std::string err;
+    if (!var->read(cursor, err)) {
+      WsjcppLog::err(TAG, err);
+      var_errors = true;
+      continue;
+    }
+    WsjcppLog::info(TAG, var->name() + ": " + var->to_string());
+  }
+  if (var_errors) {
+    return false;
+  }
+  if (m_round_in_seconds->value() < m_nScriptWaitInSec*3) {
+    err = "";
+    return false;
+  }
+  return true;
+}
+
+void service_def::setId(const std::string &sServiceID){
     m_sID = sServiceID;
 }
 
-const std::string &Ctf01dServiceDef::id() const {
+const std::string &service_def::id() const {
     return m_sID;
 }
 
-void Ctf01dServiceDef::setName(const std::string &sName){
+void service_def::setName(const std::string &sName){
     m_sName = sName;
 }
 
-const std::string &Ctf01dServiceDef::name() const {
+const std::string &service_def::name() const {
     return m_sName;
 }
 
-void Ctf01dServiceDef::setScriptPath(const std::string &sScriptPath){
+void service_def::setScriptPath(const std::string &sScriptPath){
     m_sScriptPath = sScriptPath;
 }
 
-const std::string &Ctf01dServiceDef::scriptPath() const {
+const std::string &service_def::scriptPath() const {
     return m_sScriptPath;
 }
 
-void Ctf01dServiceDef::setScriptDir(const std::string &sScriptDir) {
+void service_def::setScriptDir(const std::string &sScriptDir) {
     m_sScriptDir = sScriptDir;
 }
 
-const std::string &Ctf01dServiceDef::scriptDir() const {
+const std::string &service_def::scriptDir() const {
     return m_sScriptDir;
 }
 
-void Ctf01dServiceDef::setEnabled(bool bEnabled){
+void service_def::setEnabled(bool bEnabled){
     m_bEnabled = bEnabled;
 }
 
-bool Ctf01dServiceDef::isEnabled() const {
+bool service_def::isEnabled() const {
     return m_bEnabled;
 }
 
-void Ctf01dServiceDef::setScriptWaitInSec(int nSec){
+void service_def::setScriptWaitInSec(int nSec){
     m_nScriptWaitInSec = nSec;
     if(m_nScriptWaitInSec < 1){
         m_nScriptWaitInSec = 10;
     }
 }
 
-int Ctf01dServiceDef::scriptWaitInSec() const {
+int service_def::scriptWaitInSec() const {
     return m_nScriptWaitInSec;
 }
 
-void Ctf01dServiceDef::set_round_in_seconds(int nSec){
-    m_round_in_seconds = nSec;
-    if(m_round_in_seconds < 1){
-        m_round_in_seconds = 10;
-    }
+int service_def::round_in_seconds() const {
+    return m_round_in_seconds->value();
 }
 
-int Ctf01dServiceDef::round_in_seconds() const {
-    return m_round_in_seconds;
-}
+} // namespace ctf01d

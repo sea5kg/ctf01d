@@ -64,7 +64,7 @@ ctf01d::var_type var::type() const {
   return m_t;
 }
 
-bool var::read(WsjcppYaml &yaml, std::string &err) {
+bool var::read(WsjcppYamlCursor &cursor, std::string &err) {
   // will be overriden by type
   return false;
 }
@@ -73,16 +73,16 @@ std::string var::to_string() {
   return "unknown";
 }
 
-WsjcppYamlCursor var::cursorByPath(WsjcppYaml &yaml, std::string &err) {
-  auto cur = yaml.getCursor();
+WsjcppYamlCursor var::cursor_by_path(WsjcppYamlCursor &cursor, std::string &err) {
+  auto _cursor = cursor;
   for (int i = 0; i < m_path_name.size(); ++i) {
     std::string key = m_path_name[i];
-    if (!cur.hasKey(key)) {
-      return cur[key];
+    if (!_cursor.hasKey(key)) {
+      return _cursor[key];
     }
-    cur = cur[key];
+    _cursor = _cursor[key];
   }
-  return cur;
+  return _cursor;
 }
 
 // ---------------------------------------------------------------------
@@ -103,13 +103,13 @@ std::shared_ptr<var_int> var_int::create(const std::vector<std::string> &path_na
   return std::make_shared<var_int>(path_name, default_value);
 }
 
-bool var_int::read(WsjcppYaml &yaml, std::string &err) {
-  auto cursor = cursorByPath(yaml, err);
-  if (!cursor.isValue()) {
+bool var_int::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto _cursor = cursor_by_path(cursor, err);
+  if (!_cursor.isValue()) {
     err = "Not found '" + name() + "'";
     return false;
   }
-  return set_value(cursor.valInt(), err);
+  return set_value(_cursor.valInt(), err);
 }
 
 std::string var_int::to_string() {
@@ -162,8 +162,8 @@ std::shared_ptr<var_string> var_string::create(const std::vector<std::string> &p
   return std::make_shared<var_string>(path_name, default_value);
 }
 
-bool var_string::read(WsjcppYaml &yaml, std::string &err) {
-  auto cur = cursorByPath(yaml, err);
+bool var_string::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto cur = cursor_by_path(cursor, err);
   if (cur.isValue()) {
     setValue(cur.valStr());
     return true;
@@ -201,10 +201,10 @@ std::shared_ptr<var_bool> var_bool::create(const std::vector<std::string> &path_
   return std::make_shared<var_bool>(path_name, default_value);
 }
 
-bool var_bool::read(WsjcppYaml &yaml, std::string &err) {
-  auto cursor = cursorByPath(yaml, err);
-  if (cursor.isValue()) {
-    return set_value(cursor.valBool(), err);
+bool var_bool::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto _cursor = cursor_by_path(cursor, err);
+  if (_cursor.isValue()) {
+    return set_value(_cursor.valBool(), err);
   }
   return true;
 }
@@ -241,8 +241,8 @@ std::shared_ptr<var_dir> var_dir::create(const std::vector<std::string> &path_na
   return std::make_shared<var_dir>(path_name, default_value, root_dir);
 }
 
-bool var_dir::read(WsjcppYaml &yaml, std::string &err) {
-  auto cur = cursorByPath(yaml, err);
+bool var_dir::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto cur = cursor_by_path(cursor, err);
   if (cur.isValue()) {
     return set_value(cur.valStr(), err);
   }
@@ -304,8 +304,8 @@ std::shared_ptr<var_datetime> var_datetime::create(const std::vector<std::string
   return std::make_shared<var_datetime>(path_name, default_value);
 }
 
-bool var_datetime::read(WsjcppYaml &yaml, std::string &err) {
-  auto cur = cursorByPath(yaml, err);
+bool var_datetime::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto cur = cursor_by_path(cursor, err);
   if (cur.isValue()) {
     return set_value(cur.valStr(), err);
   }

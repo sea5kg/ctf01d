@@ -209,7 +209,7 @@ int main(int argc, const char* argv[]) {
     for (unsigned int iservice = 0; iservice < pEmployConfig->servicesConf().size(); iservice++) {
       for (unsigned int i_team = 0; i_team < pEmployConfig->teamsConf().size(); i_team++) {
         Ctf01dTeamDef teamConf = pEmployConfig->teamsConf()[i_team];
-        Ctf01dServiceDef serviceConf = pEmployConfig->servicesConf()[iservice];
+        ctf01d::service_def serviceConf = pEmployConfig->servicesConf()[iservice];
 
         // reset status to down
         pEmployConfig->scoreboard()->setServiceStatus(teamConf.getId(), serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
