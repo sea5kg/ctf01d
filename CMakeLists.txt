@@ -54,7 +54,6 @@ set(EXECUTABLE_OUTPUT_PATH ${ctf01d_SOURCE_DIR})
 
 # include header dirs
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
-list (APPEND WSJCPP_INCLUDE_DIRS "src/checker")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/third_party/sqlite3/src")
 
 # employees
@@ -66,11 +65,9 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_dat
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_alerting.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_web_server.cpp")
 
-# checker
-list (APPEND WSJCPP_SOURCES "src/checker/dorunchecker.cpp")
-
 # objects
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_database_file.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_do_run_checker.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_files_watcher.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_flag.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_var.cpp")
