@@ -1,5 +1,3 @@
-version: '3'
-
 services:
 
   # service 1 - port 4101
@@ -226,7 +224,7 @@ services:
       - "4203:4103"
       - "4204:4104"
     networks:
-      - fhqjuryad_net
+      - ctf01d_game_simulation_net
   
   # team3
   team3_server:
@@ -285,6 +283,8 @@ services:
 networks:
   ctf01d_game_simulation_net:
     driver: bridge
-    subnet: "10.10.6.0/24"
-    ip-range: "10.10.6.0/24"
-    gateway: "10.10.6.1"
+    ipam:
+      config:
+        - subnet: "10.10.6.0/24"
+          ip_range: "10.10.6.0/24"
+          gateway: "10.10.6.1"

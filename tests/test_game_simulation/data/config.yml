@@ -4,32 +4,17 @@
 game:
   id: "test" # uniq gameid must be regexp [a-z0-9]+
   name: "Test First Game" # visible game name in scoreboard
-  start: "2019-10-04 10:30:00" # start time of game (UTC)
-  end: "2030-09-06 13:00:00" # end time of game (UTC)
-  coffee_break_start: "2020-10-04 10:30:00" # start time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
-  coffee_break_end: "2021-01-04 10:30:00" # end time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
+  start_utc: "2025-11-12 16:00:00" # start time of game (UTC)
+  end_utc: "2030-11-12 22:00:00" # end time of game (UTC)
+  coffee_break_start: "2025-11-12 20:00:00" # start time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
+  coffee_break_end: "2025-11-12 21:00:00" # end time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
   flag_lifetime_in_seconds: 60 # you can change flag time live (in minutes)
   flag_cost_in_points: 10 # basic costs stolen (attack) flag in points for adaptive scoreboard
-
-server:
-  # use storage which storage will be used, now possible values:
-  # mysql - use mysql database
-  # ram - (!not implemented yet) use just memory
-  # local - (!not implemented yet) use just memory
-  # postgres - (!not implemented yet) will be used postgre database
-  use_storage: mysql
 
 scoreboard:
   port: 8080 # http port for scoreboard
   htmlfolder: "./html" # web page for scoreboard see index-template.html
   random: no # If yes - will be random values in scoreboard
-
-mysql_storage: # if server.use_storage is mysql
-  dbhost: "ctf01d_jury_db"
-  dbport: 3306
-  dbname: "ctf01d"
-  dbuser: "ctf01d"
-  dbpass: "ctf01d"
 
 checkers:
   - id: "service1_py" # work directory will be checker_example_service4
@@ -69,7 +54,7 @@ teams:
     logo: "./html/images/teams0/team2.png"
     ip_address: "10.10.12.1" # address to vulnserver
   - id: "team3"
-    name: "Team 2"
+    name: "Team 3"
     active: yes
     logo: "./html/images/teams0/team3.png"
     ip_address: "10.10.13.1" # address to vulnserver

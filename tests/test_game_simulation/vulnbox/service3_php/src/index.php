@@ -19,7 +19,7 @@
         $flag = base64_encode($flag);
         $newline = "\n".$flagid.' '.$flag;
 
-        $f = fopen($filename, 'aw') or die("Unable to open file! ".$filename);
+        $f = fopen($filename, 'a') or die("Unable to open file! ".$filename);
         fwrite($f, $newline);
         fclose($f);
         header('Location: ?p='.$page);
