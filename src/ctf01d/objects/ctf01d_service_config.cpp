@@ -35,13 +35,13 @@
  *
  ***********************************************************************************/
 
-#include "ctf01d_service_def.h"
+#include "ctf01d_service_config.h"
 #include <wsjcpp_core.h>
 
 namespace ctf01d {
 
-service_def::service_def() {
-    TAG = "ctf01d::service_def";
+service_config::service_config() {
+    TAG = "ctf01d::service_config";
     m_nScriptWaitInSec = 10;
     m_bEnabled = true;
     m_round_in_seconds = ctf01d::var_int::create({"round_in_seconds"}, 15);
@@ -50,7 +50,7 @@ service_def::service_def() {
     // m_round_in_seconds->set_maximum(1);
 }
 
-bool service_def::read(WsjcppYamlCursor &cursor, std::string &err) {
+bool service_config::read(WsjcppYamlCursor &cursor, std::string &err) {
   bool var_errors = false;
   for (int i = 0; i < m_vars.size(); ++i) {
     std::shared_ptr<ctf01d::var> var = m_vars[i];
@@ -72,58 +72,58 @@ bool service_def::read(WsjcppYamlCursor &cursor, std::string &err) {
   return true;
 }
 
-void service_def::setId(const std::string &sServiceID){
+void service_config::setId(const std::string &sServiceID){
     m_sID = sServiceID;
 }
 
-const std::string &service_def::id() const {
+const std::string &service_config::id() const {
     return m_sID;
 }
 
-void service_def::setName(const std::string &sName){
+void service_config::setName(const std::string &sName){
     m_sName = sName;
 }
 
-const std::string &service_def::name() const {
+const std::string &service_config::name() const {
     return m_sName;
 }
 
-void service_def::setScriptPath(const std::string &sScriptPath){
+void service_config::setScriptPath(const std::string &sScriptPath){
     m_sScriptPath = sScriptPath;
 }
 
-const std::string &service_def::scriptPath() const {
+const std::string &service_config::scriptPath() const {
     return m_sScriptPath;
 }
 
-void service_def::setScriptDir(const std::string &sScriptDir) {
+void service_config::setScriptDir(const std::string &sScriptDir) {
     m_sScriptDir = sScriptDir;
 }
 
-const std::string &service_def::scriptDir() const {
+const std::string &service_config::scriptDir() const {
     return m_sScriptDir;
 }
 
-void service_def::setEnabled(bool bEnabled){
+void service_config::setEnabled(bool bEnabled){
     m_bEnabled = bEnabled;
 }
 
-bool service_def::isEnabled() const {
+bool service_config::isEnabled() const {
     return m_bEnabled;
 }
 
-void service_def::setScriptWaitInSec(int nSec){
+void service_config::setScriptWaitInSec(int nSec){
     m_nScriptWaitInSec = nSec;
     if(m_nScriptWaitInSec < 1){
         m_nScriptWaitInSec = 10;
     }
 }
 
-int service_def::scriptWaitInSec() const {
+int service_config::scriptWaitInSec() const {
     return m_nScriptWaitInSec;
 }
 
-int service_def::round_in_seconds() const {
+int service_config::round_in_seconds() const {
     return m_round_in_seconds->value();
 }
 

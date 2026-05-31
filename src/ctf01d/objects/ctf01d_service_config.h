@@ -45,9 +45,9 @@
 
 namespace ctf01d {
 
-class service_def {
+class service_config {
 public:
-  service_def();
+  service_config();
 
   bool read(WsjcppYamlCursor &cursor, std::string &err);
 

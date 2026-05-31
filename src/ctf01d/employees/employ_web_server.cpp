@@ -152,7 +152,7 @@ void EmployWebServer::updateJsonCache() {
   jsonGame["services"] = nlohmann::json::array();
 
   for (unsigned int i = 0; i < config->servicesConf().size(); i++) {
-    ctf01d::service_def serviceConf = config->servicesConf()[i];
+    ctf01d::service_config serviceConf = config->servicesConf()[i];
     if (serviceConf.isEnabled()) {
       nlohmann::json serviceInfo;
       serviceInfo["id"] = serviceConf.id();

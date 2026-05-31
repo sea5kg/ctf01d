@@ -223,7 +223,7 @@ std::vector<Ctf01dTeamDef> &EmployConfig::teamsConf() {
   return m_vTeamsConf;
 }
 
-std::vector<ctf01d::service_def> &EmployConfig::servicesConf() {
+std::vector<ctf01d::service_config> &EmployConfig::servicesConf() {
   return m_vServicesConf;
 }
 
@@ -527,7 +527,7 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
     }
 
     // default values of service config
-    ctf01d::service_def _serviceConf;
+    ctf01d::service_config _serviceConf;
     std::string err;
 
     _serviceConf.setId(sServiceId);
