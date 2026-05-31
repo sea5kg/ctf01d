@@ -1,10 +1,23 @@
 {
     "cSpell.words": [
+        "dedup",
+        "elif",
+        "errno",
+        "fastblinking",
+        "grpcio",
         "hlogi",
+        "isinstance",
         "killall",
+        "libhv",
         "libpm",
+        "listended",
+        "pycache",
         "REUSEADDR",
-        "vulnbox"
+        "settimeout",
+        "tooltiptext",
+        "tzdata",
+        "vulnbox",
+        "zlibc"
     ],
     "github.copilot.chat.mcp.enabled": false,
     "github.copilot.enable": {
