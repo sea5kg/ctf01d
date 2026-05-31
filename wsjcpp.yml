@@ -70,10 +70,10 @@ resources:
       modified: 1779675622
       sha1: "888e571c3f5f5611c74d757392c11f5fddf608dc"
     - filepath: "./data_sample/config.yml"
-      size: 7033
+      size: 6993
       pack-as: "text"
-      modified: 1780019574
-      sha1: "aa13c0bcfaef1bc9a61c234478898b60c23821e8"
+      modified: 1780200490
+      sha1: "bf15e6437911127099ac6dfeafaa74529a0a3572"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
       pack-as: "binary"
@@ -202,13 +202,13 @@ resources:
     - filepath: "./data_sample/html/index.html"
       size: 9077
       pack-as: "text"
-      modified: 1779675622
-      sha1: "4266309cce53be7ff7a0fedfd295848f3e20b44f"
+      modified: 1780159826
+      sha1: "58bd8be6eca71196b17d7354357bea8f78cf9f74"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 34070
+      size: 38738
       pack-as: "text"
-      modified: 1779675622
-      sha1: "e4b9112b58464a999a065cd58a6ba78a9d94f674"
+      modified: 1780161720
+      sha1: "6b0e8dcc7736f4a1133b2358e23454010b00ff75"
     - filepath: "./data_sample/html/images/first-blood.svg"
       size: 3653
       pack-as: "text"
@@ -224,11 +224,6 @@ resources:
       pack-as: "text"
       modified: 1743318287
       sha1: "3e21fa62f2d7db8faa5989bb0c6e1675f2b6f04f"
-    - filepath: "./data_sample/html/images/defence-points.svg"
-      size: 4321
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "fad9c6b04a7846ee95bfb877e21df5bf46ceb790"
     - filepath: "./data_sample/html/images/trend-down.svg"
       size: 2357
       pack-as: "text"
@@ -264,11 +259,6 @@ resources:
       pack-as: "text"
       modified: 1779675189
       sha1: "c67e17c6da9c13673894dc9a1795c201a110b9bf"
-    - filepath: "./data_sample/html/images/defence-flags.svg"
-      size: 3010
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "38b9bf80ef6fa4ac5be0f406a5aec3a1b5f0a5ba"
     - filepath: "./data_sample/html/images/states/coffeebreak.svg"
       size: 16698
       pack-as: "text"
@@ -325,10 +315,10 @@ resources:
       modified: 1779675189
       sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
     - filepath: "./data_sample/html/css/scoreboard.css"
-      size: 18174
+      size: 20311
       pack-as: "text"
-      modified: 1779675622
-      sha1: "e06182edd0546bf60441ed5906548ecdbac76f0e"
+      modified: 1780163131
+      sha1: "fefd0f7849bbe7e010a68d40dcfcc0bcb4a69386"
     - filepath: "./data_sample/html/images/teams/team30.png"
       size: 6052
       pack-as: "binary"
@@ -519,16 +509,24 @@ resources:
       pack-as: "binary"
       modified: 1779675622
       sha1: "aa97060011deac6493bb80c578433a080eaf574c"
-
     - filepath: "./data_sample/checker_example_service5/checker.py"
       size: 4953
       pack-as: "binary"
       modified: 1779675622
       sha1: "a9b87406711c0eeba69b3e91da440ba5782954d9"
-
     - filepath: "./data_sample/checker_example_service6/checker.py"
       size: 4953
       pack-as: "binary"
       modified: 1779675622
       sha1: "ba988adef1e1598a708d4ab5faa851812b4e8d74"
+    - filepath: "./data_sample/html/images/defense-points.svg"
+      size: 4321
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "fad9c6b04a7846ee95bfb877e21df5bf46ceb790"
+    - filepath: "./data_sample/html/images/defense-flags.svg"
+      size: 3010
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "38b9bf80ef6fa4ac5be0f406a5aec3a1b5f0a5ba"
 

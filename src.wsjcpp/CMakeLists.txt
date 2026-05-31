@@ -113,8 +113,6 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sam
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_attack_svg_path70888b.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_points_svg_path7530d3.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_points_svg_path7530d3.cpp")
-list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defence_points_svg_pathc23046.h")
-list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defence_points_svg_pathc23046.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_trend_down_svg_pathda3c47.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_trend_down_svg_pathda3c47.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_trend_middle_svg_path78d20e.h")
@@ -129,8 +127,6 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sam
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_trend_up_svg_path025e92.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_round_time_svg_pathdfaa56.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_round_time_svg_pathdfaa56.cpp")
-list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defence_flags_svg_path368b55.h")
-list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defence_flags_svg_path368b55.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_states_coffeebreak_svg_path36db43.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_states_coffeebreak_svg_path36db43.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_states_shit_svg_path99ba8b.h")
@@ -235,5 +231,9 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sam
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_checker_example_service5_checker_py_path443fce.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_checker_example_service6_checker_py_path4dcf2e.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_checker_example_service6_checker_py_path4dcf2e.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defense_points_svg_path25f588.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defense_points_svg_path25f588.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defense_flags_svg_pathfb090b.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_defense_flags_svg_pathfb090b.cpp")
 
 

@@ -160,7 +160,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "        <p><div class=\"legend icon-attack\"><div class=\"activity-icon\"></div></div> - Total number of successful attacks</p>\n"
     "        <p><div class=\"legend icon-attack-points\"><div class=\"activity-icon\"></div></div> - The number of points received for a successful attack</p>\n"
     "        <p><div class=\"legend icon-defence-flags\"><div class=\"activity-icon\"></div></div> - Total number of successful defenses flags</p>\n"
-    "        <p><div class=\"legend icon-defence-points\"><div class=\"activity-icon\"></div></div> - Number of points for a successful defense</p>\n"
+    "        <p><div class=\"legend icon-defense-points\"><div class=\"activity-icon\"></div></div> - Number of points for a successful defense</p>\n"
     "        <p><div class=\"legend icon-first-blood\"><div class=\"activity-icon\"></div></div> - First Blood (who was the first to find a vulnerability and successfully exploit it)</p>\n"
     "        <p><div class=\"legend icon-sla\"><div class=\"activity-icon\"></div></div> - Service Level Agreement</p>\n"
     "        <p><div class=\"legend icon-round-time\"><div class=\"activity-icon\"></div></div> - Round time for flag planting</p>\n"
