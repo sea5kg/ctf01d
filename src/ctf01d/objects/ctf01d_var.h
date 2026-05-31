@@ -71,7 +71,7 @@ protected:
 class var_int : public ctf01d::var {
 public:
   var_int(const std::vector<std::string> &path_name, int default_value);
-  static std::shared_ptr<var_int> create(const std::vector<std::string> &path_name, int default_value);
+  static std::shared_ptr<var_int> create(const std::vector<std::string> &path_name, int default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   int default_value() const;
@@ -93,12 +93,12 @@ private:
 class var_string : public ctf01d::var {
 public:
   var_string(const std::vector<std::string> &path_name, const std::string &default_value);
-  static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value);
+  static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   std::string defaultValue() const;
   std::string value() const;
-  void setValue(const std::string &val);
+  void set_value(const std::string &val);
 
 private:
   std::string m_default_value;
@@ -109,7 +109,7 @@ private:
 class var_bool : public ctf01d::var {
 public:
   var_bool(const std::vector<std::string> &path_name, bool default_value);
-  static std::shared_ptr<var_bool> create(const std::vector<std::string> &path_name, bool default_value);
+  static std::shared_ptr<var_bool> create(const std::vector<std::string> &path_name, bool default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   bool default_value() const;
@@ -125,7 +125,28 @@ private:
 class var_dir : public ctf01d::var {
 public:
   var_dir(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir);
-  static std::shared_ptr<var_dir> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir);
+  static std::shared_ptr<var_dir> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
+  virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
+  virtual std::string to_string() override;
+  void set_root_dir(const std::string &val);
+  std::string default_value() const;
+  std::string value() const;
+  bool set_value(const std::string &val, std::string &err);
+
+private:
+  std::string to_absolute_path(const std::string &val);
+  std::string m_default;
+  std::string m_absolute_path_default;
+  bool m_value_init;
+  std::string m_value;
+  std::string m_absolute_path_value;
+  std::string m_root_dir;
+};
+
+class var_file : public ctf01d::var {
+public:
+  var_file(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir);
+  static std::shared_ptr<var_file> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   void set_root_dir(const std::string &val);
@@ -146,7 +167,7 @@ private:
 class var_datetime : public ctf01d::var {
 public:
   var_datetime(const std::vector<std::string> &path_name, const std::string &default_value);
-  static std::shared_ptr<var_datetime> create(const std::vector<std::string> &path_name, const std::string &default_value);
+  static std::shared_ptr<var_datetime> create(const std::vector<std::string> &path_name, const std::string &default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   std::string default_value() const;

@@ -41,16 +41,28 @@
 namespace ctf01d {
 
 service_config::service_config() {
-    TAG = "ctf01d::service_config";
-    m_nScriptWaitInSec = 10;
-    m_bEnabled = true;
-    m_round_in_seconds = ctf01d::var_int::create({"round_in_seconds"}, 15);
-    m_round_in_seconds->set_minimum(1);
-    m_vars.push_back(m_round_in_seconds);
-    // m_round_in_seconds->set_maximum(1);
+  TAG = "ctf01d::service_config";
+
+  m_id = ctf01d::var_string::create({"id"}, "", m_vars);
+  m_name = ctf01d::var_string::create({"service_name"}, "", m_vars);
+  m_enabled = ctf01d::var_bool::create({"enabled"}, true, m_vars);
+  m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars); // TODO var_file
+  m_big_logo = ctf01d::var_file::create({"big-logo"}, "", "", m_vars); // TODO var_file
+  m_script_path = ctf01d::var_string::create({"script_path"}, "", m_vars);
+  m_script_wait_in_sec = ctf01d::var_int::create({"script_wait_in_sec"}, 5, m_vars);
+  m_script_wait_in_sec->set_minimum(1);
+  m_round_in_seconds = ctf01d::var_int::create({"round_in_seconds"}, 15, m_vars);
+  m_round_in_seconds->set_minimum(1);
+  // m_round_in_seconds->set_maximum(1);
+
+  // not in the scope
+  m_script_dir = std::make_shared<ctf01d::var_dir>(std::vector<std::string>({"script_dir"}), "", "");
 }
 
-bool service_config::read(WsjcppYamlCursor &cursor, std::string &err) {
+bool service_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err) {
+  m_work_dir = work_dir;
+  m_logo->set_root_dir(m_work_dir);
+  m_big_logo->set_root_dir(m_work_dir);
   bool var_errors = false;
   for (int i = 0; i < m_vars.size(); ++i) {
     std::shared_ptr<ctf01d::var> var = m_vars[i];
@@ -65,66 +77,47 @@ bool service_config::read(WsjcppYamlCursor &cursor, std::string &err) {
   if (var_errors) {
     return false;
   }
-  if (m_round_in_seconds->value() < m_nScriptWaitInSec*3) {
+
+  if (m_enabled->value()) {
+    m_script_dir->set_root_dir(m_work_dir);
+    if (!m_script_dir->set_value("checker_" + m_id->value(), err)) {
+      return false;
+    }
+  }
+
+  if (m_round_in_seconds->value() < m_script_wait_in_sec->value()*3) {
     err = "";
     return false;
   }
   return true;
 }
 
-void service_config::setId(const std::string &sServiceID){
-    m_sID = sServiceID;
+std::string service_config::id() const {
+  return m_id->value();
 }
 
-const std::string &service_config::id() const {
-    return m_sID;
+std::string service_config::name() const {
+  return m_name->value();
 }
 
-void service_config::setName(const std::string &sName){
-    m_sName = sName;
+std::string service_config::scriptPath() const {
+  return m_script_path->value();
 }
 
-const std::string &service_config::name() const {
-    return m_sName;
-}
-
-void service_config::setScriptPath(const std::string &sScriptPath){
-    m_sScriptPath = sScriptPath;
-}
-
-const std::string &service_config::scriptPath() const {
-    return m_sScriptPath;
-}
-
-void service_config::setScriptDir(const std::string &sScriptDir) {
-    m_sScriptDir = sScriptDir;
-}
-
-const std::string &service_config::scriptDir() const {
-    return m_sScriptDir;
-}
-
-void service_config::setEnabled(bool bEnabled){
-    m_bEnabled = bEnabled;
+std::string service_config::scriptDir() const {
+  return m_script_dir->value();
 }
 
 bool service_config::isEnabled() const {
-    return m_bEnabled;
-}
-
-void service_config::setScriptWaitInSec(int nSec){
-    m_nScriptWaitInSec = nSec;
-    if(m_nScriptWaitInSec < 1){
-        m_nScriptWaitInSec = 10;
-    }
+  return m_enabled->value();
 }
 
 int service_config::scriptWaitInSec() const {
-    return m_nScriptWaitInSec;
+  return m_script_wait_in_sec->value();
 }
 
 int service_config::round_in_seconds() const {
-    return m_round_in_seconds->value();
+  return m_round_in_seconds->value();
 }
 
 } // namespace ctf01d

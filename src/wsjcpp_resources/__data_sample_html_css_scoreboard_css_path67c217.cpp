@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_css_scoreboard_css_path67c217::getPack
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_css_scoreboard_css_path67c217::getBufferSize() const {
-  return 20463;
+  return 20502;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() const {
-  static const std::string sRet = "" // size: 20463
+  static const std::string sRet = "" // size: 20502
     "@font-face {\n"
     "  font-family: 'DejaVuSans';\n"
     "  src: url('../font/DejaVuSans.ttf');\n"
@@ -35,7 +35,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "    color: #999;\n"
     "    padding: 0px;\n"
     "    margin: 0px;\n"
-    "    background-color: #202020;\n"
+    "    background-color: #1d1c20;\n"
     "    color: #aaa;\n"
     "    font-family: 'DejaVuSans';\n"
     "}\n"
@@ -89,7 +89,6 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "    padding-top: 40px;\n"
     "    height: 40px;\n"
     "}\n"
-    "\n"
     "\n"
     ".ctf01d-page-content {\n"
     "  display: none;\n"
@@ -149,7 +148,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  color: white;\n"
     "}\n"
     "\n"
-    ".team-ip{\n"
+    ".team-ip {\n"
     "	font-size: 10px;\n"
     "}\n"
     "\n"
@@ -170,6 +169,8 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  padding-top: 15px;\n"
     "  width: 100%;\n"
     "  white-space: nowrap;\n"
+    "  background: #202b3a;\n"
+    "  z-index: 998;\n"
     "}\n"
     "\n"
     ".tm {\n"

@@ -49,37 +49,27 @@ class service_config {
 public:
   service_config();
 
-  bool read(WsjcppYamlCursor &cursor, std::string &err);
-
-  void setId(const std::string &sServiceId);
-  const std::string &id() const;
-
-  void setName(const std::string &sName);
-  const std::string &name() const;
-
-  void setScriptPath(const std::string &sScriptPath);
-  const std::string &scriptPath() const;
-
-  void setScriptDir(const std::string &sScriptDir);
-  const std::string &scriptDir() const;
-
-  void setEnabled(bool bEnabled);
+  bool read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err);
+  std::string id() const;
+  std::string name() const;
+  std::string scriptPath() const;
+  std::string scriptDir() const;
   bool isEnabled() const;
-
-  void setScriptWaitInSec(int nSec);
   int scriptWaitInSec() const;
   int round_in_seconds() const;
 
 private:
   std::string TAG;
-  int m_nNum;
-  bool m_bEnabled;
-  int m_nScriptWaitInSec;
+  std::string m_work_dir;
+  std::shared_ptr<ctf01d::var_string> m_id;
+  std::shared_ptr<ctf01d::var_string> m_name;
+  std::shared_ptr<ctf01d::var_bool> m_enabled;
+  std::shared_ptr<ctf01d::var_file> m_logo;
+  std::shared_ptr<ctf01d::var_file> m_big_logo;
+  std::shared_ptr<ctf01d::var_int> m_script_wait_in_sec;
   std::shared_ptr<ctf01d::var_int> m_round_in_seconds;
-  std::string m_sID;
-  std::string m_sName;
-  std::string m_sScriptPath;
-  std::string m_sScriptDir;
+  std::shared_ptr<ctf01d::var_string> m_script_path;
+  std::shared_ptr<ctf01d::var_dir> m_script_dir;
   std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 };
 

@@ -20,6 +20,8 @@ checkers:
   - id: "example_service1" # work directory will be checker_example_service4
     service_name: "Service1"
     enabled: yes
+    logo: "./html/images/services/service1-default-icon.svg"
+    big-logo: "./html/images/services/service1-default-icon.svg"
     # host: 127.0.0.1
     # port: 10001
     script_path: "./checker.py"
@@ -28,30 +30,40 @@ checkers:
   - id: "example_service2" # work directory will be checker_example_service4
     service_name: "Service2"
     enabled: yes
+    logo: "./html/images/services/service2-default-icon.svg"
+    big-logo: "./html/images/services/service2-default-icon.svg"
     script_path: "./checker.py"
     script_wait_in_sec: 5
     round_in_seconds: 15
   - id: "example_service3" # work directory will be checker_example_service4
     service_name: "Service3"
     enabled: yes
+    logo: "./html/images/services/service3-default-icon.svg"
+    big-logo: "./html/images/services/service3-default-icon.svg"
     script_path: "./checker.py"
     script_wait_in_sec: 5
     round_in_seconds: 15
   - id: "example_service4" # work directory will be checker_example_service4
     service_name: "Service4"
     enabled: yes
+    logo: "./html/images/services/service4-default-icon.svg"
+    big-logo: "./html/images/services/service4-default-icon.svg"
     script_path: "./checker.py"
     script_wait_in_sec: 5
     round_in_seconds: 15
   - id: "example_service5" # work directory will be checker_example_service4
     service_name: "Service5"
     enabled: yes
+    logo: "./html/images/services/service5-default-icon.svg"
+    big-logo: "./html/images/services/service5-default-icon.svg"
     script_path: "./checker.py"
     script_wait_in_sec: 5
     round_in_seconds: 15
   - id: "example_service6" # work directory will be checker_example_service4
     service_name: "Service6"
-    enabled: yes
+    logo: "./html/images/services/service6-default-icon.svg"
+    big-logo: "./html/images/services/service6-default-icon.svg"
+    enabled: no
     script_path: "./checker.py"
     script_wait_in_sec: 5
     round_in_seconds: 15

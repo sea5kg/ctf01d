@@ -9,7 +9,7 @@ body {
     color: #999;
     padding: 0px;
     margin: 0px;
-    background-color: #202020;
+    background-color: #1d1c20;
     color: #aaa;
     font-family: 'DejaVuSans';
 }
@@ -63,7 +63,6 @@ body,html {
     padding-top: 40px;
     height: 40px;
 }
-
 
 .ctf01d-page-content {
   display: none;
@@ -123,7 +122,7 @@ button {
   color: white;
 }
 
-.team-ip{
+.team-ip {
 	font-size: 10px;
 }
 
@@ -144,6 +143,8 @@ button {
   padding-top: 15px;
   width: 100%;
   white-space: nowrap;
+  background: #202b3a;
+  z-index: 998;
 }
 
 .tm {

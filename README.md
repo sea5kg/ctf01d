@@ -285,6 +285,12 @@ $ ./ctf01d -work-dir ./data_sample/ clean
 
 *C source code as an amalgamation*
 
+**Icons**
+
+* [uxwing](https://uxwing.com)
+
 # SPECIAL THANKS
 
 * [Danil Dudkin](https://github.com/KeimaShikai)
+* [Igor Polyakov](https://github.com/hotorcelexo)
+

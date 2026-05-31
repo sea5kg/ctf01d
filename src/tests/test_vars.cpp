@@ -50,6 +50,8 @@ int main() {
     "\n" // empty line
   ;
 
+  std::vector<std::shared_ptr<ctf01d::var>> scope_vars;
+
   WsjcppYaml yaml;
   std::string err;
 
@@ -94,7 +96,7 @@ int main() {
 
   // string
   {
-    auto varGameId = ctf01d::var_string::create({"game", "id"}, "test");
+    auto varGameId = ctf01d::var_string::create({"game", "id"}, "test", scope_vars);
     if (varGameId->type() != ctf01d::var_type::STRING) {
       std::cerr << "FAILED: Expected string type" << std::endl;
       return -1;
@@ -107,7 +109,7 @@ int main() {
       std::cerr << "FAILED: Expected value 'test' but got " << varGameId->value() << "'" << std::endl;
       return -1;
     }
-    varGameId->setValue("hello");
+    varGameId->set_value("hello");
     if (varGameId->value() != "hello") {
       std::cerr << "FAILED: Expected value 'hello' but got " << varGameId->value() << "'" << std::endl;
       return -1;

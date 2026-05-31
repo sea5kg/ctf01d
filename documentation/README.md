@@ -10,6 +10,11 @@
 
 4. [For maintainers](FOR_MAINTAINERS.md)
 
-4. [Simular Software && Helpful Links](SIMULAR_SOFTWARE.md)
+5. [Similar Software && Helpful Links](SIMULAR_SOFTWARE.md)
 
-4. [Game Simulation - for a testing](GAME_SIMULATION.md)
+6. [Game Simulation - for a testing](GAME_SIMULATION.md)
+
+
+## Icons
+
+https://uxwing.com/computer-internet-connection-icon/

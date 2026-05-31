@@ -99,8 +99,14 @@ var_int::var_int(const std::vector<std::string> &path_name, int default_value)
 }
 
 // static
-std::shared_ptr<var_int> var_int::create(const std::vector<std::string> &path_name, int default_value) {
-  return std::make_shared<var_int>(path_name, default_value);
+std::shared_ptr<var_int> var_int::create(
+  const std::vector<std::string> &path_name,
+  int default_value,
+  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+) {
+  auto ret = std::make_shared<var_int>(path_name, default_value);
+  scope_vars.push_back(ret);
+  return ret;
 }
 
 bool var_int::read(WsjcppYamlCursor &cursor, std::string &err) {
@@ -158,21 +164,28 @@ var_string::var_string(const std::vector<std::string> &path_name, const std::str
 }
 
 // static
-std::shared_ptr<var_string> var_string::create(const std::vector<std::string> &path_name, const std::string &default_value) {
-  return std::make_shared<var_string>(path_name, default_value);
+std::shared_ptr<var_string> var_string::create(
+  const std::vector<std::string> &path_name,
+  const std::string &default_value,
+  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+) {
+  auto ret = std::make_shared<var_string>(path_name, default_value);
+  scope_vars.push_back(ret);
+  return ret;
 }
 
 bool var_string::read(WsjcppYamlCursor &cursor, std::string &err) {
   auto cur = cursor_by_path(cursor, err);
   if (cur.isValue()) {
-    setValue(cur.valStr());
+    set_value(cur.valStr());
     return true;
   }
+  err = "Not value for '" + name() + "'";
   return false;
 }
 
 std::string var_string::to_string() {
-  return "'" +  value() + "'";
+  return "'" + value() + "'";
 }
 
 std::string var_string::defaultValue() const {
@@ -183,7 +196,7 @@ std::string var_string::value() const {
   return m_value_init ? m_value : m_default_value;
 }
 
-void var_string::setValue(const std::string &val) {
+void var_string::set_value(const std::string &val) {
   m_value = val;
   m_value_init = true;
 }
@@ -197,8 +210,14 @@ var_bool::var_bool(const std::vector<std::string> &path_name, bool default_value
 }
 
 // static
-std::shared_ptr<var_bool> var_bool::create(const std::vector<std::string> &path_name, bool default_value) {
-  return std::make_shared<var_bool>(path_name, default_value);
+std::shared_ptr<var_bool> var_bool::create(
+  const std::vector<std::string> &path_name,
+  bool default_value,
+  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+) {
+  auto ret = std::make_shared<var_bool>(path_name, default_value);
+  scope_vars.push_back(ret);
+  return ret;
 }
 
 bool var_bool::read(WsjcppYamlCursor &cursor, std::string &err) {
@@ -237,8 +256,15 @@ var_dir::var_dir(const std::vector<std::string> &path_name, const std::string &d
 }
 
 // static
-std::shared_ptr<var_dir> var_dir::create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir) {
-  return std::make_shared<var_dir>(path_name, default_value, root_dir);
+std::shared_ptr<var_dir> var_dir::create(
+  const std::vector<std::string> &path_name,
+  const std::string &default_value,
+  const std::string &root_dir,
+  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+) {
+  auto ret = std::make_shared<var_dir>(path_name, default_value, root_dir);
+  scope_vars.push_back(ret);
+  return ret;
 }
 
 bool var_dir::read(WsjcppYamlCursor &cursor, std::string &err) {
@@ -291,6 +317,76 @@ std::string var_dir::to_absolute_path(const std::string &val) {
 
 
 // ---------------------------------------------------------------------
+// ctf01d::var_file
+
+var_file::var_file(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir)
+: ctf01d::var(path_name, ctf01d::var_type::STRING), m_value_init(false) {
+  m_root_dir = root_dir;
+  m_default = to_absolute_path(default_value);
+}
+
+// static
+std::shared_ptr<var_file> var_file::create(
+  const std::vector<std::string> &path_name,
+  const std::string &default_value,
+  const std::string &root_dir,
+  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+) {
+  auto ret = std::make_shared<var_file>(path_name, default_value, root_dir);
+  scope_vars.push_back(ret);
+  return ret;
+}
+
+bool var_file::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto cur = cursor_by_path(cursor, err);
+  if (cur.isValue()) {
+    return set_value(cur.valStr(), err);
+  }
+  err = "var_file: Not value for '" + name() + "'";
+  return false;
+}
+
+std::string var_file::to_string() {
+  return "'" +  value() + "'";
+}
+
+void var_file::set_root_dir(const std::string &val) {
+  m_root_dir = val;
+  m_absolute_path_value = to_absolute_path(m_value);
+  m_absolute_path_default = to_absolute_path(m_default);
+}
+
+std::string var_file::default_value() const {
+  return m_default;
+}
+
+std::string var_file::value() const {
+  return m_value_init ? m_absolute_path_value : m_absolute_path_default;
+}
+
+bool var_file::set_value(const std::string &val, std::string &err) {
+  std::string new_val = to_absolute_path(val);
+
+  if (!WsjcppCore::fileExists(new_val)) {
+    err = "File '" + new_val + "' does not exists";
+    WsjcppLog::err("var_file", err);
+    return false;
+  }
+  m_value = val;
+  m_absolute_path_value = new_val;
+  m_value_init = true;
+  return true;
+}
+
+std::string var_file::to_absolute_path(const std::string &val) {
+  std::string ret = val;
+  if (ret.size() > 0 && ret[0] != '/') {
+    ret = m_root_dir + "/" + ret;
+  }
+  return wsjcpp::normalizeFilePath(ret);
+}
+
+// ---------------------------------------------------------------------
 // ctf01d::var_datetime
 
 var_datetime::var_datetime(const std::vector<std::string> &path_name, const std::string &default_value)
@@ -300,8 +396,14 @@ var_datetime::var_datetime(const std::vector<std::string> &path_name, const std:
 }
 
 // static
-std::shared_ptr<var_datetime> var_datetime::create(const std::vector<std::string> &path_name, const std::string &default_value) {
-  return std::make_shared<var_datetime>(path_name, default_value);
+std::shared_ptr<var_datetime> var_datetime::create(
+  const std::vector<std::string> &path_name,
+  const std::string &default_value,
+  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+) {
+  auto ret = std::make_shared<var_datetime>(path_name, default_value);
+  scope_vars.push_back(ret);
+  return ret;
 }
 
 bool var_datetime::read(WsjcppYamlCursor &cursor, std::string &err) {

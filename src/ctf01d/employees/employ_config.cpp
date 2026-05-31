@@ -59,49 +59,33 @@ EmployConfig::EmployConfig()
   m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
 
   // game options
-  m_game_id = ctf01d::var_string::create({"game", "id"}, "test");
-  m_vars.push_back(m_game_id);
-
-  m_game_name = ctf01d::var_string::create({"game", "name"}, "Test");
-  m_vars.push_back(m_game_name);
+  m_game_id = ctf01d::var_string::create({"game", "id"}, "test", m_vars);
+  m_game_name = ctf01d::var_string::create({"game", "name"}, "Test", m_vars);
 
   m_bAppliedConfig = false;
-  m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60);
+  m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60, m_vars);
   m_flag_lifetime_in_seconds->set_minimum(1);
   m_flag_lifetime_in_seconds->set_maximum(MAX_FLAG_LIFETIME_SECONDS);
-  m_vars.push_back(m_flag_lifetime_in_seconds);
 
-  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
+  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100, m_vars);
   m_flag_cost_in_points->set_minimum(1);
   m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
-  m_vars.push_back(m_flag_cost_in_points);
 
-  m_game_start_utc = ctf01d::var_datetime::create({"game", "start_utc"}, "2023-11-12 16:00:00");
-  m_vars.push_back(m_game_start_utc);
-
-  m_game_end_utc = ctf01d::var_datetime::create({"game", "end_utc"}, "2030-11-12 22:00:00");
-  m_vars.push_back(m_game_end_utc);
-
-  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee_break_start"}, "2023-11-12 20:00:00");
-  m_vars.push_back(m_game_coffee_break_start_utc);
-
-  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee_break_end"}, "2023-11-12 21:00:00");
-  m_vars.push_back(m_game_coffee_break_end_utc);
+  m_game_start_utc = ctf01d::var_datetime::create({"game", "start_utc"}, "2023-11-12 16:00:00", m_vars);
+  m_game_end_utc = ctf01d::var_datetime::create({"game", "end_utc"}, "2030-11-12 22:00:00", m_vars);
+  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee_break_start"}, "2023-11-12 20:00:00", m_vars);
+  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee_break_end"}, "2023-11-12 21:00:00", m_vars);
 
   m_bHasCoffeeBreak = false;
 
   // scoreboard config
 
-  m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080);
+  m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080, m_vars);
   m_scoreboard_port->set_minimum(MIN_TCP_PORT);
   m_scoreboard_port->set_maximum(MAX_TCP_PORT);
-  m_vars.push_back(m_scoreboard_port);
 
-  m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false);
-  m_vars.push_back(m_scoreboard_random);
-
-  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "htmlfolder"}, "./html", m_sWorkDir);
-  m_vars.push_back(m_scoreboard_html_folder);
+  m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_vars);
+  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "htmlfolder"}, "./html", m_sWorkDir, m_vars);
 
   m_pScoreboard = nullptr;
 }
@@ -198,7 +182,7 @@ bool EmployConfig::applyConfig() {
     return false;
   }
 
-  if (!this->applyCheckersConf(yamlConfig)) {
+  if (!this->applyServicesConfig(yamlConfig)) {
     return false;
   }
 
@@ -450,7 +434,7 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
   return true;
 }
 
-bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
+bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
   m_vServicesConf.clear();
 
   WsjcppYamlCursor yamlCheckers = yamlConfig["checkers"];
@@ -462,87 +446,48 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
 
   for (int i = 0; i < yamlCheckers.size(); i++) {
     WsjcppYamlCursor yamlChecker = yamlCheckers[i];
-    std::string sServiceId = yamlChecker["id"].valStr();
-
-
-    // std::string sServiceConfPath = m_sWorkspaceDir + "/checker_" + sServiceId + "/service.conf";
-
-    std::string sServiceName = yamlChecker["service_name"].valStr();
-    WsjcppLog::info(TAG, "service_name = " + sServiceName);
-
-    bool bServiceEnable = yamlChecker["enabled"].valBool();
-    WsjcppLog::info(TAG, "enabled = " + std::string(bServiceEnable ? "yes" : "no"));
-
-    std::string sServiceScriptPath = yamlChecker["script_path"].valStr();
-    WsjcppLog::info(TAG, "script_path = " + sServiceScriptPath);
-    std::string sServiceScriptDir = m_sWorkDir + "/checker_" + sServiceId + "/";
-    if (!WsjcppCore::dirExists(sServiceScriptDir)) {
-      WsjcppLog::err(TAG, "Folder " + sServiceScriptDir + " did not exists");
-      return false;
-    }
-    // set write permissions for all to directory with checker
-    std::string sError;
-    if (!WsjcppCore::setFilePermissions(sServiceScriptDir, WsjcppFilePermissions(0x777), sError)) {
-      WsjcppLog::err(TAG, sError);
-      return false;
-    }
-
-    WsjcppLog::info(TAG, "sServiceScriptDir: " + sServiceScriptDir);
-    if (!WsjcppCore::fileExists(sServiceScriptDir + sServiceScriptPath)) {
-      WsjcppLog::err(TAG, "File " + sServiceScriptPath + " did not exists");
-      return false;
-    }
-    // set write permissions for all to script of checker
-    if (!WsjcppCore::setFilePermissions(sServiceScriptDir + sServiceScriptPath, WsjcppFilePermissions(0x777), sError)) {
-      WsjcppLog::err(TAG, sError);
-      return false;
-    }
-
-    int nServiceScriptWait = yamlChecker["script_wait_in_sec"].valInt();
-    WsjcppLog::info(TAG, "script_wait_in_sec = " + std::to_string(nServiceScriptWait));
-
-    if (nServiceScriptWait < 5) {
-      WsjcppLog::err(TAG, "Could not parse script_wait_in_sec - must be more than 4 sec ");
-      return false;
-    }
-
-    int nRoundInSeconds = yamlChecker["round_in_seconds"].valInt();
-    WsjcppLog::info(TAG, "round_in_seconds = " + std::to_string(nRoundInSeconds));
-
-    if (nRoundInSeconds < nServiceScriptWait*3) {
-      WsjcppLog::err(TAG, "Could not parse round_in_seconds - must be more than " + std::to_string(nServiceScriptWait*3-1) + " sec ");
-      return false;
-    }
-
-    if (!bServiceEnable) {
-      WsjcppLog::warn(TAG, "Checker for service " + sServiceId + " - disabled ");
-      continue;
-    }
-
-    for (unsigned int i = 0; i < m_vServicesConf.size(); i++) {
-      if (m_vServicesConf[i].id() == sServiceId) {
-        WsjcppLog::err(TAG, "Already registered checker for service " + sServiceId);
-        return false;
-      }
-    }
 
     // default values of service config
     ctf01d::service_config _serviceConf;
     std::string err;
 
-    _serviceConf.setId(sServiceId);
-    _serviceConf.setName(sServiceName);
-    _serviceConf.setScriptPath(sServiceScriptPath);
-    _serviceConf.setScriptDir(sServiceScriptDir);
-    _serviceConf.setEnabled(bServiceEnable);
-    _serviceConf.setScriptWaitInSec(nServiceScriptWait);
-    if (!_serviceConf.read(yamlChecker, err)) {
+    if (!_serviceConf.read(yamlChecker, m_sWorkDir, err)) {
       WsjcppLog::err(TAG, err);
       return false;
     }
+
+    if (!_serviceConf.isEnabled()) {
+      WsjcppLog::warn(TAG, "Checker for service " + _serviceConf.id() + " - disabled ");
+      continue;
+    }
+
+    for (unsigned int i = 0; i < m_vServicesConf.size(); i++) {
+      if (m_vServicesConf[i].id() == _serviceConf.id()) {
+        WsjcppLog::err(TAG, "Already registered checker for service '" + _serviceConf.id() + "'");
+        return false;
+      }
+    }
+
     m_vServicesConf.push_back(_serviceConf);
 
-    WsjcppLog::ok(TAG, "Registered checker for service " + sServiceId);
+    // set write permissions for all to directory with checker
+    if (!WsjcppCore::setFilePermissions(_serviceConf.scriptDir(), WsjcppFilePermissions(0x777), err)) {
+      WsjcppLog::err(TAG, err);
+      return false;
+    }
+
+    std::string script_absolute_path = wsjcpp::normalizeFilePath(_serviceConf.scriptDir() + "/" + _serviceConf.scriptPath());
+    if (!WsjcppCore::fileExists(script_absolute_path)) {
+      WsjcppLog::err(TAG, "File " + script_absolute_path + " did not exists");
+      return false;
+    }
+    // set write permissions for all to script of checker
+    if (!WsjcppCore::setFilePermissions(script_absolute_path, WsjcppFilePermissions(0x777), err)) {
+      WsjcppLog::err(TAG, err);
+      return false;
+    }
+
+    WsjcppLog::ok(TAG, "Registered checker for service " + _serviceConf.id());
   }
 
   if (m_vServicesConf.size() == 0) {

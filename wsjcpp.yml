@@ -70,10 +70,10 @@ resources:
       modified: 1779675622
       sha1: "888e571c3f5f5611c74d757392c11f5fddf608dc"
     - filepath: "./data_sample/config.yml"
-      size: 6840
+      size: 7595
       pack-as: "text"
-      modified: 1780233547
-      sha1: "27e7bbfe09abd0323fe9dd6c5abe925e0151fdc9"
+      modified: 1780247976
+      sha1: "ad59385d44c8adaf871df588afa912a3ee7c8ef7"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
       pack-as: "binary"
@@ -260,10 +260,10 @@ resources:
       modified: 1779675189
       sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
     - filepath: "./data_sample/html/css/scoreboard.css"
-      size: 20463
+      size: 20502
       pack-as: "text"
-      modified: 1780202780
-      sha1: "c56f6dca1f7f3bc22ab4f44b564717de663fd1ef"
+      modified: 1780249409
+      sha1: "9203a1d35a207df32d5d5f12a6139127fd0ef611"
     - filepath: "./data_sample/html/images/teams/team30.png"
       size: 6052
       pack-as: "binary"
@@ -529,4 +529,176 @@ resources:
       pack-as: "binary"
       modified: 1779675189
       sha1: "94bc90a0ba18eb99fa8f8e9830e7bf7bec347119"
+
+    - filepath: "./data_sample/html/images/services/service2-default-icon.svg"
+      size: 3302
+      pack-as: "binary"
+      modified: 1780249434
+      sha1: "d0231b4859ee540adcaa03126b084d7354811516"
+    - filepath: "./data_sample/html/images/services/service9-default-icon.svg"
+      size: 2061
+      pack-as: "binary"
+      modified: 1780247865
+      sha1: "0ed964259034288fe774ddeca48d8df887675d30"
+    - filepath: "./data_sample/html/images/services/service8-default-icon.svg"
+      size: 2435
+      pack-as: "binary"
+      modified: 1780247800
+      sha1: "b79d3e87c47a2f0f4c19c492086392f27ee51200"
+    - filepath: "./data_sample/html/images/services/service1-default-icon.svg"
+      size: 2896
+      pack-as: "binary"
+      modified: 1780249475
+      sha1: "31dcf284059ebbb91fd8f53c02776e54dc3d68e6"
+    - filepath: "./data_sample/html/images/services/service6-default-icon.svg"
+      size: 3886
+      pack-as: "binary"
+      modified: 1780247630
+      sha1: "b387842b0ade2d8cf59405e9c51e4f96a4f0654b"
+    - filepath: "./data_sample/html/images/services/service4-default-icon.svg"
+      size: 1900
+      pack-as: "binary"
+      modified: 1780247090
+      sha1: "e9342cecc26ebdd7010924559f421a5894a2c360"
+    - filepath: "./data_sample/html/images/services/service7-default-icon.svg"
+      size: 1221
+      pack-as: "binary"
+      modified: 1780247654
+      sha1: "93a3fbd422df1064298574b42b1f381c49dd9239"
+    - filepath: "./data_sample/html/images/services/service3-default-icon.svg"
+      size: 3741
+      pack-as: "binary"
+      modified: 1780249443
+      sha1: "55f4b69494595354f4373801b2f1db7e60e0ab3c"
+    - filepath: "./data_sample/html/images/services/service5-default-icon.svg"
+      size: 2219
+      pack-as: "binary"
+      modified: 1780247604
+      sha1: "dd610c58c547b5f5bb89e04763a38c6255da67ec"
+
+    - filepath: "./data_sample/html/images/services/service19-default-icon.svg"
+      size: 2494
+      pack-as: "binary"
+      modified: 1780248388
+      sha1: "24973408eaf7ec0944a6037ec5e7a638a1a7e3df"
+    - filepath: "./data_sample/html/images/services/service24-default-icon.svg"
+      size: 1259
+      pack-as: "binary"
+      modified: 1780248496
+      sha1: "d2d705c15e940cbce142988846407340d524b2fe"
+    - filepath: "./data_sample/html/images/services/service30-default-icon.svg"
+      size: 1106
+      pack-as: "binary"
+      modified: 1780248580
+      sha1: "78f9acd9b4672e4cdb12a97def083a072624989a"
+    - filepath: "./data_sample/html/images/services/service14-default-icon.svg"
+      size: 1104
+      pack-as: "binary"
+      modified: 1780248301
+      sha1: "34c0126ad94a929961712100c2f45fc87d6ecaeb"
+    - filepath: "./data_sample/html/images/services/service21-default-icon.svg"
+      size: 3227
+      pack-as: "binary"
+      modified: 1780248455
+      sha1: "1006b2e9078c378b6e280fbd81e6a4cb23e32179"
+    - filepath: "./data_sample/html/images/services/service26-default-icon.svg"
+      size: 7863
+      pack-as: "binary"
+      modified: 1780248522
+      sha1: "f1d9fd34f045dfc8335df6d56d064126e4a177e1"
+    - filepath: "./data_sample/html/images/services/service25-default-icon.svg"
+      size: 2095
+      pack-as: "binary"
+      modified: 1780248514
+      sha1: "65107631ea7008722bf543a39e8cd6b84890003d"
+    - filepath: "./data_sample/html/images/services/service34-default-icon.svg"
+      size: 1238
+      pack-as: "binary"
+      modified: 1780248760
+      sha1: "7b4e307a06e3fa77e1146277131cfa9bd9dd8c15"
+    - filepath: "./data_sample/html/images/services/service32-default-icon.svg"
+      size: 1833
+      pack-as: "binary"
+      modified: 1780248661
+      sha1: "8adfdcb57a3298308dc55b731e950ca109e9f993"
+    - filepath: "./data_sample/html/images/services/service31-default-icon.svg"
+      size: 1038
+      pack-as: "binary"
+      modified: 1780248624
+      sha1: "626714e03e9dc3ca9fb6774b4628177af94bae44"
+    - filepath: "./data_sample/html/images/services/service27-default-icon.svg"
+      size: 5579
+      pack-as: "binary"
+      modified: 1780248534
+      sha1: "912f8f484e82c3a400abf38d0042fe1034faf07d"
+    - filepath: "./data_sample/html/images/services/service13-default-icon.svg"
+      size: 6392
+      pack-as: "binary"
+      modified: 1780248281
+      sha1: "12010eebf5bb5d2865dd6ea2cef744efcee7ae93"
+    - filepath: "./data_sample/html/images/services/service18-default-icon.svg"
+      size: 2467
+      pack-as: "binary"
+      modified: 1780248372
+      sha1: "192469846cc570eea11deae1750ab80cc93c995a"
+    - filepath: "./data_sample/html/images/services/service29-default-icon.svg"
+      size: 1835
+      pack-as: "binary"
+      modified: 1780248568
+      sha1: "f04935923818d848ad6257cd7ef5ec081941c66d"
+    - filepath: "./data_sample/html/images/services/service11-default-icon.svg"
+      size: 3246
+      pack-as: "binary"
+      modified: 1780248248
+      sha1: "6304b3689de38c73a52e06ecf6c5aaf69022b8b8"
+    - filepath: "./data_sample/html/images/services/service16-default-icon.svg"
+      size: 993
+      pack-as: "binary"
+      modified: 1780248316
+      sha1: "c60150b1df6b8d40ad1f49105b1c1d72566eaf5a"
+    - filepath: "./data_sample/html/images/services/service17-default-icon.svg"
+      size: 1173
+      pack-as: "binary"
+      modified: 1780248742
+      sha1: "a70fa8cac17f59c0234cf00f71d52895c7c50a58"
+    - filepath: "./data_sample/html/images/services/service10-default-icon.svg"
+      size: 2670
+      pack-as: "binary"
+      modified: 1780248237
+      sha1: "cc66d6e80a0581428d6654ce04e4e900ff8b8f5b"
+    - filepath: "./data_sample/html/images/services/service20-default-icon.svg"
+      size: 1671
+      pack-as: "binary"
+      modified: 1780248431
+      sha1: "24d5859111c7aed97704f93e892b5992af296c44"
+    - filepath: "./data_sample/html/images/services/service22-default-icon.svg"
+      size: 3587
+      pack-as: "binary"
+      modified: 1780248466
+      sha1: "053441c107e53d876173f74942d4129f8a1ea34b"
+    - filepath: "./data_sample/html/images/services/service23-default-icon.svg"
+      size: 1414
+      pack-as: "binary"
+      modified: 1780248477
+      sha1: "631a8966c87a9257f823d7a6de3e00e2ab9c75b6"
+    - filepath: "./data_sample/html/images/services/service28-default-icon.svg"
+      size: 2302
+      pack-as: "binary"
+      modified: 1780248550
+      sha1: "562e35f984a336fdf0ed1bd3f7b393d8cd32fac5"
+    - filepath: "./data_sample/html/images/services/service15-default-icon.svg"
+      size: 1702
+      pack-as: "binary"
+      modified: 1780248309
+      sha1: "8204c864c8dee5e3614196d14bfa9ebd0b7880d9"
+    - filepath: "./data_sample/html/images/services/service12-default-icon.svg"
+      size: 5476
+      pack-as: "binary"
+      modified: 1780248272
+      sha1: "439ccbc8cbfebc3ac00180f4ab18afdbdfd970b0"
+    - filepath: "./data_sample/html/images/services/service33-default-icon.svg"
+      size: 4668
+      pack-as: "binary"
+      modified: 1780248682
+      sha1: "1bea2f800d5e3202cd5880ed64cec2a044509fa6"
 
