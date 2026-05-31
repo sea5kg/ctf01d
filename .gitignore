@@ -1,8 +1,4 @@
-jury.d/logs/*.log
-dckr_mysql/*
 __pycache__
-found_flags.json
-vulnbox/example_service1/flags/*
 game-simulation/vulnbox/service3_php/tmp/*
 *.log
 data_test/*
@@ -19,6 +15,8 @@ tmp/*
 /test-first-start
 /Dockerfile.build-environment
 /Dockerfile.release-environment
+/libpm/data/flags
+/libpm/res/flags
 
 # Prerequisites
 # *.d
