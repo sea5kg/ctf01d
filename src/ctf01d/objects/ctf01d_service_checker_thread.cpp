@@ -273,7 +273,7 @@ void service_checker_thread::run() {
     end = std::chrono::system_clock::now();
 
     int elapsed_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
-    int ms_sleep = m_serviceConf.timeSleepBetweenRunScriptsInSec()*1000;
+    int ms_sleep = m_serviceConf.round_in_seconds()*1000;
     WsjcppLog::info(TAG, "Elapsed milliseconds: " + std::to_string(elapsed_milliseconds) + "ms");
     std::this_thread::sleep_for(std::chrono::milliseconds(ms_sleep - elapsed_milliseconds));
   }

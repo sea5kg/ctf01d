@@ -505,11 +505,11 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
       return false;
     }
 
-    int nServiceSleepBetweenRun = yamlChecker["time_sleep_between_run_scripts_in_sec"].valInt();
-    WsjcppLog::info(TAG, "time_sleep_between_run_scripts_in_sec = " + std::to_string(nServiceSleepBetweenRun));
+    int nRoundInSeconds = yamlChecker["round_in_seconds"].valInt();
+    WsjcppLog::info(TAG, "round_in_seconds = " + std::to_string(nRoundInSeconds));
 
-    if (nServiceSleepBetweenRun < nServiceScriptWait*3) {
-      WsjcppLog::err(TAG, "Could not parse time_sleep_between_run_scripts_in_sec - must be more than " + std::to_string(nServiceScriptWait*3-1) + " sec ");
+    if (nRoundInSeconds < nServiceScriptWait*3) {
+      WsjcppLog::err(TAG, "Could not parse round_in_seconds - must be more than " + std::to_string(nServiceScriptWait*3-1) + " sec ");
       return false;
     }
 
@@ -533,7 +533,7 @@ bool EmployConfig::applyCheckersConf(WsjcppYaml &yamlConfig) {
     _serviceConf.setScriptDir(sServiceScriptDir);
     _serviceConf.setEnabled(bServiceEnable);
     _serviceConf.setScriptWaitInSec(nServiceScriptWait);
-    _serviceConf.setTimeSleepBetweenRunScriptsInSec(nServiceSleepBetweenRun);
+    _serviceConf.set_round_in_seconds(nRoundInSeconds);
     m_vServicesConf.push_back(_serviceConf);
 
     WsjcppLog::ok(TAG, "Registered checker for service " + sServiceId);

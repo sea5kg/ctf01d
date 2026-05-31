@@ -2,7 +2,7 @@
 
 ## Online Attack-Defense
 
-I have only one schmea now:
+I have only one schema now:
 
 ![schema1](./images/basic_schema_masquerade_openvpn.png)
 

@@ -40,7 +40,7 @@
 Ctf01dServiceDef::Ctf01dServiceDef(){
     m_nScriptWaitInSec = 10;
     m_bEnabled = true;
-    m_nTimeSleepBetweenRunScriptsInSec = 10;
+    m_round_in_seconds = 15;
 }
 
 void Ctf01dServiceDef::setId(const std::string &sServiceID){
@@ -94,13 +94,13 @@ int Ctf01dServiceDef::scriptWaitInSec() const {
     return m_nScriptWaitInSec;
 }
 
-void Ctf01dServiceDef::setTimeSleepBetweenRunScriptsInSec(int nSec){
-    m_nTimeSleepBetweenRunScriptsInSec = nSec;
-    if(m_nTimeSleepBetweenRunScriptsInSec < 1){
-        m_nTimeSleepBetweenRunScriptsInSec = 10;
+void Ctf01dServiceDef::set_round_in_seconds(int nSec){
+    m_round_in_seconds = nSec;
+    if(m_round_in_seconds < 1){
+        m_round_in_seconds = 10;
     }
 }
 
-int Ctf01dServiceDef::timeSleepBetweenRunScriptsInSec() const {
-    return m_nTimeSleepBetweenRunScriptsInSec;
+int Ctf01dServiceDef::round_in_seconds() const {
+    return m_round_in_seconds;
 }

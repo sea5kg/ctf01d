@@ -43,6 +43,8 @@ class Ctf01dServiceDef {
 public:
   Ctf01dServiceDef();
 
+  // bool read(WsjcppYaml &yaml, std::string &err);
+
   void setId(const std::string &sServiceId);
   const std::string &id() const;
 
@@ -61,14 +63,14 @@ public:
   void setScriptWaitInSec(int nSec);
   int scriptWaitInSec() const;
 
-  void setTimeSleepBetweenRunScriptsInSec(int nSec);
-  int timeSleepBetweenRunScriptsInSec() const;
+  void set_round_in_seconds(int nSec);
+  int round_in_seconds() const;
 
 private:
   int m_nNum;
   bool m_bEnabled;
   int m_nScriptWaitInSec;
-  int m_nTimeSleepBetweenRunScriptsInSec;
+  int m_round_in_seconds;
   std::string m_sID;
   std::string m_sName;
   std::string m_sScriptPath;

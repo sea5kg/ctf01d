@@ -220,7 +220,7 @@ class CommandMakeTestGame:
                 "    enabled: yes",
                 "    script_path: \"./checker.py\"",
                 "    script_wait_in_sec: 5",
-                "    time_sleep_between_run_scripts_in_sec: 15",
+                "    round_in_seconds: 15",
             ])
             _port = 4100 + service_i
             _readme.append("- Service" + str(service_i) + " port: " + str(_port))

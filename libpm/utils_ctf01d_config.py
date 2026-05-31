@@ -95,7 +95,7 @@ class UtilsCtf01dConfig:
                 # "port": 10001,
                 "script_path": "./checker.py",
                 "script_wait_in_sec": 5,
-                "time_sleep_between_run_scripts_in_sec": 15,
+                "round_in_seconds": 15,
             })
         return ret
 

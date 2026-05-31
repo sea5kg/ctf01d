@@ -157,7 +157,7 @@ void EmployWebServer::updateJsonCache() {
           nlohmann::json serviceInfo;
           serviceInfo["id"] = serviceConf.id();
           serviceInfo["name"] = serviceConf.name();
-          serviceInfo["round_time_in_sec"] = serviceConf.timeSleepBetweenRunScriptsInSec();
+          serviceInfo["round_time_in_sec"] = serviceConf.round_in_seconds();
           jsonGame["services"].push_back(serviceInfo);
       }
   }

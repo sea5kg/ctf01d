@@ -281,7 +281,7 @@ checkers:
     enabled: yes
     script_path: "./checker.py"
     script_wait_in_sec: 5 # max time for running script
-    time_sleep_between_run_scripts_in_sec: 15 # like a round for service
+    round_in_seconds: 15
 ```
 where "service_ZxjQMahnoK" is a UNIQUE id within the game config
 

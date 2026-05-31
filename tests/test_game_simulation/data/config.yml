@@ -37,25 +37,25 @@ checkers:
     enabled: yes
     script_path: "./checker.py"
     script_wait_in_sec: 5 # max time for running script
-    time_sleep_between_run_scripts_in_sec: 15 # like a round for service
+    round_in_seconds: 15 # like a round for service
   - id: "service2_go"
     service_name: "Golang"
     enabled: yes
     script_path: "./checker.py"
     script_wait_in_sec: 5
-    time_sleep_between_run_scripts_in_sec: 15
+    round_in_seconds: 15
   - id: "service3_php"
     service_name: "PHP"
     enabled: yes
     script_path: "./checker.py"
     script_wait_in_sec: 5
-    time_sleep_between_run_scripts_in_sec: 15
+    round_in_seconds: 15
   - id: "service4_cpp" # work directory will be checker_example_service4
     service_name: "C++"
     enabled: yes
     script_path: "./checker.py"
     script_wait_in_sec: 5
-    time_sleep_between_run_scripts_in_sec: 15
+    round_in_seconds: 15
 
 teams:
   - id: "team1"
