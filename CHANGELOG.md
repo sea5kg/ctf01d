@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [v0.6.2] - (2026 ?? ??)
 
 - Fixed #84: Added /api/v1/game/current-time
+- Fixed #67: m_nFlagLifeTimeInMin changed to seconds
+- Moved and renamed some source files to src/ctf01d
+- Added background for status up and down
+- Fixed #85: Add optionality disable animation.
+- Renamed class 'firstblood' to first-blood. Removed previous implementation first blood
+- Renamed defence -> defense in html
+- Add team slider overlay to scoreboard
+- Fixed readonly for tooltip
+- Removed examples and added documentation
+- Fixed #84: Added /api/v1/game/current-time
 
 
 ## [v0.6.1] - (2026 May 30)
