@@ -36,7 +36,7 @@
  ***********************************************************************************/
 
 #include <wsjcpp_core.h>
-#include "service_checker_thread.h"
+#include "ctf01d/objects/ctf01d_service_checker_thread.h"
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/employees/employ_web_server.h"
 
@@ -204,7 +204,7 @@ int main(int argc, const char* argv[]) {
     WsjcppLog::info(TAG, "Restoring states from storage...");
     pEmployConfig->scoreboard()->initStateFromStorage();
     WsjcppLog::ok(TAG, "Restored state from storage.");
-    std::vector<ServiceCheckerThread *> vThreads;
+    std::vector<ctf01d::service_checker_thread *> vThreads;
     WsjcppLog::info(TAG, "Starting threads...");
     for (unsigned int iservice = 0; iservice < pEmployConfig->servicesConf().size(); iservice++) {
       for (unsigned int i_team = 0; i_team < pEmployConfig->teamsConf().size(); i_team++) {
@@ -215,7 +215,7 @@ int main(int argc, const char* argv[]) {
         pEmployConfig->scoreboard()->setServiceStatus(teamConf.getId(), serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
         // pConfig->scoreboard()->setTeamTries();
 
-        ServiceCheckerThread *thr = new ServiceCheckerThread(teamConf, serviceConf);
+        ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(teamConf, serviceConf);
         thr->start();
         vThreads.push_back(thr);
       }

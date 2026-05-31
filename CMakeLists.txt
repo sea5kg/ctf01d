@@ -68,7 +68,6 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_web
 
 # checker
 list (APPEND WSJCPP_SOURCES "src/checker/dorunchecker.cpp")
-list (APPEND WSJCPP_SOURCES "src/checker/service_checker_thread.cpp")
 
 # objects
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_database_file.cpp")
@@ -77,6 +76,7 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_flag.
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_var.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_formulas_for_points.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_scoreboard.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_service_checker_thread.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_service_def.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_service_statistics.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_service_status_cell.cpp")
