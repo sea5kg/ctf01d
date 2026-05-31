@@ -8,8 +8,8 @@ game:
   end: "2030-09-06 13:00:00" # end time of game (UTC)
   coffee_break_start: "2020-10-04 10:30:00" # start time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
   coffee_break_end: "2021-01-04 10:30:00" # end time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
-  flag_lifetime_in_min: 1 # you can change flag time live (in minutes)
-  basic_costs_stolen_flag_in_points: 10 # basic costs stolen (attack) flag in points for adaptive scoreboard
+  flag_lifetime_in_seconds: 60 # you can change flag time live (in minutes)
+  flag_cost_in_points: 10 # basic costs stolen (attack) flag in points for adaptive scoreboard
 
 server:
   # use storage which storage will be used, now possible values:

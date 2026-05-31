@@ -66,10 +66,10 @@ EmployConfig::EmployConfig()
   m_vars.push_back(m_game_name);
 
   m_bAppliedConfig = false;
-  m_flag_lifetime_in_min = ctf01d::var_int::create({"game", "flag_lifetime_in_min"}, 10);
-  m_flag_lifetime_in_min->set_minimum(1);
-  m_flag_lifetime_in_min->set_maximum(MAX_FLAG_LIFETIME_MINUTES);
-  m_vars.push_back(m_flag_lifetime_in_min);
+  m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60);
+  m_flag_lifetime_in_seconds->set_minimum(1);
+  m_flag_lifetime_in_seconds->set_maximum(MAX_FLAG_LIFETIME_SECONDS);
+  m_vars.push_back(m_flag_lifetime_in_seconds);
 
   m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100);
   m_flag_cost_in_points->set_minimum(1);
@@ -246,8 +246,8 @@ std::string EmployConfig::gameName() const  {
   return m_game_name->value();
 }
 
-int EmployConfig::flagTimeliveInMin() const  {
-  return m_flag_lifetime_in_min->value();
+int EmployConfig::flagLifetimeInSeconds() const  {
+  return m_flag_lifetime_in_seconds->value();
 }
 
 std::shared_ptr<ctf01d::var_int> EmployConfig::get_flag_cost_in_points() const {

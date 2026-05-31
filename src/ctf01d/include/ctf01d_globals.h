@@ -37,7 +37,7 @@
 
 #pragma once
 
-static int MAX_FLAG_LIFETIME_MINUTES = 25;
+static int MAX_FLAG_LIFETIME_SECONDS = 1500;
 static int MAX_FLAG_COST_IN_POINTS = 1000;
 static int MIN_TCP_PORT = 11;
 static int MAX_TCP_PORT = 65535;

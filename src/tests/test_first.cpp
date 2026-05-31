@@ -41,7 +41,7 @@
 #include "ctf01d/employees/employ_flags.h"
 
 int main() {
-    int nTimeFlagLifeInMin = 1;
+    int flag_lifetime_in_seconds = 60;
     std::string sTeamId = "team1";
     std::string sServiceId = "service1";
 
@@ -52,7 +52,7 @@ int main() {
     std::cout << "nGameStartUTCInSec=" << nGameStartUTCInSec << std::endl;
 
     Ctf01dFlag flag;
-    flag.generateRandomFlag(nTimeFlagLifeInMin, sTeamId, sServiceId, nGameStartUTCInSec);
+    flag.generateRandomFlag(flag_lifetime_in_seconds, sTeamId, sServiceId, nGameStartUTCInSec);
 
     if (flag.getTeamId() != sTeamId) {
         std::cerr << "Unexpected team1" << std::endl;
@@ -66,7 +66,7 @@ int main() {
 
     long nFlagLifeTimeInMs = flag.getTimeEndInMs() - flag.getTimeStartInMs();
 
-    if (nFlagLifeTimeInMs != nTimeFlagLifeInMin*60*1000) {
+    if (nFlagLifeTimeInMs != flag_lifetime_in_seconds*1000) {
         std::cerr << "flag life time 1" << std::endl;
         return 3;
     }
@@ -74,7 +74,7 @@ int main() {
     sTeamId = "team2";
     flag.setTeamId(sTeamId);
     if (flag.getTeamId() != sTeamId) {
-        std::cerr << "Unexpected teamid 2" << std::endl;
+        std::cerr << "Unexpected team-id 2" << std::endl;
         return 4;
     }
 

@@ -4,11 +4,11 @@
 game:
   id: "test" # uniq gameid must be regexp [a-z0-9]+
   name: "Test First Game" # visible game name in scoreboard
-  start_utc: "2023-11-12 16:00:00"
+  start_utc: "2025-11-12 16:00:00"
   end_utc: "2030-11-12 22:00:00"
-  coffee_break_start: "2023-11-12 20:00:00"
-  coffee_break_end: "2023-11-12 21:00:00"
-  flag_lifetime_in_min: 1 # you can change flag time live (in minutes)
+  coffee_break_start: "2025-11-12 20:00:00"
+  coffee_break_end: "2025-11-12 21:00:00"
+  flag_lifetime_in_seconds: 60
   flag_cost_in_points: 100 # use a real number
 
 scoreboard:

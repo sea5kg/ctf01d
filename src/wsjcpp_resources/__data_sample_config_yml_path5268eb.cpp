@@ -34,7 +34,7 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "  end_utc: \"2030-11-12 22:00:00\"\n"
     "  coffee_break_start: \"2023-11-12 20:00:00\"\n"
     "  coffee_break_end: \"2023-11-12 21:00:00\"\n"
-    "  flag_lifetime_in_min: 1 # you can change flag time live (in minutes)\n"
+    "  flag_lifetime_in_seconds: 60\n"
     "  flag_cost_in_points: 100 # use a real number\n"
     "\n"
     "scoreboard:\n"

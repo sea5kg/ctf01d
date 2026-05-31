@@ -186,23 +186,23 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
 
 ### 1. Basic
 
-flag_lifetime_in_min:
-  - EN: flag lifetime (default: 1 minutes, but not more then 25 minutes)
-  - RU: время жизни флага (по-умолчанию: 1 минута, но не более 25 минут)
+flag_lifetime_in_seconds:
+  - EN: flag lifetime (by default: 60 seconds, but not more then 1500 seconds)
+  - RU: время жизни флага (по умолчанию: 60 секунд, но не более 1500 секунд)
 
-basic_costs_stolen_flag_in_points:
-  - EN: Basic cost of stolen flag (default: 1 point)
-  - RU: Базовая стоимость украденного флага (по умолчанию: 1 поинт)
+flag_cost_in_points:
+  - EN: Basic cost of stolen flag (by default: 100 point)
+  - RU: Базовая стоимость украденного флага (по умолчанию: 100 поинт)
 
-### 2. Acception of the defence flag / Принятие флага защиты
+### 2. Acception of the defense flag / Принятие флага защиты
 
 EN:
 
-Only the defence flag from the service is counted if:
+Only the defense flag from the service is counted if:
 - the flag was successfully put into the service
 - the flag existed in the service throughout its lifetime
 - the flag was not stolen by other team(s)
-- the cost of the defences flag is fixed and equal to 1.0 points
+- the cost of the defenses flag is fixed and equal to 1.0 points
 
 RU:
 
@@ -241,16 +241,16 @@ basic_flag_points = 1.0
 motivation = 1.0
 if victim_place_in_scoreboard > thief_place_in_scoreboard:
     motivation -= (victim_place_in_scoreboard - thief_place_in_scoreboard) / (m_nTeamCount - 1);
-attack_points_by_servece1 = basic_flag_points * motivation
+attack_points_by_service1 = basic_flag_points * motivation
 ```
 
 Team points are counted as:
 
 ```
-team_points = team_points + SLA_1 * (service1_defence_points + service1_attack_points)
-team_points = team_points + SLA_2 * (service2_defence_points + service2_attack_points)
+team_points = team_points + SLA_1 * (service1_defense_points + service1_attack_points)
+team_points = team_points + SLA_2 * (service2_defense_points + service2_attack_points)
 ...
-team_points = team_points + SLA_N * (serviceN_defence_points + serviceN_attack_points)
+team_points = team_points + SLA_N * (serviceN_defense_points + serviceN_attack_points)
 ```
 
 ### Download and basic configuration

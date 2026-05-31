@@ -54,9 +54,9 @@ Ctf01dFlag::Ctf01dFlag() {
   m_nTimeEndInMs = 0;
 }
 
-void Ctf01dFlag::generateRandomFlag(int nTimeFlagLifeInMin, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec) {
+void Ctf01dFlag::generateRandomFlag(int nFlagLifetimeInSeconds, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec) {
   long nTimeStartInMs = WsjcppCore::getCurrentTimeInMilliseconds();
-  long nTimeEndInMs = nTimeStartInMs + nTimeFlagLifeInMin*60*1000;
+  long nTimeEndInMs = nTimeStartInMs + nFlagLifetimeInSeconds*1000;
   setTimeStartInMs(nTimeStartInMs);
   setTimeEndInMs(nTimeEndInMs);
 

@@ -42,7 +42,7 @@
 class Ctf01dFlag {
 public:
   Ctf01dFlag();
-  void generateRandomFlag(int nTimeFlagLifeInMin, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec);
+  void generateRandomFlag(int nFlagLifetimeInSeconds, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec);
 
   void generateId();
   void setId(const std::string &sId);

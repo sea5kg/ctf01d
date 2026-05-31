@@ -57,7 +57,7 @@ class UtilsCtf01dConfig:
                 "end_utc": "2030-11-12 22:00:00",
                 "coffee_break_start_utc": "2023-11-12 20:00:00",
                 "coffee_break_end_utc": "2023-11-12 21:00:00",
-                "flag_lifetime_in_min": 1,
+                "flag_lifetime_in_seconds": 1,
                 "basic_costs_stolen_flag_in_points": 1,
                 "cost_defense_flag_in_points": 1.0,
             },

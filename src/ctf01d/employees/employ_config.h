@@ -71,7 +71,7 @@ public:
   // game configuration
   std::string gameId() const;
   std::string gameName() const;
-  int flagTimeliveInMin() const;
+  int flagLifetimeInSeconds() const;
   std::shared_ptr<ctf01d::var_int> get_flag_cost_in_points() const;
   int gameStartUTCInSec() const;
   int gameEndUTCInSec() const;
@@ -107,7 +107,7 @@ private:
   std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 
   // game config
-  std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_min;
+  std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_seconds;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   std::shared_ptr<ctf01d::var_string> m_game_id;
   std::shared_ptr<ctf01d::var_string> m_game_name;

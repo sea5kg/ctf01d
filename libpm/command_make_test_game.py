@@ -199,7 +199,7 @@ class CommandMakeTestGame:
             "  end_utc: \"2030-11-12 22:00:00\"",
             "  coffee_break_start: \"2023-11-12 20:00:00\"",
             "  coffee_break_end: \"2023-11-12 21:00:00\"",
-            "  flag_lifetime_in_min: 1",
+            "  flag_lifetime_in_seconds: 1",
             "  flag_cost_in_points: 100",
             "",
             "scoreboard:",

@@ -203,10 +203,10 @@ void service_checker_thread::run() {
 
     // If there is more time left before the end of the game than the life of the flag,
     // then we establish a flag
-    if (nCurrentTime < (m_pConfig->gameEndUTCInSec() - m_pConfig->flagTimeliveInMin()*60)) {
+    if (nCurrentTime < (m_pConfig->gameEndUTCInSec() - m_pConfig->flagLifetimeInSeconds())) {
       Ctf01dFlag flag;
       flag.generateRandomFlag(
-        m_pConfig->flagTimeliveInMin(),
+        m_pConfig->flagLifetimeInSeconds(),
         m_teamConf.getId(),
         m_serviceConf.id(),
         nGameStartUTCInSec
