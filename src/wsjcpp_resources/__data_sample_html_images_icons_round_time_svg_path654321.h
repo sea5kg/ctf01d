@@ -2,7 +2,7 @@
 
 #include <wsjcpp_core.h>
 
-class RES___data_sample_html_images_states_coffeebreak_svg_path36db43 : public WsjcppResourceFile {
+class RES___data_sample_html_images_icons_round_time_svg_path654321 : public WsjcppResourceFile {
 public:
   virtual const std::string &getFilename() const override;
   virtual const std::string &getPackAs() const override;

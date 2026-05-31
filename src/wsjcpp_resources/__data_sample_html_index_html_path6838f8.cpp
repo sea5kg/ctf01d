@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_index_html_path6838f8::getPackAs() con
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_index_html_path6838f8::getBufferSize() const {
-  return 9077;
+  return 9084;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
-  static const std::string sRet = "" // size: 9077
+  static const std::string sRet = "" // size: 9084
     "<!DOCTYPE html>\n"
     "<html>\n"
     "<head>\n"
@@ -154,7 +154,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "        <p><div class=\"legend service-status corrupt\"></div> - service is corrupt</p>\n"
     "        <p><div class=\"legend service-status shit\"></div> - checker is shit (developer of checker for service must fix this)</p>\n"
     "        <p><div class=\"legend service-status wait\"></div> - Waiting start game</p>\n"
-    "        <p><div class=\"legend service-status coffeebreak\"></div> - Coffeebreak</p>\n"
+    "        <p><div class=\"legend service-status coffee-break\"></div> - Coffeebreak</p>\n"
     "        <p><div class=\"legend activity\"><div class=\"activity-icon\"></div></div> - activities (how much try send flags by team)</p>\n"
     "\n"
     "        <p><div class=\"legend icon-attack\"><div class=\"activity-icon\"></div></div> - Total number of successful attacks</p>\n"
@@ -170,7 +170,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "    <div class=\"ctf01d-blockinfo\">\n"
     "      <div class=\"ctf01d-blockinfo-header\">About ctf01d</div>\n"
     "      <div class=\"ctf01d-blockinfo-content\">\n"
-    "        <img src=\"./images/logo.png\"/>\n"
+    "        <img src=\"./images/icons/logo.png\"/>\n"
     "        <br>\n"
     "        <br>\n"
     "        Repository: <a target=\"_blank\" href=\"https://github.com/sea-kg/ctf01d/issues\">https://github.com/sea-kg/ctf01d/issues</a>\n"

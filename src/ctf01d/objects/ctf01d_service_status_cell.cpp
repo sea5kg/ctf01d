@@ -44,7 +44,7 @@ const std::string Ctf01dServiceStatusCell::SERVICE_MUMBLE = "mumble";
 const std::string Ctf01dServiceStatusCell::SERVICE_CORRUPT = "corrupt";
 const std::string Ctf01dServiceStatusCell::SERVICE_SHIT = "shit";
 const std::string Ctf01dServiceStatusCell::SERVICE_WAIT = "wait";
-const std::string Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK = "coffeebreak";
+const std::string Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK = "coffee-break";
 
 Ctf01dServiceStatusCell::Ctf01dServiceStatusCell(const std::string &sServiceId) {
   m_nUpPointTimeInSec = WsjcppCore::getCurrentTimeInSeconds();

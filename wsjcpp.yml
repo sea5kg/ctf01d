@@ -194,72 +194,17 @@ resources:
       pack-as: "text"
       modified: 1743318287
       sha1: "7726bf6746d80d7ac2c2726d0415487461dfb19c"
-    - filepath: "./data_sample/html/images/logo.png"
-      size: 38137
-      pack-as: "binary"
-      modified: 1779675189
-      sha1: "94bc90a0ba18eb99fa8f8e9830e7bf7bec347119"
     - filepath: "./data_sample/html/index.html"
-      size: 9077
+      size: 9084
       pack-as: "text"
-      modified: 1780159826
-      sha1: "58bd8be6eca71196b17d7354357bea8f78cf9f74"
+      modified: 1780202101
+      sha1: "b18e79f9145ec0581b7253946d114436db0cd230"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 38738
+      size: 38739
       pack-as: "text"
-      modified: 1780161720
-      sha1: "6b0e8dcc7736f4a1133b2358e23454010b00ff75"
-    - filepath: "./data_sample/html/images/first-blood.svg"
-      size: 3653
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "23586917ff26fed596cf9dc791295a2621b6f2da"
-    - filepath: "./data_sample/html/images/attack.svg"
-      size: 2877
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "09bbff9a684e7a4da9392c84e41d33d1f628e063"
-    - filepath: "./data_sample/html/images/points.svg"
-      size: 2979
-      pack-as: "text"
-      modified: 1743318287
-      sha1: "3e21fa62f2d7db8faa5989bb0c6e1675f2b6f04f"
-    - filepath: "./data_sample/html/images/trend-down.svg"
-      size: 2357
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "da911e610419836e4b60ac1ccf00d55e67e476b3"
-    - filepath: "./data_sample/html/images/trend-middle.svg"
-      size: 2286
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "e322f761583f497a1b10eb5bb6c14f7b34384a56"
-    - filepath: "./data_sample/html/images/attack-points.svg"
-      size: 4294
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "efa213828889e667f4d9dad81b07b01ae7a11f04"
-    - filepath: "./data_sample/html/images/activity.svg"
-      size: 4918
-      pack-as: "text"
-      modified: 1743318287
-      sha1: "ca5dd1067da744bdb6631753ed61c680f4ccd6fc"
-    - filepath: "./data_sample/html/images/sla.svg"
-      size: 2564
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "31935152ea2e051610848d132d349324b6690d85"
-    - filepath: "./data_sample/html/images/trend-up.svg"
-      size: 2359
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "d2d760e6bd7b0dc7eff057f9b77a00d6d2f9f52b"
-    - filepath: "./data_sample/html/images/round-time.svg"
-      size: 7251
-      pack-as: "text"
-      modified: 1779675189
-      sha1: "c67e17c6da9c13673894dc9a1795c201a110b9bf"
-    - filepath: "./data_sample/html/images/states/coffeebreak.svg"
+      modified: 1780202092
+      sha1: "700b34fbbe5fb0bdb608bc9c547e0000095cd064"
+    - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"
       modified: 1743318287
@@ -315,10 +260,10 @@ resources:
       modified: 1779675189
       sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
     - filepath: "./data_sample/html/css/scoreboard.css"
-      size: 20311
+      size: 20463
       pack-as: "text"
-      modified: 1780163131
-      sha1: "fefd0f7849bbe7e010a68d40dcfcc0bcb4a69386"
+      modified: 1780202780
+      sha1: "c56f6dca1f7f3bc22ab4f44b564717de663fd1ef"
     - filepath: "./data_sample/html/images/teams/team30.png"
       size: 6052
       pack-as: "binary"
@@ -369,11 +314,6 @@ resources:
       pack-as: "binary"
       modified: 1779675189
       sha1: "cd35d14634e5ca97ac5162ffee14399f6a0f3091"
-    - filepath: "./data_sample/html/images/details.svg"
-      size: 7007
-      pack-as: "binary"
-      modified: 1779675189
-      sha1: "24aa81f99e1227810fca3d3293ea5cfde1667009"
     - filepath: "./data_sample/html/font/LICENSE"
       size: 8816
       pack-as: "binary"
@@ -519,14 +459,74 @@ resources:
       pack-as: "binary"
       modified: 1779675622
       sha1: "ba988adef1e1598a708d4ab5faa851812b4e8d74"
-    - filepath: "./data_sample/html/images/defense-points.svg"
-      size: 4321
+    - filepath: "./data_sample/html/images/icons/first-blood.svg"
+      size: 3653
       pack-as: "binary"
       modified: 1779675189
-      sha1: "fad9c6b04a7846ee95bfb877e21df5bf46ceb790"
-    - filepath: "./data_sample/html/images/defense-flags.svg"
+      sha1: "23586917ff26fed596cf9dc791295a2621b6f2da"
+    - filepath: "./data_sample/html/images/icons/attack.svg"
+      size: 2877
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "09bbff9a684e7a4da9392c84e41d33d1f628e063"
+    - filepath: "./data_sample/html/images/icons/points.svg"
+      size: 2979
+      pack-as: "binary"
+      modified: 1743318287
+      sha1: "3e21fa62f2d7db8faa5989bb0c6e1675f2b6f04f"
+    - filepath: "./data_sample/html/images/icons/trend-down.svg"
+      size: 2357
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "da911e610419836e4b60ac1ccf00d55e67e476b3"
+    - filepath: "./data_sample/html/images/icons/trend-middle.svg"
+      size: 2286
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "e322f761583f497a1b10eb5bb6c14f7b34384a56"
+    - filepath: "./data_sample/html/images/icons/defense-flags.svg"
       size: 3010
       pack-as: "binary"
       modified: 1779675189
       sha1: "38b9bf80ef6fa4ac5be0f406a5aec3a1b5f0a5ba"
+    - filepath: "./data_sample/html/images/icons/attack-points.svg"
+      size: 4294
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "efa213828889e667f4d9dad81b07b01ae7a11f04"
+    - filepath: "./data_sample/html/images/icons/activity.svg"
+      size: 4918
+      pack-as: "binary"
+      modified: 1743318287
+      sha1: "ca5dd1067da744bdb6631753ed61c680f4ccd6fc"
+    - filepath: "./data_sample/html/images/icons/details.svg"
+      size: 7007
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "24aa81f99e1227810fca3d3293ea5cfde1667009"
+    - filepath: "./data_sample/html/images/icons/sla.svg"
+      size: 2564
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "31935152ea2e051610848d132d349324b6690d85"
+    - filepath: "./data_sample/html/images/icons/trend-up.svg"
+      size: 2359
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "d2d760e6bd7b0dc7eff057f9b77a00d6d2f9f52b"
+    - filepath: "./data_sample/html/images/icons/defense-points.svg"
+      size: 4321
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "fad9c6b04a7846ee95bfb877e21df5bf46ceb790"
+    - filepath: "./data_sample/html/images/icons/round-time.svg"
+      size: 7251
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "c67e17c6da9c13673894dc9a1795c201a110b9bf"
+    - filepath: "./data_sample/html/images/icons/logo.png"
+      size: 38137
+      pack-as: "binary"
+      modified: 1779675189
+      sha1: "94bc90a0ba18eb99fa8f8e9830e7bf7bec347119"
 

@@ -26,7 +26,7 @@ body,html {
   cursor: pointer;
   width: 50px;
   height: 50px;
-  background-image: url("../images/details.svg");
+  background-image: url("../images/icons/details.svg");
   background-position: 0px 0px;
   background-size: 100% 100%;
   z-index: 100000;
@@ -243,7 +243,7 @@ img.team-logo {
 .score .hdr-text {
   display: inline-block;
   height: 50px;
-  background-image: url("../images/points.svg");
+  background-image: url("../images/icons/points.svg");
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: bottom;
@@ -325,21 +325,21 @@ img.team-logo {
 }
 
 .points-trend.trend-up {
-  background-image: url("../images/trend-up.svg");
+  background-image: url("../images/icons/trend-up.svg");
 }
 
 .points-trend.trend-down {
-  background-image: url("../images/trend-down.svg");
+  background-image: url("../images/icons/trend-down.svg");
 }
 
 .points-trend.trend-middle {
-  background-image: url("../images/trend-middle.svg");
+  background-image: url("../images/icons/trend-middle.svg");
 }
 
 .points {
   display: inline-block;
   height: 20px;
-  background-image: url("../images/points.svg");
+  background-image: url("../images/icons/points.svg");
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: right;
@@ -435,7 +435,7 @@ img.team-logo {
 
 .activity .activity-icon {
   display: inline-block;
-  background-image: url(../images/activity.svg);
+  background-image: url(../images/icons/activity.svg);
   background-repeat: no-repeat;
   background-position: center center;
   background-size: 100% 100%;
@@ -482,8 +482,8 @@ img.team-logo {
 	background-image: url("../images/states/wait.svg");
 }
 
-.service-status.coffeebreak {
-	background-image: url("../images/states/coffeebreak.svg");
+.service-status.coffee-break {
+	background-image: url("../images/states/coffee-break.svg");
 }
 
 .service-sla {
@@ -562,37 +562,37 @@ img.team-logo {
 
 .service-att-def-cell.defense-points {
   color: #ffe600;
-  background-image: url("../images/defense-points.svg");
+  background-image: url("../images/icons/defense-points.svg");
 }
 
 .service-att-def-cell.defence-flags {
   color: #00b100;
-  background-image: url("../images/defense-flags.svg");
+  background-image: url("../images/icons/defense-flags.svg");
 }
 
 .service-att-def-cell.attack-points {
   color: #ff6700;
-  background-image: url("../images/attack-points.svg");
+  background-image: url("../images/icons/attack-points.svg");
 }
 
 .service-att-def-cell.round-time {
   color: #8f8e8d;
-  background-image: url("../images/round-time.svg");
+  background-image: url("../images/icons/round-time.svg");
 }
 
 .service-att-def-cell.first-blood {
   color: #bb1919;
-  background-image: url("../images/first-blood.svg");
+  background-image: url("../images/icons/first-blood.svg");
 }
 
 .service-att-def-cell.sla {
   color: #9cb9ea;
-  background-image: url("../images/sla.svg");
+  background-image: url("../images/icons/sla.svg");
 }
 
 .service-att-def-cell.stollen-flags {
   color: #cc5914;
-  background-image: url("../images/attack.svg");
+  background-image: url("../images/icons/attack.svg");
 }
 
 /*
@@ -672,31 +672,31 @@ img.team-logo {
 }
 
 .icon-attack {
-  background-image: url("../images/attack.svg");
+  background-image: url("../images/icons/attack.svg");
 }
 
 .icon-attack-points {
-  background-image: url("../images/attack-points.svg");
+  background-image: url("../images/icons/attack-points.svg");
 }
 
 .icon-defence-flags {
-  background-image: url("../images/defence-flags.svg");
+  background-image: url("../images/icons/defence-flags.svg");
 }
 
 .icon-defense-points {
-  background-image: url("../images/defense-points.svg");
+  background-image: url("../images/icons/defense-points.svg");
 }
 
 .icon-first-blood {
-  background-image: url("../images/first-blood.svg");
+  background-image: url("../images/icons/first-blood.svg");
 }
 
 .icon-sla {
-  background-image: url("../images/sla.svg");
+  background-image: url("../images/icons/sla.svg");
 }
 
 .icon-round-time {
-  background-image: url("../images/round-time.svg");
+  background-image: url("../images/icons/round-time.svg");
 }
 
 .pre-flag-format {
@@ -782,7 +782,7 @@ img.team-logo {
 }
 
 .tooltiptext.sla {
-  background-image: url("../images/sla.svg");
+  background-image: url("../images/icons/sla.svg");
   background-repeat: no-repeat;
   background-position: 3px 2px;
   background-size: 25px 25px;
@@ -791,7 +791,7 @@ img.team-logo {
 }
 
 .tooltiptext.team-info {
-  /* background-image: url("../images/sla.svg"); */
+  /* background-image: url("../images/icons/sla.svg"); */
   background-repeat: no-repeat;
   background-position: 3px 2px;
   background-size: 25px 25px;
@@ -801,7 +801,7 @@ img.team-logo {
 }
 
 .tooltiptext.stollen-flags {
-  background-image: url("../images/attack.svg");
+  background-image: url("../images/icons/attack.svg");
   background-repeat: no-repeat;
   background-position: 7px 2px;
   background-size: 25px 25px;
@@ -813,7 +813,7 @@ img.team-logo {
 }
 
 .tooltiptext.first-blood-info {
-  background-image: url("../images/first-blood.svg");
+  background-image: url("../images/icons/first-blood.svg");
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-position: 3px 2px;

@@ -780,7 +780,7 @@ function updateScoreboard() {
                         el.classList.remove('corrupt');
                         el.classList.remove('shit');
                         el.classList.remove('wait');
-                        el.classList.remove('coffeebreak');
+                        el.classList.remove('coffee-break');
                         el.classList.add(newState);
                         // _animateElementOneTime(elId);
                         _animateElementServiceCell(elId);
@@ -791,7 +791,7 @@ function updateScoreboard() {
                 var sCell = teamID + '-' + sService;
                 // console.log(sCell);
                 silentUpdate('att-' + sCell, newAttackFlags)
-                // silentUpdate('def-' + sCell, newDefenceFlags)
+                // silentUpdate('def-' + sCell, newDefenseFlags)
                 silentUpdate('pt_att-' + sCell, newAttackPoints.toFixed(2))
                 silentUpdateWithoutAnimation('pt_def-' + sCell, newDefencePoints.toFixed(0))
                 silentUpdate('sla-' + sCell, "SLA: " + newSLA + "%")

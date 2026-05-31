@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 38738;
+  return 38739;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 38738
+  static const std::string sRet = "" // size: 38739
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -806,7 +806,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "                        el.classList.remove('corrupt');\n"
     "                        el.classList.remove('shit');\n"
     "                        el.classList.remove('wait');\n"
-    "                        el.classList.remove('coffeebreak');\n"
+    "                        el.classList.remove('coffee-break');\n"
     "                        el.classList.add(newState);\n"
     "                        // _animateElementOneTime(elId);\n"
     "                        _animateElementServiceCell(elId);\n"
@@ -817,7 +817,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "                var sCell = teamID + '-' + sService;\n"
     "                // console.log(sCell);\n"
     "                silentUpdate('att-' + sCell, newAttackFlags)\n"
-    "                // silentUpdate('def-' + sCell, newDefenceFlags)\n"
+    "                // silentUpdate('def-' + sCell, newDefenseFlags)\n"
     "                silentUpdate('pt_att-' + sCell, newAttackPoints.toFixed(2))\n"
     "                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefencePoints.toFixed(0))\n"
     "                silentUpdate('sla-' + sCell, \"SLA: \" + newSLA + \"%\")\n"

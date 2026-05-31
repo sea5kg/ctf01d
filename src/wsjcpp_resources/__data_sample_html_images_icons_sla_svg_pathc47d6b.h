@@ -2,7 +2,7 @@
 
 #include <wsjcpp_core.h>
 
-class RES___data_sample_html_images_defense_points_svg_path25f588 : public WsjcppResourceFile {
+class RES___data_sample_html_images_icons_sla_svg_pathc47d6b : public WsjcppResourceFile {
 public:
   virtual const std::string &getFilename() const override;
   virtual const std::string &getPackAs() const override;
