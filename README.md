@@ -264,15 +264,6 @@ $ nano ~/ctf01d.git/data_sample/config.yml
 Config files (see comments in file):
 * `~/ctf01d.git/data_sample/config.yml` - one config
 
-### Prepare to start with clearing all previous data
-
-Previously created data-flags will be cleared
-
-```
-$ cd ~/ctf01d.git/
-$ ./ctf01d -work-dir ./data_sample/ clean
-```
-
 ## Third Party
 
 **c++ webserver**
