@@ -5,6 +5,7 @@
         "errno",
         "fastblinking",
         "grpcio",
+        "hackerdom",
         "hlogi",
         "isinstance",
         "killall",
