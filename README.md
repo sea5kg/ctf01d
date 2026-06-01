@@ -31,6 +31,8 @@ services:
       - "./data:/usr/share/ctf01d"
     environment:
       CTF01D_WORKDIR: "/usr/share/ctf01d"
+    expose:
+      - "8080"
     ports:
       - "8080:8080"
     # restart: always
