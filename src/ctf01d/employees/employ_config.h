@@ -67,6 +67,8 @@ public:
   int scoreboardPort() const ;
   std::string scoreboardHtmlFolder() const;
   bool scoreboardRandom() const;
+  bool scoreboardMetricsPrometheus() const;
+  std::string scoreboardMetricsPrometheusAllowed() const;
 
   // game configuration
   std::string gameId() const;
@@ -103,6 +105,8 @@ private:
   std::shared_ptr<ctf01d::var_int> m_scoreboard_port;
   std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_random;
+  std::shared_ptr<ctf01d::var_bool> m_scoreboard_metrics_prometheus;
+  std::shared_ptr<ctf01d::var_string> m_scoreboard_metrics_prometheus_allowed;
 
   std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 

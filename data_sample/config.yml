@@ -15,6 +15,8 @@ scoreboard:
   port: 8080 # http port for scoreboard
   htmlfolder: "./html" # web page for scoreboard see index-template.html
   random: no # If yes - will be random values in scoreboard
+  metrics_prometheus: no # enable GET /api/v1/metrics (Prometheus exposition). Off by default.
+  metrics_prometheus_allowed: "" # allowed scraper IPs/CIDRs (comma-separated). Only loopback is allowed implicitly; add your monitoring/Docker subnet here, not the game network.
 
 checkers:
   - id: "example_service1" # work directory will be checker_example_service4

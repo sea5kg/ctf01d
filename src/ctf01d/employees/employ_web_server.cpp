@@ -49,6 +49,8 @@
 #include <sstream>
 #include <utility>
 #include <vector>
+#include <cstdint>
+#include <arpa/inet.h>
 
 #include "WebSocketServer.h"  // libhv
 #include "EventLoop.h"  // libhv
@@ -87,6 +89,85 @@ static std::string prometheusLabels(std::initializer_list<std::pair<const char*,
 static void prometheusMetricInfo(std::ostringstream &oss, const std::string &sName, const std::string &sType, const std::string &sHelp) {
   oss << "# HELP " << sName << " " << sHelp << "\n"
     << "# TYPE " << sName << " " << sType << "\n";
+}
+
+// Parse a dotted-quad IPv4 address into a host-order uint32. Strips a leading
+// "::ffff:" so IPv4-mapped IPv6 client addresses (as libhv may report them) work.
+static bool parseIPv4(const std::string &sIp, uint32_t &nOut) {
+  std::string sAddr = sIp;
+  const std::string sMappedPrefix = "::ffff:";
+  if (sAddr.rfind(sMappedPrefix, 0) == 0) {
+    sAddr = sAddr.substr(sMappedPrefix.size());
+  }
+  struct in_addr addr;
+  if (inet_pton(AF_INET, sAddr.c_str(), &addr) != 1) {
+    return false;
+  }
+  nOut = ntohl(addr.s_addr);
+  return true;
+}
+
+// True if host-order IPv4 nIp falls inside net/prefix. prefix==0 matches everything.
+static bool ipv4InCidr(uint32_t nIp, uint32_t nNet, int nPrefix) {
+  if (nPrefix < 0 || nPrefix > 32) {
+    return false;
+  }
+  uint32_t nMask = (nPrefix == 0) ? 0 : (0xFFFFFFFFu << (32 - nPrefix));
+  return (nIp & nMask) == (nNet & nMask);
+}
+
+// Decide whether a client may access /api/v1/metrics. Only loopback is always
+// allowed; every other client (incl. private/Docker networks, which on an A/D
+// CTF usually carry the team game network) must be listed explicitly in
+// sAllowedList, an optional comma-separated list of IPs ("a.b.c.d") or CIDR
+// subnets ("a.b.c.d/n").
+static bool isMetricsClientAllowed(const std::string &sClientIp, const std::string &sAllowedList) {
+  if (sClientIp == "::1") { // IPv6 loopback
+    return true;
+  }
+
+  uint32_t nClient = 0;
+  if (!parseIPv4(sClientIp, nClient)) {
+    WsjcppLog::warn("EmployWebServer", "metrics: could not parse client ip '" + sClientIp + "'");
+    return false;
+  }
+
+  // Always-allowed: loopback only (127.0.0.0/8).
+  uint32_t nLoopback = 0;
+  parseIPv4("127.0.0.0", nLoopback);
+  if (ipv4InCidr(nClient, nLoopback, 8)) {
+    return true;
+  }
+
+  // Extra allowed entries from config.
+  std::vector<std::string> vEntries = WsjcppCore::split(sAllowedList, ",");
+  for (std::string sEntry : vEntries) {
+    sEntry = WsjcppCore::trim(sEntry);
+    if (sEntry.empty()) {
+      continue;
+    }
+    std::string sNet = sEntry;
+    int nPrefix = 32;
+    std::size_t nSlash = sEntry.find('/');
+    if (nSlash != std::string::npos) {
+      sNet = sEntry.substr(0, nSlash);
+      try {
+        nPrefix = std::stoi(sEntry.substr(nSlash + 1));
+      } catch (...) {
+        WsjcppLog::warn("EmployWebServer", "metrics: bad allowed entry '" + sEntry + "'");
+        continue;
+      }
+    }
+    uint32_t nNet = 0;
+    if (!parseIPv4(sNet, nNet)) {
+      WsjcppLog::warn("EmployWebServer", "metrics: bad allowed entry '" + sEntry + "'");
+      continue;
+    }
+    if (ipv4InCidr(nClient, nNet, nPrefix)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
@@ -250,7 +331,7 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
       return this->httpApiV1MyIp(req, resp);
     } else if (request_path == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
       return this->httpApiV1Teams(req, resp);
-    } else if (request_path == "/api/v1/metrics") { // Public endpoint. Allowed without authorization.
+    } else if (request_path == "/api/v1/metrics") { // Config-gated: disabled by default + IP allowlist (see httpApiV1Metrics).
       return this->httpApiV1Metrics(req, resp);
     }
     return this->httpApiV1GetPaths(req, resp);
@@ -512,6 +593,18 @@ int EmployWebServer::httpTeamLogos(const std::string &request_path, HttpRequest*
 
 int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   auto config = findWsjcppEmploy<EmployConfig>();
+
+  // Endpoint is disabled by default; read the live config value on every request
+  // so toggling it does not require restarting the webserver.
+  if (!config->scoreboardMetricsPrometheus()) {
+    resp->String("Forbidden: metrics endpoint is disabled");
+    return 403;
+  }
+  if (!isMetricsClientAllowed(req->client_addr.ip, config->scoreboardMetricsPrometheusAllowed())) {
+    resp->String("Forbidden");
+    return 403;
+  }
+
   auto scoreboard = config->scoreboard();
   nlohmann::json jsonScoreboard = scoreboard->toJson();
 

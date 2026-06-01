@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [v0.6.2] - (2026 ?? ??)
 
+- Prometheus /api/v1/metrics endpoint is now disabled by default (config scoreboard.metrics_prometheus) and gated by an IP allowlist (scoreboard.metrics_prometheus_allowed); only loopback is allowed implicitly, every other scraper (including private/game-network ranges) must be listed explicitly, otherwise it returns 403
 - Fixed #84: Added /api/v1/game/current-time
 - Fixed #67: m_nFlagLifeTimeInMin changed to seconds
 - Moved and renamed some source files to src/ctf01d

@@ -87,6 +87,9 @@ EmployConfig::EmployConfig()
   m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_vars);
   m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "htmlfolder"}, "./html", m_sWorkDir, m_vars);
 
+  m_scoreboard_metrics_prometheus = ctf01d::var_bool::create({"scoreboard", "metrics_prometheus"}, false, m_vars);
+  m_scoreboard_metrics_prometheus_allowed = ctf01d::var_string::create({"scoreboard", "metrics_prometheus_allowed"}, "", m_vars);
+
   m_pScoreboard = nullptr;
 }
 
@@ -221,6 +224,14 @@ std::string EmployConfig::scoreboardHtmlFolder() const {
 
 bool EmployConfig::scoreboardRandom() const {
   return m_scoreboard_random->value();
+}
+
+bool EmployConfig::scoreboardMetricsPrometheus() const {
+  return m_scoreboard_metrics_prometheus->value();
+}
+
+std::string EmployConfig::scoreboardMetricsPrometheusAllowed() const {
+  return m_scoreboard_metrics_prometheus_allowed->value();
 }
 
 std::string EmployConfig::gameId() const {
