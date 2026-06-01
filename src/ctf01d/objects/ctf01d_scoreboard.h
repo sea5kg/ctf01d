@@ -74,6 +74,7 @@ public:
   std::vector<Ctf01dFlag> outdatedFlagsLive(const std::string &sTeamId, const std::string &sServiceId);
   bool findFlagLive(const std::string &sFlagValue, Ctf01dFlag &flag);
   void removeFlagLive(const Ctf01dFlag &flag);
+  int countFlagsLive();
 
   std::string toString();
   const nlohmann::json &toJson();

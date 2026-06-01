@@ -540,6 +540,11 @@ void Ctf01dScoreboard::removeFlagLive(const Ctf01dFlag &flag) {
   }
 }
 
+int Ctf01dScoreboard::countFlagsLive() {
+  std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
+  return static_cast<int>(m_mapFlagsLive.size());
+}
+
 std::string Ctf01dScoreboard::toString(){
   std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
   std::string sResult = "";

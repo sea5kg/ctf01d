@@ -43,6 +43,7 @@ Ctf01dServiceStatistics::Ctf01dServiceStatistics(const std::string &sServiceId) 
   m_nAllStolenFlagsForService = 0;
   m_nAllDefenseFlagsForService = 0;
   m_sFirstBloodTeamId = "?";
+  m_nFirstBloodTimeInSeconds = 0;
 }
 
 int Ctf01dServiceStatistics::getAllStolenFlagsForService() {
