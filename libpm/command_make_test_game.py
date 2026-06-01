@@ -58,9 +58,11 @@ class CommandMakeTestGame:
 
     def do_registry(self, subparsers):
         """ registering sub command """
+        _desc = "Make a directories with configs for test game"
+        _desc += " (testing infrastructure configuration)"
         _parser_make_test_game = subparsers.add_parser(
             name=self.__subcommand_name,
-            description='Make a dir with configs for test game'
+            description=_desc
         )
         _parser_make_test_game.add_argument(
             '-t', '--teams',
@@ -76,6 +78,13 @@ class CommandMakeTestGame:
             help='Number of Services',
             required=True,
         )
+        _parser_make_test_game.add_argument(
+            '-j', '--jury-host',
+            dest='jury_host',
+            help='Jury host (by default: 10.10.100.100:8080)',
+            default="10.10.100.100:8080",
+            required=False,
+        )
         _parser_make_test_game.set_defaults(subparser=self.__subcommand_name)
 
     def __prepare_test_game_dir(self):
@@ -88,7 +97,23 @@ class CommandMakeTestGame:
         os.makedirs(_dir, exist_ok=True)
         return _dir
 
-    def __prepare_make_vulnbox(self, _dir, number_of_services):
+    def __validate_args(self, args):
+        if args.number_of_teams < 1:
+            self.__log.error("Number of teams must be more than 0")
+            sys.exit(1)
+        if args.number_of_teams > 253:
+            self.__log.error("Number of teams must be less than 253")
+            sys.exit(1)
+        if args.number_of_services < 1:
+            self.__log.error("Number of services must be more than 0")
+            sys.exit(1)
+        if args.number_of_services > 10:
+            self.__log.error("Number of services must be less than 61436")
+            sys.exit(1)
+
+    def __gen_vulnbox(self, _cfg):
+        _dir = _cfg["data_dir"]
+        number_of_services = _cfg["services"]
         _vulnbox_dir = os.path.join(_dir, "vulnbox")
         os.makedirs(_vulnbox_dir, exist_ok=True)
         _compose = [
@@ -158,22 +183,27 @@ class CommandMakeTestGame:
         with open(_checker_path, "wt", encoding="utf-8", newline="\n") as _checker:
             _checker.write("".join(_new_lines))
 
-    def __prepare_make_jury(self, _dir, number_of_teams, number_of_services):
+    def __gen_jury(self, _cfg):
+        _dir = _cfg["data_dir"]
+        number_of_teams = _cfg["teams"]
+        number_of_services = _cfg["services"]
         _jury_dir = os.path.join(_dir, "jury")
         os.makedirs(_jury_dir, exist_ok=True)
-        # in future somehow get latest version
+        # in future somehow get latest released version
         _compose = [
             "version: '3'",
             "services:",
             "  ctf01d_jury:",
             "    container_name: ctf01d_jury_my_game",
-            "    image: sea5kg/ctf01d:v0.7.0",
+            "    image: sea5kg/ctf01d:latest",
             "    volumes:",
             "      - \"./data:/usr/share/ctf01d\"",
             "    environment:",
             "      CTF01D_WORKDIR: \"/usr/share/ctf01d\"",
+            "    expose:",
+            "      - \"" + str(_cfg["jury_port"]) + "\"",
             "    ports:",
-            "      - \"8080:8080\"",
+            "      - \"" + str(_cfg["jury_port"]) + ":" + str(_cfg["jury_port"]) + "\"",
             "    restart: always",
             "    networks:",
             "      - ctf01d_net",
@@ -203,7 +233,7 @@ class CommandMakeTestGame:
             "  flag_cost_in_points: 100",
             "",
             "scoreboard:",
-            "  port: 8080",
+            "  port: " + str(_cfg["jury_port"]),
             "  htmlfolder: \"./html\"",
             "  random: no",
             "",
@@ -253,7 +283,9 @@ class CommandMakeTestGame:
         UtilsFiles.write_file(os.path.join(_jury_dir, "docker-compose.yml"), _compose)
         UtilsFiles.write_file(os.path.join(_data_path, "config.yml"), _config)
 
-    def __prepare_make_attacker(self, _dir):
+    def __gen_attacker(self, _cfg):
+        _dir = _cfg["data_dir"]
+        _jury_host = _cfg["jury_host"]
         _attacker_dir = os.path.join(_dir, "attacker")
         os.makedirs(_attacker_dir, exist_ok=True)
         _compose = [
@@ -267,7 +299,7 @@ class CommandMakeTestGame:
             "    volumes:",
             "    - \"./tmp/flags_exploit:/root/flags\"",
             "    - \"./attacker.py:/root/attacker.py\"",
-            "    command: sh -c \"python3 -u /root/attacker.py 10.10.100.100:8080\"",
+            "    command: sh -c \"python3 -u /root/attacker.py " + _jury_host + "\"",
             "    restart: always",
             "    networks:",
             "    - attacker_net",
@@ -295,19 +327,30 @@ class CommandMakeTestGame:
 
     def execute(self, args):
         """ executing """
+        self.__validate_args(args)
+        _config = {
+            "teams": args.number_of_teams,
+            "services": args.number_of_services,
+            "jury_host": args.jury_host,
+            "jury_port": 80,
+        }
+        if ":" in args.jury_host:
+            _config["jury_port"] = int(args.jury_host.split(":")[-1])
+
         self.__log.info(
             "\n*****************************\n"
             "Make a test game configuration:\n"
             "  teams: %s\n"
             "  services %s\n"
+            "  jury-host %s\n"
             "*****************************\n",
             str(args.number_of_teams),
             str(args.number_of_services),
+            str(args.jury_host),
         )
-        _dir = self.__prepare_test_game_dir()
-
-        self.__prepare_make_vulnbox(_dir, args.number_of_services)
-        self.__prepare_make_jury(_dir, args.number_of_teams, args.number_of_services)
-        self.__prepare_make_attacker(_dir)
+        _config["data_dir"] = self.__prepare_test_game_dir()
+        self.__gen_vulnbox(_config)
+        self.__gen_jury(_config)
+        self.__gen_attacker(_config)
         self.__log.info("DONE")
         sys.exit(0)
