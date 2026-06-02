@@ -86,6 +86,37 @@ WsjcppYamlCursor var::cursor_by_path(WsjcppYamlCursor &cursor, std::string &err)
 }
 
 // ---------------------------------------------------------------------
+// ctf01d::scope_vars
+
+scope_vars::scope_vars(const std::string &scope_name) : m_scope_name(scope_name) {}
+
+void scope_vars::add_var(std::shared_ptr<ctf01d::var> v) {
+  m_vars.push_back(v);
+}
+
+void scope_vars::clear() {
+  m_vars.clear();
+}
+
+bool scope_vars::read(WsjcppYamlCursor &cursor, std::string &err) {
+  bool var_errors = false;
+  for (int i = 0; i < m_vars.size(); ++i) {
+    std::shared_ptr<ctf01d::var> var = m_vars[i];
+    std::string err;
+    if (!var->read(cursor, err)) {
+      var_errors = true;
+      WsjcppLog::err(m_scope_name, err);
+      continue;
+    }
+    WsjcppLog::info(m_scope_name, var->name() + ": " + var->to_string());
+  }
+  if (var_errors) {
+    return false;
+  }
+  return true;
+}
+
+// ---------------------------------------------------------------------
 // ctf01d::var_int
 
 var_int::var_int(const std::vector<std::string> &path_name, int default_value)
@@ -102,10 +133,10 @@ var_int::var_int(const std::vector<std::string> &path_name, int default_value)
 std::shared_ptr<var_int> var_int::create(
   const std::vector<std::string> &path_name,
   int default_value,
-  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+  ctf01d::scope_vars &sc_vars
 ) {
   auto ret = std::make_shared<var_int>(path_name, default_value);
-  scope_vars.push_back(ret);
+  sc_vars.add_var(ret);
   return ret;
 }
 
@@ -167,10 +198,10 @@ var_string::var_string(const std::vector<std::string> &path_name, const std::str
 std::shared_ptr<var_string> var_string::create(
   const std::vector<std::string> &path_name,
   const std::string &default_value,
-  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+  ctf01d::scope_vars &sc_vars
 ) {
   auto ret = std::make_shared<var_string>(path_name, default_value);
-  scope_vars.push_back(ret);
+  sc_vars.add_var(ret);
   return ret;
 }
 
@@ -213,10 +244,10 @@ var_bool::var_bool(const std::vector<std::string> &path_name, bool default_value
 std::shared_ptr<var_bool> var_bool::create(
   const std::vector<std::string> &path_name,
   bool default_value,
-  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+  ctf01d::scope_vars &sc_vars
 ) {
   auto ret = std::make_shared<var_bool>(path_name, default_value);
-  scope_vars.push_back(ret);
+  sc_vars.add_var(ret);
   return ret;
 }
 
@@ -260,10 +291,10 @@ std::shared_ptr<var_dir> var_dir::create(
   const std::vector<std::string> &path_name,
   const std::string &default_value,
   const std::string &root_dir,
-  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+  ctf01d::scope_vars &sc_vars
 ) {
   auto ret = std::make_shared<var_dir>(path_name, default_value, root_dir);
-  scope_vars.push_back(ret);
+  sc_vars.add_var(ret);
   return ret;
 }
 
@@ -330,10 +361,10 @@ std::shared_ptr<var_file> var_file::create(
   const std::vector<std::string> &path_name,
   const std::string &default_value,
   const std::string &root_dir,
-  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+  ctf01d::scope_vars &sc_vars
 ) {
   auto ret = std::make_shared<var_file>(path_name, default_value, root_dir);
-  scope_vars.push_back(ret);
+  sc_vars.add_var(ret);
   return ret;
 }
 
@@ -399,10 +430,10 @@ var_datetime::var_datetime(const std::vector<std::string> &path_name, const std:
 std::shared_ptr<var_datetime> var_datetime::create(
   const std::vector<std::string> &path_name,
   const std::string &default_value,
-  std::vector<std::shared_ptr<ctf01d::var>> &scope_vars
+  ctf01d::scope_vars &sc_vars
 ) {
   auto ret = std::make_shared<var_datetime>(path_name, default_value);
-  scope_vars.push_back(ret);
+  sc_vars.add_var(ret);
   return ret;
 }
 

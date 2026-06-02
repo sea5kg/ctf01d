@@ -59,34 +59,34 @@ EmployConfig::EmployConfig()
   m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
 
   // game options
-  m_game_id = ctf01d::var_string::create({"game", "id"}, "test", m_vars);
-  m_game_name = ctf01d::var_string::create({"game", "name"}, "Test", m_vars);
+  m_game_id = ctf01d::var_string::create({"game", "id"}, "test", m_game_vars);
+  m_game_name = ctf01d::var_string::create({"game", "name"}, "Test", m_game_vars);
 
   m_bAppliedConfig = false;
-  m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60, m_vars);
+  m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60, m_game_vars);
   m_flag_lifetime_in_seconds->set_minimum(1);
   m_flag_lifetime_in_seconds->set_maximum(MAX_FLAG_LIFETIME_SECONDS);
 
-  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100, m_vars);
+  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100, m_game_vars);
   m_flag_cost_in_points->set_minimum(1);
   m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
 
-  m_game_start_utc = ctf01d::var_datetime::create({"game", "start_utc"}, "2023-11-12 16:00:00", m_vars);
-  m_game_end_utc = ctf01d::var_datetime::create({"game", "end_utc"}, "2030-11-12 22:00:00", m_vars);
-  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee_break_start"}, "2023-11-12 20:00:00", m_vars);
-  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee_break_end"}, "2023-11-12 21:00:00", m_vars);
+  m_game_start_utc = ctf01d::var_datetime::create({"game", "start_utc"}, "2023-11-12 16:00:00", m_game_vars);
+  m_game_end_utc = ctf01d::var_datetime::create({"game", "end_utc"}, "2030-11-12 22:00:00", m_game_vars);
+  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee_break_start"}, "2023-11-12 20:00:00", m_game_vars);
+  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee_break_end"}, "2023-11-12 21:00:00", m_game_vars);
 
   m_bHasCoffeeBreak = false;
 
   // scoreboard config
 
-  m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080, m_vars);
+  m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080, m_scoreboard_vars);
   m_scoreboard_port->set_minimum(MIN_TCP_PORT);
   m_scoreboard_port->set_maximum(MAX_TCP_PORT);
-  m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_vars);
-  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_sWorkDir, m_vars);
-  m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_vars);
-  m_scoreboard_metrics_allowed_for = ctf01d::var_string::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_vars);
+  m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_scoreboard_vars);
+  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_sWorkDir, m_scoreboard_vars);
+  m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_scoreboard_vars);
+  m_scoreboard_metrics_allowed_for = ctf01d::var_string::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_scoreboard_vars);
 
 
   m_pScoreboard = nullptr;
@@ -94,7 +94,8 @@ EmployConfig::EmployConfig()
 
 EmployConfig::~EmployConfig() {
   // TODO cleanup
-  m_vars.clear();
+  m_game_vars.clear();
+  m_scoreboard_vars.clear();
 }
 
 bool EmployConfig::init(const std::string &sName, bool bSilent) {
@@ -164,18 +165,14 @@ bool EmployConfig::applyConfig() {
     return false;
   }
 
-  bool var_errors = false;
-  for (int i = 0; i < m_vars.size(); ++i) {
-    std::shared_ptr<ctf01d::var> var = m_vars[i];
-    std::string err;
-    auto cursor = yamlConfig.getCursor();
-    if (!var->read(cursor, err)) {
-      var_errors = true;
-      continue;
-    }
-    WsjcppLog::info(TAG, var->name() + ": " + var->to_string());
+  auto cursor = yamlConfig.getCursor();
+  std::string err;
+  if (!m_game_vars.read(cursor, err)) {
+    WsjcppLog::err(TAG, err);
+    return false;
   }
-  if (var_errors) {
+  if (!m_scoreboard_vars.read(cursor, err)) {
+    WsjcppLog::err(TAG, err);
     return false;
   }
 

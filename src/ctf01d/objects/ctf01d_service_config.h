@@ -60,6 +60,7 @@ public:
 
 private:
   std::string TAG;
+  ctf01d::scope_vars m_vars = ctf01d::scope_vars("service_config");
   std::string m_work_dir;
   std::shared_ptr<ctf01d::var_string> m_id;
   std::shared_ptr<ctf01d::var_string> m_name;
@@ -70,7 +71,6 @@ private:
   std::shared_ptr<ctf01d::var_int> m_round_in_seconds;
   std::shared_ptr<ctf01d::var_string> m_script_path;
   std::shared_ptr<ctf01d::var_dir> m_script_dir;
-  std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 };
 
 } // namespace ctf01d

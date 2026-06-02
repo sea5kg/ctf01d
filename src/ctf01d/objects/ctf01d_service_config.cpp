@@ -63,21 +63,9 @@ bool service_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir,
   m_work_dir = work_dir;
   m_logo->set_root_dir(m_work_dir);
   m_big_logo->set_root_dir(m_work_dir);
-  bool var_errors = false;
-  for (int i = 0; i < m_vars.size(); ++i) {
-    std::shared_ptr<ctf01d::var> var = m_vars[i];
-    std::string err;
-    if (!var->read(cursor, err)) {
-      WsjcppLog::err(TAG, err);
-      var_errors = true;
-      continue;
-    }
-    WsjcppLog::info(TAG, var->name() + ": " + var->to_string());
-  }
-  if (var_errors) {
+  if (!m_vars.read(cursor, err)) {
     return false;
   }
-
   if (m_enabled->value()) {
     m_script_dir->set_root_dir(m_work_dir);
     if (!m_script_dir->set_value("checker_" + m_id->value(), err)) {

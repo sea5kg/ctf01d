@@ -68,15 +68,21 @@ protected:
   ctf01d::var_type m_t;
 };
 
-// class scope_vars {
-// public:
-//   scope_vars();
-// };
+class scope_vars {
+public:
+  scope_vars(const std::string &scope_name);
+  void add_var(std::shared_ptr<ctf01d::var> v);
+  void clear();
+  bool read(WsjcppYamlCursor &cursor, std::string &err);
+private:
+  std::string m_scope_name;
+  std::vector<std::shared_ptr<ctf01d::var>> m_vars;
+};
 
 class var_int : public ctf01d::var {
 public:
   var_int(const std::vector<std::string> &path_name, int default_value);
-  static std::shared_ptr<var_int> create(const std::vector<std::string> &path_name, int default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
+  static std::shared_ptr<var_int> create(const std::vector<std::string> &path_name, int default_value, ctf01d::scope_vars &sc_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   int default_value() const;
@@ -98,7 +104,7 @@ private:
 class var_string : public ctf01d::var {
 public:
   var_string(const std::vector<std::string> &path_name, const std::string &default_value);
-  static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
+  static std::shared_ptr<var_string> create(const std::vector<std::string> &path_name, const std::string &default_value, ctf01d::scope_vars &sc_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   std::string defaultValue() const;
@@ -114,7 +120,7 @@ private:
 class var_bool : public ctf01d::var {
 public:
   var_bool(const std::vector<std::string> &path_name, bool default_value);
-  static std::shared_ptr<var_bool> create(const std::vector<std::string> &path_name, bool default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
+  static std::shared_ptr<var_bool> create(const std::vector<std::string> &path_name, bool default_value, ctf01d::scope_vars &sc_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   bool default_value() const;
@@ -130,7 +136,7 @@ private:
 class var_dir : public ctf01d::var {
 public:
   var_dir(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir);
-  static std::shared_ptr<var_dir> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
+  static std::shared_ptr<var_dir> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir, ctf01d::scope_vars &sc_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   void set_root_dir(const std::string &val);
@@ -151,7 +157,7 @@ private:
 class var_file : public ctf01d::var {
 public:
   var_file(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir);
-  static std::shared_ptr<var_file> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
+  static std::shared_ptr<var_file> create(const std::vector<std::string> &path_name, const std::string &default_value, const std::string &root_dir, ctf01d::scope_vars &sc_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   void set_root_dir(const std::string &val);
@@ -172,7 +178,7 @@ private:
 class var_datetime : public ctf01d::var {
 public:
   var_datetime(const std::vector<std::string> &path_name, const std::string &default_value);
-  static std::shared_ptr<var_datetime> create(const std::vector<std::string> &path_name, const std::string &default_value, std::vector<std::shared_ptr<ctf01d::var>> &scope_vars);
+  static std::shared_ptr<var_datetime> create(const std::vector<std::string> &path_name, const std::string &default_value, ctf01d::scope_vars &sc_vars);
   virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
   virtual std::string to_string() override;
   std::string default_value() const;
