@@ -86,7 +86,8 @@ public:
 
 private:
   bool checkYamlMainKeys(WsjcppYaml &yamlConfig);
-  bool applyGameConf(WsjcppYaml &yamlConfig);
+  bool checkGameConf();
+  bool applyScoreboardPortFromEnv();
   bool applyServicesConfig(WsjcppYaml &yamlConfig);
   bool readTeamsConf(WsjcppYaml &yamlConfig);
   bool isValidIPv4(const std::string &sValue, std::string &sError);

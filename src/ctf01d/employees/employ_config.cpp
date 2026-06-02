@@ -178,8 +178,12 @@ bool EmployConfig::applyConfig() {
     return false;
   }
 
-  // apply the game config
-  if (!this->applyGameConf(yamlConfig)) {
+  // CTF01D_PORT
+  if (!applyScoreboardPortFromEnv()) {
+    return false;
+  }
+
+  if (!this->checkGameConf()) {
     return false;
   }
 
@@ -397,14 +401,7 @@ bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
   return true;
 }
 
-bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
-  auto cur = yamlConfig.getCursor();
-  if (!cur.hasKey("game")) {
-      WsjcppLog::err(TAG, "Missing 'game'");
-      return false;
-  }
-  cur = cur["game"];
-
+bool EmployConfig::checkGameConf() {
   std::string err;
 
   WsjcppLog::info(TAG, "Game start: " + m_game_start_utc->value());
@@ -431,7 +428,34 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
     WsjcppLog::info(TAG, "Oh! Game has coffee break! nice!");
     m_bHasCoffeeBreak = true;
   }
+  return true;
+}
 
+bool EmployConfig::applyScoreboardPortFromEnv() {
+  std::string str_port;
+  if (WsjcppCore::getEnv("CTF01D_PORT", str_port)) {
+    WsjcppLog::warn(TAG, "CTF01D_PORT='" + str_port + "'");
+    try {
+      int port = std::stoi(str_port);
+      std::string err;
+      if (!m_scoreboard_port->set_value(port, err)) {
+        WsjcppLog::err(TAG, "CTF01D_PORT='" + str_port + "' is wrong. " + err);
+        return false;
+      }
+    } catch (const std::invalid_argument& e) {
+      WsjcppLog::err(TAG, "No conversion could be performed. CTF01D_PORT='" + str_port + "'");
+      std::cerr << "Error: \n";
+      return false;
+    } catch (const std::out_of_range& e) {
+      WsjcppLog::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
+      return false;
+    } catch (...) {
+      WsjcppLog::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
+      return false;
+    }
+    WsjcppLog::info(TAG, "scoreboard.port will be overridden from environment variable. CTF01D_PORT='" + str_port + "'");
+    return true;
+  }
   return true;
 }
 
