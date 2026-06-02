@@ -39,7 +39,6 @@
 
 #include <string>
 #include <memory>
-#include <vector>
 #include <wsjcpp_yaml.h>
 #include "ctf01d_var.h"
 

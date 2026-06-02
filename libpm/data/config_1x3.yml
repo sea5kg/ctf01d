@@ -11,26 +11,37 @@ scoreboard:
   port: 8080
   html-dir-path: ./html
   random: false
+  prometheus-metrics-endpoint:
+    enabled: no
+    allowed-for: "10.10.100.*, 127.0.*"
 checkers:
   - id: test_service1
     service_name: Service1
     enabled: true
+    logo: "./html/images/services/service1-default-icon.svg"
+    big-logo: "./html/images/services/service1-default-icon.svg"
     script_path: ./checker.py
     script_wait_in_sec: 5
     round_in_seconds: 15
 teams:
   - id: t01
+    type: normal
     name: 'Team #1'
     active: true
     logo: ./html/images/teams/team01.png
+    big-logo: ./html/images/teams/team01.png
     ip_address: 127.0.1.1
   - id: t02
+    type: normal
     name: 'Team #2'
     active: true
     logo: ./html/images/teams/team02.png
+    big-logo: ./html/images/teams/team02.png
     ip_address: 127.0.2.1
   - id: t03
+    type: normal
     name: 'Team #3'
     active: true
     logo: ./html/images/teams/team03.png
+    big-logo: ./html/images/teams/team03.png
     ip_address: 127.0.3.1

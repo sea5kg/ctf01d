@@ -71,158 +71,216 @@ checkers:
     script_wait_in_sec: 5
     round_in_seconds: 15
 
+# team.type can be normal, red, blue, guest, disqualified
+
 teams:
   - id: "t01" # must be uniq
+    type: normal
     name: "Team #1"
     active: yes
     logo: "./html/images/teams/team01.png"
     big-logo: "./html/images/teams/team01.png"
-    ip_address: "127.0.1.1" # address to vulnserver
+    ip_address: "127.0.1.1"
   - id: "t02" # must be uniq
+    type: normal
     name: "Team #2"
     active: yes
     logo: "./html/images/teams/team02.png"
-    ip_address: "127.0.2.1" # address to vulnserver
+    big-logo: "./html/images/teams/team02.png"
+    ip_address: "127.0.2.1"
   - id: "t03" # must be uniq
+    type: normal
     name: "Team #3"
     active: yes
     logo: "./html/images/teams/team03.png"
-    ip_address: "127.0.3.1" # address to vulnserver
+    big-logo: "./html/images/teams/team03.png"
+    ip_address: "127.0.3.1"
   - id: "t04" # must be uniq
+    type: normal
     name: "Team #4"
     active: yes
     logo: "./html/images/teams/team04.png"
-    ip_address: "127.0.4.1" # address to vulnserver
+    big-logo: "./html/images/teams/team03.png"
+    ip_address: "127.0.4.1"
   - id: "t05" # must be uniq
+    type: normal
     name: "Team #5"
     active: yes
     logo: "./html/images/teams/team05.png"
-    ip_address: "127.0.5.1" # address to vulnserver
+    big-logo: "./html/images/teams/team03.png"
+    ip_address: "127.0.5.1"
   - id: "t06" # must be uniq
+    type: normal
     name: "Team #6"
     active: yes
     logo: "./html/images/teams/team06.png"
-    ip_address: "127.0.6.1" # address to vulnserver
+    big-logo: "./html/images/teams/team06.png"
+    ip_address: "127.0.6.1"
   - id: "t07" # must be uniq
+    type: normal
     name: "Team #7"
     active: yes
     logo: "./html/images/teams/team07.png"
-    ip_address: "127.0.7.1" # address to vulnserver
+    big-logo: "./html/images/teams/team07.png"
+    ip_address: "127.0.7.1"
   - id: "t08" # must be uniq
+    type: normal
     name: "Team #8"
     active: yes
     logo: "./html/images/teams/team08.png"
-    ip_address: "127.0.8.1" # address to vulnserver
+    big-logo: "./html/images/teams/team08.png"
+    ip_address: "127.0.8.1"
   - id: "t09" # must be uniq
+    type: normal
     name: "Team #9"
     active: yes
     logo: "./html/images/teams/team09.png"
-    ip_address: "127.0.9.1" # address to vulnserver
-
+    big-logo: "./html/images/teams/team09.png"
+    ip_address: "127.0.9.1"
   - id: "t10" # must be uniq
+    type: normal
     name: "Team #10"
     active: yes
     logo: "./html/images/teams/team10.png"
-    ip_address: "127.0.10.1" # address to vulnserver
+    big-logo: "./html/images/teams/team10.png"
+    ip_address: "127.0.10.1"
   - id: "t11" # must be uniq
+    type: normal
     name: "Team #11"
     active: yes
     logo: "./html/images/teams/team11.png"
-    ip_address: "127.0.11.1" # address to vulnserver
+    big-logo: "./html/images/teams/team11.png"
+    ip_address: "127.0.11.1"
   - id: "t12" # must be uniq
+    type: normal
     name: "Team #12"
     active: yes
     logo: "./html/images/teams/team12.png"
-    ip_address: "127.0.12.1" # address to vulnserver
+    big-logo: "./html/images/teams/team12.png"
+    ip_address: "127.0.12.1"
   - id: "t13" # must be uniq
+    type: normal
     name: "Team #13"
     active: yes
     logo: "./html/images/teams/team13.png"
-    ip_address: "127.0.13.1" # address to vulnserver
+    big-logo: "./html/images/teams/team13.png"
+    ip_address: "127.0.13.1"
   - id: "t14" # must be uniq
+    type: normal
     name: "Team #14"
     active: yes
     logo: "./html/images/teams/team14.png"
-    ip_address: "127.0.14.1" # address to vulnserver
+    big-logo: "./html/images/teams/team14.png"
+    ip_address: "127.0.14.1"
   - id: "t15" # must be uniq
+    type: normal
     name: "Team #15"
     active: yes
     logo: "./html/images/teams/team15.png"
-    ip_address: "127.0.15.1" # address to vulnserver
+    big-logo: "./html/images/teams/team15.png"
+    ip_address: "127.0.15.1"
   - id: "t16" # must be uniq
+    type: normal
     name: "Team #16"
     active: yes
     logo: "./html/images/teams/team16.png"
-    ip_address: "127.0.16.1" # address to vulnserver
+    big-logo: "./html/images/teams/team16.png"
+    ip_address: "127.0.16.1"
   - id: "t17" # must be uniq
+    type: normal
     name: "Team #17"
     active: yes
     logo: "./html/images/teams/team17.png"
-    ip_address: "127.0.17.1" # address to vulnserver
+    big-logo: "./html/images/teams/team17.png"
+    ip_address: "127.0.17.1"
   - id: "t18" # must be uniq
+    type: normal
     name: "Team #18"
     active: yes
     logo: "./html/images/teams/team18.png"
-    ip_address: "127.0.18.1" # address to vulnserver
+    big-logo: "./html/images/teams/team18.png"
+    ip_address: "127.0.18.1"
   - id: "t19" # must be uniq
+    type: normal
     name: "Team #19"
     active: yes
     logo: "./html/images/teams/team19.png"
-    ip_address: "127.0.19.1" # address to vulnserver
-
+    big-logo: "./html/images/teams/team19.png"
+    ip_address: "127.0.19.1"
   - id: "t20" # must be uniq
+    type: normal
     name: "Team #20"
     active: yes
     logo: "./html/images/teams/team20.png"
-    ip_address: "127.0.20.1" # address to vulnserver
+    big-logo: "./html/images/teams/team20.png"
+    ip_address: "127.0.20.1"
   - id: "t21" # must be uniq
+    type: normal
     name: "Team #21"
     active: yes
     logo: "./html/images/teams/team21.png"
-    ip_address: "127.0.21.1" # address to vulnserver
+    big-logo: "./html/images/teams/team21.png"
+    ip_address: "127.0.21.1"
   - id: "t22" # must be uniq
+    type: normal
     name: "Team #22"
     active: yes
     logo: "./html/images/teams/team22.png"
-    ip_address: "127.0.22.1" # address to vulnserver
+    big-logo: "./html/images/teams/team22.png"
+    ip_address: "127.0.22.1"
   - id: "t23" # must be uniq
+    type: normal
     name: "Team #23"
     active: yes
     logo: "./html/images/teams/team23.png"
-    ip_address: "127.0.23.1" # address to vulnserver
+    big-logo: "./html/images/teams/team23.png"
+    ip_address: "127.0.23.1"
   - id: "t24" # must be uniq
+    type: normal
     name: "Team #24"
     active: yes
     logo: "./html/images/teams/team24.png"
-    ip_address: "127.0.24.1" # address to vulnserver
+    big-logo: "./html/images/teams/team24.png"
+    ip_address: "127.0.24.1"
   - id: "t25" # must be uniq
+    type: normal
     name: "Team #25"
     active: yes
     logo: "./html/images/teams/team25.png"
-    ip_address: "127.0.25.1" # address to vulnserver
+    big-logo: "./html/images/teams/team25.png"
+    ip_address: "127.0.25.1"
   - id: "t26" # must be uniq
+    type: normal
     name: "Team #26"
     active: yes
     logo: "./html/images/teams/team26.png"
-    ip_address: "127.0.26.1" # address to vulnserver
+    big-logo: "./html/images/teams/team26.png"
+    ip_address: "127.0.26.1"
   - id: "t27" # must be uniq
+    type: normal
     name: "Team #27"
     active: yes
     logo: "./html/images/teams/team27.png"
-    ip_address: "127.0.27.1" # address to vulnserver
+    big-logo: "./html/images/teams/team27.png"
+    ip_address: "127.0.27.1"
   - id: "t28" # must be uniq
+    type: normal
     name: "Team #28"
     active: yes
     logo: "./html/images/teams/team28.png"
-    ip_address: "127.0.28.1" # address to vulnserver
+    big-logo: "./html/images/teams/team28.png"
+    ip_address: "127.0.28.1"
   - id: "t29" # must be uniq
+    type: normal
     name: "Team #29"
     active: yes
     logo: "./html/images/teams/team29.png"
-    ip_address: "127.0.29.1" # address to vulnserver
-
+    big-logo: "./html/images/teams/team29.png"
+    ip_address: "127.0.29.1"
   - id: "t30" # must be uniq
+    type: normal
     name: "Team #30 1111111111111111111111111111111"
     active: yes
     logo: "./html/images/teams/team30.png"
-    ip_address: "192.168.88.3" # address to vulnserver
+    big-logo: "./html/images/teams/team30.png"
+    ip_address: "192.168.88.3"

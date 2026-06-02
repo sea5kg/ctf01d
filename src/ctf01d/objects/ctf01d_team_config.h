@@ -38,12 +38,16 @@
 #pragma once
 
 #include <string>
+#include <memory>
+#include <wsjcpp_yaml.h>
+#include "ctf01d_var.h"
 
 namespace ctf01d {
 
 class team_config {
 public:
   team_config();
+  bool read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err);
 
   void setId(const std::string &sId);
   const std::string &getId() const;
@@ -63,6 +67,13 @@ public:
   int getLogoLastWriteTime();
 
 private:
+  std::string TAG;
+  std::string m_work_dir;
+  ctf01d::scope_vars m_vars = ctf01d::scope_vars("team_config");
+  std::shared_ptr<ctf01d::var_string> m_type;
+  std::shared_ptr<ctf01d::var_file> m_logo;
+  std::shared_ptr<ctf01d::var_file> m_big_logo;
+
   bool m_bActive;
   std::string m_sTeamID;
   std::string m_sName;

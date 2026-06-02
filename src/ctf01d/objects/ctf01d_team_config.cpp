@@ -40,7 +40,27 @@
 namespace ctf01d {
 
 team_config::team_config() {
-  // nothing
+  // normal, red, blue, guest, inactive, disqualified
+  m_type = ctf01d::var_string::create({"type"}, "normal", m_vars);
+  m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
+  m_big_logo = ctf01d::var_file::create({"big-logo"}, "", "", m_vars);
+}
+
+bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err) {
+  m_work_dir = work_dir;
+  m_logo->set_root_dir(m_work_dir);
+  m_big_logo->set_root_dir(m_work_dir);
+  if (!m_vars.read(cursor, err)) {
+    return false;
+  }
+  // if (m_enabled->value()) {
+  //   m_script_dir->set_root_dir(m_work_dir);
+  //   if (!m_script_dir->set_value("checker_" + m_id->value(), err)) {
+  //     return false;
+  //   }
+  // }
+
+  return true;
 }
 
 void team_config::setId(const std::string &sTeamId){

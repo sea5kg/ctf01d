@@ -511,12 +511,18 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
   std::vector<std::string> vIPAddresses;
 
   for (int i = 0; i < yamlTeams.size(); i++) {
-    WsjcppYamlCursor yamlTeam = yamlTeams[i];
-    std::string sTeamId = yamlTeam["id"].valStr();
+    WsjcppYamlCursor cur = yamlTeams[i];
+    ctf01d::team_config _team_config;
+    std::string err;
+    if (!_team_config.read(cur, m_sWorkDir, err)) {
+      return false;
+    }
+
+    std::string sTeamId = cur["id"].valStr();
     // TODO check sTeamId format
 
     WsjcppLog::info(TAG, "id = " + sTeamId);
-    bool bTeamActive = yamlTeam["active"].valBool();
+    bool bTeamActive = cur["active"].valBool();
     WsjcppLog::info(TAG, "active = " + std::string(bTeamActive ? "yes" : "no"));
     if (!bTeamActive) {
       WsjcppLog::warn(TAG, "Team " + sTeamId + " - deactivated");
@@ -530,10 +536,10 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
       }
     }
 
-    std::string sTeamName = yamlTeam["name"].valStr();
+    std::string sTeamName = cur["name"].valStr();
     WsjcppLog::info(TAG, "name = " + sTeamName);
 
-    std::string sTeamIpAddress = yamlTeam["ip_address"].valStr();
+    std::string sTeamIpAddress = cur["ip_address"].valStr();
     WsjcppLog::info(TAG, "ip_address = " + sTeamIpAddress);
     std::string sError;
     if (!isValidIPv4(sTeamIpAddress, sError)) {
@@ -549,7 +555,7 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
       return false;
     }
 
-    std::string sTeamLogo = yamlTeam["logo"].valStr();
+    std::string sTeamLogo = cur["logo"].valStr();
     sTeamLogo = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sTeamLogo);
     if (!pTeamLogos->loadTeamLogo(sTeamId, sTeamLogo)) {
       return false;
@@ -557,14 +563,13 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
     WsjcppLog::info(TAG, "logo = " + sTeamLogo);
 
     // default values of service config
-    ctf01d::team_config _teamConf;
-    _teamConf.setId(sTeamId);
-    _teamConf.setName(sTeamName);
-    _teamConf.setActive(true);
-    _teamConf.setIpAddress(sTeamIpAddress);
-    _teamConf.setLogo(sTeamLogo);
+    _team_config.setId(sTeamId);
+    _team_config.setName(sTeamName);
+    _team_config.setActive(true);
+    _team_config.setIpAddress(sTeamIpAddress);
+    _team_config.setLogo(sTeamLogo);
 
-    m_vTeamsConf.push_back(_teamConf);
+    m_vTeamsConf.push_back(_team_config);
     WsjcppLog::ok(TAG, "Registered team " + sTeamId);
   }
 

@@ -46,8 +46,8 @@ service_config::service_config() {
   m_id = ctf01d::var_string::create({"id"}, "", m_vars);
   m_name = ctf01d::var_string::create({"service_name"}, "", m_vars);
   m_enabled = ctf01d::var_bool::create({"enabled"}, true, m_vars);
-  m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars); // TODO var_file
-  m_big_logo = ctf01d::var_file::create({"big-logo"}, "", "", m_vars); // TODO var_file
+  m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
+  m_big_logo = ctf01d::var_file::create({"big-logo"}, "", "", m_vars);
   m_script_path = ctf01d::var_string::create({"script_path"}, "", m_vars);
   m_script_wait_in_sec = ctf01d::var_int::create({"script_wait_in_sec"}, 5, m_vars);
   m_script_wait_in_sec->set_minimum(1);
