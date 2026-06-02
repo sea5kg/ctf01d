@@ -378,7 +378,7 @@ bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
   std::vector<std::string> expected_keys = {
     "scoreboard",
     "game",
-    "checkers",
+    "services",
     "teams",
   };
   std::vector<std::string> main_keys = cur.keys();
@@ -438,7 +438,7 @@ bool EmployConfig::applyGameConf(WsjcppYaml &yamlConfig) {
 bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
   m_vServicesConf.clear();
 
-  WsjcppYamlCursor yamlCheckers = yamlConfig["checkers"];
+  WsjcppYamlCursor yamlCheckers = yamlConfig["services"];
 
   if (yamlCheckers.size() == 0) {
     WsjcppLog::err(TAG, "Checkers does not defined");
@@ -457,7 +457,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
       return false;
     }
 
-    if (!_serviceConf.isEnabled()) {
+    if (!_serviceConf.is_enabled()) {
       WsjcppLog::warn(TAG, "Checker for service " + _serviceConf.id() + " - disabled ");
       continue;
     }
@@ -472,12 +472,12 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
     m_vServicesConf.push_back(_serviceConf);
 
     // set write permissions for all to directory with checker
-    if (!WsjcppCore::setFilePermissions(_serviceConf.scriptDir(), WsjcppFilePermissions(0x777), err)) {
+    if (!WsjcppCore::setFilePermissions(_serviceConf.script_dir(), WsjcppFilePermissions(0x777), err)) {
       WsjcppLog::err(TAG, err);
       return false;
     }
 
-    std::string script_absolute_path = wsjcpp::normalizeFilePath(_serviceConf.scriptDir() + "/" + _serviceConf.scriptPath());
+    std::string script_absolute_path = wsjcpp::normalizeFilePath(_serviceConf.script_dir() + "/" + _serviceConf.script_path());
     if (!WsjcppCore::fileExists(script_absolute_path)) {
       WsjcppLog::err(TAG, "File " + script_absolute_path + " did not exists");
       return false;
@@ -492,7 +492,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
   }
 
   if (m_vServicesConf.size() == 0) {
-    WsjcppLog::err(TAG, "No one defined checkers in config");
+    WsjcppLog::err(TAG, "No one defined services in config");
     return false;
   }
 

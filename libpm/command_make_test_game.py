@@ -237,7 +237,7 @@ class CommandMakeTestGame:
             "  html-dir-path: \"./html\"",
             "  random: no",
             "",
-            "checkers:",
+            "services:",
         ]
 
         _data_path = os.path.join(_jury_dir, "data")
@@ -246,11 +246,11 @@ class CommandMakeTestGame:
             _name_service = "service" + str(service_i)
             _config.extend([
                 "  - id: \"" + _name_service + "\"",
-                "    service_name: \"Service" + str(service_i) + "\"",
+                "    name: \"Service" + str(service_i) + "\"",
                 "    enabled: yes",
-                "    script_path: \"./checker.py\"",
-                "    script_wait_in_sec: 5",
-                "    round_in_seconds: 15",
+                "    script-relative-path: \"./checker.py\"",
+                "    script-timeout-in-seconds: 5",
+                "    round-in-seconds: 15",
             ])
             _port = 4100 + service_i
             _readme.append("- Service" + str(service_i) + " port: " + str(_port))

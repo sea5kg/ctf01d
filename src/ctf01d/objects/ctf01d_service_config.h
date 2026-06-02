@@ -51,10 +51,10 @@ public:
   bool read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err);
   std::string id() const;
   std::string name() const;
-  std::string scriptPath() const;
-  std::string scriptDir() const;
-  bool isEnabled() const;
-  int scriptWaitInSec() const;
+  std::string script_path() const;
+  std::string script_dir() const;
+  bool is_enabled() const;
+  int script_timeout_in_seconds() const;
   int round_in_seconds() const;
 
 private:
@@ -66,7 +66,7 @@ private:
   std::shared_ptr<ctf01d::var_bool> m_enabled;
   std::shared_ptr<ctf01d::var_file> m_logo;
   std::shared_ptr<ctf01d::var_file> m_big_logo;
-  std::shared_ptr<ctf01d::var_int> m_script_wait_in_sec;
+  std::shared_ptr<ctf01d::var_int> m_script_timeout_in_seconds;
   std::shared_ptr<ctf01d::var_int> m_round_in_seconds;
   std::shared_ptr<ctf01d::var_string> m_script_path;
   std::shared_ptr<ctf01d::var_dir> m_script_dir;

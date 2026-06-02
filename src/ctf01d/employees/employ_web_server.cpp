@@ -153,7 +153,7 @@ void EmployWebServer::updateJsonCache() {
 
   for (unsigned int i = 0; i < config->servicesConf().size(); i++) {
     ctf01d::service_config serviceConf = config->servicesConf()[i];
-    if (serviceConf.isEnabled()) {
+    if (serviceConf.is_enabled()) {
       nlohmann::json serviceInfo;
       serviceInfo["id"] = serviceConf.id();
       serviceInfo["name"] = serviceConf.name();

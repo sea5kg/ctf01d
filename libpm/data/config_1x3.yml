@@ -20,9 +20,9 @@ checkers:
     enabled: true
     logo: "./html/images/services/service1-default-icon.svg"
     big-logo: "./html/images/services/service1-default-icon.svg"
-    script_path: ./checker.py
-    script_wait_in_sec: 5
-    round_in_seconds: 15
+    script-relative-path: ./checker.py
+    script-timeout-in-seconds: 5
+    round-in-seconds: 15
 teams:
   config:
     ip-or-host-prefix: ""

@@ -70,10 +70,10 @@ resources:
       modified: 1779675622
       sha1: "888e571c3f5f5611c74d757392c11f5fddf608dc"
     - filepath: "./data_sample/config.yml"
-      size: 8895
+      size: 9374
       pack-as: "text"
-      modified: 1780370335
-      sha1: "68ab0307150bd0efea45eafe29291d66edf4929f"
+      modified: 1780372263
+      sha1: "06c9087d70ae9eb81ce3c85cb5066d16dc888005"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
       pack-as: "binary"
@@ -355,10 +355,10 @@ resources:
       modified: 1779675622
       sha1: "b423ebfc46f18b2344a39e094b80ad750a2740fc"
     - filepath: "./data_sample/game_result_calculation.py"
-      size: 14267
+      size: 14259
       pack-as: "binary"
-      modified: 1779675622
-      sha1: "271ee36368b1ccb15a3d4ebb73c4f108bbad1558"
+      modified: 1780372176
+      sha1: "6d59ecc34b337e6dc5fe279ae2733f95defe5cfb"
     - filepath: "./data_sample/html/style-hackerdom/index.html"
       size: 1589
       pack-as: "binary"

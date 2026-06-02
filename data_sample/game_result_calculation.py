@@ -92,7 +92,7 @@ RENDER_DATA = {
 SERVICE_IDS = []
 for checker in CONFIG["checkers"]:
     RENDER_DATA["rows"].append(checker["id"])
-    RENDER_DATA["names"][checker["id"]] = checker["service_name"]
+    RENDER_DATA["names"][checker["id"]] = checker["name"]
     SERVICE_IDS.append(checker["id"])
 
 print(GAME_LENGTH)

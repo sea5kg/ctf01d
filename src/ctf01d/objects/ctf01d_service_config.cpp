@@ -44,14 +44,14 @@ service_config::service_config() {
   TAG = "ctf01d::service_config";
 
   m_id = ctf01d::var_string::create({"id"}, "", m_vars);
-  m_name = ctf01d::var_string::create({"service_name"}, "", m_vars);
+  m_name = ctf01d::var_string::create({"name"}, "", m_vars);
   m_enabled = ctf01d::var_bool::create({"enabled"}, true, m_vars);
   m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
   m_big_logo = ctf01d::var_file::create({"big-logo"}, "", "", m_vars);
-  m_script_path = ctf01d::var_string::create({"script_path"}, "", m_vars);
-  m_script_wait_in_sec = ctf01d::var_int::create({"script_wait_in_sec"}, 5, m_vars);
-  m_script_wait_in_sec->set_minimum(1);
-  m_round_in_seconds = ctf01d::var_int::create({"round_in_seconds"}, 15, m_vars);
+  m_script_path = ctf01d::var_string::create({"script-relative-path"}, "", m_vars);
+  m_script_timeout_in_seconds = ctf01d::var_int::create({"script-timeout-in-seconds"}, 5, m_vars);
+  m_script_timeout_in_seconds->set_minimum(1);
+  m_round_in_seconds = ctf01d::var_int::create({"round-in-seconds"}, 15, m_vars);
   m_round_in_seconds->set_minimum(1);
   // m_round_in_seconds->set_maximum(1);
 
@@ -73,7 +73,7 @@ bool service_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir,
     }
   }
 
-  if (m_round_in_seconds->value() < m_script_wait_in_sec->value()*3) {
+  if (m_round_in_seconds->value() < m_script_timeout_in_seconds->value()*3) {
     err = "";
     return false;
   }
@@ -88,20 +88,20 @@ std::string service_config::name() const {
   return m_name->value();
 }
 
-std::string service_config::scriptPath() const {
+std::string service_config::script_path() const {
   return m_script_path->value();
 }
 
-std::string service_config::scriptDir() const {
+std::string service_config::script_dir() const {
   return m_script_dir->value();
 }
 
-bool service_config::isEnabled() const {
+bool service_config::is_enabled() const {
   return m_enabled->value();
 }
 
-int service_config::scriptWaitInSec() const {
-  return m_script_wait_in_sec->value();
+int service_config::script_timeout_in_seconds() const {
+  return m_script_timeout_in_seconds->value();
 }
 
 int service_config::round_in_seconds() const {

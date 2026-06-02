@@ -89,13 +89,13 @@ class UtilsCtf01dConfig:
             n = str(i)
             ret["checkers"].append({
                 "id": "test_service" + n,
-                "service_name": "Service" + n,
+                "name": "Service" + n,
                 "enabled": True,
                 # "host": 127.0.0.1,
                 # "port": 10001,
-                "script_path": "./checker.py",
-                "script_wait_in_sec": 5,
-                "round_in_seconds": 15,
+                "script-relative-path": "./checker.py",
+                "script-timeout-in-seconds": 5,
+                "round-in-seconds": 15,
             })
         return ret
 

@@ -82,7 +82,7 @@ Allowed return codes:
 
 Don't allowed but scripts can return:
 
-  * none - "service is mumbled" (this state used by ctf01d for detect problems with checker script: a long time running, please fix checker-script or change `script_wait_in_sec` in ctf01d `data/config.yml`)
+  * none - "service is mumbled" (this state used by ctf01d for detect problems with checker script: a long time running, please fix checker-script or change `script-timeout-in-seconds` in ctf01d `data/config.yml`)
   * other - "checker is shit" (this state used by ctf01d for detect problems with checker script: could not run checker-script or checker-script ended with unexpected exit code)
 
 # Checker script description
@@ -277,11 +277,11 @@ Remove example services and add you checker-service, like:
 ```yml
 checkers:
   - id: "service_ZxjQMahnoK" # work directory will be checker_service_ZxjQMahnoK
-    service_name: "Service1"
+    name: "Service1"
     enabled: yes
     script_path: "./checker.py"
-    script_wait_in_sec: 5 # max time for running script
-    round_in_seconds: 15
+    script-timeout: 5 # max time for running script
+    round-in-seconds: 15
 ```
 where "service_ZxjQMahnoK" is a UNIQUE id within the game config
 

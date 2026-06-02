@@ -98,7 +98,7 @@ int service_checker_thread::runChecker(Ctf01dFlag &flag, const std::string &sCom
   // Used code from here
   // https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
 
-  std::string sShellCommand = m_serviceConf.scriptPath()
+  std::string sShellCommand = m_serviceConf.script_path()
     + " " + m_teamConf.ip_or_host()
     + " " + sCommand
     + " " + flag.getId()
@@ -107,13 +107,13 @@ int service_checker_thread::runChecker(Ctf01dFlag &flag, const std::string &sCom
   WsjcppLog::info(TAG, "Start script " + sShellCommand);
 
   DoRunChecker process(
-    m_serviceConf.scriptDir(),
-    m_serviceConf.scriptPath(),
+    m_serviceConf.script_dir(),
+    m_serviceConf.script_path(),
     m_teamConf.ip_or_host(),
     sCommand, flag.getId(),
     flag.getValue()
   );
-  process.start(m_serviceConf.scriptWaitInSec()*1000);
+  process.start(m_serviceConf.script_timeout_in_seconds()*1000);
 
   if (process.isTimeout()) {
     WsjcppLog::err(TAG, "ErrorTimeout on run script service: " + process.outputString());
@@ -163,7 +163,7 @@ void service_checker_thread::run() {
     return;
   }*/
 
-  std::string sScriptPath = m_serviceConf.scriptPath();
+  std::string sScriptPath = m_serviceConf.script_path();
   /*
   // already checked on start
   if (!Wsjcpp::fileExists(sScriptPath)) {
