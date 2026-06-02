@@ -128,12 +128,12 @@ class CommandRebuildEnvironmentImages:
             self.__log.error("ERROR: Could not build image by command: %s", cmd)
             sys.exit(1)
 
-    def __has_image(self, fulltag):
-        retcode, output = UtilsShell.run_command_get_output(self.__log, [
-            "docker", "images", fulltag, "--format", "{{json . }}"
+    def __has_image(self, full_tag):
+        exit_code, output = UtilsShell.run_command_get_output(self.__log, [
+            "docker", "images", full_tag, "--format", "{{json . }}"
         ])
-        if retcode != 0:
-            # self.__log.info("retcode: %s", retcode)
+        if exit_code != 0:
+            # self.__log.info("exit_code: %s", exit_code)
             self.__log.error("Could not execute command 'docker images...', output %s", output)
             sys.exit(-1)
         # self.__log.info("output: %s", output)

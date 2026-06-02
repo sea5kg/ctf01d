@@ -43,12 +43,11 @@ class UtilsStrings:
     """ UtilsStrings """
 
     @staticmethod
-    def to_camel_case(snake_str):
+    def to_camelcase(snake_str):
         """
-        to_camel_case
+        to_camelcase
 
-        by https://stackoverflow.com/users/487903/jbaiter
-        from stackoverflow
+        from https://stackoverflow.com/users/487903/jbaiter
         """
         return "".join(x.capitalize() for x in snake_str.lower().split("_"))
 
@@ -58,9 +57,8 @@ class UtilsStrings:
         We capitalize the first letter of each component except the first one
         with the 'capitalize' method and join them together.
 
-        by https://stackoverflow.com/users/487903/jbaiter
-        from stackoverflow
+        from https://stackoverflow.com/users/487903/jbaiter
         """
 
-        camel_string = UtilsStrings.to_camel_case(snake_str)
+        camel_string = UtilsStrings.to_camelcase(snake_str)
         return snake_str[0].upper() + camel_string[1:]

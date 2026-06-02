@@ -1,6 +1,7 @@
 {
     "cSpell.words": [
         "dedup",
+        "dpkg",
         "elif",
         "errno",
         "fastblinking",
@@ -11,10 +12,13 @@
         "killall",
         "libhv",
         "libpm",
+        "libpthread",
         "listended",
+        "noninteractive",
         "pycache",
         "REUSEADDR",
         "settimeout",
+        "snakecase",
         "tooltiptext",
         "tzdata",
         "vulnbox",

@@ -60,7 +60,7 @@ class CommandPyCheck:
         return self.__subcommand_name
 
     def do_registry(self, subparsers):
-        """ registring sub command """
+        """ registering sub command """
         _parser = subparsers.add_parser(
             name=self.__subcommand_name,
             description='Check python files'

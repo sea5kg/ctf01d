@@ -51,10 +51,10 @@ class UtilsLog:
             '[%(asctime)s] %(levelname)s [%(filename)s.%(funcName)s:%(lineno)d] %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
         )
-        self.__shellout = logging.StreamHandler(sys.stdout)
-        self.__shellout.setLevel(logging.DEBUG)
-        self.__shellout.setFormatter(formatter)
-        self.__log.addHandler(self.__shellout)
+        self.__shell_out = logging.StreamHandler(sys.stdout)
+        self.__shell_out.setLevel(logging.DEBUG)
+        self.__shell_out.setFormatter(formatter)
+        self.__log.addHandler(self.__shell_out)
         self.__log.propagate = False
 
     def get_logger(self):
@@ -64,4 +64,4 @@ class UtilsLog:
     def set_level(self, level):
         """ set level """
         self.__log.setLevel(level)
-        self.__shellout.setLevel(level)
+        self.__shell_out.setLevel(level)
