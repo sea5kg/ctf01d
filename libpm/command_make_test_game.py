@@ -272,10 +272,12 @@ class CommandMakeTestGame:
             )
             _config.extend([
                 "  - id: \"t" + team_ti + "\"",
+                "    type: \"normal\"",
                 "    name: \"Team #" + str(team_i) + "\"",
                 "    active: yes",
                 "    logo: \"./html/images/teams/team" + team_ti + ".png\"",
-                "    ip_address: \"10.10." + str(team_i) + ".3\"",
+                "    big-logo: \"./html/images/teams/team" + team_ti + ".png\"",
+                "    ip-or-host: \"10.10." + str(team_i) + ".3\"",
             ])
         _config.extend([""])
         _readme.extend([""])

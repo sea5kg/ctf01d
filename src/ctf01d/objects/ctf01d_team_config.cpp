@@ -41,9 +41,13 @@ namespace ctf01d {
 
 team_config::team_config() {
   // normal, red, blue, guest, inactive, disqualified
+  m_id = ctf01d::var_string::create({"id"}, "normal", m_vars);
   m_type = ctf01d::var_string::create({"type"}, "normal", m_vars);
+  m_name = ctf01d::var_string::create({"name"}, "normal", m_vars);
+  m_active = ctf01d::var_bool::create({"active"}, true, m_vars);
   m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
   m_big_logo = ctf01d::var_file::create({"big-logo"}, "", "", m_vars);
+  m_ip_or_host = ctf01d::var_string::create({"ip-or-host"}, "", m_vars); // TODO var_ip_or_host
 }
 
 bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err) {
@@ -53,7 +57,7 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
   if (!m_vars.read(cursor, err)) {
     return false;
   }
-  // if (m_enabled->value()) {
+  // if (m_active->value()) {
   //   m_script_dir->set_root_dir(m_work_dir);
   //   if (!m_script_dir->set_value("checker_" + m_id->value(), err)) {
   //     return false;
@@ -63,44 +67,27 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
   return true;
 }
 
-void team_config::setId(const std::string &sTeamId){
-  m_sTeamID = sTeamId;
+std::string team_config::id() const {
+  return m_id->value();
 }
 
-const std::string &team_config::getId() const {
-  return m_sTeamID;
+std::string team_config::name() const {
+  return m_name->value();
 }
 
-void team_config::setName(const std::string &sName){
-  m_sName = sName;
+std::string team_config::ip_or_host() const {
+  return m_ip_or_host->value();
 }
 
-const std::string &team_config::getName() const {
-  return m_sName;
+bool team_config::is_active() const {
+  return m_active->value();
 }
 
-void team_config::setIpAddress(const std::string &sIpAddress){
-  m_sIpAddress = sIpAddress;
+std::string team_config::logo_path() const {
+  return m_logo->value();
 }
-
-const std::string &team_config::ipAddress() const {
-  return m_sIpAddress;
-}
-
-void team_config::setActive(bool bActive){
-  m_bActive = bActive;
-}
-
-bool team_config::isActive() const {
-  return m_bActive;
-}
-
-void team_config::setLogo(const std::string &sLogo){
-  m_sLogo = sLogo;
-}
-
-const std::string &team_config::logo() const {
-  return m_sLogo;
+std::string team_config::big_logo_path() const {
+  return m_big_logo->value();
 }
 
 int team_config::getLogoLastWriteTime() {

@@ -49,20 +49,12 @@ public:
   team_config();
   bool read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err);
 
-  void setId(const std::string &sId);
-  const std::string &getId() const;
-
-  void setName(const std::string &sName);
-  const std::string &getName() const;
-
-  void setIpAddress(const std::string &sIpAddress);
-  const std::string &ipAddress() const;
-
-  void setActive(bool bActive);
-  bool isActive() const;
-
-  void setLogo(const std::string &sLogo);
-  const std::string &logo() const;
+  std::string id() const;
+  std::string name() const;
+  std::string ip_or_host() const;
+  bool is_active() const;
+  std::string logo_path() const;
+  std::string big_logo_path() const;
 
   int getLogoLastWriteTime();
 
@@ -70,15 +62,15 @@ private:
   std::string TAG;
   std::string m_work_dir;
   ctf01d::scope_vars m_vars = ctf01d::scope_vars("team_config");
+  std::shared_ptr<ctf01d::var_string> m_id;
+  std::shared_ptr<ctf01d::var_string> m_name;
   std::shared_ptr<ctf01d::var_string> m_type;
+  std::shared_ptr<ctf01d::var_string> m_ip_or_host;
   std::shared_ptr<ctf01d::var_file> m_logo;
   std::shared_ptr<ctf01d::var_file> m_big_logo;
+  std::shared_ptr<ctf01d::var_bool> m_active;
 
-  bool m_bActive;
-  std::string m_sTeamID;
-  std::string m_sName;
   std::string m_sIpAddress;
-  std::string m_sLogo;
   int m_nLogoLastWriteTime;
 };
 

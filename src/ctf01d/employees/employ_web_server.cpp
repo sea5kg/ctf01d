@@ -165,10 +165,11 @@ void EmployWebServer::updateJsonCache() {
   for (unsigned int i = 0; i < config->teamsConf().size(); i++) {
       ctf01d::team_config teamConf = config->teamsConf()[i];
       nlohmann::json teamInfo;
-      teamInfo["id"] = teamConf.getId();
-      teamInfo["name"] = teamConf.getName();
-      teamInfo["ip_address"] = teamConf.ipAddress();
-      teamInfo["logo"] = "./team-logo/" + teamConf.getId();
+      teamInfo["id"] = teamConf.id();
+      teamInfo["name"] = teamConf.name();
+      teamInfo["ip_address"] = teamConf.ip_or_host();
+      teamInfo["logo"] = "./team-logo/" + teamConf.id();
+      teamInfo["logo"] = "./team-big-logo/" + teamConf.id();
       teamInfo["logo_last_write_time"] = teamConf.getLogoLastWriteTime();
 
       jsonGame["teams"].push_back(teamInfo);
@@ -362,7 +363,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   bool bTeamFound = false;
   for (unsigned int i_team = 0; i_team < config->teamsConf().size(); i_team++) {
     ctf01d::team_config teamConf = config->teamsConf()[i_team];
-    if (teamConf.getId() == sTeamId) {
+    if (teamConf.id() == sTeamId) {
       bTeamFound = true;
     }
   }

@@ -75,7 +75,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   m_mapTeamsStatuses.clear(); // possible memory leak
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
     ctf01d::team_config teamConf = vTeamsConf[i_team];
-    std::string sTeamId = teamConf.getId();
+    std::string sTeamId = teamConf.id();
     m_mapTeamsStatuses[sTeamId] = new Ctf01dTeamStatusRow(sTeamId, nGameStartInSec, nGameEndInSec);
     m_mapTeamsStatuses[sTeamId]->setPlace(i_team + 1);
     // random values of service for testing
@@ -123,7 +123,7 @@ void Ctf01dScoreboard::initJsonScoreboard() {
   nlohmann::json jsonScoreboard;
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
     ctf01d::team_config teamConf = vTeamsConf[i_team];
-    std::string sTeamId = teamConf.getId();
+    std::string sTeamId = teamConf.id();
     nlohmann::json teamData;
     teamData["place"] = m_mapTeamsStatuses[sTeamId]->getPlace();
     teamData["points"] = double(m_mapTeamsStatuses[sTeamId]->getPoints());
@@ -142,7 +142,7 @@ void Ctf01dScoreboard::initJsonScoreboard() {
       jsonServices[serviceConf.id()] = serviceData;
     }
     teamData["ts_sta"] = jsonServices;
-    jsonScoreboard[teamConf.getId()] = teamData;
+    jsonScoreboard[teamConf.id()] = teamData;
   }
   m_jsonScoreboard["scoreboard"] = jsonScoreboard;
   nlohmann::json jsonGame;

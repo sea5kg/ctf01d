@@ -212,7 +212,7 @@ int main(int argc, const char* argv[]) {
         ctf01d::service_config serviceConf = pEmployConfig->servicesConf()[iservice];
 
         // reset status to down
-        pEmployConfig->scoreboard()->setServiceStatus(teamConf.getId(), serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
+        pEmployConfig->scoreboard()->setServiceStatus(teamConf.id(), serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
         // pConfig->scoreboard()->setTeamTries();
 
         ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(teamConf, serviceConf);

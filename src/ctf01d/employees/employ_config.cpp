@@ -518,59 +518,34 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
       return false;
     }
 
-    std::string sTeamId = cur["id"].valStr();
     // TODO check sTeamId format
-
-    WsjcppLog::info(TAG, "id = " + sTeamId);
-    bool bTeamActive = cur["active"].valBool();
-    WsjcppLog::info(TAG, "active = " + std::string(bTeamActive ? "yes" : "no"));
-    if (!bTeamActive) {
-      WsjcppLog::warn(TAG, "Team " + sTeamId + " - deactivated");
+    if (!_team_config.is_active()) {
+      WsjcppLog::warn(TAG, "Team " + _team_config.id() + " - deactivated");
       continue;
     }
 
     for (unsigned int i = 0; i < m_vTeamsConf.size(); i++) {
-      if (m_vTeamsConf[i].getId() == sTeamId) {
-        WsjcppLog::err(TAG, "Already registered team with id " + sTeamId);
+      if (m_vTeamsConf[i].id() == _team_config.id()) {
+        WsjcppLog::err(TAG, "Already registered team with id " + _team_config.id());
         return false;
       }
     }
 
-    std::string sTeamName = cur["name"].valStr();
-    WsjcppLog::info(TAG, "name = " + sTeamName);
-
-    std::string sTeamIpAddress = cur["ip_address"].valStr();
-    WsjcppLog::info(TAG, "ip_address = " + sTeamIpAddress);
-    std::string sError;
-    if (!isValidIPv4(sTeamIpAddress, sError)) {
-      WsjcppLog::err(TAG, "Invalid IPv4 address" + sError);
+    if (!isValidIPv4(_team_config.ip_or_host(), err)) {
+      WsjcppLog::err(TAG, "Invalid IPv4 address: " + err);
       return false;
     }
 
     // Check duplicate IP addresses
-    if (std::find(vIPAddresses.begin(), vIPAddresses.end(), sTeamIpAddress) == vIPAddresses.end()) {
-      vIPAddresses.push_back(sTeamIpAddress);
+    if (std::find(vIPAddresses.begin(), vIPAddresses.end(), _team_config.ip_or_host()) == vIPAddresses.end()) {
+      vIPAddresses.push_back(_team_config.ip_or_host());
     } else {
-      WsjcppLog::err(TAG, "Found duplicate IP address: " + sTeamIpAddress);
+      WsjcppLog::err(TAG, "Found duplicate IP address: " + _team_config.ip_or_host());
       return false;
     }
-
-    std::string sTeamLogo = cur["logo"].valStr();
-    sTeamLogo = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sTeamLogo);
-    if (!pTeamLogos->loadTeamLogo(sTeamId, sTeamLogo)) {
-      return false;
-    }
-    WsjcppLog::info(TAG, "logo = " + sTeamLogo);
-
-    // default values of service config
-    _team_config.setId(sTeamId);
-    _team_config.setName(sTeamName);
-    _team_config.setActive(true);
-    _team_config.setIpAddress(sTeamIpAddress);
-    _team_config.setLogo(sTeamLogo);
 
     m_vTeamsConf.push_back(_team_config);
-    WsjcppLog::ok(TAG, "Registered team " + sTeamId);
+    WsjcppLog::ok(TAG, "Registered team " + _team_config.id());
   }
 
   if (m_vTeamsConf.size() == 0) {

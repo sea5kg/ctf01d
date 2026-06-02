@@ -72,7 +72,7 @@ service_checker_thread::service_checker_thread(
   m_serviceConf = service;
   m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
 
-  TAG = "Checker: " + m_teamConf.getId() + std::string( 15 - m_teamConf.getId().length(), ' ')
+  TAG = "Checker: " + m_teamConf.id() + std::string( 15 - m_teamConf.id().length(), ' ')
     + m_serviceConf.id() + " ";
   WsjcppLog::info(TAG, "Created thread");
 }
@@ -99,7 +99,7 @@ int service_checker_thread::runChecker(Ctf01dFlag &flag, const std::string &sCom
   // https://stackoverflow.com/questions/478898/how-to-execute-a-command-and-get-output-of-command-within-c-using-posix
 
   std::string sShellCommand = m_serviceConf.scriptPath()
-    + " " + m_teamConf.ipAddress()
+    + " " + m_teamConf.ip_or_host()
     + " " + sCommand
     + " " + flag.getId()
     + " " + flag.getValue();
@@ -109,7 +109,7 @@ int service_checker_thread::runChecker(Ctf01dFlag &flag, const std::string &sCom
   DoRunChecker process(
     m_serviceConf.scriptDir(),
     m_serviceConf.scriptPath(),
-    m_teamConf.ipAddress(),
+    m_teamConf.ip_or_host(),
     sCommand, flag.getId(),
     flag.getValue()
   );
@@ -181,7 +181,7 @@ void service_checker_thread::run() {
       && nCurrentTime < m_pConfig->gameCoffeeBreakEndUTCInSec()
     ) {
       WsjcppLog::info(TAG, "Game on coffee break");
-      m_pConfig->scoreboard()->setServiceStatus(m_teamConf.getId(), m_serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK);
+      m_pConfig->scoreboard()->setServiceStatus(m_teamConf.id(), m_serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK);
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       continue;
     }
@@ -193,7 +193,7 @@ void service_checker_thread::run() {
 
     if (nCurrentTime < nGameStartUTCInSec) {
       WsjcppLog::warn(TAG, "Game started after: " + std::to_string(nGameStartUTCInSec - nCurrentTime) + " seconds");
-      m_pConfig->scoreboard()->setServiceStatus(m_teamConf.getId(), m_serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_WAIT);
+      m_pConfig->scoreboard()->setServiceStatus(m_teamConf.id(), m_serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_WAIT);
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       continue;
     };
@@ -207,7 +207,7 @@ void service_checker_thread::run() {
       Ctf01dFlag flag;
       flag.generateRandomFlag(
         m_pConfig->flagLifetimeInSeconds(),
-        m_teamConf.getId(),
+        m_teamConf.id(),
         m_serviceConf.id(),
         nGameStartUTCInSec
       );
@@ -246,7 +246,7 @@ void service_checker_thread::run() {
       // check some service status or just update to UP (Ha-Ha I'm the real evil!)
     }
 
-    std::vector<Ctf01dFlag> vEndedFlags = m_pConfig->scoreboard()->outdatedFlagsLive(m_teamConf.getId(), m_serviceConf.id());
+    std::vector<Ctf01dFlag> vEndedFlags = m_pConfig->scoreboard()->outdatedFlagsLive(m_teamConf.id(), m_serviceConf.id());
 
     for (unsigned int i = 0; i < vEndedFlags.size(); i++) {
       Ctf01dFlag outdatedFlag = vEndedFlags[i];
