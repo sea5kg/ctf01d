@@ -36,13 +36,16 @@
  ***********************************************************************************/
 
 #include "ctf01d_team_config.h"
+#include <wsjcpp_core.h>
+#include <vector>
+#include <algorithm>
 
 namespace ctf01d {
 
 team_config::team_config() {
   // normal, red, blue, guest, inactive, disqualified
   m_id = ctf01d::var_string::create({"id"}, "normal", m_vars);
-  m_type = ctf01d::var_string::create({"type"}, "normal", m_vars);
+  m_type = ctf01d::var_string::create({"type"}, "normal", m_vars); // TODO var_types
   m_name = ctf01d::var_string::create({"name"}, "normal", m_vars);
   m_active = ctf01d::var_bool::create({"active"}, true, m_vars);
   m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
@@ -57,6 +60,21 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
   if (!m_vars.read(cursor, err)) {
     return false;
   }
+  // check type
+  static const std::vector<std::string> allowed_types = {
+    "normal",
+    "red",
+    "blue",
+    "guest",
+    "disqualified",
+  };
+  if (std::find(allowed_types.begin(), allowed_types.end(), m_type->value()) == allowed_types.end()) {
+    err = "Didn't allowed team.type: '" + m_type->value() + "'";
+    WsjcppLog::err(TAG, err);
+    return false;
+  }
+  // m_type->value()
+
   // if (m_active->value()) {
   //   m_script_dir->set_root_dir(m_work_dir);
   //   if (!m_script_dir->set_value("checker_" + m_id->value(), err)) {
