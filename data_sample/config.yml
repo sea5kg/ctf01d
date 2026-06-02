@@ -13,7 +13,7 @@ game:
 
 scoreboard:
   port: 8080 # http port for scoreboard
-  htmlfolder: "./html" # web page for scoreboard see index-template.html
+  html-dir-path: "./html" # web page for scoreboard see index-template.html
   random: no # If yes - will be random values in scoreboard
 
 checkers:

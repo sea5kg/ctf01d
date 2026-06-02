@@ -64,7 +64,7 @@ class UtilsCtf01dConfig:
 
             "scoreboard": {
                 "port": 8080,
-                "htmlfolder": "./html",
+                "html-dir-path": "./html",
                 "random": False,
             },
 

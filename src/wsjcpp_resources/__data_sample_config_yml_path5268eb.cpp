@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 7595;
+  return 7598;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 7595
+  static const std::string sRet = "" // size: 7598
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -39,7 +39,7 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "\n"
     "scoreboard:\n"
     "  port: 8080 # http port for scoreboard\n"
-    "  htmlfolder: \"./html\" # web page for scoreboard see index-template.html\n"
+    "  html-dir-path: \"./html\" # web page for scoreboard see index-template.html\n"
     "  random: no # If yes - will be random values in scoreboard\n"
     "\n"
     "checkers:\n"

@@ -85,7 +85,7 @@ EmployConfig::EmployConfig()
   m_scoreboard_port->set_maximum(MAX_TCP_PORT);
 
   m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_vars);
-  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "htmlfolder"}, "./html", m_sWorkDir, m_vars);
+  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_sWorkDir, m_vars);
 
   m_pScoreboard = nullptr;
 }

@@ -9,7 +9,7 @@ game:
   flag_cost_in_points: 100
 scoreboard:
   port: 8080
-  htmlfolder: ./html
+  html-dir-path: ./html
   random: false
 checkers:
   - id: test_service1

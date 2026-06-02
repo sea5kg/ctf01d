@@ -234,7 +234,7 @@ class CommandMakeTestGame:
             "",
             "scoreboard:",
             "  port: " + str(_cfg["jury_port"]),
-            "  htmlfolder: \"./html\"",
+            "  html-dir-path: \"./html\"",
             "  random: no",
             "",
             "checkers:",
