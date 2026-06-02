@@ -68,6 +68,11 @@ protected:
   ctf01d::var_type m_t;
 };
 
+// class scope_vars {
+// public:
+//   scope_vars();
+// };
+
 class var_int : public ctf01d::var {
 public:
   var_int(const std::vector<std::string> &path_name, int default_value);

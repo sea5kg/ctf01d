@@ -103,7 +103,8 @@ private:
   std::shared_ptr<ctf01d::var_int> m_scoreboard_port;
   std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_random;
-
+  std::shared_ptr<ctf01d::var_bool> m_scoreboard_metrics_enabled;
+  std::shared_ptr<ctf01d::var_string> m_scoreboard_metrics_allowed_for;
   std::vector<std::shared_ptr<ctf01d::var>> m_vars;
 
   // game config

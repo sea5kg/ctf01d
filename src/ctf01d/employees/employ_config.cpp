@@ -83,9 +83,11 @@ EmployConfig::EmployConfig()
   m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080, m_vars);
   m_scoreboard_port->set_minimum(MIN_TCP_PORT);
   m_scoreboard_port->set_maximum(MAX_TCP_PORT);
-
   m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_vars);
   m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_sWorkDir, m_vars);
+  m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_vars);
+  m_scoreboard_metrics_allowed_for = ctf01d::var_string::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_vars);
+
 
   m_pScoreboard = nullptr;
 }

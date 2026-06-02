@@ -15,6 +15,9 @@ scoreboard:
   port: 8080 # http port for scoreboard
   html-dir-path: "./html" # web page for scoreboard see index-template.html
   random: no # If yes - will be random values in scoreboard
+  prometheus-metrics-endpoint:
+    enabled: no
+    allowed-for: "10.10.100.*, 127.0.*"
 
 checkers:
   - id: "example_service1" # work directory will be checker_example_service4
