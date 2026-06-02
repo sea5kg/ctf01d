@@ -119,6 +119,10 @@ private:
   std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_start_utc;
   std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_end_utc;
 
+  ctf01d::scope_vars m_teams_config = ctf01d::scope_vars("teams_config");
+  std::shared_ptr<ctf01d::var_string> m_ip_or_host_prefix;
+  std::shared_ptr<ctf01d::var_string> m_ip_or_host_suffix;
+
   // teams config
   std::vector<ctf01d::team_config> m_vTeamsConf;
 

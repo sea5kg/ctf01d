@@ -24,31 +24,35 @@ checkers:
     script_wait_in_sec: 5
     round_in_seconds: 15
 teams:
-  - id: t01
-    type: normal
-    name: 'Team #1'
-    active: true
-    logo: ./html/images/teams/team01.png
-    big-logo: ./html/images/teams/team01.png
-    ip-or-host: 127.0.1.1
-  - id: t02
-    type: normal
-    name: 'Team #2'
-    active: true
-    logo: ./html/images/teams/team02.png
-    big-logo: ./html/images/teams/team02.png
-    ip-or-host: 127.0.2.1
-  - id: t03
-    type: normal
-    name: 'Team #3'
-    active: true
-    logo: ./html/images/teams/team03.png
-    big-logo: ./html/images/teams/team03.png
-    ip-or-host: 127.0.3.1
-  - id: t04
-    type: normal
-    name: 'Team #4'
-    active: false
-    logo: ./html/images/teams/team04.png
-    big-logo: ./html/images/teams/team04.png
-    ip-or-host: 127.0.4.1
+  config:
+    ip-or-host-prefix: ""
+    ip-or-host-suffix: ""
+  list:
+    - id: t01
+      type: normal
+      name: 'Team #1'
+      active: true
+      logo: ./html/images/teams/team01.png
+      big-logo: ./html/images/teams/team01.png
+      ip-or-host: 127.0.1.1
+    - id: t02
+      type: normal
+      name: 'Team #2'
+      active: true
+      logo: ./html/images/teams/team02.png
+      big-logo: ./html/images/teams/team02.png
+      ip-or-host: 127.0.2.1
+    - id: t03
+      type: normal
+      name: 'Team #3'
+      active: true
+      logo: ./html/images/teams/team03.png
+      big-logo: ./html/images/teams/team03.png
+      ip-or-host: 127.0.3.1
+    - id: t04
+      type: normal
+      name: 'Team #4'
+      active: false
+      logo: ./html/images/teams/team04.png
+      big-logo: ./html/images/teams/team04.png
+      ip-or-host: 127.0.4.1

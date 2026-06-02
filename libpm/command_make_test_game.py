@@ -263,6 +263,10 @@ class CommandMakeTestGame:
         _config.extend([
             "",
             "teams:",
+            "  config:",
+            "      ip-or-host-prefix: \"\"",
+            "      ip-or-host-suffix: \"\"",
+            "  list:",
         ])
 
         for team_i in range(1, number_of_teams+1):
@@ -271,13 +275,13 @@ class CommandMakeTestGame:
                 "- Team # " + str(team_i) + " t" + team_ti + ": \"10.10." + str(team_i) + ".3\""
             )
             _config.extend([
-                "  - id: \"t" + team_ti + "\"",
-                "    type: \"normal\"",
-                "    name: \"Team #" + str(team_i) + "\"",
-                "    active: yes",
-                "    logo: \"./html/images/teams/team" + team_ti + ".png\"",
-                "    big-logo: \"./html/images/teams/team" + team_ti + ".png\"",
-                "    ip-or-host: \"10.10." + str(team_i) + ".3\"",
+                "    - id: \"t" + team_ti + "\"",
+                "      type: \"normal\"",
+                "      name: \"Team #" + str(team_i) + "\"",
+                "      active: yes",
+                "      logo: \"./html/images/teams/team" + team_ti + ".png\"",
+                "      big-logo: \"./html/images/teams/team" + team_ti + ".png\"",
+                "      ip-or-host: \"10.10." + str(team_i) + ".3\"",
             ])
         _config.extend([""])
         _readme.extend([""])

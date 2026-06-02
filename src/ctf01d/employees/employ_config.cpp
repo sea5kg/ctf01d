@@ -88,6 +88,8 @@ EmployConfig::EmployConfig()
   m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_scoreboard_vars);
   m_scoreboard_metrics_allowed_for = ctf01d::var_string::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_scoreboard_vars);
 
+  m_ip_or_host_prefix = ctf01d::var_string::create({"config", "ip-or-host-prefix"}, "", m_teams_config);
+  m_ip_or_host_suffix = ctf01d::var_string::create({"config", "ip-or-host-suffix"}, "", m_teams_config);
 
   m_pScoreboard = nullptr;
 }
@@ -501,17 +503,28 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
   m_vTeamsConf.clear();
   EmployTeamLogos *pTeamLogos = findWsjcppEmploy<EmployTeamLogos>();
 
-  WsjcppYamlCursor yamlTeams = yamlConfig["teams"];
+  WsjcppYamlCursor cursor = yamlConfig["teams"];
+  std::string err;
+  if (!m_teams_config.read(cursor, err)) {
+    WsjcppLog::err(TAG, err);
+    return false;
+  }
 
-  if (yamlTeams.size() == 0) {
+  if (!cursor.hasKey("list")) {
+    WsjcppLog::err(TAG, "Missing teams.list");
+    return false;
+  }
+  cursor = cursor["list"];
+
+  if (cursor.size() == 0) {
     WsjcppLog::err(TAG, "Teams does not defined");
     return false;
   }
 
   std::vector<std::string> vIPAddresses;
 
-  for (int i = 0; i < yamlTeams.size(); i++) {
-    WsjcppYamlCursor cur = yamlTeams[i];
+  for (int i = 0; i < cursor.size(); i++) {
+    WsjcppYamlCursor cur = cursor[i];
     ctf01d::team_config _team_config;
     std::string err;
     if (!_team_config.read(cur, m_sWorkDir, err)) {
