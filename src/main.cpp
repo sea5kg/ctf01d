@@ -208,7 +208,7 @@ int main(int argc, const char* argv[]) {
     WsjcppLog::info(TAG, "Starting threads...");
     for (unsigned int iservice = 0; iservice < pEmployConfig->servicesConf().size(); iservice++) {
       for (unsigned int i_team = 0; i_team < pEmployConfig->teamsConf().size(); i_team++) {
-        Ctf01dTeamDef teamConf = pEmployConfig->teamsConf()[i_team];
+        ctf01d::team_config teamConf = pEmployConfig->teamsConf()[i_team];
         ctf01d::service_config serviceConf = pEmployConfig->servicesConf()[iservice];
 
         // reset status to down

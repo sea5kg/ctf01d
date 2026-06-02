@@ -202,7 +202,7 @@ bool EmployConfig::applyConfig() {
   return m_bAppliedConfig;
 }
 
-std::vector<Ctf01dTeamDef> &EmployConfig::teamsConf() {
+std::vector<ctf01d::team_config> &EmployConfig::teamsConf() {
   return m_vTeamsConf;
 }
 
@@ -557,7 +557,7 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
     WsjcppLog::info(TAG, "logo = " + sTeamLogo);
 
     // default values of service config
-    Ctf01dTeamDef _teamConf;
+    ctf01d::team_config _teamConf;
     _teamConf.setId(sTeamId);
     _teamConf.setName(sTeamName);
     _teamConf.setActive(true);

@@ -51,7 +51,7 @@ public:
   static int CHECKER_CODE_MUMBLE;
   static int CHECKER_CODE_DOWN;
   static int CHECKER_CODE_SHIT;
-  service_checker_thread(const Ctf01dTeamDef &teamConf, const ctf01d::service_config &serviceConf);
+  service_checker_thread(const ctf01d::team_config &teamConf, const ctf01d::service_config &serviceConf);
   void start();
   void run();
 
@@ -61,7 +61,7 @@ private:
   EmployConfig *m_pConfig;
   EmployDatabase *m_pDatabase; // TODO not must be here
   EmployFlags *m_pEmployFlags;
-  Ctf01dTeamDef m_teamConf;
+  ctf01d::team_config m_teamConf;
   ctf01d::service_config m_serviceConf;
 
   int runChecker(Ctf01dFlag &flag, const std::string &sCommand);

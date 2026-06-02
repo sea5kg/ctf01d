@@ -69,7 +69,7 @@ bool EmployScoreboard::initServicesStats() {
   m_map_services_stats.clear();
 
   EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<Ctf01dTeamDef> &teams_conf = pEmployConfig->teamsConf();
+  const std::vector<ctf01d::team_config> &teams_conf = pEmployConfig->teamsConf();
   const std::vector<ctf01d::service_config> &services_conf = pEmployConfig->servicesConf();
 
   // keep the list of the services ids

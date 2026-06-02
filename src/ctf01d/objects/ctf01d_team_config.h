@@ -39,9 +39,11 @@
 
 #include <string>
 
-class Ctf01dTeamDef {
+namespace ctf01d {
+
+class team_config {
 public:
-  Ctf01dTeamDef();
+  team_config();
 
   void setId(const std::string &sId);
   const std::string &getId() const;
@@ -68,3 +70,5 @@ private:
   std::string m_sLogo;
   int m_nLogoLastWriteTime;
 };
+
+} // namespace ctf01d

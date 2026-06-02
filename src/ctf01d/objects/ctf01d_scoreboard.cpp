@@ -54,7 +54,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   TAG = "Ctf01dScoreboard";
   auto *config = findWsjcppEmploy<EmployConfig>();
   m_pDatabase = findWsjcppEmploy<EmployDatabase>();
-  const std::vector<Ctf01dTeamDef> &vTeamsConf = config->teamsConf();
+  const std::vector<ctf01d::team_config> &vTeamsConf = config->teamsConf();
   const std::vector<ctf01d::service_config> &vServicesConf = config->servicesConf();
   m_bRandom = bRandom;
   std::string sScoreboardRandom = "Scoreboard random: ";
@@ -74,7 +74,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
 
   m_mapTeamsStatuses.clear(); // possible memory leak
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
-    Ctf01dTeamDef teamConf = vTeamsConf[i_team];
+    ctf01d::team_config teamConf = vTeamsConf[i_team];
     std::string sTeamId = teamConf.getId();
     m_mapTeamsStatuses[sTeamId] = new Ctf01dTeamStatusRow(sTeamId, nGameStartInSec, nGameEndInSec);
     m_mapTeamsStatuses[sTeamId]->setPlace(i_team + 1);
@@ -107,7 +107,7 @@ void Ctf01dScoreboard::initJsonScoreboard() {
   std::lock_guard<std::mutex> lock(m_mutexJson);
   m_jsonScoreboard.clear();
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<Ctf01dTeamDef> &vTeamsConf = pConfig->teamsConf();
+  const std::vector<ctf01d::team_config> &vTeamsConf = pConfig->teamsConf();
   const std::vector<ctf01d::service_config> &vServices = pConfig->servicesConf();
 
   nlohmann::json jsonServicesStatistics;
@@ -122,7 +122,7 @@ void Ctf01dScoreboard::initJsonScoreboard() {
 
   nlohmann::json jsonScoreboard;
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
-    Ctf01dTeamDef teamConf = vTeamsConf[i_team];
+    ctf01d::team_config teamConf = vTeamsConf[i_team];
     std::string sTeamId = teamConf.getId();
     nlohmann::json teamData;
     teamData["place"] = m_mapTeamsStatuses[sTeamId]->getPlace();

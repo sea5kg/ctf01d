@@ -35,52 +35,56 @@
  *
  ***********************************************************************************/
 
-#include "ctf01d_team_def.h"
+#include "ctf01d_team_config.h"
 
-Ctf01dTeamDef::Ctf01dTeamDef() {
+namespace ctf01d {
+
+team_config::team_config() {
   // nothing
 }
 
-void Ctf01dTeamDef::setId(const std::string &sTeamId){
+void team_config::setId(const std::string &sTeamId){
   m_sTeamID = sTeamId;
 }
 
-const std::string &Ctf01dTeamDef::getId() const {
+const std::string &team_config::getId() const {
   return m_sTeamID;
 }
 
-void Ctf01dTeamDef::setName(const std::string &sName){
+void team_config::setName(const std::string &sName){
   m_sName = sName;
 }
 
-const std::string &Ctf01dTeamDef::getName() const {
+const std::string &team_config::getName() const {
   return m_sName;
 }
 
-void Ctf01dTeamDef::setIpAddress(const std::string &sIpAddress){
+void team_config::setIpAddress(const std::string &sIpAddress){
   m_sIpAddress = sIpAddress;
 }
 
-const std::string &Ctf01dTeamDef::ipAddress() const {
+const std::string &team_config::ipAddress() const {
   return m_sIpAddress;
 }
 
-void Ctf01dTeamDef::setActive(bool bActive){
+void team_config::setActive(bool bActive){
   m_bActive = bActive;
 }
 
-bool Ctf01dTeamDef::isActive() const {
+bool team_config::isActive() const {
   return m_bActive;
 }
 
-void Ctf01dTeamDef::setLogo(const std::string &sLogo){
+void team_config::setLogo(const std::string &sLogo){
   m_sLogo = sLogo;
 }
 
-const std::string &Ctf01dTeamDef::logo() const {
+const std::string &team_config::logo() const {
   return m_sLogo;
 }
 
-int Ctf01dTeamDef::getLogoLastWriteTime() {
+int team_config::getLogoLastWriteTime() {
   return m_nLogoLastWriteTime;
 }
+
+} // namespace ctf01d

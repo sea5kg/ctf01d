@@ -163,7 +163,7 @@ void EmployWebServer::updateJsonCache() {
   }
 
   for (unsigned int i = 0; i < config->teamsConf().size(); i++) {
-      Ctf01dTeamDef teamConf = config->teamsConf()[i];
+      ctf01d::team_config teamConf = config->teamsConf()[i];
       nlohmann::json teamInfo;
       teamInfo["id"] = teamConf.getId();
       teamInfo["name"] = teamConf.getName();
@@ -361,7 +361,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // TODO optimize
   bool bTeamFound = false;
   for (unsigned int i_team = 0; i_team < config->teamsConf().size(); i_team++) {
-    Ctf01dTeamDef teamConf = config->teamsConf()[i_team];
+    ctf01d::team_config teamConf = config->teamsConf()[i_team];
     if (teamConf.getId() == sTeamId) {
       bTeamFound = true;
     }

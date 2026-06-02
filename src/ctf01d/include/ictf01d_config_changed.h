@@ -37,9 +37,9 @@
 
 #pragma once
 
-#include "ctf01d/objects/ctf01d_team_def.h"
+#include "ctf01d/objects/ctf01d_team_config.h"
 
 class ICtf01dConfigChanged {
 public:
-  virtual void addTeam(const Ctf01dTeamDef &team) = 0;
+  virtual void addTeam(const ctf01d::team_config &team) = 0;
 };

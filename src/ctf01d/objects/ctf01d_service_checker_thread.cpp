@@ -63,7 +63,7 @@ int service_checker_thread::CHECKER_CODE_DOWN = 104;
 int service_checker_thread::CHECKER_CODE_SHIT = 400;
 
 service_checker_thread::service_checker_thread(
-  const Ctf01dTeamDef &teamConf,
+  const ctf01d::team_config &teamConf,
   const ctf01d::service_config &service
 ) {
   m_pConfig = findWsjcppEmploy<EmployConfig>();

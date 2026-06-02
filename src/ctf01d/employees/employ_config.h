@@ -42,7 +42,7 @@
 #include "ctf01d/objects/ctf01d_var.h"
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/objects/ctf01d_service_config.h"
-#include "ctf01d/objects/ctf01d_team_def.h"
+#include "ctf01d/objects/ctf01d_team_config.h"
 #include "ctf01d/objects/ctf01d_files_watcher.h"
 
 class EmployConfig : public WsjcppEmployBase {
@@ -61,7 +61,7 @@ public:
   std::vector<ctf01d::service_config> &servicesConf();
 
   // teams configuration
-  std::vector<Ctf01dTeamDef> &teamsConf();
+  std::vector<ctf01d::team_config> &teamsConf();
 
   // scoreboard configuration
   int scoreboardPort() const ;
@@ -120,7 +120,7 @@ private:
   std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_end_utc;
 
   // teams config
-  std::vector<Ctf01dTeamDef> m_vTeamsConf;
+  std::vector<ctf01d::team_config> m_vTeamsConf;
 
   // services config
   std::vector<ctf01d::service_config> m_vServicesConf;
