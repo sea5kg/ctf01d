@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 38739;
+  return 38751;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 38739
+  static const std::string sRet = "" // size: 38751
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -908,7 +908,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "    // generate teams-services table\n"
     "    var sContent = \"\"\n"
     "        + \"<div class='scoreboard' id='table_scoreboard'>\"\n"
-    "        + \"    <div class='hdrs'>\"\n"
+    "        + \"    <div class='headers'>\"\n"
     "        + \"        <div class='place'>#</div>\"\n"
     "        + \"        <div class='team-logo'></div>\"\n"
     "        + \"        <div class='team'>Team <button class='team-slider-button' title='Show top teams' onclick='showTopTeamsSlider()'>&#9654;</button></div>\"\n"
@@ -948,9 +948,9 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "        + '              <div class=\"activity-icon\" id=\"tries-icon-all-summary-teams\"></div>'\n"
     "        + '        </div>'\n"
     "        + '  </div>'\n"
-    "        + \"  <div class='hdrs-time'>\"\n"
-    "        + \"    <div class='hdrs-time-fill' id='game_progress_time'></div>\"\n"
-    "        + \"    <div class='hdrs-time-game-current-time' id='game_current_time'>0</div>\"\n"
+    "        + \"  <div class='headers-time'>\"\n"
+    "        + \"    <div class='headers-time-fill' id='game_progress_time'></div>\"\n"
+    "        + \"    <div class='headers-time-game-current-time' id='game_current_time'>0</div>\"\n"
     "        + \"  </div>\";\n"
     "\n"
     "    var sTeamListSelect = '';\n"

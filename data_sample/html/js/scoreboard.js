@@ -882,7 +882,7 @@ getAjax('/api/v1/game', function(err, resp){
     // generate teams-services table
     var sContent = ""
         + "<div class='scoreboard' id='table_scoreboard'>"
-        + "    <div class='hdrs'>"
+        + "    <div class='headers'>"
         + "        <div class='place'>#</div>"
         + "        <div class='team-logo'></div>"
         + "        <div class='team'>Team <button class='team-slider-button' title='Show top teams' onclick='showTopTeamsSlider()'>&#9654;</button></div>"
@@ -922,9 +922,9 @@ getAjax('/api/v1/game', function(err, resp){
         + '              <div class="activity-icon" id="tries-icon-all-summary-teams"></div>'
         + '        </div>'
         + '  </div>'
-        + "  <div class='hdrs-time'>"
-        + "    <div class='hdrs-time-fill' id='game_progress_time'></div>"
-        + "    <div class='hdrs-time-game-current-time' id='game_current_time'>0</div>"
+        + "  <div class='headers-time'>"
+        + "    <div class='headers-time-fill' id='game_progress_time'></div>"
+        + "    <div class='headers-time-game-current-time' id='game_current_time'>0</div>"
         + "  </div>";
 
     var sTeamListSelect = '';

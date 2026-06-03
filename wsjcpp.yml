@@ -200,10 +200,10 @@ resources:
       modified: 1780202101
       sha1: "b18e79f9145ec0581b7253946d114436db0cd230"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 38739
+      size: 38751
       pack-as: "text"
-      modified: 1780495097
-      sha1: "8825a9fec9e0a0e7ceb79b59dd54db9b9f217839"
+      modified: 1780495223
+      sha1: "f485fc6d5579499641647cab759b2c3c33e298e4"
     - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"
@@ -260,10 +260,10 @@ resources:
       modified: 1779675189
       sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
     - filepath: "./data_sample/html/css/scoreboard.css"
-      size: 20502
+      size: 20523
       pack-as: "text"
-      modified: 1780495076
-      sha1: "b4964482dc36f33aa7a7351440a26af1c73e055e"
+      modified: 1780495217
+      sha1: "e77be8fffce28322c37de6398ba6dc6054ddb605"
     - filepath: "./data_sample/html/images/teams/team30.png"
       size: 6052
       pack-as: "binary"

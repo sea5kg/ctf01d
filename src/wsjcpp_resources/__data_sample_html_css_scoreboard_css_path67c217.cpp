@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_css_scoreboard_css_path67c217::getPack
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_css_scoreboard_css_path67c217::getBufferSize() const {
-  return 20502;
+  return 20523;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() const {
-  static const std::string sRet = "" // size: 20502
+  static const std::string sRet = "" // size: 20523
     "@font-face {\n"
     "  font-family: 'DejaVuSans';\n"
     "  src: url('../font/DejaVuSans.ttf');\n"
@@ -162,7 +162,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  position: relative;\n"
     "}\n"
     "\n"
-    ".hdrs {\n"
+    ".headers {\n"
     "  border-bottom: 1px solid #444;\n"
     "  height: 85px;\n"
     "  position: absolute;\n"
@@ -253,7 +253,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  /* overflow: hidden; */\n"
     "}\n"
     "\n"
-    ".hdrs .team {\n"
+    ".headers .team {\n"
     "  line-height: 50px;\n"
     "}\n"
     "\n"
@@ -289,7 +289,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  text-align: center;\n"
     "}\n"
     "\n"
-    ".hdrs .service {\n"
+    ".headers .service {\n"
     "  height: 100px;\n"
     "  line-height: 20px;\n"
     "  width: 139px;\n"
@@ -297,7 +297,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  padding-right: 5px;\n"
     "}\n"
     "\n"
-    ".hdrs .service .service-att-def {\n"
+    ".headers .service .service-att-def {\n"
     "  padding-left: 20px;\n"
     "  width: 133px;\n"
     "  max-width: 133px;\n"
@@ -389,7 +389,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  display: inline-block;\n"
     "}\n"
     "\n"
-    ".hdrs-time {\n"
+    ".headers-time {\n"
     "  height: 24px;\n"
     "  background-color: #333;\n"
     "  line-height: 20px;\n"
@@ -408,7 +408,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  z-index: 999;\n"
     "}\n"
     "\n"
-    ".hdrs-time-fill {\n"
+    ".headers-time-fill {\n"
     "  display: block;\n"
     "  background-color: #193112;\n"
     "  height: 20px;\n"
@@ -421,7 +421,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  border-right: 5px solid #706518;\n"
     "}\n"
     "\n"
-    ".hdrs-time-game-current-time {\n"
+    ".headers-time-game-current-time {\n"
     "  position: absolute;\n"
     "  text-align: center;\n"
     "  display: block;\n"

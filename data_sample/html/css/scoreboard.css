@@ -136,7 +136,7 @@ button {
   position: relative;
 }
 
-.hdrs {
+.headers {
   border-bottom: 1px solid #444;
   height: 85px;
   position: absolute;
@@ -227,7 +227,7 @@ img.team-logo {
   /* overflow: hidden; */
 }
 
-.hdrs .team {
+.headers .team {
   line-height: 50px;
 }
 
@@ -263,7 +263,7 @@ img.team-logo {
   text-align: center;
 }
 
-.hdrs .service {
+.headers .service {
   height: 100px;
   line-height: 20px;
   width: 139px;
@@ -271,7 +271,7 @@ img.team-logo {
   padding-right: 5px;
 }
 
-.hdrs .service .service-att-def {
+.headers .service .service-att-def {
   padding-left: 20px;
   width: 133px;
   max-width: 133px;
@@ -363,7 +363,7 @@ img.team-logo {
   display: inline-block;
 }
 
-.hdrs-time {
+.headers-time {
   height: 24px;
   background-color: #333;
   line-height: 20px;
@@ -382,7 +382,7 @@ img.team-logo {
   z-index: 999;
 }
 
-.hdrs-time-fill {
+.headers-time-fill {
   display: block;
   background-color: #193112;
   height: 20px;
@@ -395,7 +395,7 @@ img.team-logo {
   border-right: 5px solid #706518;
 }
 
-.hdrs-time-game-current-time {
+.headers-time-game-current-time {
   position: absolute;
   text-align: center;
   display: block;
