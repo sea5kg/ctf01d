@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 9374;
+  return 9382;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 9374
+  static const std::string sRet = "" // size: 9382
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -49,8 +49,8 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "  - id: \"example_service1\" # work directory will be checker_example_service4\n"
     "    name: \"Service1\"\n"
     "    enabled: yes\n"
-    "    logo: \"./html/images/services/service1-default-icon.svg\"\n"
-    "    logo-big: \"./html/images/services/service1-default-icon.svg\"\n"
+    "    logo: \"./html/images/services/service17-default-icon.svg\"\n"
+    "    logo-big: \"./html/images/services/service17-default-icon.svg\"\n"
     "    # host: 127.0.0.1\n"
     "    # port: 10001\n"
     "    script-relative-path: \"./checker.py\"\n"
@@ -67,31 +67,31 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "  - id: \"example_service3\" # work directory will be checker_example_service4\n"
     "    name: \"Service3\"\n"
     "    enabled: yes\n"
-    "    logo: \"./html/images/services/service3-default-icon.svg\"\n"
-    "    logo-big: \"./html/images/services/service3-default-icon.svg\"\n"
+    "    logo: \"./html/images/services/service26-default-icon.svg\"\n"
+    "    logo-big: \"./html/images/services/service26-default-icon.svg\"\n"
     "    script-relative-path: \"./checker.py\"\n"
     "    script-timeout-in-seconds: 5\n"
     "    round-in-seconds: 15\n"
     "  - id: \"example_service4\" # work directory will be checker_example_service4\n"
     "    name: \"Service4\"\n"
     "    enabled: yes\n"
-    "    logo: \"./html/images/services/service4-default-icon.svg\"\n"
-    "    logo-big: \"./html/images/services/service4-default-icon.svg\"\n"
+    "    logo: \"./html/images/services/service21-default-icon.svg\"\n"
+    "    logo-big: \"./html/images/services/service21-default-icon.svg\"\n"
     "    script-relative-path: \"./checker.py\"\n"
     "    script-timeout-in-seconds: 5\n"
     "    round-in-seconds: 15\n"
     "  - id: \"example_service5\" # work directory will be checker_example_service4\n"
     "    name: \"Service5\"\n"
     "    enabled: yes\n"
-    "    logo: \"./html/images/services/service5-default-icon.svg\"\n"
-    "    logo-big: \"./html/images/services/service5-default-icon.svg\"\n"
+    "    logo: \"./html/images/services/service6-default-icon.svg\"\n"
+    "    logo-big: \"./html/images/services/service6-default-icon.svg\"\n"
     "    script-relative-path: \"./checker.py\"\n"
     "    script-timeout-in-seconds: 5\n"
     "    round-in-seconds: 15\n"
     "  - id: \"example_service6\" # work directory will be checker_example_service4\n"
     "    name: \"Service6\"\n"
-    "    logo: \"./html/images/services/service6-default-icon.svg\"\n"
-    "    logo-big: \"./html/images/services/service6-default-icon.svg\"\n"
+    "    logo: \"./html/images/services/service11-default-icon.svg\"\n"
+    "    logo-big: \"./html/images/services/service11-default-icon.svg\"\n"
     "    enabled: no\n"
     "    script-relative-path: \"./checker.py\"\n"
     "    script-timeout-in-seconds: 5\n"

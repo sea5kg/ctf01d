@@ -70,10 +70,10 @@ resources:
       modified: 1779675622
       sha1: "888e571c3f5f5611c74d757392c11f5fddf608dc"
     - filepath: "./data_sample/config.yml"
-      size: 9374
+      size: 9382
       pack-as: "text"
-      modified: 1780455858
-      sha1: "0f8cdadf18ba1d66159107cc7415d84a133483e7"
+      modified: 1780505083
+      sha1: "29c938718e601a45893e44a5e62e41ba1d94981c"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
       pack-as: "binary"
@@ -530,10 +530,10 @@ resources:
       modified: 1779675189
       sha1: "94bc90a0ba18eb99fa8f8e9830e7bf7bec347119"
     - filepath: "./data_sample/html/images/services/service2-default-icon.svg"
-      size: 3302
+      size: 4359
       pack-as: "binary"
-      modified: 1780249434
-      sha1: "d0231b4859ee540adcaa03126b084d7354811516"
+      modified: 1780504770
+      sha1: "e035b7140f7db63cf81a564da9fc49126f10b5d9"
     - filepath: "./data_sample/html/images/services/service9-default-icon.svg"
       size: 2061
       pack-as: "binary"
@@ -545,15 +545,15 @@ resources:
       modified: 1780247800
       sha1: "b79d3e87c47a2f0f4c19c492086392f27ee51200"
     - filepath: "./data_sample/html/images/services/service1-default-icon.svg"
-      size: 2896
+      size: 4683
       pack-as: "binary"
-      modified: 1780249475
-      sha1: "31dcf284059ebbb91fd8f53c02776e54dc3d68e6"
+      modified: 1780504718
+      sha1: "4ced6f5cb845806b630b561cfe070965b6d38284"
     - filepath: "./data_sample/html/images/services/service6-default-icon.svg"
-      size: 3886
+      size: 4943
       pack-as: "binary"
-      modified: 1780247630
-      sha1: "b387842b0ade2d8cf59405e9c51e4f96a4f0654b"
+      modified: 1780505033
+      sha1: "0588eba7a4eecb6b00071718cfb9a4d197b5db09"
     - filepath: "./data_sample/html/images/services/service4-default-icon.svg"
       size: 1900
       pack-as: "binary"
@@ -596,15 +596,15 @@ resources:
       modified: 1780248301
       sha1: "34c0126ad94a929961712100c2f45fc87d6ecaeb"
     - filepath: "./data_sample/html/images/services/service21-default-icon.svg"
-      size: 3227
+      size: 4258
       pack-as: "binary"
-      modified: 1780248455
-      sha1: "1006b2e9078c378b6e280fbd81e6a4cb23e32179"
+      modified: 1780504993
+      sha1: "4d974ee6849908abcfa6e12e5a84da593352aa78"
     - filepath: "./data_sample/html/images/services/service26-default-icon.svg"
-      size: 7863
+      size: 8865
       pack-as: "binary"
-      modified: 1780248522
-      sha1: "f1d9fd34f045dfc8335df6d56d064126e4a177e1"
+      modified: 1780504837
+      sha1: "d8f5eb7f0f194ce72f581aac4a434a7fe12f1154"
     - filepath: "./data_sample/html/images/services/service25-default-icon.svg"
       size: 2095
       pack-as: "binary"
@@ -656,10 +656,10 @@ resources:
       modified: 1780248316
       sha1: "c60150b1df6b8d40ad1f49105b1c1d72566eaf5a"
     - filepath: "./data_sample/html/images/services/service17-default-icon.svg"
-      size: 1173
+      size: 2205
       pack-as: "binary"
-      modified: 1780248742
-      sha1: "a70fa8cac17f59c0234cf00f71d52895c7c50a58"
+      modified: 1780505100
+      sha1: "524dc6e5c25e35d6a781687daff814bcbe83f466"
     - filepath: "./data_sample/html/images/services/service10-default-icon.svg"
       size: 2670
       pack-as: "binary"
