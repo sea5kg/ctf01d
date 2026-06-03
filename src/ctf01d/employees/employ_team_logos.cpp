@@ -173,7 +173,7 @@ void EmployTeamLogos::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
   while (it2 != m_teams_big_logo.end()) {
     Ctf01dTeamLogo *pTeamLogo = it2->second;
     jsonScoreboard["scoreboard"][pTeamLogo->sTeamId]["logo_last_updated"] = pTeamLogo->nLastWriteTime;
-    it++;
+    it2++;
   }
 }
 
