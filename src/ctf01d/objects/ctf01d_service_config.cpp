@@ -47,7 +47,7 @@ service_config::service_config() {
   m_name = ctf01d::var_string::create({"name"}, "", m_vars);
   m_enabled = ctf01d::var_bool::create({"enabled"}, true, m_vars);
   m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
-  m_big_logo = ctf01d::var_file::create({"big-logo"}, "", "", m_vars);
+  m_logo_big = ctf01d::var_file::create({"logo-big"}, "", "", m_vars);
   m_script_path = ctf01d::var_string::create({"script-relative-path"}, "", m_vars);
   m_script_timeout_in_seconds = ctf01d::var_int::create({"script-timeout-in-seconds"}, 5, m_vars);
   m_script_timeout_in_seconds->set_minimum(1);
@@ -62,7 +62,7 @@ service_config::service_config() {
 bool service_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err) {
   m_work_dir = work_dir;
   m_logo->set_root_dir(m_work_dir);
-  m_big_logo->set_root_dir(m_work_dir);
+  m_logo_big->set_root_dir(m_work_dir);
   if (!m_vars.read(cursor, err)) {
     return false;
   }
@@ -107,5 +107,14 @@ int service_config::script_timeout_in_seconds() const {
 int service_config::round_in_seconds() const {
   return m_round_in_seconds->value();
 }
+
+std::string service_config::logo_path() const {
+  return m_logo->value();
+}
+
+std::string service_config::logo_big_path() const {
+  return m_logo_big->value();
+}
+
 
 } // namespace ctf01d

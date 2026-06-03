@@ -63,12 +63,15 @@ private:
   int httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp);
   int httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp);
   int httpApiV1Flag(HttpRequest* req, HttpResponse* resp);
-  int httpTeamLogos(const std::string &request_path, HttpRequest* req, HttpResponse* resp);
+  int httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp);
 
   std::shared_ptr<hv::HttpService> m_pHttpService;
   std::string m_sApiPathPrefix;
-  std::string m_sTeamLogoPrefix;
-  int m_nTeamLogoPrefixLength;
+
+  // TODO refactoring it
+  std::string m_logo_prefix;
+  int m_logo_prefix_length;
+
   std::string m_sIndexHtml;
   std::string m_sScoreboardHtmlFolder;
   std::string m_sCacheResponseGameJson;

@@ -72,8 +72,8 @@ resources:
     - filepath: "./data_sample/config.yml"
       size: 9374
       pack-as: "text"
-      modified: 1780372263
-      sha1: "06c9087d70ae9eb81ce3c85cb5066d16dc888005"
+      modified: 1780455858
+      sha1: "0f8cdadf18ba1d66159107cc7415d84a133483e7"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
       pack-as: "binary"

@@ -58,68 +58,144 @@ bool EmployTeamLogos::deinit(const std::string &sName, bool bSilent) {
   return true;
 }
 
-bool EmployTeamLogos::loadTeamLogo(const std::string &sTeamId, const std::string &sTeamLogoPath) {
-  if (!WsjcppCore::fileExists(sTeamLogoPath)) {
-    WsjcppLog::err(TAG, "File '" + sTeamLogoPath + "' did not found");
+bool EmployTeamLogos::load_team_logo(const std::string &team_id, const std::string &filepath) {
+  if (!load_logo(team_id, filepath, m_teams_logo)) {
     return false;
   }
-  Ctf01dTeamLogo *pTeamLogo = new Ctf01dTeamLogo();
-  pTeamLogo->sTeamId = sTeamId;
-  pTeamLogo->pBuffer = nullptr;
-  pTeamLogo->nBufferSize = 0;
-  pTeamLogo->sFilename = WsjcppCore::extractFilename(sTeamLogoPath);
-  pTeamLogo->sFilepath = sTeamLogoPath;
-  if (!WsjcppCore::readFileToBuffer(sTeamLogoPath, &(pTeamLogo->pBuffer), (pTeamLogo->nBufferSize))) {
-    delete pTeamLogo;
-    WsjcppLog::throw_err(TAG, "Could not read file '" + sTeamLogoPath + "'");
-    return false;
-  }
-  std::filesystem::file_time_type ftime = std::filesystem::last_write_time(sTeamLogoPath.c_str());
-  pTeamLogo->nLastWriteTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
-  // add only if file found
-  m_mapTeamLogos[sTeamId] = pTeamLogo;
-  WsjcppLog::info(TAG, "Loaded team logo: " + sTeamLogoPath + " for team " + sTeamId + " (last write time file: " + std::to_string(pTeamLogo->nLastWriteTime) + ")");
+  WsjcppLog::info(TAG, "Loaded logo: " + filepath + " for team " + team_id + " (last write time file: " + std::to_string(m_teams_logo[team_id]->nLastWriteTime) + ")");
   return true;
 }
 
-Ctf01dTeamLogo *EmployTeamLogos::findTeamLogo(const std::string &sTeamId) {
-  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.find(sTeamId);
-  if (it != m_mapTeamLogos.end()) {
+bool EmployTeamLogos::load_team_big_logo(const std::string &team_id, const std::string &filepath) {
+  if (!load_logo(team_id, filepath, m_teams_big_logo)) {
+    return false;
+  }
+  WsjcppLog::info(TAG, "Loaded big-logo: " + filepath + " for team " + team_id + " (last write time file: " + std::to_string(m_teams_big_logo[team_id]->nLastWriteTime) + ")");
+  return true;
+}
+
+bool EmployTeamLogos::load_service_logo(const std::string &service_id, const std::string &filepath) {
+  if (!load_logo(service_id, filepath, m_services_logo)) {
+    return false;
+  }
+  WsjcppLog::info(TAG, "Loaded logo: " + filepath + " for service " + service_id + " (last write time file: " + std::to_string(m_services_logo[service_id]->nLastWriteTime) + ")");
+  return true;
+}
+
+bool EmployTeamLogos::load_service_big_logo(const std::string &service_id, const std::string &filepath) {
+  if (!load_logo(service_id, filepath, m_services_big_logo)) {
+    return false;
+  }
+  WsjcppLog::info(TAG, "Loaded big-logo: " + filepath + " for service " + service_id + " (last write time file: " + std::to_string(m_services_big_logo[service_id]->nLastWriteTime) + ")");
+  return true;
+}
+
+Ctf01dTeamLogo *EmployTeamLogos::find_logo_team(const std::string &team_id) {
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_teams_logo.find(team_id);
+  if (it != m_teams_logo.end()) {
     return it->second;
   }
   return nullptr;
 }
 
-bool EmployTeamLogos::updateLastChangeTime() {
+Ctf01dTeamLogo *EmployTeamLogos::find_logo_big_team(const std::string &team_id) {
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_teams_big_logo.find(team_id);
+  if (it != m_teams_big_logo.end()) {
+    return it->second;
+  }
+  return nullptr;
+}
+
+Ctf01dTeamLogo *EmployTeamLogos::find_logo_service(const std::string &service_id) {
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_services_logo.find(service_id);
+  if (it != m_services_logo.end()) {
+    return it->second;
+  }
+  return nullptr;
+}
+
+Ctf01dTeamLogo *EmployTeamLogos::find_logo_big_service(const std::string &service_id) {
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_services_big_logo.find(service_id);
+  if (it != m_services_big_logo.end()) {
+    return it->second;
+  }
+  return nullptr;
+}
+
+bool EmployTeamLogos::update_last_change_time() {
   if (WsjcppCore::getCurrentTimeInSeconds() - m_nLastUpdateChangeTimeLogosInSec < 30) {
     return false;
   }
   m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
   WsjcppLog::info(TAG, "updateLastWriteTime for team's logos");
   bool bHasChanges = false;
-  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();
-  while (it != m_mapTeamLogos.end()) {
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_teams_logo.begin();
+  while (it != m_teams_logo.end()) {
     Ctf01dTeamLogo *pTeamLogo = it->second;
     std::filesystem::file_time_type ftime = std::filesystem::last_write_time(pTeamLogo->sFilepath.c_str());
-    long nLastWriteTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
-    if (nLastWriteTime != pTeamLogo->nLastWriteTime) {
+    long last_changed_time = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
+    if (last_changed_time != pTeamLogo->nLastWriteTime) {
       bHasChanges = true;
       delete pTeamLogo->pBuffer;
       pTeamLogo->pBuffer = nullptr;
       pTeamLogo->nBufferSize = 0;
       WsjcppCore::readFileToBuffer(pTeamLogo->sFilepath, &(pTeamLogo->pBuffer), pTeamLogo->nBufferSize);
-      pTeamLogo->nLastWriteTime = nLastWriteTime;
+      pTeamLogo->nLastWriteTime = last_changed_time;
     }
     it++;
+  }
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it2 = m_teams_big_logo.begin();
+  while (it2 != m_teams_big_logo.end()) {
+    Ctf01dTeamLogo *pTeamLogo = it2->second;
+    std::filesystem::file_time_type ftime = std::filesystem::last_write_time(pTeamLogo->sFilepath.c_str());
+    long last_changed_time = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
+    if (last_changed_time != pTeamLogo->nLastWriteTime) {
+      bHasChanges = true;
+      delete pTeamLogo->pBuffer;
+      pTeamLogo->pBuffer = nullptr;
+      pTeamLogo->nBufferSize = 0;
+      WsjcppCore::readFileToBuffer(pTeamLogo->sFilepath, &(pTeamLogo->pBuffer), pTeamLogo->nBufferSize);
+      pTeamLogo->nLastWriteTime = last_changed_time;
+    }
+    it2++;
   }
   return bHasChanges;
 }
 
-void EmployTeamLogos::updateScoreboardJson(nlohmann::json &jsonScoreboard) {
-  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_mapTeamLogos.begin();
-  while (it != m_mapTeamLogos.end()) {
+void EmployTeamLogos::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it = m_teams_logo.begin();
+  while (it != m_teams_logo.end()) {
     Ctf01dTeamLogo *pTeamLogo = it->second;
     jsonScoreboard["scoreboard"][pTeamLogo->sTeamId]["logo_last_updated"] = pTeamLogo->nLastWriteTime;
     it++;
   }
+  std::map<std::string, Ctf01dTeamLogo *>::iterator it2 = m_teams_big_logo.begin();
+  while (it2 != m_teams_big_logo.end()) {
+    Ctf01dTeamLogo *pTeamLogo = it2->second;
+    jsonScoreboard["scoreboard"][pTeamLogo->sTeamId]["logo_last_updated"] = pTeamLogo->nLastWriteTime;
+    it++;
+  }
+}
+
+bool EmployTeamLogos::load_logo(const std::string &id, const std::string &filepath, std::map<std::string, Ctf01dTeamLogo *> &logos) {
+   if (!WsjcppCore::fileExists(filepath)) {
+    WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
+    return false;
+  }
+  Ctf01dTeamLogo *pLogo = new Ctf01dTeamLogo();
+  pLogo->sTeamId = id;
+  pLogo->pBuffer = nullptr;
+  pLogo->nBufferSize = 0;
+  pLogo->sFilename = WsjcppCore::extractFilename(filepath);
+  pLogo->sFilepath = filepath;
+  if (!WsjcppCore::readFileToBuffer(filepath, &(pLogo->pBuffer), (pLogo->nBufferSize))) {
+    delete pLogo;
+    WsjcppLog::throw_err(TAG, "Could not read file '" + filepath + "'");
+    return false;
+  }
+  std::filesystem::file_time_type ftime = std::filesystem::last_write_time(filepath.c_str());
+  pLogo->nLastWriteTime = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
+  // add only if file found
+  logos[id] = pLogo;
+  return true;
 }

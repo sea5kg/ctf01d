@@ -45,15 +45,26 @@ class EmployTeamLogos : public WsjcppEmployBase {
 public:
   EmployTeamLogos();
   static std::string name() { return "EmployTeamLogos"; }
-  virtual bool init(const std::string &sName, bool bSilent) override;
-  virtual bool deinit(const std::string &sName, bool bSilent) override;
-  bool loadTeamLogo(const std::string &sTeamId, const std::string &sFilepath);
-  Ctf01dTeamLogo *findTeamLogo(const std::string &sTeamId);
-  bool updateLastChangeTime();
-  void updateScoreboardJson(nlohmann::json &jsonScoreboard);
+  virtual bool init(const std::string &name, bool silent) override;
+  virtual bool deinit(const std::string &name, bool silent) override;
+  bool load_team_logo(const std::string &team_id, const std::string &filepath);
+  bool load_team_big_logo(const std::string &team_id, const std::string &filepath);
+  bool load_service_logo(const std::string &service_id, const std::string &filepath);
+  bool load_service_big_logo(const std::string &service_id, const std::string &filepath);
+  Ctf01dTeamLogo *find_logo_team(const std::string &team_id);
+  Ctf01dTeamLogo *find_logo_big_team(const std::string &team_id);
+  Ctf01dTeamLogo *find_logo_service(const std::string &team_id);
+  Ctf01dTeamLogo *find_logo_big_service(const std::string &team_id);
+  bool update_last_change_time();
+  void update_scoreboard_json(nlohmann::json &jsonScoreboard);
 
 private:
   std::string TAG;
-  std::map<std::string, Ctf01dTeamLogo *> m_mapTeamLogos;
+  bool load_logo(const std::string &team_id, const std::string &filepath, std::map<std::string, Ctf01dTeamLogo *> &logos);
+
+  std::map<std::string, Ctf01dTeamLogo *> m_teams_logo;
+  std::map<std::string, Ctf01dTeamLogo *> m_teams_big_logo;
+  std::map<std::string, Ctf01dTeamLogo *> m_services_logo;
+  std::map<std::string, Ctf01dTeamLogo *> m_services_big_logo;
   int m_nLastUpdateChangeTimeLogosInSec;
 };

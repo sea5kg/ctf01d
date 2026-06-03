@@ -54,7 +54,7 @@ public:
   std::string ip_or_host() const;
   bool is_active() const;
   std::string logo_path() const;
-  std::string big_logo_path() const;
+  std::string logo_big_path() const;
 
   int getLogoLastWriteTime();
 
@@ -67,7 +67,7 @@ private:
   std::shared_ptr<ctf01d::var_string> m_type;
   std::shared_ptr<ctf01d::var_string> m_ip_or_host;
   std::shared_ptr<ctf01d::var_file> m_logo;
-  std::shared_ptr<ctf01d::var_file> m_big_logo;
+  std::shared_ptr<ctf01d::var_file> m_logo_big;
   std::shared_ptr<ctf01d::var_bool> m_active;
 
   std::string m_sIpAddress;

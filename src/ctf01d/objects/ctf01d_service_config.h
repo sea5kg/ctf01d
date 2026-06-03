@@ -56,6 +56,8 @@ public:
   bool is_enabled() const;
   int script_timeout_in_seconds() const;
   int round_in_seconds() const;
+  std::string logo_path() const;
+  std::string logo_big_path() const;
 
 private:
   std::string TAG;
@@ -65,7 +67,7 @@ private:
   std::shared_ptr<ctf01d::var_string> m_name;
   std::shared_ptr<ctf01d::var_bool> m_enabled;
   std::shared_ptr<ctf01d::var_file> m_logo;
-  std::shared_ptr<ctf01d::var_file> m_big_logo;
+  std::shared_ptr<ctf01d::var_file> m_logo_big;
   std::shared_ptr<ctf01d::var_int> m_script_timeout_in_seconds;
   std::shared_ptr<ctf01d::var_int> m_round_in_seconds;
   std::shared_ptr<ctf01d::var_string> m_script_path;

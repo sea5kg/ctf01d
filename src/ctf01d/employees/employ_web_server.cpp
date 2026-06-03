@@ -56,8 +56,10 @@ REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
 EmployWebServer::EmployWebServer()
 : WsjcppEmployBase({ EmployWebServer::name() }, { EmployConfig::name() }) {
   m_sApiPathPrefix = "/api/v1/";
-  m_sTeamLogoPrefix = "/team-logo/";
-  m_nTeamLogoPrefixLength = m_sTeamLogoPrefix.size();
+
+  // TODO refactoring it
+  m_logo_prefix = "/logo/";
+  m_logo_prefix_length = m_logo_prefix.size();
 }
 
 bool EmployWebServer::init(const std::string &name, bool bSilent) {
@@ -168,8 +170,8 @@ void EmployWebServer::updateJsonCache() {
       teamInfo["id"] = teamConf.id();
       teamInfo["name"] = teamConf.name();
       teamInfo["ip_address"] = teamConf.ip_or_host();
-      teamInfo["logo"] = "./team-logo/" + teamConf.id();
-      teamInfo["logo"] = "./team-big-logo/" + teamConf.id();
+      teamInfo["logo"] = "./logo/team/" + teamConf.id();
+      // teamInfo["logo"] = "./logo/big/team/" + teamConf.id();
       teamInfo["logo_last_write_time"] = teamConf.getLogoLastWriteTime();
 
       jsonGame["teams"].push_back(teamInfo);
@@ -198,8 +200,8 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     return this->httpApiV1Flag(req, resp);
   }
 
-  if (request_path.rfind(m_sTeamLogoPrefix, 0) == 0) {
-    return httpTeamLogos(request_path, req, resp);
+  if (request_path.rfind(m_logo_prefix, 0) == 0) {
+    return httpLogo(request_path, req, resp);
   }
 
   if (request_path.rfind(m_sApiPathPrefix, 0) == 0) {
@@ -289,9 +291,10 @@ int EmployWebServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
 int EmployWebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
   auto teamLogos = findWsjcppEmploy<EmployTeamLogos>();
   auto config = findWsjcppEmploy<EmployConfig>();
-  teamLogos->updateLastChangeTime();
+  teamLogos->update_last_change_time();
+
   nlohmann::json jsonScoreboard = config->scoreboard()->toJson();
-  teamLogos->updateScoreboardJson(jsonScoreboard);
+  teamLogos->update_scoreboard_json(jsonScoreboard);
   std::string sScoreboardJson = jsonScoreboard.dump();
   resp->Data(
       (void *)(sScoreboardJson.c_str()),
@@ -455,10 +458,34 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   return 200;
 }
 
-int EmployWebServer::httpTeamLogos(const std::string &request_path, HttpRequest* req, HttpResponse* resp) {
-  std::string sTeamId = request_path.substr(m_nTeamLogoPrefixLength, request_path.length() - m_nTeamLogoPrefixLength);
+int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp) {
+  // TODO refactoring it
+
+  static const std::string logo_team_prefix = "/logo/team/";
+  static const int logo_team_prefix_length = logo_team_prefix.size();
+  static const std::string logo_big_team_prefix = "/logo/big/team/";
+  static const int logo_big_team_prefix_length = logo_big_team_prefix.size();
+  static const std::string logo_service_prefix = "/logo/service/";
+  static const int logo_service_prefix_length = logo_service_prefix.size();
+  static const std::string logo_big_service_prefix = "/logo/big/service/";
+  static const int logo_big_service_prefix_length = logo_big_service_prefix.size();
+
   auto teamLogos = findWsjcppEmploy<EmployTeamLogos>();
-  Ctf01dTeamLogo *pLogo = teamLogos->findTeamLogo(sTeamId);
+  Ctf01dTeamLogo *pLogo = nullptr;
+  if (request_path.rfind(logo_team_prefix, 0) == 0) {
+    std::string id = request_path.substr(logo_team_prefix_length, request_path.length() - logo_team_prefix_length);
+    pLogo = teamLogos->find_logo_team(id);
+  } else if (request_path.rfind(logo_big_team_prefix, 0) == 0) {
+    std::string id = request_path.substr(logo_big_team_prefix_length, request_path.length() - logo_big_team_prefix_length);
+    pLogo = teamLogos->find_logo_big_team(id);
+  } else if (request_path.rfind(logo_service_prefix, 0) == 0) {
+    std::string id = request_path.substr(logo_service_prefix_length, request_path.length() - logo_service_prefix_length);
+    pLogo = teamLogos->find_logo_service(id);
+  } else if (request_path.rfind(logo_big_service_prefix, 0) == 0) {
+    std::string id = request_path.substr(logo_big_service_prefix_length, request_path.length() - logo_big_service_prefix_length);
+    pLogo = teamLogos->find_logo_big_service(id);
+  }
+
   if (pLogo == nullptr) {
     return 404;
   }
@@ -469,4 +496,5 @@ int EmployWebServer::httpTeamLogos(const std::string &request_path, HttpRequest*
   );
   resp->SetContentTypeByFilename(pLogo->sFilename.c_str());
   return 200;
+
 }
