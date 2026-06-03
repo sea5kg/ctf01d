@@ -37,34 +37,29 @@
 
 #pragma once
 
-#include <wsjcpp_employees.h>
-#include <json.hpp>
-#include "ctf01d/objects/ctf01d_team_logo.h"
+#include <string>
 
-class EmployTeamLogos : public WsjcppEmployBase {
+namespace ctf01d {
+
+class image {
 public:
-  EmployTeamLogos();
-  static std::string name() { return "EmployTeamLogos"; }
-  virtual bool init(const std::string &name, bool silent) override;
-  virtual bool deinit(const std::string &name, bool silent) override;
-  bool load_team_logo(const std::string &team_id, const std::string &filepath);
-  bool load_team_big_logo(const std::string &team_id, const std::string &filepath);
-  bool load_service_logo(const std::string &service_id, const std::string &filepath);
-  bool load_service_big_logo(const std::string &service_id, const std::string &filepath);
-  Ctf01dTeamLogo *find_logo_team(const std::string &team_id);
-  Ctf01dTeamLogo *find_logo_big_team(const std::string &team_id);
-  Ctf01dTeamLogo *find_logo_service(const std::string &team_id);
-  Ctf01dTeamLogo *find_logo_big_service(const std::string &team_id);
-  bool update_last_change_time();
-  void update_scoreboard_json(nlohmann::json &jsonScoreboard);
+  image(const std::string &id);
+  ~image();
+  bool reload_from_file(const std::string &filepath);
+  std::string id();
+  std::string filename();
+  std::string filepath();
+  long last_modified_time();
+
+  char *pBuffer;
+  int nBufferSize;
 
 private:
   std::string TAG;
-  bool load_logo(const std::string &team_id, const std::string &filepath, std::map<std::string, Ctf01dTeamLogo *> &logos);
-
-  std::map<std::string, Ctf01dTeamLogo *> m_teams_logo;
-  std::map<std::string, Ctf01dTeamLogo *> m_teams_big_logo;
-  std::map<std::string, Ctf01dTeamLogo *> m_services_logo;
-  std::map<std::string, Ctf01dTeamLogo *> m_services_big_logo;
-  int m_nLastUpdateChangeTimeLogosInSec;
+  std::string m_id;
+  std::string m_filename;
+  std::string m_filepath;
+  long m_last_modified_time;
 };
+
+} // namespace ctf01d

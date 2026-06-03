@@ -35,4 +35,30 @@
  *
  ***********************************************************************************/
 
-#include "ctf01d_team_logo.h"
+#pragma once
+
+#include <wsjcpp_employees.h>
+#include <json.hpp>
+#include "ctf01d/objects/ctf01d_image.h"
+
+class EmployImages : public WsjcppEmployBase {
+public:
+  EmployImages();
+  static std::string name() { return "EmployImages"; }
+  virtual bool init(const std::string &name, bool silent) override;
+  virtual bool deinit(const std::string &name, bool silent) override;
+  bool load_team_logo(const std::string &team_id, const std::string &filepath);
+  bool load_team_big_logo(const std::string &team_id, const std::string &filepath);
+  bool load_service_logo(const std::string &service_id, const std::string &filepath);
+  bool load_service_big_logo(const std::string &service_id, const std::string &filepath);
+  std::shared_ptr<ctf01d::image> find_image(const std::string &id);
+  bool update_last_change_time();
+  void update_scoreboard_json(nlohmann::json &jsonScoreboard);
+
+private:
+  std::string TAG;
+  bool load_logo(const std::string &id, const std::string &filepath);
+
+  std::map<std::string, std::shared_ptr<ctf01d::image>> m_images;
+  int m_nLastUpdateChangeTimeLogosInSec;
+};

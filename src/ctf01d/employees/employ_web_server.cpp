@@ -37,8 +37,7 @@
 
 #include "employ_web_server.h"
 #include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_team_logos.h"
-#include "ctf01d/objects/ctf01d_team_logo.h"
+#include "ctf01d/employees/employ_images.h"
 #include <wsjcpp_core.h>
 #include <fstream>
 #include <cstring>
@@ -289,7 +288,7 @@ int EmployWebServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
 }
 
 int EmployWebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
-  auto teamLogos = findWsjcppEmploy<EmployTeamLogos>();
+  auto teamLogos = findWsjcppEmploy<EmployImages>();
   auto config = findWsjcppEmploy<EmployConfig>();
   teamLogos->update_last_change_time();
 
@@ -461,40 +460,20 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp) {
   // TODO refactoring it
 
-  static const std::string logo_team_prefix = "/logo/team/";
-  static const int logo_team_prefix_length = logo_team_prefix.size();
-  static const std::string logo_big_team_prefix = "/logo/big/team/";
-  static const int logo_big_team_prefix_length = logo_big_team_prefix.size();
-  static const std::string logo_service_prefix = "/logo/service/";
-  static const int logo_service_prefix_length = logo_service_prefix.size();
-  static const std::string logo_big_service_prefix = "/logo/big/service/";
-  static const int logo_big_service_prefix_length = logo_big_service_prefix.size();
+  std::string id = request_path.substr(m_logo_prefix_length, request_path.length() - m_logo_prefix_length);
+  WsjcppLog::info(TAG, "httpLogo, id = " + id);
+  auto images = findWsjcppEmploy<EmployImages>();
+  std::shared_ptr<ctf01d::image> img = images->find_image(id);
 
-  auto teamLogos = findWsjcppEmploy<EmployTeamLogos>();
-  Ctf01dTeamLogo *pLogo = nullptr;
-  if (request_path.rfind(logo_team_prefix, 0) == 0) {
-    std::string id = request_path.substr(logo_team_prefix_length, request_path.length() - logo_team_prefix_length);
-    pLogo = teamLogos->find_logo_team(id);
-  } else if (request_path.rfind(logo_big_team_prefix, 0) == 0) {
-    std::string id = request_path.substr(logo_big_team_prefix_length, request_path.length() - logo_big_team_prefix_length);
-    pLogo = teamLogos->find_logo_big_team(id);
-  } else if (request_path.rfind(logo_service_prefix, 0) == 0) {
-    std::string id = request_path.substr(logo_service_prefix_length, request_path.length() - logo_service_prefix_length);
-    pLogo = teamLogos->find_logo_service(id);
-  } else if (request_path.rfind(logo_big_service_prefix, 0) == 0) {
-    std::string id = request_path.substr(logo_big_service_prefix_length, request_path.length() - logo_big_service_prefix_length);
-    pLogo = teamLogos->find_logo_big_service(id);
-  }
-
-  if (pLogo == nullptr) {
+  if (!img) {
     return 404;
   }
   resp->Data(
-    pLogo->pBuffer,
-    pLogo->nBufferSize,
+    img->pBuffer,
+    img->nBufferSize,
     true // nocopy
   );
-  resp->SetContentTypeByFilename(pLogo->sFilename.c_str());
+  resp->SetContentTypeByFilename(img->filename().c_str());
   return 200;
 
 }
