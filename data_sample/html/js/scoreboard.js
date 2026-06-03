@@ -22,11 +22,11 @@ function parsePageParams() {
 g_pageParams = parsePageParams();
 g_iconAnimation = g_pageParams.hasOwnProperty("animation");
 
-var mneu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];
+var menu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0];
 var tabs_content = document.getElementsByClassName('ctf01d-page-content');
 
-mneu_btn.onclick = function() {
-    // mneu_btn
+menu_btn.onclick = function() {
+    // menu_btn
     for (var i = 0; i < tabs_content.length; i++) {
         tabs_content[i].style.display = '';
     }
@@ -766,9 +766,9 @@ function updateScoreboard() {
             for(var sService in t.ts_sta){
                 var newState = t.ts_sta[sService]['status'];
                 var newAttackFlags = t.ts_sta[sService]['att'];
-                // var newDefenceFlags = t.ts_sta[sService]['def'];
+                // var newDefenseFlags = t.ts_sta[sService]['def'];
                 var newAttackPoints = t.ts_sta[sService]['pt_att'];
-                var newDefencePoints = t.ts_sta[sService]['pt_def'];
+                var newDefensePoints = t.ts_sta[sService]['pt_def'];
                 var newSLA = t.ts_sta[sService]['sla'];
                 var elId = 'status-' + teamID + '-' + sService;
                 var el = document.getElementById(elId);
@@ -793,7 +793,7 @@ function updateScoreboard() {
                 silentUpdate('att-' + sCell, newAttackFlags)
                 // silentUpdate('def-' + sCell, newDefenseFlags)
                 silentUpdate('pt_att-' + sCell, newAttackPoints.toFixed(2))
-                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefencePoints.toFixed(0))
+                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefensePoints.toFixed(0))
                 silentUpdate('sla-' + sCell, "SLA: " + newSLA + "%")
                 silentUpdateWidthWithoutAnimation('sla-progress-' + sCell, newSLA + "%")
             }
@@ -893,7 +893,7 @@ getAjax('/api/v1/game', function(err, resp){
         + '<div class="service"><b>' + resp.services[i].name + '</b><br>'
         + '  <div class="service-att-def">'
         + '      <div class="service-att-def-row">'
-        + '          <div class="service-att-def-cell defence-flags" id="' + serviceId + '-all-flags-def">0</div>'
+        + '          <div class="service-att-def-cell defense-flags" id="' + serviceId + '-all-flags-def">0</div>'
         + '          <div class="service-att-def-cell stollen-flags" id="' + serviceId + '-all-flags-att">0</div>'
         + '      </div>'
         + '      <div class="service-att-def-row">'

@@ -566,7 +566,7 @@ img.team-logo {
   background-image: url("../images/icons/defense-points.svg");
 }
 
-.service-att-def-cell.defence-flags {
+.service-att-def-cell.defense-flags {
   color: #00b100;
   background-image: url("../images/icons/defense-flags.svg");
 }
@@ -680,8 +680,8 @@ img.team-logo {
   background-image: url("../images/icons/attack-points.svg");
 }
 
-.icon-defence-flags {
-  background-image: url("../images/icons/defence-flags.svg");
+.icon-defense-flags {
+  background-image: url("../images/icons/defense-flags.svg");
 }
 
 .icon-defense-points {
