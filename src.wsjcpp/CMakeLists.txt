@@ -303,5 +303,11 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sam
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_services_service12_default_icon_svg_path4ab12a.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_services_service33_default_icon_svg_pathdaecf1.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_services_service33_default_icon_svg_pathdaecf1.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_first_blood_unknown_svg_path136154.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_first_blood_unknown_svg_path136154.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_flags_red_svg_path37516e.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_flags_red_svg_path37516e.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_flags_green_svg_pathdad8e9.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_flags_green_svg_pathdad8e9.cpp")
 
 

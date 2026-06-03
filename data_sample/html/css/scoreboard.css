@@ -20,7 +20,7 @@ body,html {
 }
 
 .ctf01d-global-page-switcher {
-  top: 5px;
+  top: 25px;
   left: 5px;
   position: fixed;
   cursor: pointer;
@@ -78,10 +78,10 @@ input, select {
 
 
 button {
-    background-color: #202020;
-    color: #aaa;
-    border: 1px solid #aaa;
-    cursor: pointer;
+  background-color: #202020;
+  color: #aaa;
+  border: 1px solid #aaa;
+  cursor: pointer;
 }
 
 .d-icn {
@@ -139,8 +139,8 @@ button {
 .headers {
   border-bottom: 1px solid #444;
   height: 85px;
-  position: absolute;
-  padding-top: 15px;
+  position: fixed;
+  padding-top: 25px;
   width: 100%;
   white-space: nowrap;
   background: #202b3a;
@@ -264,34 +264,74 @@ img.team-logo {
 }
 
 .headers .service {
+  display: inline-table;
   height: 100px;
   line-height: 20px;
   width: 139px;
+  max-width: 139px;
   padding-left: 10px;
   padding-right: 5px;
 }
 
-.headers .service .service-att-def {
-  padding-left: 20px;
-  width: 133px;
-  max-width: 133px;
+.headers .service .logo-service {
+  display: block;
+  width: 35px;
+  height: 35px;
+  padding: 0px;
 }
 
-.first-blood {
+.headers .service .service-row {
+  display: table-row;
+}
+
+.headers .service .service-cell {
+  display: table-cell;
+  vertical-align: top;
+  width: 105px;
+  max-width: 105px;
+}
+
+.headers .service .service-att-def {
+  padding-left: 20px;
+  width: 85px;
+  max-width: 85px;
+}
+
+.all-services-header {
   display: inline-block;
+  vertical-align: top;
+}
+
+.service-first-blood {
+  display: block;
+  width: 35px;
+  max-width: 35px;
+}
+
+.service-first-blood-icon {
+  display: inline-block;
+  position: relative;
   height: 20px;
-  background-image: url("../images/first-blood.svg");
+  width: 20px;
+  background-image: url("../images/icons/first-blood.svg");
   background-size: 20px 20px;
   background-repeat: no-repeat;
-  padding-left: 25px;
+  left: 20px;
+  top: -3px;
+  z-index: 1051;
+  cursor: pointer;
 }
 
 .first-blood-value {
   display: inline-block;
-  height: 20px;
+  position: relative;
+  height: 35px;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  width: 35px;
+  max-width: 35px;
+  left: -25px;
+  font-size: 10px;
 }
 
 .first-blood-info-value {
@@ -364,35 +404,49 @@ img.team-logo {
 }
 
 .headers-time {
-  height: 24px;
-  background-color: #333;
-  line-height: 20px;
-  top: 88px;
-  border-radius: 20px;
-  position: absolute;
-  width: calc(100% - 200px);
-  margin-left: 100px;
-  margin-right: 100px;
-  border-top: 2px solid #444;
-  border-bottom: 2px solid #0c1d07;
-  /*background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M10 10h123v123H10z'/%3E%3C/svg%3E");
-  background-size: 70% 70px;
-  background-repeat: no-repeat;
-  background-position: 0px -10px;*/
+  height: 15px;
+  background-color: #354863;
+  line-height: 15px;
+  top: 0px;
+  position: fixed;
+  width: 100%;
+  font-size: 10px;
   z-index: 999;
+  cursor: pointer;
+}
+
+@keyframes headersTimeResize {
+  from {
+    height: 15px;
+    font-size: 10px;
+    line-height: 15px;
+  }
+  to {
+    height: 30px;
+    font-size: 20px;
+    line-height: 30px;
+  }
+}
+
+.headers-time:hover {
+  animation: headersTimeResize 0.8s ease-in-out;
+  height: 30px;
+  font-size: 20px;
+  line-height: 30px;
 }
 
 .headers-time-fill {
   display: block;
-  background-color: #193112;
-  height: 20px;
-  border-radius: 20px;
+  background-color: #1a3d6e;
+  height: 15px;
   position: absolute;
   width: 50%;
-  z-index: 100;
-  border-top: 2px solid #2a3d24;
-  border-bottom: 2px solid #112909;
-  border-right: 5px solid #706518;
+  z-index: 999;
+}
+
+.headers-time:hover .headers-time-fill {
+  animation: headersTimeResize 0.8s ease-in-out;
+  height: 30px;
 }
 
 .headers-time-game-current-time {
@@ -534,6 +588,20 @@ img.team-logo {
   text-overflow: ellipsis;
 }
 
+.flags-green {
+  background-image: url("../images/icons/flags-green.svg");
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position-x: 40px;
+}
+
+.flags-red {
+  background-image: url("../images/icons/flags-red.svg");
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  background-position-x: 40px;
+}
+
 .service-sla-notify-container {
   height: 5px;
   width: 137px;
@@ -581,11 +649,6 @@ img.team-logo {
   background-image: url("../images/icons/round-time.svg");
 }
 
-.service-att-def-cell.first-blood {
-  color: #bb1919;
-  background-image: url("../images/icons/first-blood.svg");
-}
-
 .service-att-def-cell.sla {
   color: #9cb9ea;
   background-image: url("../images/icons/sla.svg");
@@ -593,6 +656,7 @@ img.team-logo {
 
 .service-att-def-cell.stollen-flags {
   color: #cc5914;
+  background-color: rgba(87,59,0,0.4);
   background-image: url("../images/icons/attack.svg");
 }
 
@@ -775,7 +839,7 @@ img.team-logo {
   border-radius: 50px;
   /* Position the tooltip text - see examples below! */
   position: absolute;
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .tooltip:hover .tooltiptext {
@@ -814,6 +878,7 @@ img.team-logo {
 }
 
 .tooltiptext.first-blood-info {
+  /*visibility: visible !important;*/
   background-image: url("../images/icons/first-blood.svg");
   background-size: 20px 20px;
   background-repeat: no-repeat;
@@ -823,6 +888,7 @@ img.team-logo {
   border: 1px solid #bb1919;
   border-radius: 5px;
   padding-top: 5px;
+  z-index: 1000;
 }
 
 .current-team {

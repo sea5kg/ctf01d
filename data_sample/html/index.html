@@ -27,13 +27,13 @@
         <p>Every flag have a lifetime (default: 1 minute)</p> <!-- TODO get from server -->
         <p>Basic cost of stolen flag (default: 1.0 points)</p> <!-- TODO get from server -->
 
-        <h3>2. Acception of flag defence</h3>
-        <p>Only that flag defence from the service is counted if:</p>
+        <h3>2. Acception of flag defense</h3>
+        <p>Only that flag defense from the service is counted if:</p>
         <div>
           <p>- the flag was successfully putted to the service</<p>
           <p>- the flag has existed on the service all the time of it's life</<p>
           <p>- the flag was not stolen by another team (s)</<p>
-          <p>- the cost of the defences flag is fixed and equal to 1.0 points</<p> <!-- TODO get from server -->
+          <p>- the cost of the defenses flag is fixed and equal to 1.0 points</<p> <!-- TODO get from server -->
         </div>
 
         <h3>3. Acception of flag attack</h3>
@@ -45,22 +45,22 @@
           <p>- a flag from the same type of service as yours, but your service must be in UP state</p>
           <p>- the flag is dealt the first time by your team (the same flag may be dealt by different teams)</p>
           <p>- the flag is still alive (the flag has not expired)</p>
-          <p>- only during the announced game (flags are not accepted during coffeebreaking)</p>
+          <p>- only during the announced game (flags are not accepted during coffee-breaking)</p>
         </div>
         <div style="display: inline-block;">
           <pre class="pre-flag-format">
-# formala1
+# formula1
 basic_flag_points = 1.0
 motivation = 1.0
 if victim_place_in_scoreboard > thief_place_in_scoreboard:
     motivation -= (victim_place_in_scoreboard - thief_place_in_scoreboard) / (m_nTeamCount - 1);
-attack_points_by_servece1 = basic_flag_points * motivation
+attack_points_by_service1 = basic_flag_points * motivation
 
-# formala2
-team_points = team_points + SLA_1 * (service1_defence_points + service1_attack_points)
-team_points = team_points + SLA_2 * (service2_defence_points + service2_attack_points)
+# formula2
+team_points = team_points + SLA_1 * (service1_defense_points + service1_attack_points)
+team_points = team_points + SLA_2 * (service2_defense_points + service2_attack_points)
 ...
-team_points = team_points + SLA_N * (serviceN_defence_points + serviceN_attack_points)
+team_points = team_points + SLA_N * (serviceN_defense_points + serviceN_attack_points)
           </pre>
         </div>
       </div>
@@ -180,6 +180,25 @@ SOFTWARE.
     </div>
     <div class="ctf01d-page-content" id="game_scoreboard" style="display: block">
       <div id="scoreboard_content" style="display: none">
+        <div class='scoreboard' id='table_scoreboard'>
+          <div class='headers'>
+            <div class='place'></div>
+            <div class='team-logo'></div>
+            <div class='team'>Team <button class='team-slider-button' title='Show top teams' onclick='showTopTeamsSlider()'>&#9654;</button></div>
+            <div class='score'><div class='hdr-text'>points</div></div>
+            <div class='all-services-header' id="services_header"></div>
+            <div class="activity">
+              Activity<br>
+              <div class="activity-value" id="tries-all-summary-teams">0</div>
+              <div class="activity-icon" id="tries-icon-all-summary-teams"></div>
+            </div>
+          </div>
+          <div class='headers-time'>
+            <div class='headers-time-fill' id='game_progress_time'></div>
+            <div class='headers-time-game-current-time' id='game_current_time'>0</div>
+          </div>
+          <div id="teams_rows"></div>
+        </div>
       </div>
       <div id="loader_content" style="display: block">
         <div class="lds-facebook">
