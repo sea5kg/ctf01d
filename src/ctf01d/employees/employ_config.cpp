@@ -461,7 +461,7 @@ bool EmployConfig::applyScoreboardPortFromEnv() {
 
 bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
   m_vServicesConf.clear();
-  EmployImages *logos = findWsjcppEmploy<EmployImages>();
+  auto images = findWsjcppEmploy<EmployImages>();
 
   WsjcppYamlCursor yamlCheckers = yamlConfig["services"];
 
@@ -494,11 +494,11 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
       }
     }
 
-    if (!logos->load_team_logo(_serviceConf.id(), _serviceConf.logo_path())) {
+    if (!images->load_service_logo(_serviceConf.id(), _serviceConf.logo_path())) {
       return false;
     }
     WsjcppLog::info(TAG, "Loaded service logo = " + _serviceConf.logo_path());
-    if (!logos->load_team_big_logo(_serviceConf.id(), _serviceConf.logo_big_path())) {
+    if (!images->load_service_big_logo(_serviceConf.id(), _serviceConf.logo_big_path())) {
       return false;
     }
     WsjcppLog::info(TAG, "Loaded service logo-big = " + _serviceConf.logo_big_path());
@@ -535,7 +535,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
 
 bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
   m_vTeamsConf.clear();
-  EmployImages *logos = findWsjcppEmploy<EmployImages>();
+  auto images = findWsjcppEmploy<EmployImages>();
 
   WsjcppYamlCursor cursor = yamlConfig["teams"];
   std::string err;
@@ -591,11 +591,11 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
       return false;
     }
 
-    if (!logos->load_team_logo(_team_config.id(), _team_config.logo_path())) {
+    if (!images->load_team_logo(_team_config.id(), _team_config.logo_path())) {
       return false;
     }
     WsjcppLog::info(TAG, "Loaded team logo = " + _team_config.logo_path());
-    if (!logos->load_team_big_logo(_team_config.id(), _team_config.logo_big_path())) {
+    if (!images->load_team_big_logo(_team_config.id(), _team_config.logo_big_path())) {
       return false;
     }
     WsjcppLog::info(TAG, "Loaded team logo-big = " + _team_config.logo_path());
