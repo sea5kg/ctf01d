@@ -71,8 +71,6 @@ public:
   void updateScore(const std::string &sTeamId, const std::string &sServiceId);
   std::string serviceStatus(const std::string &sTeamId, const std::string &sServiceId);
 
-  int countFlagsLive();
-
   // std::string toString();
   const nlohmann::json &toJson();
 

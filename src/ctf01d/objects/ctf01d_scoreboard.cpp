@@ -434,10 +434,6 @@ std::string Ctf01dScoreboard::serviceStatus(const std::string &sTeamId, const st
   return "";
 }
 
-int Ctf01dScoreboard::countFlagsLive() {
-  return m_alive_flags->count_alive_flags();
-}
-
 static bool sort_using_greater_than(double u, double v) {
   return u > v;
 }

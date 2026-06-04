@@ -588,7 +588,7 @@ int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   prometheusMetricInfo(oss, "ctf01d_flag_attempts_total", "counter", "Total flag submission attempts.");
   oss << "ctf01d_flag_attempts_total " << jsonScoreboard["sum_act"].get<long>() << "\n";
   prometheusMetricInfo(oss, "ctf01d_flags_live", "gauge", "Currently active flags.");
-  oss << "ctf01d_flags_live " << scoreboard->countFlagsLive() << "\n";
+  oss << "ctf01d_flags_live " << findWsjcppEmploy<IAliveFlags>()->count_alive_flags() << "\n";
 
   prometheusMetricInfo(oss, "ctf01d_team_score", "gauge", "Team score.");
   for (auto &it : jsonScoreboard["scoreboard"].items()) {
