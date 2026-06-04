@@ -1,0 +1,10 @@
+# Drop this scrape job into your existing prometheus.yml under `scrape_configs:`
+- job_name: ctf01d
+  scrape_interval: 5s
+  scrape_timeout: 4s
+  metrics_path: /api/v1/metrics
+  static_configs:
+    - targets:
+        - "localhost:8080"        # change to host:port where ctf01d listens
+      labels:
+        game: "test-first-game"
