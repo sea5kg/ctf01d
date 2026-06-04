@@ -1,8 +1,12 @@
 # Changelog
 
-## [v0.7.0] - (2026 June 4)
+
+## [v0.7.1] - (2026 ?? ??)
 
 - Added Prometheus exposition at GET /api/v1/metrics. Disabled by default; enable via `scoreboard.prometheus-metrics-endpoint.enabled` and restrict scrapers with `scoreboard.prometheus-metrics-endpoint.allowed-for` (comma-separated wildcard patterns, e.g. `10.10.100.*, 127.0.*`). Not listed clients get HTTP 403.
+
+## [v0.7.0] - (2026 June 4)
+
 - Fixed #84: Added /api/v1/game/current-time
 - Fixed #67: m_nFlagLifeTimeInMin changed to seconds
 - Moved and renamed some source files to src/ctf01d
