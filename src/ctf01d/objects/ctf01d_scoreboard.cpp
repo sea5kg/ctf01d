@@ -42,7 +42,6 @@
 #include <algorithm>
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_flags.h"
 
 Ctf01dScoreboard::Ctf01dScoreboard(
   bool bRandom,
@@ -69,7 +68,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   m_nAllTriesActivities = 0;
   m_flag_cost_in_points = config->get_flag_cost_in_points();
   m_nTeamCount = vTeamsConf.size();
-  m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
+  m_alive_flags = findWsjcppEmploy<IAliveFlags>();
   m_formulas = std::make_shared<Ctf01dFormulasForPoints_RuCtf>();
 
   m_mapTeamsStatuses.clear(); // possible memory leak
@@ -203,13 +202,6 @@ void Ctf01dScoreboard::initStateFromStorage() {
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
   const std::vector<ctf01d::service_config> &vServices = pConfig->servicesConf();
 
-  WsjcppLog::info(TAG, "Loading alive flags...");
-  std::vector<Ctf01dFlag> vFlagLives = m_pDatabase->listOfLiveFlags();
-  for (unsigned int i = 0; i < vFlagLives.size(); i++) {
-    Ctf01dFlag flag = vFlagLives[i];
-    m_mapFlagsLive[flag.getValue()] = flag;
-  }
-
   // load services statistics
   WsjcppLog::info(TAG, "Loading services statistics...");
   m_nAllDefenseFlags = 0;
@@ -291,7 +283,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
   }
 }
 
-std::optional<int> Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId) {
+std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &flag, const std::string &sTeamId) {
   std::lock_guard<std::mutex> lock(m_mutexJson);
   if (m_pDatabase->isAlreadyStole(flag, sTeamId)) {
     return std::nullopt;
@@ -338,7 +330,7 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const Ctf01dFlag &flag
   return std::optional<int>(flag_points);
 }
 
-void Ctf01dScoreboard::incrementDefenseScore(const Ctf01dFlag &flag) {
+void Ctf01dScoreboard::incrementDefenseScore(const ctf01d::flag &flag) {
   std::lock_guard<std::mutex> lock(m_mutexJson);
 
   std::string sTeamId = flag.getTeamId();
@@ -367,24 +359,15 @@ void Ctf01dScoreboard::incrementDefenseScore(const Ctf01dFlag &flag) {
   }
 }
 
-void Ctf01dScoreboard::incrementFlagsPuttedAndServiceUp(const Ctf01dFlag &flag) {
+void Ctf01dScoreboard::incrementFlagsPuttedAndServiceUp(const ctf01d::flag &flag) {
   std::string sServiceId = flag.getServiceId();
   std::string sTeamId = flag.getTeamId();
   std::string sNewStatus = m_bRandom ? randomServiceStatus() : Ctf01dServiceStatusCell::SERVICE_UP;
 
-  // insert flag lives
-  {
-    std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
-    std::map<std::string, Ctf01dFlag>::iterator it;
-    it = m_mapFlagsLive.find(flag.getValue());
-    if (it != m_mapFlagsLive.end()) {
-      WsjcppLog::err(TAG, flag.getValue() + " - flag already exists");
-    } else {
-      m_mapFlagsLive[flag.getValue()] = flag;
-      m_pDatabase->insertToFlagLive(flag);
-      m_pDatabase->insertToFlagsCheckerPutResult(flag, "up");
-      m_mapTeamsStatuses[flag.getTeamId()]->incrementPutFlagSuccess(flag.getServiceId());
-    }
+  if (m_alive_flags->insert_alive_flag(flag)) {
+    // m_pDatabase->insertToFlagLive(flag);
+    m_pDatabase->insertToFlagsCheckerPutResult(flag, "up");
+    m_mapTeamsStatuses[flag.getTeamId()]->incrementPutFlagSuccess(flag.getServiceId());
   }
 
   // success putted
@@ -405,7 +388,7 @@ void Ctf01dScoreboard::incrementFlagsPuttedAndServiceUp(const Ctf01dFlag &flag) 
   }
 }
 
-void Ctf01dScoreboard::insertFlagPutFail(const Ctf01dFlag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus) {
+void Ctf01dScoreboard::insertFlagPutFail(const ctf01d::flag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus) {
   m_pDatabase->insertToFlagsCheckerPutResult(flag, sDescrStatus);
 
   std::lock_guard<std::mutex> lock(m_mutexJson);
@@ -501,61 +484,17 @@ void Ctf01dScoreboard::updateServicesStatistics() {
   }
 }
 
-std::vector<Ctf01dFlag> Ctf01dScoreboard::outdatedFlagsLive(const std::string &sTeamId, const std::string &sServiceId) {
-  std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
-  std::vector<Ctf01dFlag> vResult;
-  long nCurrentTime = WsjcppCore::getCurrentTimeInMilliseconds();
-  std::map<std::string,Ctf01dFlag>::iterator it;
-  for (it = m_mapFlagsLive.begin(); it != m_mapFlagsLive.end(); it++) {
-    Ctf01dFlag flag = it->second;
-    if (flag.getTeamId() == sTeamId
-      && flag.getServiceId() == sServiceId
-      && flag.getTimeEndInMs() < nCurrentTime
-    ) {
-      vResult.push_back(flag);
-    }
-  }
-  return vResult;
-}
-
-bool Ctf01dScoreboard::findFlagLive(const std::string &sFlagValue, Ctf01dFlag &flag) {
-  std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
-  std::map<std::string,Ctf01dFlag>::iterator it = m_mapFlagsLive.find(sFlagValue);
-  if (it != m_mapFlagsLive.end()) {
-    flag.copyFrom(it->second);
-    return true;
-  }
-  return false;
-}
-
-void Ctf01dScoreboard::removeFlagLive(const Ctf01dFlag &flag) {
-  std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
-  std::map<std::string,Ctf01dFlag>::iterator it;
-  it = m_mapFlagsLive.find(flag.getValue());
-  if (it != m_mapFlagsLive.end()) {
-    m_mapFlagsLive.erase(it);
-    m_pDatabase->deleteFlagLive(flag);
-  } else {
-    WsjcppLog::warn(TAG, flag.getValue() + " - flag did not exists");
-  }
-}
-
-int Ctf01dScoreboard::countFlagsLive() {
-  std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
-  return static_cast<int>(m_mapFlagsLive.size());
-}
-
-std::string Ctf01dScoreboard::toString(){
-  std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
-  std::string sResult = "";
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
-  for (it = m_mapTeamsStatuses.begin(); it != m_mapTeamsStatuses.end(); ++it){
-    sResult += it->first + ": \n"
-      "\tpoints: " + std::to_string(it->second->getPoints()) + "\n"
-      + it->second->servicesToString() + "\n";
-  }
-  return sResult;
-}
+// std::string Ctf01dScoreboard::toString() {
+//   std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
+//   std::string sResult = "";
+//   std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+//   for (it = m_mapTeamsStatuses.begin(); it != m_mapTeamsStatuses.end(); ++it){
+//     sResult += it->first + ": \n"
+//       "\tpoints: " + std::to_string(it->second->getPoints()) + "\n"
+//       + it->second->servicesToString() + "\n";
+//   }
+//   return sResult;
+// }
 
 const nlohmann::json &Ctf01dScoreboard::toJson(){
   std::lock_guard<std::mutex> lock(m_mutexJson);

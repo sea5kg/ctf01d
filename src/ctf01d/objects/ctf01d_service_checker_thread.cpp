@@ -70,7 +70,7 @@ service_checker_thread::service_checker_thread(
   m_pDatabase = findWsjcppEmploy<EmployDatabase>();
   m_teamConf = teamConf;
   m_serviceConf = service;
-  m_pEmployFlags = findWsjcppEmploy<EmployFlags>();
+  m_alive_flags = findWsjcppEmploy<IAliveFlags>();
 
   TAG = "Checker: " + m_teamConf.id() + std::string( 15 - m_teamConf.id().length(), ' ')
     + m_serviceConf.id() + " ";
@@ -89,7 +89,7 @@ void service_checker_thread::start() {
   pthread_create(&m_checkerThread, NULL, &newServiceCheckerThread, (void *)this);
 }
 
-int service_checker_thread::runChecker(Ctf01dFlag &flag, const std::string &sCommand) {
+int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sCommand) {
   if (sCommand != "put" &&  sCommand != "check") {
     WsjcppLog::err(TAG, "runChecker - sCommand must be 'put' or 'check' ");
     return service_checker_thread::CHECKER_CODE_SHIT;
@@ -128,12 +128,12 @@ int service_checker_thread::runChecker(Ctf01dFlag &flag, const std::string &sCom
 
   int nExitCode = process.exitCode();
   if (nExitCode == service_checker_thread::CHECKER_CODE_MUMBLE) {
-    WsjcppLog::err(TAG, "Checker says that serivice is mumble...\nLOG:\n"
+    WsjcppLog::err(TAG, "Checker says that service is mumble...\nLOG:\n"
       "\n" + process.outputString() + "\n\n");
   }
 
   if (nExitCode == service_checker_thread::CHECKER_CODE_CORRUPT) {
-    WsjcppLog::err(TAG, "Checker says that serivice is corrupt... \nLOG:\n"
+    WsjcppLog::err(TAG, "Checker says that service is corrupt... \nLOG:\n"
       "\n" + process.outputString() + "\n\n");
   }
 
@@ -204,7 +204,7 @@ void service_checker_thread::run() {
     // If there is more time left before the end of the game than the life of the flag,
     // then we establish a flag
     if (nCurrentTime < (m_pConfig->gameEndUTCInSec() - m_pConfig->flagLifetimeInSeconds())) {
-      Ctf01dFlag flag;
+      ctf01d::flag flag;
       flag.generateRandomFlag(
         m_pConfig->flagLifetimeInSeconds(),
         m_teamConf.id(),
@@ -246,11 +246,11 @@ void service_checker_thread::run() {
       // check some service status or just update to UP (Ha-Ha I'm the real evil!)
     }
 
-    std::vector<Ctf01dFlag> vEndedFlags = m_pConfig->scoreboard()->outdatedFlagsLive(m_teamConf.id(), m_serviceConf.id());
+    std::vector<ctf01d::flag> vEndedFlags = m_alive_flags->outdated_alive_flags(m_teamConf.id(), m_serviceConf.id());
 
     for (unsigned int i = 0; i < vEndedFlags.size(); i++) {
-      Ctf01dFlag outdatedFlag = vEndedFlags[i];
-      m_pConfig->scoreboard()->removeFlagLive(outdatedFlag);
+      ctf01d::flag outdatedFlag = vEndedFlags[i];
+      m_alive_flags->remove_alive_flag(outdatedFlag);
 
       // if (outdatedFlag.teamStole() != "") {
       //     continue;

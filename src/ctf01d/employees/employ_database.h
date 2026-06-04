@@ -49,32 +49,27 @@ public:
   virtual bool deinit(const std::string &sName, bool bSilent) override;
 
   // flags_checker_put_states
-  void insertToFlagsCheckerPutResult(Ctf01dFlag flag, std::string sResult);
+  void insertToFlagsCheckerPutResult(ctf01d::flag flag, std::string sResult);
   int numberOfFlagFlagsCheckerPutAllResults(std::string sTeamId, std::string sServiceId);
   int numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId, std::string sServiceId);
 
   void insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP);
   int numberOfFlagAttempts(std::string sTeamId);
 
-  void insertToFlagsDefense(Ctf01dFlag flag, int nPoints);
+  void insertToFlagsDefense(ctf01d::flag flag, int nPoints);
   int numberOfFlagsDefense(std::string sTeamId, std::string sServiceId);
   int sumPointsOfFlagsDefense(std::string sTeamId, std::string sServiceId);
   int numberOfDefenseFlagForService(std::string sServiceId);
-  void insertFlagCheckFail(Ctf01dFlag flag, std::string sReason);
+  void insertFlagCheckFail(ctf01d::flag flag, std::string sReason);
 
   // flags_stollen
   int numberOfFlagsStollen(std::string sTeamId, std::string sServiceId);
   int sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId);
   int numberOfStolenFlagsForService(std::string sServiceId);
   std::pair<std::string, long> getFirstBloodFromStolenFlagsForService(std::string sServiceId);
-  void insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
-  bool isAlreadyStole(Ctf01dFlag flag, std::string sTeamId);
-  bool isSomebodyStole(Ctf01dFlag flag);
-
-  // flags live
-  void insertToFlagLive(Ctf01dFlag flag);
-  void deleteFlagLive(Ctf01dFlag flag);
-  std::vector<Ctf01dFlag> listOfLiveFlags();
+  void insertToFlagsStolen(ctf01d::flag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard);
+  bool isAlreadyStole(ctf01d::flag flag, std::string sTeamId);
+  bool isSomebodyStole(ctf01d::flag flag);
 
 private:
   std::string TAG;
@@ -83,6 +78,5 @@ private:
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsDefense;
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckFails;
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsStolen;
-  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsLive;
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckerPutsResults;
 };

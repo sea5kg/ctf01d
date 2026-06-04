@@ -39,7 +39,7 @@
 
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_flags.h"
+#include "ctf01d/include/i_alive_flags.h"
 
 namespace ctf01d {
 
@@ -60,11 +60,11 @@ private:
   pthread_t m_checkerThread;
   EmployConfig *m_pConfig;
   EmployDatabase *m_pDatabase; // TODO not must be here
-  EmployFlags *m_pEmployFlags;
+  IAliveFlags *m_alive_flags;
   ctf01d::team_config m_teamConf;
   ctf01d::service_config m_serviceConf;
 
-  int runChecker(Ctf01dFlag &flag, const std::string &sCommand);
+  int runChecker(ctf01d::flag &flag, const std::string &sCommand);
   // int runChecker(Flag &flag, const std::string &sCommand);
   // void run();
 };

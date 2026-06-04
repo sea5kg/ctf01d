@@ -391,8 +391,8 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
   // TODO m_pEmployFlags->insertFlagAttempt(sTeamId, sFlag);
 
-  Ctf01dFlag flag;
-  if (!config->scoreboard()->findFlagLive(sFlag, flag)) {
+  ctf01d::flag flag;
+  if (!findWsjcppEmploy<IAliveFlags>()->find_alive_flag(sFlag, flag)) {
       static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag already stole.";
       WsjcppLog::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
       resp->String(sErrorMsg);

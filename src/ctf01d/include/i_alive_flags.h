@@ -37,18 +37,15 @@
 
 #pragma once
 
-#include <wsjcpp_employees.h>
-#include <string>
-#include <fstream>
+#include <vector>
 #include "ctf01d/objects/ctf01d_flag.h"
 
-class EmployFlags : public WsjcppEmployBase {
+class IAliveFlags {
 public:
-  EmployFlags();
-  static std::string name() { return "EmployFlags"; }
-  virtual bool init(const std::string &sName, bool bSilent) override;
-  virtual bool deinit(const std::string &sName, bool bSilent) override;
-
-private:
-  std::string TAG;
+  static std::string name() { return "IAliveFlags"; }
+  virtual bool insert_alive_flag(const ctf01d::flag &flag) = 0;
+  virtual std::vector<ctf01d::flag> outdated_alive_flags(const std::string &team_id, const std::string &service_id) = 0;
+  virtual bool find_alive_flag(const std::string &flag_value, ctf01d::flag &flag) = 0;
+  virtual void remove_alive_flag(const ctf01d::flag &flag) = 0;
+  virtual int count_alive_flags() = 0;
 };

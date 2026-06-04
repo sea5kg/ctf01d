@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include "ctf01d/employees/employ_flags.h"
+#include "ctf01d/include/i_alive_flags.h"
 #include "ctf01d/employees/employ_scoreboard.h"
 #include "ctf01d/employees/employ_database.h"
 #include <optional>
@@ -64,24 +64,19 @@ public:
   // Returns flag points on success; std::nullopt if this team has already
   // stolen the flag (dedup check happens under the same lock as the insert
   // so concurrent submissions can't double-credit).
-  std::optional<int> incrementAttackScore(const Ctf01dFlag &flag, const std::string &sTeamId);
-  void incrementDefenseScore(const Ctf01dFlag &flag);
-  void incrementFlagsPuttedAndServiceUp(const Ctf01dFlag &flag);
-  void insertFlagPutFail(const Ctf01dFlag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus);
+  std::optional<int> incrementAttackScore(const ctf01d::flag &flag, const std::string &sTeamId);
+  void incrementDefenseScore(const ctf01d::flag &flag);
+  void incrementFlagsPuttedAndServiceUp(const ctf01d::flag &flag);
+  void insertFlagPutFail(const ctf01d::flag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus);
   void updateScore(const std::string &sTeamId, const std::string &sServiceId);
   std::string serviceStatus(const std::string &sTeamId, const std::string &sServiceId);
 
-  std::vector<Ctf01dFlag> outdatedFlagsLive(const std::string &sTeamId, const std::string &sServiceId);
-  bool findFlagLive(const std::string &sFlagValue, Ctf01dFlag &flag);
-  void removeFlagLive(const Ctf01dFlag &flag);
-  int countFlagsLive();
-
-  std::string toString();
+  // std::string toString();
   const nlohmann::json &toJson();
 
 private:
   std::string TAG;
-  EmployFlags *m_pEmployFlags;
+  IAliveFlags *m_alive_flags;
   EmployDatabase *m_pDatabase;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   int m_nGameStartInSec;
@@ -107,8 +102,5 @@ private:
   void updateJsonScoreboard();
   // nlohmann::json m_jsonGF; // prepare data for flags costs
 
-  // flags live for fast check
-  std::mutex m_mutexFlagsLive;
-  std::map<std::string, Ctf01dFlag> m_mapFlagsLive; // Must be in somewhere in storage
   std::shared_ptr<Ctf01dFormulasForPoints> m_formulas;
 };

@@ -40,10 +40,9 @@
 // #include <fstream>
 #include <cstring>
 
-// ---------------------------------------------------------------------
-// Ctf01dFlag
+namespace ctf01d {
 
-Ctf01dFlag::Ctf01dFlag() {
+flag::flag() {
   // flag id
   m_sId = "qweRT12345";
   // flag format
@@ -54,7 +53,7 @@ Ctf01dFlag::Ctf01dFlag() {
   m_nTimeEndInMs = 0;
 }
 
-void Ctf01dFlag::generateRandomFlag(int nFlagLifetimeInSeconds, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec) {
+void flag::generateRandomFlag(int nFlagLifetimeInSeconds, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec) {
   long nTimeStartInMs = WsjcppCore::getCurrentTimeInMilliseconds();
   long nTimeEndInMs = nTimeStartInMs + nFlagLifetimeInSeconds*1000;
   setTimeStartInMs(nTimeStartInMs);
@@ -66,7 +65,7 @@ void Ctf01dFlag::generateRandomFlag(int nFlagLifetimeInSeconds, const std::strin
   m_sServiceId = sServiceId;
 }
 
-void Ctf01dFlag::generateId() {
+void ctf01d::flag::generateId() {
   static const std::string sAlphabet =
     "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -79,15 +78,15 @@ void Ctf01dFlag::generateId() {
   }
 }
 
-void Ctf01dFlag::setId(const std::string &sId) {
+void ctf01d::flag::setId(const std::string &sId) {
   m_sId = sId;
 }
 
-const std::string &Ctf01dFlag::getId() const {
+const std::string &ctf01d::flag::getId() const {
   return m_sId;
 }
 
-void Ctf01dFlag::generateValue(int nGameStartUTCInSec) {
+void ctf01d::flag::generateValue(int nGameStartUTCInSec) {
   // TODO redesign more freeble format
   static const std::string sAlphabet = "0123456789abcdef";
   char sUuid[37];
@@ -108,7 +107,7 @@ void Ctf01dFlag::generateValue(int nGameStartUTCInSec) {
   std::string sTimePoint = std::to_string(dt);
   int nTimePointLen = sTimePoint.size();
   if (nTimePointLen > 8) {
-    WsjcppLog::throw_err("Ctf01dFlag::generateValue", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
+    WsjcppLog::throw_err("ctf01d::flag::generateValue", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
   }
   int nPos = m_sValue.size() - 1;
   for (int i = nTimePointLen - 1; i >= 0; i--) {
@@ -121,49 +120,49 @@ void Ctf01dFlag::generateValue(int nGameStartUTCInSec) {
   // this->setValue(std::string(sUuid) + sTimePoint);
 }
 
-void Ctf01dFlag::setValue(const std::string &sValue) {
+void ctf01d::flag::setValue(const std::string &sValue) {
   // TODO validate format
   // c01d...00000000 - prefix and time
   m_sValue = sValue;
 }
 
-const std::string &Ctf01dFlag::getValue() const {
+const std::string &ctf01d::flag::getValue() const {
   return m_sValue;
 }
 
-void Ctf01dFlag::setTeamId(const std::string &sTeamId) {
+void ctf01d::flag::setTeamId(const std::string &sTeamId) {
   m_sTeamId = sTeamId;
 }
 
-const std::string &Ctf01dFlag::getTeamId() const {
+const std::string &ctf01d::flag::getTeamId() const {
   return m_sTeamId;
 }
 
-void Ctf01dFlag::setServiceId(const std::string &sServiceId) {
+void ctf01d::flag::setServiceId(const std::string &sServiceId) {
   m_sServiceId = sServiceId;
 }
 
-const std::string &Ctf01dFlag::getServiceId() const {
+const std::string &ctf01d::flag::getServiceId() const {
   return m_sServiceId;
 }
 
-void Ctf01dFlag::setTimeStartInMs(long nTimeStartInMs) {
+void ctf01d::flag::setTimeStartInMs(long nTimeStartInMs) {
   m_nTimeStartInMs = nTimeStartInMs;
 }
 
-long Ctf01dFlag::getTimeStartInMs() const {
+long ctf01d::flag::getTimeStartInMs() const {
   return m_nTimeStartInMs;
 }
 
-void Ctf01dFlag::setTimeEndInMs(long nTimeEndInMs) {
+void ctf01d::flag::setTimeEndInMs(long nTimeEndInMs) {
   m_nTimeEndInMs = nTimeEndInMs;
 }
 
-long Ctf01dFlag::getTimeEndInMs() const {
+long ctf01d::flag::getTimeEndInMs() const {
   return m_nTimeEndInMs;
 }
 
-void Ctf01dFlag::copyFrom(const Ctf01dFlag &flag) {
+void ctf01d::flag::copyFrom(const ctf01d::flag &flag) {
   this->setId(flag.getId());
   this->setValue(flag.getValue());
   this->setServiceId(flag.getServiceId());
@@ -172,3 +171,4 @@ void Ctf01dFlag::copyFrom(const Ctf01dFlag &flag) {
   this->setTimeEndInMs(flag.getTimeEndInMs());
 }
 
+} // namespace ctf01d

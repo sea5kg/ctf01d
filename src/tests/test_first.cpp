@@ -38,7 +38,7 @@
 #include <vector>
 #include <iostream>
 #include <wsjcpp_core.h>
-#include "ctf01d/employees/employ_flags.h"
+#include "ctf01d/objects/ctf01d_flag.h"
 
 int main() {
     int flag_lifetime_in_seconds = 60;
@@ -51,7 +51,7 @@ int main() {
     int nGameStartUTCInSec = nCurrentTime - 86400; // Game started 24 hours ago
     std::cout << "nGameStartUTCInSec=" << nGameStartUTCInSec << std::endl;
 
-    Ctf01dFlag flag;
+    ctf01d::flag flag;
     flag.generateRandomFlag(flag_lifetime_in_seconds, sTeamId, sServiceId, nGameStartUTCInSec);
 
     if (flag.getTeamId() != sTeamId) {
@@ -129,7 +129,7 @@ int main() {
         return 11;
     }
 
-    Ctf01dFlag flag3;
+    ctf01d::flag flag3;
     flag3.copyFrom(flag);
 
     if (flag3.getId() != sFlagId) {

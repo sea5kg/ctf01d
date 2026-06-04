@@ -39,9 +39,11 @@
 
 #include <string>
 
-class Ctf01dFlag {
+namespace ctf01d {
+
+class flag {
 public:
-  Ctf01dFlag();
+  flag();
   void generateRandomFlag(int nFlagLifetimeInSeconds, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec);
 
   void generateId();
@@ -64,7 +66,7 @@ public:
   void setTimeEndInMs(long nTimeEnd);
   long getTimeEndInMs() const;
 
-  void copyFrom(const Ctf01dFlag &flag);
+  void copyFrom(const ctf01d::flag &flag);
 
 private:
   std::string m_sId;
@@ -74,3 +76,5 @@ private:
   long m_nTimeStartInMs;
   long m_nTimeEndInMs;
 };
+
+} // namespace ctf01d

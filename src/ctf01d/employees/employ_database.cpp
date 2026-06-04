@@ -54,7 +54,6 @@ EmployDatabase::EmployDatabase()
     m_pFlagsDefense = nullptr;
     m_pFlagsCheckFails = nullptr;
     m_pFlagsStolen = nullptr;
-    m_pFlagsLive = nullptr;
     m_pFlagsCheckerPutsResults = nullptr;
 }
 
@@ -154,21 +153,6 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         return false;
     }
 
-    m_pFlagsLive = std::make_shared<Ctf01dDatabaseFile>("flags_live.db",
-        "CREATE TABLE IF NOT EXISTS flags_live ( "
-        "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "  serviceid VARCHAR(50) NOT NULL, "
-        "  flag_id VARCHAR(50) NOT NULL, "
-        "  flag VARCHAR(36) NOT NULL, "
-        "  teamid VARCHAR(50) NOT NULL, "
-        "  date_start INTEGER NOT NULL, "
-        "  date_end INTEGER NOT NULL "
-        ");"
-    );
-    WsjcppLog::info(TAG, "Opening m_pFlagsLive");
-    if (!m_pFlagsLive->open()) {
-        return false;
-    }
     return true;
 }
 
@@ -178,7 +162,7 @@ bool EmployDatabase::deinit(const std::string &sName, bool bSilent) {
     return true;
 }
 
-void EmployDatabase::insertToFlagsCheckerPutResult(Ctf01dFlag flag, std::string sResult) {
+void EmployDatabase::insertToFlagsCheckerPutResult(ctf01d::flag flag, std::string sResult) {
     std::string sQuery = "INSERT INTO flags_checker_put_results(serviceid, flag_id, flag, teamid, "
         "   date_start, date_end, result) VALUES("
         "'" + flag.getServiceId() + "', "
@@ -228,7 +212,7 @@ int EmployDatabase::numberOfFlagAttempts(std::string sTeamId) {
     );
 }
 
-void EmployDatabase::insertToFlagsDefense(Ctf01dFlag flag, int nPoints) {
+void EmployDatabase::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
     std::string sQuery = "INSERT INTO flags_defense(serviceid, teamid, flag_id, flag, "
         "   date_start, date_end, flag_cost) VALUES("
         "'" + flag.getServiceId() + "', "
@@ -269,7 +253,7 @@ int EmployDatabase::numberOfDefenseFlagForService(std::string sServiceId) {
     );
 }
 
-void EmployDatabase::insertFlagCheckFail(Ctf01dFlag flag, std::string sReason) {
+void EmployDatabase::insertFlagCheckFail(ctf01d::flag flag, std::string sReason) {
     std::string sQuery = "INSERT INTO flags_check_fails(serviceid, flag_id, flag, teamid, "
         "   date_start, date_end, reason) VALUES("
         "'" + flag.getServiceId() + "', "
@@ -328,7 +312,7 @@ std::pair<std::string, long> EmployDatabase::getFirstBloodFromStolenFlagsForServ
     return pairRet;
 }
 
-void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard) {
+void EmployDatabase::insertToFlagsStolen(ctf01d::flag flag, std::string sTeamId, int nPoints, long nDateAction, int nVictimPlaceInScoreBoard, int nThiefPlaceInScoreboard) {
     // TODO
     // nVictimPlaceInScoreBoard
     // nThiefPlaceInScoreboard
@@ -351,7 +335,7 @@ void EmployDatabase::insertToFlagsStolen(Ctf01dFlag flag, std::string sTeamId, i
 }
 
 
-bool EmployDatabase::isAlreadyStole(Ctf01dFlag flag, std::string sTeamId) {
+bool EmployDatabase::isAlreadyStole(ctf01d::flag flag, std::string sTeamId) {
     int nRet = m_pFlagsStolen->selectSumOrCount(
         "SELECT COUNT(*) as cnt FROM flags_stolen "
             " WHERE serviceid = '" + flag.getServiceId() + "' "
@@ -362,7 +346,7 @@ bool EmployDatabase::isAlreadyStole(Ctf01dFlag flag, std::string sTeamId) {
     return nRet > 0;
 }
 
-bool EmployDatabase::isSomebodyStole(Ctf01dFlag flag) {
+bool EmployDatabase::isSomebodyStole(ctf01d::flag flag) {
     int nRet = m_pFlagsStolen->selectSumOrCount(
         "SELECT COUNT(*) as cnt FROM flags_stolen "
             " WHERE serviceid = '" + flag.getServiceId() + "' "
@@ -371,63 +355,4 @@ bool EmployDatabase::isSomebodyStole(Ctf01dFlag flag) {
             "   AND flag = '" + flag.getValue() + "'"
     );
     return nRet > 0;
-}
-
-void EmployDatabase::insertToFlagLive(Ctf01dFlag flag) {
-    std::string sQuery = "INSERT INTO flags_live(serviceid, flag_id, flag, teamid, "
-        "   date_start, date_end) VALUES("
-        "'" + flag.getServiceId() + "', "
-        + "'" + flag.getId() + "', "
-        + "'" + flag.getValue() + "', "
-        + "'" + flag.getTeamId() + "', "
-        + std::to_string(flag.getTimeStartInMs()) + ", "
-        + std::to_string(flag.getTimeEndInMs())
-        + ");";
-    if (!m_pFlagsLive->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagLive");
-    }
-}
-
-void EmployDatabase::deleteFlagLive(Ctf01dFlag flag) {
-    std::string sQuery = "DELETE FROM flags_live WHERE flag = '" + flag.getValue() + "';";
-    if (!m_pFlagsLive->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error delete deleteFlagLive");
-    }
-}
-
-std::vector<Ctf01dFlag> EmployDatabase::listOfLiveFlags() {
-    // long nCurrentTime = WsjcppCore::getCurrentTimeInMilliseconds();
-    EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-
-    std::string sQuery =
-        "SELECT flag_id, serviceid, teamid, flag, date_start, date_end "
-        "FROM flags_live "
-        "WHERE "
-        "   date_start > " + std::to_string(long(pConfig->gameStartUTCInSec())*1000) + " "
-        "   AND date_end < " + std::to_string(long(pConfig->gameEndUTCInSec())*1000) + " "
-        ";";
-
-    std::vector<Ctf01dFlag> vResult;
-    auto rows = m_pFlagsLive->selectRows(sQuery);
-    if (rows == nullptr) {
-        WsjcppLog::err(TAG, "Error select listOfLiveFlags " + sQuery);
-        return vResult;
-    }
-    int nCounter = 0;
-    while (rows->next()) {
-        nCounter++;
-        Ctf01dFlag flag;
-        std::string sFlagId = rows->getString(0);
-        flag.setId(sFlagId);
-        flag.setServiceId(rows->getString(1));
-        flag.setTeamId(rows->getString(2));
-        std::string sFlagValue = rows->getString(3);
-        flag.setValue(sFlagValue);
-        flag.setTimeStartInMs(rows->getLong(4));
-        flag.setTimeEndInMs(rows->getLong(5));
-        WsjcppLog::info(TAG, "Loaded flag from previous session flags_live: id = " + sFlagId + ", value = " + sFlagValue);
-        vResult.push_back(flag);
-    }
-    WsjcppLog::info(TAG, "Found rows listOfLiveFlags " + std::to_string(nCounter));
-    return vResult;
 }

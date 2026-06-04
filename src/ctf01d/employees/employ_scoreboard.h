@@ -40,6 +40,7 @@
 #include <wsjcpp_employees.h>
 #include <json.hpp>
 #include "ctf01d/objects/ctf01d_service_statistics.h"
+#include "ctf01d/objects/ctf01d_flag.h"
 
 class EmployScoreboard : public WsjcppEmployBase {
 public:

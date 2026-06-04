@@ -58,29 +58,22 @@ image::~image() {
 }
 
 bool image::reload_from_file(const std::string &filepath) {
-
-  WsjcppLog::info(TAG, "reload_from_file point 1");
   std::filesystem::file_time_type ftime = std::filesystem::last_write_time(filepath.c_str());
   long last_modified_time = std::chrono::duration_cast<std::chrono::seconds>(ftime.time_since_epoch()).count();
   if (m_last_modified_time == last_modified_time) {
     // file has not changes
     return true;
   }
-  WsjcppLog::info(TAG, "reload_from_file point 2");
   // cleanup buffer
   if (pBuffer != nullptr) {
     nBufferSize = 0;
     delete pBuffer;
   }
-
-  WsjcppLog::info(TAG, "reload_from_file point 3");
-
   m_filepath = filepath;
   m_filename = WsjcppCore::extractFilename(filepath);
   if (!WsjcppCore::readFileToBuffer(m_filepath, &pBuffer, nBufferSize)) {
     return false;
   }
-  WsjcppLog::info(TAG, "reload_from_file point 4");
   m_last_modified_time = last_modified_time;
   return true;
 }
