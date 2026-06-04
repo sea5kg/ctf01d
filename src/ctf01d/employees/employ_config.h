@@ -82,9 +82,13 @@ public:
 
   std::shared_ptr<Ctf01dScoreboard> scoreboard();
 
-  void doExtractFilesIfNotExists();
+  void update_files_in_data();
 
 private:
+  nlohmann::json load_files_sha1();
+  void save_files_sha1(nlohmann::json &files);
+  void update_data_html(nlohmann::json &files);
+
   bool checkYamlMainKeys(WsjcppYaml &yamlConfig);
   bool checkGameConf();
   bool applyScoreboardPortFromEnv();

@@ -18,6 +18,7 @@
         "pycache",
         "REUSEADDR",
         "settimeout",
+        "smallsha",
         "snakecase",
         "tooltiptext",
         "tzdata",

@@ -42,12 +42,13 @@
 #include <locale>
 #include <date.h>
 #include <iostream>
-#include <sstream>
+#include <fstream>
+#include <iomanip>
 #include <wsjcpp_core.h>
 #include <wsjcpp_yaml.h>
 #include "ctf01d/employees/employ_images.h"
 #include "ctf01d/include/ctf01d_globals.h"
-
+#include "third_party/smallsha1/smallsha1.h"
 #include <sys/stat.h>
 #include <stdio.h>
 
@@ -109,7 +110,7 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
     return false;
   }
 
-  this->doExtractFilesIfNotExists();
+  this->update_files_in_data();
 
   m_sConfigFilepath = m_sWorkDir + "/config.yml";
   m_files_watcher->watchFile(m_sConfigFilepath);
@@ -270,14 +271,65 @@ std::shared_ptr<Ctf01dScoreboard> EmployConfig::scoreboard() {
   return m_pScoreboard;
 }
 
-void EmployConfig::doExtractFilesIfNotExists() {
+// helper
+std::string sha1_by_string(const std::string &data) {
+  char hexstring[41]; // 40 chars + a zero
+  std::memset(hexstring, 0, sizeof hexstring);
+
+  unsigned char hash[20];
+  sha1::calc(data.c_str(), data.length(), hash);
+  sha1::toHexString(hash, hexstring);
+  return std::string(hexstring);
+}
+
+std::string sha1_by_data(const char *data, int len) {
+  char hexstring[41]; // 40 chars + a zero
+  std::memset(hexstring, 0, sizeof hexstring);
+
+  unsigned char hash[20];
+  sha1::calc(data, len, hash);
+  sha1::toHexString(hash, hexstring);
+  return std::string(hexstring);
+}
+
+std::string sha1_by_file(const std::string &sFilename) {
+  std::ifstream f(sFilename, std::ifstream::binary);
+  if (!f) {
+    return "Could not open file";
+  }
+  // get length of file:
+  f.seekg (0, f.end);
+  int nBufferSize = f.tellg();
+  f.seekg (0, f.beg);
+  char *pBuffer = new char [nBufferSize];
+  // read data as a block:
+  f.read(pBuffer, nBufferSize);
+  if (!f) {
+    delete[] pBuffer;
+    // f.close();
+    WsjcppLog::throw_err("sha1_by_file", "Could not read file. Only " + std::to_string(f.gcount()) + " could be read");
+    return "";
+  }
+  f.close();
+  char hexstring[41]; // 40 chars + a zero
+  std::memset(hexstring, 0, sizeof hexstring);
+  unsigned char hash[20];
+  sha1::calc(pBuffer, nBufferSize, hash);
+  sha1::toHexString(hash, hexstring);
+  delete[] pBuffer;
+  return std::string(hexstring);
+}
+
+void EmployConfig::update_files_in_data() {
   std::string sError;
   if (!WsjcppCore::dirExists(m_sWorkDir + "/logs")) {
     WsjcppCore::makeDir(m_sWorkDir + "/logs");
-    if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x776), sError)) {
+    if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x755), sError)) {
       WsjcppLog::throw_err(TAG, sError);
     }
   }
+
+  nlohmann::json previous_files_sha1 = load_files_sha1();
 
   if (!WsjcppCore::fileExists(m_sWorkDir + "/config.yml")) {
     WsjcppLog::warn(TAG, "Extracting config.yml and files");
@@ -285,15 +337,15 @@ void EmployConfig::doExtractFilesIfNotExists() {
     const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
     std::vector<std::string> vExecutableFiles;
     for (int i = 0; i < vFiles.size(); i++) {
-      std::string sFilepath = vFiles[i]->getFilename();
-      if (sFilepath.rfind("./data_sample/checker_example_", 0) == 0) {
-        std::vector<std::string> vPath = WsjcppCore::split(sFilepath, "/");
+      std::string filepath = vFiles[i]->getFilename();
+      if (filepath.rfind("./data_sample/checker_example_", 0) == 0) {
+        std::vector<std::string> vPath = WsjcppCore::split(filepath, "/");
         std::string sDirname = vPath[2];
         vPath.erase (vPath.begin(),vPath.begin()+3);
         std::string sNewFilepath = WsjcppCore::join(vPath, "/");
         sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/" + sNewFilepath);
         if (!WsjcppCore::fileExists(sNewFilepath)) {
-          std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
+          std::cout << "Extracting file '" << filepath << "' to '" << sNewFilepath << "'" << std::endl;
         } else {
           std::cout << "File '" << sNewFilepath << "' already exists. Skip." << std::endl;
           continue;
@@ -331,47 +383,86 @@ void EmployConfig::doExtractFilesIfNotExists() {
     }
   }
 
-  if (!WsjcppCore::fileExists(m_sWorkDir + "/html/index.html")) {
-    if (!WsjcppCore::dirExists(m_sWorkDir + "/html")) {
-      WsjcppCore::makeDir(m_sWorkDir + "/html");
+  update_data_html(previous_files_sha1);
+  save_files_sha1(previous_files_sha1);
+}
+
+nlohmann::json EmployConfig::load_files_sha1() {
+  nlohmann::json files_sha1;
+  if (WsjcppCore::fileExists(m_sWorkDir + "/files_sha1.json")) {
+    std::ifstream ifs(m_sWorkDir + "/files_sha1.json");
+    files_sha1 = nlohmann::json::parse(ifs);
+  }
+  return files_sha1;
+}
+
+void EmployConfig::save_files_sha1(nlohmann::json &files) {
+  std::ofstream output(m_sWorkDir + "/files_sha1.json");
+  output << std::setw(2) << files << std::endl;
+}
+
+void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
+  WsjcppLog::warn(TAG, "Updating files in data/html");
+  if (!WsjcppCore::dirExists(m_sWorkDir + "/html")) {
+    WsjcppCore::makeDir(m_sWorkDir + "/html");
+  }
+  
+  const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
+  for (int i = 0; i < vFiles.size(); i++) {
+    std::string source_filepath = vFiles[i]->getFilename();
+    if (source_filepath.rfind("./data_sample/html/", 0) != 0) {
+      continue;
     }
+    // remove base folder
+    std::vector<std::string> vPath = WsjcppCore::split(source_filepath, "/");
+    vPath.erase (vPath.begin(),vPath.begin()+3);
+    std::string target_filepath = WsjcppCore::join(vPath, "/");
+    target_filepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/" + target_filepath);
 
-    WsjcppLog::warn(TAG, "Extracting html/index.html and files");
-    const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
-    for (int i = 0; i < vFiles.size(); i++) {
-      std::string sFilepath = vFiles[i]->getFilename();
-      if (sFilepath.rfind("./data_sample/html/", 0) == 0) {
-        std::vector<std::string> vPath = WsjcppCore::split(sFilepath, "/");
-        vPath.erase (vPath.begin(),vPath.begin()+3);
-        std::string sNewFilepath = WsjcppCore::join(vPath, "/");
-        sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/" + sNewFilepath);
-        if (!WsjcppCore::fileExists(sNewFilepath)) {
-          std::cout << "Extracting file '" << sFilepath << "' to '" << sNewFilepath << "'" << std::endl;
-        } else {
-          std::cout << "File '" << sNewFilepath << "' already exists. Skip." << std::endl;
-          continue;
-        }
-
-        // prepare folders
-        std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/");
-        for (int p = 0; p < vPath.size()-1; p++) {
-          sFolder = wsjcpp::normalizeFilePath(sFolder + "/" + vPath[p]);
-          if (!WsjcppCore::dirExists(sFolder)) {
-            WsjcppCore::makeDir(sFolder);
-          }
-        }
-
-        if (!WsjcppCore::writeFile(sNewFilepath, vFiles[i]->getBuffer(), vFiles[i]->getBufferSize())) {
-          std::cout << "ERROR. Could not write file. " << std::endl;
-          continue;
-        } else {
-          std::cout << "Successfully created file. " << std::endl;
-          if (!WsjcppCore::setFilePermissions(sNewFilepath, WsjcppFilePermissions(0x776), sError)) {
-            WsjcppLog::throw_err(TAG, sError);
+    // prepare folders
+    if (!WsjcppCore::fileExists(target_filepath)) {
+      std::string dirpath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/");
+      for (int p = 0; p < vPath.size()-1; p++) {
+        dirpath = wsjcpp::normalizeFilePath(dirpath + "/" + vPath[p]);
+        if (!WsjcppCore::dirExists(dirpath)) {
+          if (!WsjcppCore::makeDir(dirpath)) {
+            std::cout << "ERROR. Could not create: " << dirpath << std::endl;
+            continue;
           }
         }
       }
     }
+    
+    std::string previous_sha1 = "";
+    if (previous_files_sha1.contains(source_filepath)) {
+      previous_sha1 = previous_files_sha1[source_filepath];
+    }
+
+    if (WsjcppCore::fileExists(target_filepath) && previous_sha1 != "") {
+      if (previous_sha1 != sha1_by_file(target_filepath)) {
+        // Skip. file has changes by user. Skip.
+        std::cout << "Warning. Could not override file, because has changes: " << target_filepath << std::endl;
+        continue;
+      }
+    }
+
+    std::string new_sha1 = sha1_by_data(vFiles[i]->getBuffer(), vFiles[i]->getBufferSize());
+    if (WsjcppCore::fileExists(target_filepath) && new_sha1 == previous_sha1) {
+      // Skip. file has same content
+      continue;
+    }
+    
+    if (!WsjcppCore::writeFile(target_filepath, vFiles[i]->getBuffer(), vFiles[i]->getBufferSize())) {
+      std::cout << "ERROR. Could not write/override file. " << std::endl;
+      continue;
+    }
+
+    std::cout << "Successfully created/updated file: " << target_filepath << std::endl;
+    std::string err;
+    if (!WsjcppCore::setFilePermissions(target_filepath, WsjcppFilePermissions(0x644), err)) {
+      WsjcppLog::throw_err(TAG, err);
+    }
+    previous_files_sha1[source_filepath] = new_sha1;
   }
 }
 

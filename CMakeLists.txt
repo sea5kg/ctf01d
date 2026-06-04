@@ -56,6 +56,9 @@ set(EXECUTABLE_OUTPUT_PATH ${ctf01d_SOURCE_DIR})
 list (APPEND WSJCPP_INCLUDE_DIRS "src")
 list (APPEND WSJCPP_INCLUDE_DIRS "src/third_party/sqlite3/src")
 
+# third_party
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/third_party/smallsha1/smallsha1.cpp")
+
 # employees
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_alive_flags.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_images.cpp")

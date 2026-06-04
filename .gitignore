@@ -4,6 +4,7 @@ game-simulation/vulnbox/service3_php/tmp/*
 data_test/*
 /data_sample/db/*
 /data_sample/game_result
+/data_sample/files_sha1.json
 /data_test_tmp
 /test_game_config
 /ctf01d
