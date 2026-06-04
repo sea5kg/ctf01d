@@ -60,7 +60,7 @@ And now you can build image:
 ```
 $ cd ~/ctf01d.git
 $ docker build --rm=true -t "sea5kg/ctf01d:latest" .
-$ docker tag "sea5kg/ctf01d:latest" "sea5kg/ctf01d:v0.5.x"
+$ docker tag "sea5kg/ctf01d:latest" "sea5kg/ctf01d:v0.7.x"
 ```
 
 3. Run dev docker-container, build and start
