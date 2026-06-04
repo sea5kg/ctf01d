@@ -134,7 +134,80 @@ void printHelp(const std::string &programName) {
   ;
 }
 
+bool is_root() {
+  // Root always has an Effective User ID (EUID) of 0
+  return geteuid() == 0;
+}
+
+bool change_privilegues(int user_id) {
+  std::cout << " ...Trying change privilegues (setgid)" << std::endl;
+  if (setgid(user_id) != 0) {
+    std::cerr << " -> FAIL. Failed to set GID" << std::endl;
+    return false;
+  }
+  std::cout << " ...Trying change privilegues (setuid)" << std::endl;
+  if (setuid(user_id) != 0) {
+    std::cerr << " -> FAIL. Failed to set UID" << std::endl;
+    return false;
+  }
+  std::cout << " ...Trying change privilegues (verify)" << std::endl;
+  if (setuid(0) == 0) {
+    std::cerr << " -> FAIL. Security Risk: Privileges were not permanently dropped!" << std::endl;
+    return false;
+  }
+  std::cout << " ...Trying change privilegues (test)" << std::endl;
+  if (getuid() == user_id) {
+    std::cout << "-> OK. Successful changed privilegues." << std::endl;
+  } else {
+    std::cerr << " -> FAIL. NOT CHANGED." << std::endl;
+    return false;
+  }
+  return true;
+}
+
+bool try_apply_ctf01d_user(const std::string &work_dir) {
+  // std::cout << "work_dir = " << work_dir << std::endl;
+  std::string str_user;
+  int user_id = 0;
+  if (WsjcppCore::getEnv("CTF01D_USER", str_user)) {
+    std::cout << "CTF01D_USER='" << str_user << "'" << std::endl;
+    try {
+      user_id = std::stoi(str_user);
+    } catch (const std::invalid_argument& e) {
+      std::cerr << "Error: No conversion could be performed. CTF01D_USER='" << str_user << "'" << std::endl;
+      return false;
+    } catch (const std::out_of_range& e) {
+      std::cerr << "The converted value is too big for an int.. CTF01D_USER='" << str_user << "'" << std::endl;
+      return false;
+    } catch (...) {
+      std::cerr << "The converted value is too big for an int.. CTF01D_USER='" << str_user << "'" << std::endl;
+      return false;
+    }
+    if (is_root()) {
+      std::cout << " ...Try change owner for '" << work_dir << "' to '" << str_user << ":" << str_user << "'" << std::endl;
+      std::string cmd = "chown -R " + std::to_string(user_id) + ":" + std::to_string(user_id) + " \"" + work_dir + "\"";
+      if (system(cmd.c_str()) == 0) {
+        std::cout << " -> OK. Successful changed owner for data." << std::endl;
+      } else {
+        std::cerr << " -> FAIL. Could not change owner for directory." << std::endl;
+        return false;
+      }
+      return change_privilegues(user_id);
+    } else if (geteuid() == user_id) {
+      std::cout << " * OK. CTF01D_USER is equal with current user" << std::endl;
+    } else {
+      return change_privilegues(user_id);
+    }
+    return true;
+  }
+  return true;
+}
+
 int main(int argc, const char* argv[]) {
+  if (getuid() == 0) {
+    std::cout << "This program started as root." << std::endl;
+  }
+
   std::string TAG = "MAIN";
   std::string appName = std::string(WSJCPP_APP_NAME);
   std::string appVersion = std::string(WSJCPP_APP_VERSION);
@@ -163,6 +236,8 @@ int main(int argc, const char* argv[]) {
     std::cout << "Working directory not found: " << sWorkDir << std::endl;
     return -1;
   }
+  try_apply_ctf01d_user(sWorkDir);
+
   std::cout << "WorkDir: " << sWorkDir << std::endl;
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
   pConfig->setWorkDir(sWorkDir);

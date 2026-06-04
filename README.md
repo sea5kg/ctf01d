@@ -31,6 +31,7 @@ services:
       - "./data:/usr/share/ctf01d"
     environment:
       CTF01D_WORKDIR: "/usr/share/ctf01d"
+      CTF01D_USER: 1000  # automatically will be changed rights to folder and files.
       CTF01D_PORT: 8080
     expose:
       - "8080"
