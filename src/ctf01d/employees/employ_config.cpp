@@ -229,6 +229,14 @@ bool EmployConfig::scoreboardRandom() const {
   return m_scoreboard_random->value();
 }
 
+bool EmployConfig::scoreboardMetricsEnabled() const {
+  return m_scoreboard_metrics_enabled->value();
+}
+
+std::string EmployConfig::scoreboardMetricsAllowedFor() const {
+  return m_scoreboard_metrics_allowed_for->value();
+}
+
 std::string EmployConfig::gameId() const {
   return m_game_id->value();
 }

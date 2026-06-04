@@ -67,6 +67,8 @@ public:
   int scoreboardPort() const ;
   std::string scoreboardHtmlFolder() const;
   bool scoreboardRandom() const;
+  bool scoreboardMetricsEnabled() const;
+  std::string scoreboardMetricsAllowedFor() const;
 
   // game configuration
   std::string gameId() const;
