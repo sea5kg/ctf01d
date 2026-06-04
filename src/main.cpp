@@ -139,25 +139,25 @@ bool is_root() {
   return geteuid() == 0;
 }
 
-bool change_privilegues(int user_id) {
-  std::cout << " ...Trying change privilegues (setgid)" << std::endl;
+bool change_privileges(int user_id) {
+  std::cout << " ...Trying change privileges (setgid)" << std::endl;
   if (setgid(user_id) != 0) {
     std::cerr << " -> FAIL. Failed to set GID" << std::endl;
     return false;
   }
-  std::cout << " ...Trying change privilegues (setuid)" << std::endl;
+  std::cout << " ...Trying change privileges (setuid)" << std::endl;
   if (setuid(user_id) != 0) {
     std::cerr << " -> FAIL. Failed to set UID" << std::endl;
     return false;
   }
-  std::cout << " ...Trying change privilegues (verify)" << std::endl;
+  std::cout << " ...Trying change privileges (verify)" << std::endl;
   if (setuid(0) == 0) {
     std::cerr << " -> FAIL. Security Risk: Privileges were not permanently dropped!" << std::endl;
     return false;
   }
-  std::cout << " ...Trying change privilegues (test)" << std::endl;
+  std::cout << " ...Trying change privileges (test)" << std::endl;
   if (getuid() == user_id) {
-    std::cout << "-> OK. Successful changed privilegues." << std::endl;
+    std::cout << "-> OK. Successful changed privileges." << std::endl;
   } else {
     std::cerr << " -> FAIL. NOT CHANGED." << std::endl;
     return false;
@@ -192,11 +192,11 @@ bool try_apply_ctf01d_user(const std::string &work_dir) {
         std::cerr << " -> FAIL. Could not change owner for directory." << std::endl;
         return false;
       }
-      return change_privilegues(user_id);
+      return change_privileges(user_id);
     } else if (geteuid() == user_id) {
       std::cout << " * OK. CTF01D_USER is equal with current user" << std::endl;
     } else {
-      return change_privilegues(user_id);
+      return change_privileges(user_id);
     }
     return true;
   }
