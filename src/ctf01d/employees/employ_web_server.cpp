@@ -38,17 +38,85 @@
 #include "employ_web_server.h"
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/employees/employ_images.h"
+#include "ctf01d/objects/ctf01d_service_status_cell.h"
 #include <wsjcpp_core.h>
 #include <fstream>
 #include <cstring>
+#include <initializer_list>
 #include <optional>
 #include <regex>
+#include <sstream>
+#include <utility>
+#include <vector>
 
 #include "WebSocketServer.h"  // libhv
 #include "EventLoop.h"  // libhv
 #include "htime.h"  // libhv
 #include "hssl.h"  // libhv
 #include "hlog.h"  // libhv
+#include "hbase.h"  // libhv: hv_wildcard_match
+
+static std::string prometheusEscapeLabelValue(const std::string &sValue) {
+  std::string sResult;
+  for (char c : sValue) {
+    switch (c) {
+      case '\\': sResult += "\\\\"; break;
+      case '"': sResult += "\\\""; break;
+      case '\n': sResult += "\\n"; break;
+      default: sResult += c;
+    }
+  }
+  return sResult;
+}
+
+static std::string prometheusLabels(std::initializer_list<std::pair<const char*, std::string>> labels) {
+  std::ostringstream oss;
+  oss << "{";
+  bool bFirst = true;
+  for (auto &label : labels) {
+    if (!bFirst) {
+      oss << ",";
+    }
+    oss << label.first << "=\"" << prometheusEscapeLabelValue(label.second) << "\"";
+    bFirst = false;
+  }
+  oss << "}";
+  return oss.str();
+}
+
+static void prometheusMetricInfo(std::ostringstream &oss, const std::string &sName, const std::string &sType, const std::string &sHelp) {
+  oss << "# HELP " << sName << " " << sHelp << "\n"
+    << "# TYPE " << sName << " " << sType << "\n";
+}
+
+// Decide whether a client may access /api/v1/metrics. The allowlist is a
+// comma-separated list of IP patterns matched with libhv's wildcard matcher
+// (only a trailing '*' is supported), e.g. "10.10.100.*, 127.0.*". On A/D CTF
+// the team game network is usually private, so private ranges are NOT allowed
+// implicitly — list only your monitoring/Docker subnet, not the game network.
+static bool isMetricsClientAllowed(const std::string &sClientIp, const std::string &sAllowedList) {
+  if (sClientIp == "::1") { // IPv6 loopback
+    return true;
+  }
+  // Strip IPv4-mapped IPv6 prefix that libhv may report.
+  std::string sIp = sClientIp;
+  const std::string sMappedPrefix = "::ffff:";
+  if (sIp.rfind(sMappedPrefix, 0) == 0) {
+    sIp = sIp.substr(sMappedPrefix.size());
+  }
+
+  std::vector<std::string> vEntries = WsjcppCore::split(sAllowedList, ",");
+  for (std::string sEntry : vEntries) {
+    sEntry = WsjcppCore::trim(sEntry);
+    if (sEntry.empty()) {
+      continue;
+    }
+    if (hv_wildcard_match(sIp.c_str(), sEntry.c_str())) {
+      return true;
+    }
+  }
+  return false;
+}
 
 REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
 
@@ -214,6 +282,8 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
       return this->httpApiV1MyIp(req, resp);
     } else if (request_path == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
       return this->httpApiV1Teams(req, resp);
+    } else if (request_path == "/api/v1/metrics") { // Config-gated: disabled by default + IP allowlist (see httpApiV1Metrics).
+      return this->httpApiV1Metrics(req, resp);
     }
     return this->httpApiV1GetPaths(req, resp);
   }
@@ -476,4 +546,166 @@ int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req,
   resp->SetContentTypeByFilename(img->filename().c_str());
   return 200;
 
+}
+
+int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
+  auto config = findWsjcppEmploy<EmployConfig>();
+
+  // Re-read config on every request so toggling the flag (or editing the
+  // allowlist) does not require restarting the webserver.
+  if (!config->scoreboardMetricsEnabled()) {
+    resp->String("Forbidden: metrics endpoint is disabled");
+    return 403;
+  }
+  if (!isMetricsClientAllowed(req->client_addr.ip, config->scoreboardMetricsAllowedFor())) {
+    resp->String("Forbidden");
+    return 403;
+  }
+
+  auto scoreboard = config->scoreboard();
+  nlohmann::json jsonScoreboard = scoreboard->toJson();
+
+  std::ostringstream oss;
+
+  prometheusMetricInfo(oss, "ctf01d_build_info", "gauge", "ctf01d build information.");
+  oss << "ctf01d_build_info" << prometheusLabels({{"version", std::string(WSJCPP_APP_VERSION)}}) << " 1\n";
+
+  prometheusMetricInfo(oss, "ctf01d_game_start_timestamp_seconds", "gauge", "Game start (UTC).");
+  oss << "ctf01d_game_start_timestamp_seconds " << jsonScoreboard["game"]["t0"].get<long>() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_game_end_timestamp_seconds", "gauge", "Game end (UTC).");
+  oss << "ctf01d_game_end_timestamp_seconds " << jsonScoreboard["game"]["t3"].get<long>() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_game_coffee_break_start_timestamp_seconds", "gauge", "Coffee break start.");
+  oss << "ctf01d_game_coffee_break_start_timestamp_seconds " << jsonScoreboard["game"]["t1"].get<long>() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_game_coffee_break_end_timestamp_seconds", "gauge", "Coffee break end.");
+  oss << "ctf01d_game_coffee_break_end_timestamp_seconds " << jsonScoreboard["game"]["t2"].get<long>() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_game_current_time_seconds", "gauge", "Server current time.");
+  oss << "ctf01d_game_current_time_seconds " << jsonScoreboard["game"]["tc"].get<long>() << "\n";
+
+  prometheusMetricInfo(oss, "ctf01d_teams_total", "gauge", "Teams in the game.");
+  oss << "ctf01d_teams_total " << jsonScoreboard["scoreboard"].size() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_services_total", "gauge", "Services in the game.");
+  oss << "ctf01d_services_total " << jsonScoreboard["s_sta"].size() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_flag_attempts_total", "counter", "Total flag submission attempts.");
+  oss << "ctf01d_flag_attempts_total " << jsonScoreboard["sum_act"].get<long>() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_flags_live", "gauge", "Currently active flags.");
+  oss << "ctf01d_flags_live " << scoreboard->countFlagsLive() << "\n";
+
+  prometheusMetricInfo(oss, "ctf01d_team_score", "gauge", "Team score.");
+  for (auto &it : jsonScoreboard["scoreboard"].items()) {
+    oss << "ctf01d_team_score" << prometheusLabels({{"team", it.key()}})
+      << " " << it.value()["points"].get<double>() << "\n";
+  }
+  prometheusMetricInfo(oss, "ctf01d_team_place", "gauge", "Team current place (1 = leader).");
+  for (auto &it : jsonScoreboard["scoreboard"].items()) {
+    oss << "ctf01d_team_place" << prometheusLabels({{"team", it.key()}})
+      << " " << it.value()["place"].get<int>() << "\n";
+  }
+  prometheusMetricInfo(oss, "ctf01d_team_tries_total", "counter", "Team flag submission attempts.");
+  for (auto &it : jsonScoreboard["scoreboard"].items()) {
+    oss << "ctf01d_team_tries_total" << prometheusLabels({{"team", it.key()}})
+      << " " << it.value()["tries"].get<long>() << "\n";
+  }
+
+  static const std::vector<std::string> vStatuses = {
+    Ctf01dServiceStatusCell::SERVICE_UP,
+    Ctf01dServiceStatusCell::SERVICE_DOWN,
+    Ctf01dServiceStatusCell::SERVICE_MUMBLE,
+    Ctf01dServiceStatusCell::SERVICE_CORRUPT,
+    Ctf01dServiceStatusCell::SERVICE_SHIT,
+    Ctf01dServiceStatusCell::SERVICE_WAIT,
+    Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK
+  };
+
+  prometheusMetricInfo(oss, "ctf01d_team_service_status", "gauge", "Service status as one-hot: 1 if current, else 0.");
+  for (auto &team : jsonScoreboard["scoreboard"].items()) {
+    for (auto &service : team.value()["ts_sta"].items()) {
+      const std::string sCurrentStatus = service.value()["status"].get<std::string>();
+      for (auto &sStatus : vStatuses) {
+        oss << "ctf01d_team_service_status"
+          << prometheusLabels({{"team", team.key()}, {"service", service.key()}, {"status", sStatus}})
+          << " " << (sCurrentStatus == sStatus ? 1 : 0) << "\n";
+      }
+    }
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_team_service_sla_percent", "gauge", "SLA percent (0..100).");
+  for (auto &team : jsonScoreboard["scoreboard"].items()) {
+    for (auto &service : team.value()["ts_sta"].items()) {
+      oss << "ctf01d_team_service_sla_percent"
+        << prometheusLabels({{"team", team.key()}, {"service", service.key()}})
+        << " " << service.value()["sla"].get<double>() << "\n";
+    }
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_team_service_defense_flags_total", "counter", "Team defended flags per service.");
+  for (auto &team : jsonScoreboard["scoreboard"].items()) {
+    for (auto &service : team.value()["ts_sta"].items()) {
+      oss << "ctf01d_team_service_defense_flags_total"
+        << prometheusLabels({{"team", team.key()}, {"service", service.key()}})
+        << " " << service.value()["def"].get<long>() << "\n";
+    }
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_team_service_defense_points", "gauge", "Team defense points per service.");
+  for (auto &team : jsonScoreboard["scoreboard"].items()) {
+    for (auto &service : team.value()["ts_sta"].items()) {
+      oss << "ctf01d_team_service_defense_points"
+        << prometheusLabels({{"team", team.key()}, {"service", service.key()}})
+        << " " << service.value()["pt_def"].get<double>() << "\n";
+    }
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_team_service_attack_flags_total", "counter", "Team stolen flags per service.");
+  for (auto &team : jsonScoreboard["scoreboard"].items()) {
+    for (auto &service : team.value()["ts_sta"].items()) {
+      oss << "ctf01d_team_service_attack_flags_total"
+        << prometheusLabels({{"team", team.key()}, {"service", service.key()}})
+        << " " << service.value()["att"].get<long>() << "\n";
+    }
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_team_service_attack_points", "gauge", "Team attack points per service.");
+  for (auto &team : jsonScoreboard["scoreboard"].items()) {
+    for (auto &service : team.value()["ts_sta"].items()) {
+      oss << "ctf01d_team_service_attack_points"
+        << prometheusLabels({{"team", team.key()}, {"service", service.key()}})
+        << " " << service.value()["pt_att"].get<double>() << "\n";
+    }
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_service_attack_flags_total", "counter", "Total stolen flags per service (across teams).");
+  for (auto &it : jsonScoreboard["s_sta"].items()) {
+    oss << "ctf01d_service_attack_flags_total" << prometheusLabels({{"service", it.key()}})
+      << " " << it.value()["af_att"].get<long>() << "\n";
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_service_defense_flags_total", "counter", "Total defended flags per service.");
+  for (auto &it : jsonScoreboard["s_sta"].items()) {
+    oss << "ctf01d_service_defense_flags_total" << prometheusLabels({{"service", it.key()}})
+      << " " << it.value()["af_def"].get<long>() << "\n";
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_service_first_blood_timestamp_seconds", "gauge", "First blood UTC seconds; 0 if none yet.");
+  for (auto &it : jsonScoreboard["s_sta"].items()) {
+    const std::string sFirstBloodTeamId = it.value()["first_blood"].get<std::string>();
+    if (sFirstBloodTeamId.empty() || sFirstBloodTeamId == "?") {
+      oss << "ctf01d_service_first_blood_timestamp_seconds"
+        << prometheusLabels({{"service", it.key()}, {"team", ""}})
+        << " 0\n";
+    } else {
+      oss << "ctf01d_service_first_blood_timestamp_seconds"
+        << prometheusLabels({{"service", it.key()}, {"team", sFirstBloodTeamId}})
+        << " " << it.value()["first_blood_ts"].get<long>() << "\n";
+    }
+  }
+
+  std::string sResponse = oss.str();
+  resp->Data(
+    (void *)(sResponse.c_str()),
+    sResponse.size(),
+    false // copy buffer
+  );
+  resp->content_type = TEXT_PLAIN;
+  resp->headers["Content-Type"] = "text/plain; version=0.0.4; charset=utf-8";
+  return 200;
 }
