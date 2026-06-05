@@ -195,4 +195,21 @@ private:
   int m_value_in_seconds;
 };
 
+class var_allowed_ip : public ctf01d::var {
+public:
+  var_allowed_ip(const std::vector<std::string> &path_name, const std::string &default_value);
+  static std::shared_ptr<var_allowed_ip> create(const std::vector<std::string> &path_name, const std::string &default_value, ctf01d::scope_vars &sc_vars);
+  virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
+  virtual std::string to_string() override;
+  std::string default_value() const;
+  std::string value() const;
+  bool set_value(const std::string &val, std::string &err);
+
+private:
+  std::string m_default;
+  int m_default_in_seconds;
+  bool m_value_init;
+  std::string m_value;
+};
+
 } // namespace ctf01d

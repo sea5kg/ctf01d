@@ -38,8 +38,15 @@
 #pragma once
 
 #include "ctf01d/objects/ctf01d_team_config.h"
+#include "ctf01d/objects/ctf01d_var.h"
 
 class ICtf01dConfigChanged {
 public:
   virtual void addTeam(const ctf01d::team_config &team) = 0;
+};
+
+
+class IVarChanged {
+public:
+  virtual void changed(const ctf01d::var) = 0;
 };

@@ -67,8 +67,8 @@ public:
   int scoreboardPort() const ;
   std::string scoreboardHtmlFolder() const;
   bool scoreboardRandom() const;
-  bool scoreboardMetricsEnabled() const;
-  std::string scoreboardMetricsAllowedFor() const;
+  std::shared_ptr<ctf01d::var_bool> scoreboard_metrics_enabled() const;
+  std::shared_ptr<ctf01d::var_allowed_ip> scoreboard_metrics_allowed_for() const;
 
   // game configuration
   std::string gameId() const;
@@ -112,7 +112,7 @@ private:
   std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_random;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_metrics_enabled;
-  std::shared_ptr<ctf01d::var_string> m_scoreboard_metrics_allowed_for;
+  std::shared_ptr<ctf01d::var_allowed_ip> m_scoreboard_metrics_allowed_for;
 
   // game config
   ctf01d::scope_vars m_game_vars = ctf01d::scope_vars("game_config");

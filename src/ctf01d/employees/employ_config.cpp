@@ -87,7 +87,7 @@ EmployConfig::EmployConfig()
   m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_scoreboard_vars);
   m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_sWorkDir, m_scoreboard_vars);
   m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_scoreboard_vars);
-  m_scoreboard_metrics_allowed_for = ctf01d::var_string::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_scoreboard_vars);
+  m_scoreboard_metrics_allowed_for = ctf01d::var_allowed_ip::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_scoreboard_vars);
 
   m_ip_or_host_prefix = ctf01d::var_string::create({"config", "ip-or-host-prefix"}, "", m_teams_config);
   m_ip_or_host_suffix = ctf01d::var_string::create({"config", "ip-or-host-suffix"}, "", m_teams_config);
@@ -229,12 +229,12 @@ bool EmployConfig::scoreboardRandom() const {
   return m_scoreboard_random->value();
 }
 
-bool EmployConfig::scoreboardMetricsEnabled() const {
-  return m_scoreboard_metrics_enabled->value();
+std::shared_ptr<ctf01d::var_bool> EmployConfig::scoreboard_metrics_enabled() const {
+  return m_scoreboard_metrics_enabled;
 }
 
-std::string EmployConfig::scoreboardMetricsAllowedFor() const {
-  return m_scoreboard_metrics_allowed_for->value();
+std::shared_ptr<ctf01d::var_allowed_ip> EmployConfig::scoreboard_metrics_allowed_for() const {
+  return m_scoreboard_metrics_allowed_for;
 }
 
 std::string EmployConfig::gameId() const {

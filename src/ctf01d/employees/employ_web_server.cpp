@@ -553,11 +553,11 @@ int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
 
   // Re-read config on every request so toggling the flag (or editing the
   // allowlist) does not require restarting the webserver.
-  if (!config->scoreboardMetricsEnabled()) {
+  if (!config->scoreboard_metrics_enabled()->value()) {
     resp->String("Forbidden: metrics endpoint is disabled");
     return 403;
   }
-  if (!isMetricsClientAllowed(req->client_addr.ip, config->scoreboardMetricsAllowedFor())) {
+  if (!isMetricsClientAllowed(req->client_addr.ip, config->scoreboard_metrics_allowed_for()->value())) {
     resp->String("Forbidden");
     return 403;
   }

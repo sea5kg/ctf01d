@@ -476,4 +476,49 @@ int var_datetime::convert_to_seconds(const std::string &val)
   return std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
 }
 
+// ---------------------------------------------------------------------
+// ctf01d::var_allowed_ip
+
+var_allowed_ip::var_allowed_ip(const std::vector<std::string> &path_name, const std::string &default_value)
+: ctf01d::var(path_name, ctf01d::var_type::STRING), m_value_init(false) {
+  m_default = default_value;
+}
+
+// static
+std::shared_ptr<var_allowed_ip> var_allowed_ip::create(
+  const std::vector<std::string> &path_name,
+  const std::string &default_value,
+  ctf01d::scope_vars &sc_vars
+) {
+  auto ret = std::make_shared<var_allowed_ip>(path_name, default_value);
+  sc_vars.add_var(ret);
+  return ret;
+}
+
+bool var_allowed_ip::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto cur = cursor_by_path(cursor, err);
+  if (cur.isValue()) {
+    return set_value(cur.valStr(), err);
+  }
+  return false;
+}
+
+std::string var_allowed_ip::to_string() {
+  return "'" +  value() + "'";
+}
+
+std::string var_allowed_ip::default_value() const {
+  return m_default;
+}
+
+std::string var_allowed_ip::value() const {
+  return m_value_init ? m_value : m_default;
+}
+
+bool var_allowed_ip::set_value(const std::string &val, std::string &err) {
+  m_value = val;
+  m_value_init = true;
+  return true;
+}
+
 } // namespace ctf01d
