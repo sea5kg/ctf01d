@@ -5,11 +5,16 @@
 
 - Added Prometheus exposition at GET /api/v1/metrics ([#113](https://github.com/sea5kg/ctf01d/pull/113)). Disabled by default; enable via `scoreboard.prometheus-metrics-endpoint.enabled` and restrict scrapers with `scoreboard.prometheus-metrics-endpoint.allowed-for` (comma-separated wildcard patterns, e.g. `10.10.100.*, 127.0.*`). Not listed clients get HTTP 403.
 - Added Grafana dashboard and Prometheus example for the metrics endpoint ([#115](https://github.com/sea5kg/ctf01d/pull/115))
-
 - Implemented suffix/prefix for ip-or-host. Also allowed host name.
 - Add thread watcher for hot reload
 - Implemented hot reload for option: prometheus-metrics-endpoint.enabled
 - Updated HowardHinnant/date to v3.0.4
+- Splitted logging for web-server to different file (but error will be duplicates to main log file)
+- Fixed './pm.py make-test-game' for compatible with v0.7.0, Change default jury public port to 80 by default
+- Fixed disabling ActionAutomation if disabled icon animation
+- Redesign logging system for checker (every checker now will be write info messages to self log file)
+- Fixed infinity first-blood
+- Replaced to free font 'AmazingGroteskDemi'
 
 ## [v0.7.0] - (2026 June 4)
 
