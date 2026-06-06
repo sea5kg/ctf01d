@@ -208,8 +208,8 @@ function showTopTeamsSlider() {
   showTeamSlider(getTopTeamSliderSlides(3));
 }
 
-function showTeamEventSlider(teamID, title, subtitle, type) {
-  var team = getTeamByID(teamID);
+function showTeamEventSlider(team_id, title, subtitle, type) {
+  var team = getTeamByID(team_id);
   if (!team) {
     return;
   }
