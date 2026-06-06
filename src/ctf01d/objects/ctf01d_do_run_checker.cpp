@@ -36,6 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_do_run_checker.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <mutex>
 #include <sstream>
@@ -139,7 +140,7 @@ void DoRunChecker::run() {
 
   if (pipe(fd) != 0) {
     m_sOutput = "Could not open pipe";
-    WsjcppLog::err(TAG, m_sOutput);
+    ctf01d::log::err(TAG, m_sOutput);
     m_nExitCode = -1;
     m_bHasError = true;
     m_bFinishedByTimeout = false;
@@ -151,7 +152,7 @@ void DoRunChecker::run() {
 
   if (nChildPid < 0) {
     m_sOutput = "fork failed!";
-    WsjcppLog::err(TAG, m_sOutput);
+    ctf01d::log::err(TAG, m_sOutput);
     m_nExitCode = -1;
     m_bHasError = true;
     m_bFinishedByTimeout = false;
@@ -212,7 +213,7 @@ void DoRunChecker::run() {
     close(nPipeOut);
     m_bHasError = true;
     m_nExitCode = -1;
-    WsjcppLog::err("DoRunProcess", "bad alloc");
+    ctf01d::log::err("DoRunProcess", "bad alloc");
     return;
   }
 

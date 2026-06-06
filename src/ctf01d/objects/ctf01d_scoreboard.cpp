@@ -42,6 +42,7 @@
 #include <algorithm>
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 
 Ctf01dScoreboard::Ctf01dScoreboard(
   bool bRandom,
@@ -58,7 +59,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   m_bRandom = bRandom;
   std::string sScoreboardRandom = "Scoreboard random: ";
   sScoreboardRandom = sScoreboardRandom + (m_bRandom ? "yes" : "no");
-  WsjcppLog::warn(TAG, sScoreboardRandom);
+  ctf01d::log::warn(TAG, sScoreboardRandom);
   std::srand(unsigned(std::time(0)));
   m_nGameStartInSec = nGameStartInSec;
   m_nGameEndInSec = nGameEndInSec;
@@ -203,7 +204,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
   const std::vector<ctf01d::service_config> &vServices = pConfig->servicesConf();
 
   // load services statistics
-  WsjcppLog::info(TAG, "Loading services statistics...");
+  ctf01d::log::info(TAG, "Loading services statistics...");
   m_nAllDefenseFlags = 0;
   struct FlagsForService {
     std::string sServiceID;
@@ -228,7 +229,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
     vFlags.push_back(f);
   }
 
-  WsjcppLog::info(TAG, "Setting services statistics...");
+  ctf01d::log::info(TAG, "Setting services statistics...");
   for (int i = 0; i < vFlags.size(); i++) {
     FlagsForService f = vFlags[i];
     m_mapServiceCostsAndStatistics[f.sServiceID]->setStolenFlagsForService(f.nStolenFlags);
@@ -238,7 +239,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
     }
   }
 
-  WsjcppLog::info(TAG, "Setting teams statistics...");
+  ctf01d::log::info(TAG, "Setting teams statistics...");
   m_nAllTriesActivities = 0;
   std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
   for (it = m_mapTeamsStatuses.begin(); it != m_mapTeamsStatuses.end(); it++) {
@@ -275,7 +276,7 @@ void Ctf01dScoreboard::initStateFromStorage() {
   }
   m_jsonScoreboard["sum_act"] = m_nAllTriesActivities;
 
-  WsjcppLog::info(TAG, "Sorting places and apply to json...");
+  ctf01d::log::info(TAG, "Sorting places and apply to json...");
   {
     std::lock_guard<std::mutex> lock(m_mutexJson);
     sortPlaces();

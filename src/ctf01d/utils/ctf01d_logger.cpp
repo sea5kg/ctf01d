@@ -71,7 +71,7 @@ class private_logger_impl : public ctf01d::logger {
 public:
   private_logger_impl();
   virtual void set_log_directory(const std::string &log_dir) override;
-  virtual void set_log_file_name_prefix(const std::string &prefix) override;
+  virtual void set_log_filename_prefix(const std::string &prefix) override;
   virtual const std::string &get_log_file_fullpath() override;
   virtual void set_rotation_period_in_seconds(long val_in_seconds) override;
   virtual bool get_enable_log_file() override;
@@ -116,7 +116,7 @@ void private_logger_impl::set_log_directory(const std::string &log_dir) {
   do_log_rotate_update_filename(true);
 }
 
-void private_logger_impl::set_log_file_name_prefix(const std::string &prefix) {
+void private_logger_impl::set_log_filename_prefix(const std::string &prefix) {
   m_log_file_name_prefix = prefix;
   do_log_rotate_update_filename(true);
 }
@@ -234,8 +234,8 @@ void log::set_log_directory(const std::string &log_dir) {
   log::g_WSJCPP_LOG_GLOBAL_CONF->set_log_directory(log_dir);
 }
 
-void log::set_log_file_name_prefix(const std::string &prefix) {
-  log::g_WSJCPP_LOG_GLOBAL_CONF->set_log_file_name_prefix(prefix);
+void log::set_log_filename_prefix(const std::string &prefix) {
+  log::g_WSJCPP_LOG_GLOBAL_CONF->set_log_filename_prefix(prefix);
 }
 
 void log::set_enable_log_file(bool val) {

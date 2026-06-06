@@ -36,6 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_flag.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 // #include <fstream>
 #include <cstring>
@@ -107,7 +108,7 @@ void ctf01d::flag::generateValue(int nGameStartUTCInSec) {
   std::string sTimePoint = std::to_string(dt);
   int nTimePointLen = sTimePoint.size();
   if (nTimePointLen > 8) {
-    WsjcppLog::throw_err("ctf01d::flag::generateValue", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
+    ctf01d::log::throw_err("ctf01d::flag::generateValue", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
   }
   int nPos = m_sValue.size() - 1;
   for (int i = nTimePointLen - 1; i >= 0; i--) {

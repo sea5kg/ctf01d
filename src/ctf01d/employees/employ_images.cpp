@@ -39,6 +39,7 @@
 #include <wsjcpp_core.h>
 #include <filesystem>
 #include "ctf01d/employees/employ_config.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 
 REGISTRY_WSJCPP_EMPLOY(EmployImages)
 
@@ -49,12 +50,12 @@ EmployImages::EmployImages()
 }
 
 bool EmployImages::init(const std::string &sName, bool bSilent) {
-  WsjcppLog::info(TAG, "init");
+  ctf01d::log::info(TAG, "init");
   return true;
 }
 
 bool EmployImages::deinit(const std::string &sName, bool bSilent) {
-  WsjcppLog::info(TAG, "deinit");
+  ctf01d::log::info(TAG, "deinit");
   return true;
 }
 
@@ -87,7 +88,7 @@ bool EmployImages::update_last_change_time() {
     return false;
   }
   m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
-  WsjcppLog::info(TAG, "updateLastWriteTime for team's logos");
+  ctf01d::log::info(TAG, "updateLastWriteTime for team's logos");
   bool bHasChanges = false;
   {
     std::map<std::string, std::shared_ptr<ctf01d::image>>::iterator it = m_images.begin();
@@ -131,15 +132,15 @@ void EmployImages::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
 
 bool EmployImages::load_logo(const std::string &id, const std::string &filepath) {
    if (!WsjcppCore::fileExists(filepath)) {
-    WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
+    ctf01d::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
   }
   std::shared_ptr<ctf01d::image> img = std::make_shared<ctf01d::image>(id);
   if (!img->reload_from_file(filepath)) {
-    WsjcppLog::throw_err(TAG, "Could not read file '" + filepath + "'");
+    ctf01d::log::throw_err(TAG, "Could not read file '" + filepath + "'");
     return false;
   }
   m_images[id] = img;
-  WsjcppLog::info(TAG, "Loaded image " + filepath + " for " + id + " (last write time file: " + std::to_string(img->last_modified_time()) + ")");
+  ctf01d::log::info(TAG, "Loaded image " + filepath + " for " + id + " (last write time file: " + std::to_string(img->last_modified_time()) + ")");
   return true;
 }

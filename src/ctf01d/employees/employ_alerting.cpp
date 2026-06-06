@@ -37,6 +37,7 @@
 
 #include "employ_alerting.h"
 #include "ctf01d/employees/employ_config.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <fstream>
 #include <cstring>
@@ -49,11 +50,11 @@ EmployAlerting::EmployAlerting()
 }
 
 bool EmployAlerting::init(const std::string &sName, bool bSilent) {
-  WsjcppLog::info(TAG, "init");
+  ctf01d::log::info(TAG, "init");
   return true;
 }
 
 bool EmployAlerting::deinit(const std::string &sName, bool bSilent) {
-  WsjcppLog::info(TAG, "deinit");
+  ctf01d::log::info(TAG, "deinit");
   return true;
 }

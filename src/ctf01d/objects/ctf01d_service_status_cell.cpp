@@ -137,7 +137,7 @@ void Ctf01dServiceStatusCell::incrementPutFlagFail() {
 int Ctf01dServiceStatusCell::calculateSLA() {
   if (m_nFlagsPutAllResultsCounter == 0) {
     // if (m_nFlagsPutSuccessResultsCounter != 0) {
-    //   WsjcppLog::warn(TAG, "Could not possible situation!");
+    //   ctf01d::log::warn(TAG, "Could not possible situation!");
     // }
     return 100;
   }

@@ -41,6 +41,7 @@
 #include "ctf01d/objects/ctf01d_service_checker_thread.h"
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/include/i_web_server.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 
 std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
   std::vector<std::string> ret;
@@ -206,6 +207,7 @@ bool try_apply_ctf01d_user(const std::string &work_dir) {
 }
 
 int main(int argc, const char* argv[]) {
+  WsjcppLog::setEnableLogFile(false);
   if (getuid() == 0) {
     std::cout << "This program started as root." << std::endl;
   }
@@ -215,8 +217,7 @@ int main(int argc, const char* argv[]) {
   std::string appVersion = std::string(WSJCPP_APP_VERSION);
 
   // disable log in first
-  WsjcppLog::setEnableLogFile(false);
-  WsjcppLog::setPrefixLogFile("ctf01d");
+  ctf01d::log::set_log_filename_prefix("ctf01d");
 
   // parse arguments
   std::vector<std::string> arguments = argumentsToVector(argc, argv);
@@ -257,18 +258,18 @@ int main(int argc, const char* argv[]) {
   std::string command = arguments[0];
 
   if (command == "web-test") {
-    WsjcppLog::info(TAG, "Web Test...");
+    ctf01d::log::info(TAG, "Web Test...");
     if (!WsjcppEmployees::init({})) {
-        WsjcppLog::err(TAG, "Failed.");
+        ctf01d::log::err(TAG, "Failed.");
         return -1;
     }
     return findWsjcppEmploy<IWebServer>()->start();
   }
 
   if (command == "start") {
-    WsjcppLog::info(TAG, "Starting...");
+    ctf01d::log::info(TAG, "Starting...");
     if (!WsjcppEmployees::init({})) {
-      WsjcppLog::err(TAG, "Start failed on step init configs.");
+      ctf01d::log::err(TAG, "Start failed on step init configs.");
       return -1;
     }
 
@@ -278,11 +279,11 @@ int main(int argc, const char* argv[]) {
     EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
 
     // TODO move to hot reload and EmployScoreboard::init
-    WsjcppLog::info(TAG, "Restoring states from storage...");
+    ctf01d::log::info(TAG, "Restoring states from storage...");
     pEmployConfig->scoreboard()->initStateFromStorage();
-    WsjcppLog::ok(TAG, "Restored state from storage.");
+    ctf01d::log::ok(TAG, "Restored state from storage.");
     std::vector<ctf01d::service_checker_thread *> vThreads;
-    WsjcppLog::info(TAG, "Starting threads...");
+    ctf01d::log::info(TAG, "Starting threads...");
     for (unsigned int iservice = 0; iservice < pEmployConfig->servicesConf().size(); iservice++) {
       for (unsigned int i_team = 0; i_team < pEmployConfig->teamsConf().size(); i_team++) {
         ctf01d::team_config teamConf = pEmployConfig->teamsConf()[i_team];
@@ -297,7 +298,7 @@ int main(int argc, const char* argv[]) {
         vThreads.push_back(thr);
       }
     }
-    WsjcppLog::info(TAG, std::to_string(vThreads.size()) + " threads started");
+    ctf01d::log::info(TAG, std::to_string(vThreads.size()) + " threads started");
     return findWsjcppEmploy<IWebServer>()->start();
   }
 

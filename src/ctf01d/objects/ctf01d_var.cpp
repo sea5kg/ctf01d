@@ -36,6 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_var.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <cstring>
 #include <date.h> // HowardHinnant_date
@@ -106,10 +107,10 @@ bool scope_vars::read(WsjcppYamlCursor &cursor, std::string &err) {
     std::string err;
     if (!var->read(cursor, err)) {
       var_errors = true;
-      WsjcppLog::err(m_scope_name, err);
+      ctf01d::log::err(m_scope_name, err);
       continue;
     }
-    WsjcppLog::info(m_scope_name, var->name() + ": " + var->to_string());
+    ctf01d::log::info(m_scope_name, var->name() + ": " + var->to_string());
   }
   if (var_errors) {
     return false;
@@ -165,12 +166,12 @@ int var_int::value() const {
 bool var_int::set_value(int val, std::string &err) {
   if (m_check_minimum && val < m_minimum) {
     err = "Value '" + name() + "' must be equal or more than " + std::to_string(m_minimum);
-    WsjcppLog::err("var_int", err);
+    ctf01d::log::err("var_int", err);
     return false;
   }
   if (m_check_maximum && val > m_maximum) {
     err = "Value '" + name() + "' must be less or equal than " + std::to_string(m_maximum);
-    WsjcppLog::err("var_int", err);
+    ctf01d::log::err("var_int", err);
     return false;
   }
   m_value = val;
@@ -330,7 +331,7 @@ bool var_dir::set_value(const std::string &val, std::string &err) {
 
   if (!WsjcppCore::dirExists(new_val)) {
     err = "Directory '" + new_val + "' does not exists";
-    WsjcppLog::err("var_dir", err);
+    ctf01d::log::err("var_dir", err);
     return false;
   }
   m_value = val;
@@ -401,7 +402,7 @@ bool var_file::set_value(const std::string &val, std::string &err) {
 
   if (!WsjcppCore::fileExists(new_val)) {
     err = "File '" + new_val + "' does not exists";
-    WsjcppLog::err("var_file", err);
+    ctf01d::log::err("var_file", err);
     return false;
   }
   m_value = val;

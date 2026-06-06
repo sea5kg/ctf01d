@@ -38,6 +38,7 @@
 #include "employ_scoreboard.h"
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <cmath>
 #include <stdio.h>
 #include <string>
@@ -60,7 +61,7 @@ bool EmployScoreboard::init(const std::string &sName, bool bSilent) {
 }
 
 bool EmployScoreboard::deinit(const std::string &sName, bool bSilent) {
-  WsjcppLog::info(TAG, "deinit");
+  ctf01d::log::info(TAG, "deinit");
   return true;
 }
 

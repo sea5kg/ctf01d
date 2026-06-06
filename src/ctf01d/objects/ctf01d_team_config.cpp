@@ -36,6 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_team_config.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <vector>
 #include <algorithm>
@@ -70,7 +71,7 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
   };
   if (std::find(allowed_types.begin(), allowed_types.end(), m_type->value()) == allowed_types.end()) {
     err = "Didn't allowed team.type: '" + m_type->value() + "'";
-    WsjcppLog::err(TAG, err);
+    ctf01d::log::err(TAG, err);
     return false;
   }
 

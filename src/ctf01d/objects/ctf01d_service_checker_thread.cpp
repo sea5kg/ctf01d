@@ -53,6 +53,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <wsjcpp_core.h>
+#include "ctf01d/utils/ctf01d_logger.h"
 
 namespace ctf01d {
 
@@ -74,7 +75,7 @@ service_checker_thread::service_checker_thread(
 
   TAG = "Checker: " + m_teamConf.id() + std::string( 15 - m_teamConf.id().length(), ' ')
     + m_serviceConf.id() + " ";
-  WsjcppLog::info(TAG, "Created thread");
+  ctf01d::log::info(TAG, "Created thread");
 }
 
 void* newServiceCheckerThread(void *arg) {
@@ -91,7 +92,7 @@ void service_checker_thread::start() {
 
 int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sCommand) {
   if (sCommand != "put" &&  sCommand != "check") {
-    WsjcppLog::err(TAG, "runChecker - sCommand must be 'put' or 'check' ");
+    ctf01d::log::err(TAG, "runChecker - sCommand must be 'put' or 'check' ");
     return service_checker_thread::CHECKER_CODE_SHIT;
   }
 
@@ -104,7 +105,7 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
     + " " + flag.getId()
     + " " + flag.getValue();
 
-  WsjcppLog::info(TAG, "Start script " + sShellCommand);
+  ctf01d::log::info(TAG, "Start script " + sShellCommand);
 
   DoRunChecker process(
     m_serviceConf.script_dir(),
@@ -116,24 +117,24 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
   process.start(m_serviceConf.script_timeout_in_seconds()*1000);
 
   if (process.isTimeout()) {
-    WsjcppLog::err(TAG, "ErrorTimeout on run script service: " + process.outputString());
+    ctf01d::log::err(TAG, "ErrorTimeout on run script service: " + process.outputString());
     return service_checker_thread::CHECKER_CODE_MUMBLE;
   }
 
   if (process.hasError()) {
-    WsjcppLog::err(TAG, "Checker is shit");
-    WsjcppLog::err(TAG, "Error on run script service: " + process.outputString());
+    ctf01d::log::err(TAG, "Checker is shit");
+    ctf01d::log::err(TAG, "Error on run script service: " + process.outputString());
     return service_checker_thread::CHECKER_CODE_SHIT;
   }
 
   int nExitCode = process.exitCode();
   if (nExitCode == service_checker_thread::CHECKER_CODE_MUMBLE) {
-    WsjcppLog::err(TAG, "Checker says that service is mumble...\nLOG:\n"
+    ctf01d::log::err(TAG, "Checker says that service is mumble...\nLOG:\n"
       "\n" + process.outputString() + "\n\n");
   }
 
   if (nExitCode == service_checker_thread::CHECKER_CODE_CORRUPT) {
-    WsjcppLog::err(TAG, "Checker says that service is corrupt... \nLOG:\n"
+    ctf01d::log::err(TAG, "Checker says that service is corrupt... \nLOG:\n"
       "\n" + process.outputString() + "\n\n");
   }
 
@@ -143,7 +144,7 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
     && nExitCode != service_checker_thread::CHECKER_CODE_CORRUPT
     && nExitCode != service_checker_thread::CHECKER_CODE_DOWN
   ) {
-    WsjcppLog::err(TAG, "Wrong checker exit code...\n"
+    ctf01d::log::err(TAG, "Wrong checker exit code...\n"
       "\n" + process.outputString());
     return service_checker_thread::CHECKER_CODE_SHIT;
   }
@@ -157,9 +158,9 @@ void service_checker_thread::run() {
 
   // TODO check if game ended
 
-  WsjcppLog::info(TAG, "Starting thread...");
+  ctf01d::log::info(TAG, "Starting thread...");
   /*if (QString::fromStdString(m_teamConf.ipAddress()).isEmpty()) {
-    WsjcppLog::err(TAG, "User IP Address is empty!!!");
+    ctf01d::log::err(TAG, "User IP Address is empty!!!");
     return;
   }*/
 
@@ -167,7 +168,7 @@ void service_checker_thread::run() {
   /*
   // already checked on start
   if (!Wsjcpp::fileExists(sScriptPath)) {
-    WsjcppLog::err(TAG, "FAIL: Script Path to checker not found '" + sScriptPath + "'");
+    ctf01d::log::err(TAG, "FAIL: Script Path to checker not found '" + sScriptPath + "'");
     // TODO shit status
     return;
   }*/
@@ -180,19 +181,19 @@ void service_checker_thread::run() {
       && nCurrentTime > m_pConfig->gameCoffeeBreakStartUTCInSec()
       && nCurrentTime < m_pConfig->gameCoffeeBreakEndUTCInSec()
     ) {
-      WsjcppLog::info(TAG, "Game on coffee break");
+      ctf01d::log::info(TAG, "Game on coffee break");
       m_pConfig->scoreboard()->setServiceStatus(m_teamConf.id(), m_serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK);
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       continue;
     }
 
     if (nCurrentTime > m_pConfig->gameEndUTCInSec()) {
-      WsjcppLog::warn(TAG, "Game ended (current time: " + std::to_string(nCurrentTime) + ")");
+      ctf01d::log::warn(TAG, "Game ended (current time: " + std::to_string(nCurrentTime) + ")");
       return;
     };
 
     if (nCurrentTime < nGameStartUTCInSec) {
-      WsjcppLog::warn(TAG, "Game started after: " + std::to_string(nGameStartUTCInSec - nCurrentTime) + " seconds");
+      ctf01d::log::warn(TAG, "Game started after: " + std::to_string(nGameStartUTCInSec - nCurrentTime) + " seconds");
       m_pConfig->scoreboard()->setServiceStatus(m_teamConf.id(), m_serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_WAIT);
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       continue;
@@ -214,35 +215,35 @@ void service_checker_thread::run() {
 
       int nExitCode = this->runChecker(flag, "put");
 
-      // WsjcppLog::ok(TAG, " runChecker: " + std::to_string(nExitCode));
+      // ctf01d::log::ok(TAG, " runChecker: " + std::to_string(nExitCode));
 
       if (nExitCode == service_checker_thread::CHECKER_CODE_UP) {
         // >>>>>>>>>>> service is UP <<<<<<<<<<<<<<
-        WsjcppLog::ok(TAG, " => service is up");
+        ctf01d::log::ok(TAG, " => service is up");
         m_pConfig->scoreboard()->incrementFlagsPuttedAndServiceUp(flag);
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_CORRUPT) {
         // >>>>>>>>>>> service is CORRUPT <<<<<<<<<<<<<<
-        WsjcppLog::warn(TAG, " => service is corrupt");
+        ctf01d::log::warn(TAG, " => service is corrupt");
         m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_CORRUPT, "corrupt");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_MUMBLE) {
         // >>>>>>>>>>> service is MUMBLE <<<<<<<<<<<<<<
-        WsjcppLog::warn(TAG, " => service is mumble");
-        WsjcppLog::warn(TAG, "exit_code = " + std::to_string(nExitCode));
+        ctf01d::log::warn(TAG, " => service is mumble");
+        ctf01d::log::warn(TAG, "exit_code = " + std::to_string(nExitCode));
         m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_MUMBLE, "mumble");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_DOWN) {
         // >>>>>>>>>>> service is DOWN <<<<<<<<<<<<<<
         m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_DOWN, "down");
-        WsjcppLog::warn(TAG, " => service is down");
+        ctf01d::log::warn(TAG, " => service is down");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_SHIT) {
         // >>>>>>>>>>> checker is SHIT <<<<<<<<<<<<<<
         m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_SHIT, "shit");
-        WsjcppLog::err(TAG, " => checker is shit");
+        ctf01d::log::err(TAG, " => checker is shit");
       } else {
         m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_SHIT, "internal_error");
-        WsjcppLog::err(TAG, " => runChecker - wrong code return");
+        ctf01d::log::err(TAG, " => runChecker - wrong code return");
       }
     } else {
-      WsjcppLog::info(TAG, "Game ended after: " + std::to_string(m_pConfig->gameEndUTCInSec() - nCurrentTime) + " sec");
+      ctf01d::log::info(TAG, "Game ended after: " + std::to_string(m_pConfig->gameEndUTCInSec() - nCurrentTime) + " sec");
       // check some service status or just update to UP (Ha-Ha I'm the real evil!)
     }
 
@@ -259,7 +260,7 @@ void service_checker_thread::run() {
       int nCheckExitCode = this->runChecker(outdatedFlag, "check");
       if (nCheckExitCode != service_checker_thread::CHECKER_CODE_UP) {
             // service is not up
-            WsjcppLog::info(TAG, "flag_check_fail " + outdatedFlag.getValue());
+            ctf01d::log::info(TAG, "flag_check_fail " + outdatedFlag.getValue());
             m_pDatabase->insertFlagCheckFail(outdatedFlag, "code_" + std::to_string(nCheckExitCode));
       } else {
         // service is up
@@ -274,7 +275,7 @@ void service_checker_thread::run() {
 
     int elapsed_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count();
     int ms_sleep = m_serviceConf.round_in_seconds()*1000;
-    WsjcppLog::info(TAG, "Elapsed milliseconds: " + std::to_string(elapsed_milliseconds) + "ms");
+    ctf01d::log::info(TAG, "Elapsed milliseconds: " + std::to_string(elapsed_milliseconds) + "ms");
     std::this_thread::sleep_for(std::chrono::milliseconds(ms_sleep - elapsed_milliseconds));
   }
 }

@@ -49,7 +49,7 @@ class logger {
 public:
   static logger *create();
   virtual void set_log_directory(const std::string &log_dir) = 0;
-  virtual void set_log_file_name_prefix(const std::string &prefix) = 0;
+  virtual void set_log_filename_prefix(const std::string &prefix) = 0;
   virtual const std::string &get_log_file_fullpath() = 0;
   virtual void set_rotation_period_in_seconds(long val_in_seconds) = 0;
   virtual bool get_enable_log_file() = 0;
@@ -70,7 +70,7 @@ public:
   static void warn(const std::string &tag, const std::string &message);
   static void ok(const std::string &tag, const std::string &message);
   static void set_log_directory(const std::string &log_dir);
-  static void set_log_file_name_prefix(const std::string &prefix);
+  static void set_log_filename_prefix(const std::string &prefix);
   static void set_enable_log_file(bool val);
   static void set_rotation_period_in_seconds(long val_in_seconds);
 };

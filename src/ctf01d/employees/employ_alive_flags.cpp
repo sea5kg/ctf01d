@@ -41,6 +41,7 @@
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/i_alive_flags.h"
 #include "ctf01d/employees/employ_config.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <fstream>
 #include <cstring>
@@ -85,7 +86,7 @@ EmployAliveFlags::EmployAliveFlags()
 }
 
 bool EmployAliveFlags::init(const std::string &name, bool silent) {
-  WsjcppLog::info(TAG, "init");
+  ctf01d::log::info(TAG, "init");
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
 
   m_alive_flags_db = std::make_shared<Ctf01dDatabaseFile>("alive_flags.db",
@@ -99,26 +100,26 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     "  date_end INTEGER NOT NULL "
     ");"
   );
-  WsjcppLog::info(TAG, "Opening alive_flags.db");
+  ctf01d::log::info(TAG, "Opening alive_flags.db");
   if (!m_alive_flags_db->open()) {
       return false;
   }
 
   // load alive flags
-  WsjcppLog::info(TAG, "Loading alive flags...");
+  ctf01d::log::info(TAG, "Loading alive flags...");
   std::vector<ctf01d::flag> alive_flags = get_from_db_alive_flags();
   for (unsigned int i = 0; i < alive_flags.size(); i++) {
     // TODO check service_id and team_id
     ctf01d::flag flag = alive_flags[i];
     m_alive_flags_cache[flag.getValue()] = flag;
-    WsjcppLog::info(TAG, "Loaded flag from previous session flags_live: id = " + flag.getId() + ", value = " + flag.getValue());
+    ctf01d::log::info(TAG, "Loaded flag from previous session flags_live: id = " + flag.getId() + ", value = " + flag.getValue());
   }
 
   return true;
 }
 
 bool EmployAliveFlags::deinit(const std::string &name, bool silent) {
-  WsjcppLog::info(TAG, "deinit");
+  ctf01d::log::info(TAG, "deinit");
   return true;
 }
 
@@ -127,7 +128,7 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
   std::map<std::string, ctf01d::flag>::iterator it;
   it = m_alive_flags_cache.find(flag.getValue());
   if (it != m_alive_flags_cache.end()) {
-    WsjcppLog::err(TAG, flag.getValue() + " - flag already exists");
+    ctf01d::log::err(TAG, flag.getValue() + " - flag already exists");
     return false;
   }
   m_alive_flags_cache[flag.getValue()] = flag;
@@ -142,7 +143,7 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
     + std::to_string(flag.getTimeEndInMs())
     + ");";
   if (!m_alive_flags_db->executeQuery(sQuery)) {
-    WsjcppLog::err(TAG, "Error insert insertToFlagLive");
+    ctf01d::log::err(TAG, "Error insert insertToFlagLive");
   }
   return true;
 }
@@ -183,10 +184,10 @@ void EmployAliveFlags::remove_alive_flag(const ctf01d::flag &flag) {
 
     std::string sQuery = "DELETE FROM alive_flags WHERE flag = '" + flag.getValue() + "';";
     if (!m_alive_flags_db->executeQuery(sQuery)) {
-      WsjcppLog::err(TAG, "Error delete deleteFlagLive");
+      ctf01d::log::err(TAG, "Error delete deleteFlagLive");
     }
   } else {
-    WsjcppLog::warn(TAG, flag.getValue() + " - flag did not exists");
+    ctf01d::log::warn(TAG, flag.getValue() + " - flag did not exists");
   }
 }
 
@@ -210,7 +211,7 @@ std::vector<ctf01d::flag> EmployAliveFlags::get_from_db_alive_flags() {
   std::vector<ctf01d::flag> vResult;
   auto rows = m_alive_flags_db->selectRows(sQuery);
   if (rows == nullptr) {
-    WsjcppLog::err(TAG, "Error select listOfLiveFlags " + sQuery);
+    ctf01d::log::err(TAG, "Error select listOfLiveFlags " + sQuery);
     return vResult;
   }
   int nCounter = 0;

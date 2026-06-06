@@ -47,6 +47,7 @@
 #include <wsjcpp_core.h>
 #include <wsjcpp_yaml.h>
 #include "ctf01d/employees/employ_images.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/include/ctf01d_globals.h"
 #include "ctf01d/include/i_web_server.h"
 #include "third_party/smallsha1/smallsha1.h"
@@ -114,7 +115,7 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
   this->update_files_in_data();
 
   if (!this->applyConfig()) {
-    WsjcppLog::err(TAG, "Configuration file has some problems");
+    ctf01d::log::err(TAG, "Configuration file has some problems");
     return false;
   }
 
@@ -122,7 +123,7 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
 }
 
 bool EmployConfig::deinit(const std::string &sName, bool bSilent) {
-  WsjcppLog::info(TAG, "deinit");
+  ctf01d::log::info(TAG, "deinit");
   // wait stop threads
   if (m_thread_watcher.joinable()) {
     m_thread_watcher.join();
@@ -149,19 +150,19 @@ bool EmployConfig::applyConfig() {
   }
 
   m_bAppliedConfig = false;
-  WsjcppLog::info(TAG, "Loading configuration...");
+  ctf01d::log::info(TAG, "Loading configuration...");
 
-  WsjcppLog::info(TAG, "Reading config: " + m_config_filepath);
+  ctf01d::log::info(TAG, "Reading config: " + m_config_filepath);
 
   if (!WsjcppCore::fileExists(m_config_filepath)) {
-    WsjcppLog::err(TAG, "File " + m_config_filepath + " does not exists");
+    ctf01d::log::err(TAG, "File " + m_config_filepath + " does not exists");
     return false;
   }
 
   WsjcppYaml yamlConfig;
   std::string sError;
   if (!yamlConfig.loadFromFile(m_config_filepath, sError)) {
-    WsjcppLog::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + sError);
+    ctf01d::log::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + sError);
     return false;
   }
 
@@ -172,11 +173,11 @@ bool EmployConfig::applyConfig() {
   auto cursor = yamlConfig.getCursor();
   std::string err;
   if (!m_game_vars.read(cursor, err)) {
-    WsjcppLog::err(TAG, err);
+    ctf01d::log::err(TAG, err);
     return false;
   }
   if (!m_scoreboard_vars.read(cursor, err)) {
-    WsjcppLog::err(TAG, err);
+    ctf01d::log::err(TAG, err);
     return false;
   }
 
@@ -318,7 +319,7 @@ std::string sha1_by_file(const std::string &sFilename) {
   if (!f) {
     delete[] pBuffer;
     // f.close();
-    WsjcppLog::throw_err("sha1_by_file", "Could not read file. Only " + std::to_string(f.gcount()) + " could be read");
+    ctf01d::log::throw_err("sha1_by_file", "Could not read file. Only " + std::to_string(f.gcount()) + " could be read");
     return "";
   }
   f.close();
@@ -336,15 +337,15 @@ void EmployConfig::update_files_in_data() {
   if (!WsjcppCore::dirExists(m_sWorkDir + "/logs")) {
     WsjcppCore::makeDir(m_sWorkDir + "/logs");
     if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x755), sError)) {
-      WsjcppLog::throw_err(TAG, sError);
+      ctf01d::log::throw_err(TAG, sError);
     }
   }
 
   nlohmann::json previous_files_sha1 = load_files_sha1();
 
   if (!WsjcppCore::fileExists(m_sWorkDir + "/config.yml")) {
-    WsjcppLog::warn(TAG, "Extracting config.yml and files");
-    WsjcppLog::warn(TAG, "Extracting checker_example_*");
+    ctf01d::log::warn(TAG, "Extracting config.yml and files");
+    ctf01d::log::warn(TAG, "Extracting checker_example_*");
     const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
     std::vector<std::string> vExecutableFiles;
     for (int i = 0; i < vFiles.size(); i++) {
@@ -413,7 +414,7 @@ void EmployConfig::save_files_sha1(nlohmann::json &files) {
 }
 
 void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
-  WsjcppLog::warn(TAG, "Updating files in data/html");
+  ctf01d::log::warn(TAG, "Updating files in data/html");
   if (!WsjcppCore::dirExists(m_sWorkDir + "/html")) {
     WsjcppCore::makeDir(m_sWorkDir + "/html");
   }
@@ -471,7 +472,7 @@ void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
     std::cout << "Successfully created/updated file: " << target_filepath << std::endl;
     std::string err;
     if (!WsjcppCore::setFilePermissions(target_filepath, WsjcppFilePermissions(0x644), err)) {
-      WsjcppLog::throw_err(TAG, err);
+      ctf01d::log::throw_err(TAG, err);
     }
     previous_files_sha1[source_filepath] = new_sha1;
   }
@@ -490,13 +491,13 @@ bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
   std::vector<std::string> main_keys = cur.keys();
   for (int i = 0; i < main_keys.size(); i++) {
     if (std::find(expected_keys.begin(), expected_keys.end(), main_keys[i]) == expected_keys.end()) {
-      WsjcppLog::err(TAG, "Got unexpected key in main: '" + main_keys[i] + "'");
+      ctf01d::log::err(TAG, "Got unexpected key in main: '" + main_keys[i] + "'");
       return false;
     }
   }
   for (int i = 0; i < expected_keys.size(); i++) {
     if (std::find(main_keys.begin(), main_keys.end(), expected_keys[i]) == main_keys.end()) {
-      WsjcppLog::err(TAG, "Not found expected key in config: '" + expected_keys[i] + "'");
+      ctf01d::log::err(TAG, "Not found expected key in config: '" + expected_keys[i] + "'");
       return false;
     }
   }
@@ -506,28 +507,28 @@ bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
 bool EmployConfig::checkGameConf() {
   std::string err;
 
-  WsjcppLog::info(TAG, "Game start: " + m_game_start_utc->value());
-  WsjcppLog::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_game_start_utc->value_in_seconds()));
-  WsjcppLog::info(TAG, "Game end: " + m_game_end_utc->value());
-  WsjcppLog::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_game_end_utc->value_in_seconds()));
+  ctf01d::log::info(TAG, "Game start: " + m_game_start_utc->value());
+  ctf01d::log::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_game_start_utc->value_in_seconds()));
+  ctf01d::log::info(TAG, "Game end: " + m_game_end_utc->value());
+  ctf01d::log::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_game_end_utc->value_in_seconds()));
 
   if (m_game_end_utc->value_in_seconds() <= m_game_start_utc->value_in_seconds()) {
-    WsjcppLog::err(TAG, "game.end must be gather then game.start");
+    ctf01d::log::err(TAG, "game.end must be gather then game.start");
     return false;
   }
 
-  WsjcppLog::info(TAG, "game.coffee_break_start: " + m_game_coffee_break_start_utc->value());
-  WsjcppLog::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_game_coffee_break_start_utc->value_in_seconds()));
+  ctf01d::log::info(TAG, "game.coffee_break_start: " + m_game_coffee_break_start_utc->value());
+  ctf01d::log::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_game_coffee_break_start_utc->value_in_seconds()));
 
-  WsjcppLog::info(TAG, "game.coffee_break_end: " + m_game_coffee_break_end_utc->value());
-  WsjcppLog::info(TAG, "Game coffee break end (UNIX timestamp): " + std::to_string(m_game_coffee_break_end_utc->value_in_seconds()));
+  ctf01d::log::info(TAG, "game.coffee_break_end: " + m_game_coffee_break_end_utc->value());
+  ctf01d::log::info(TAG, "Game coffee break end (UNIX timestamp): " + std::to_string(m_game_coffee_break_end_utc->value_in_seconds()));
 
   if (m_game_start_utc->value_in_seconds() < m_game_coffee_break_start_utc->value_in_seconds()
     && m_game_coffee_break_start_utc->value_in_seconds() < m_game_end_utc->value_in_seconds()
     && m_game_start_utc->value_in_seconds() < m_game_coffee_break_end_utc->value_in_seconds()
     && m_game_coffee_break_end_utc->value_in_seconds() < m_game_end_utc->value_in_seconds()
   ) {
-    WsjcppLog::ok(TAG, "Oh! Game has coffee break! nice!");
+    ctf01d::log::ok(TAG, "Oh! Game has coffee break! nice!");
     m_has_coffee_break = true;
   }
   return true;
@@ -536,26 +537,26 @@ bool EmployConfig::checkGameConf() {
 bool EmployConfig::applyScoreboardPortFromEnv() {
   std::string str_port;
   if (WsjcppCore::getEnv("CTF01D_PORT", str_port)) {
-    WsjcppLog::warn(TAG, "CTF01D_PORT='" + str_port + "'");
+    ctf01d::log::warn(TAG, "CTF01D_PORT='" + str_port + "'");
     try {
       int port = std::stoi(str_port);
       std::string err;
       if (!m_scoreboard_port->set_value(port, err)) {
-        WsjcppLog::err(TAG, "CTF01D_PORT='" + str_port + "' is wrong. " + err);
+        ctf01d::log::err(TAG, "CTF01D_PORT='" + str_port + "' is wrong. " + err);
         return false;
       }
     } catch (const std::invalid_argument& e) {
-      WsjcppLog::err(TAG, "No conversion could be performed. CTF01D_PORT='" + str_port + "'");
+      ctf01d::log::err(TAG, "No conversion could be performed. CTF01D_PORT='" + str_port + "'");
       std::cerr << "Error: \n";
       return false;
     } catch (const std::out_of_range& e) {
-      WsjcppLog::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
+      ctf01d::log::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
       return false;
     } catch (...) {
-      WsjcppLog::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
+      ctf01d::log::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
       return false;
     }
-    WsjcppLog::info(TAG, "scoreboard.port will be overridden from environment variable. CTF01D_PORT='" + str_port + "'");
+    ctf01d::log::info(TAG, "scoreboard.port will be overridden from environment variable. CTF01D_PORT='" + str_port + "'");
     return true;
   }
   return true;
@@ -568,7 +569,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
   WsjcppYamlCursor yamlCheckers = yamlConfig["services"];
 
   if (yamlCheckers.size() == 0) {
-    WsjcppLog::err(TAG, "Checkers does not defined");
+    ctf01d::log::err(TAG, "Checkers does not defined");
     return false;
   }
 
@@ -580,18 +581,18 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
     std::string err;
 
     if (!_serviceConf.read(yamlChecker, m_sWorkDir, err)) {
-      WsjcppLog::err(TAG, err);
+      ctf01d::log::err(TAG, err);
       return false;
     }
 
     if (!_serviceConf.is_enabled()) {
-      WsjcppLog::warn(TAG, "Checker for service " + _serviceConf.id() + " - disabled ");
+      ctf01d::log::warn(TAG, "Checker for service " + _serviceConf.id() + " - disabled ");
       continue;
     }
 
     for (unsigned int i = 0; i < m_vServicesConf.size(); i++) {
       if (m_vServicesConf[i].id() == _serviceConf.id()) {
-        WsjcppLog::err(TAG, "Already registered checker for service '" + _serviceConf.id() + "'");
+        ctf01d::log::err(TAG, "Already registered checker for service '" + _serviceConf.id() + "'");
         return false;
       }
     }
@@ -599,36 +600,36 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
     if (!images->load_service_logo(_serviceConf.id(), _serviceConf.logo_path())) {
       return false;
     }
-    WsjcppLog::info(TAG, "Loaded service logo = " + _serviceConf.logo_path());
+    ctf01d::log::info(TAG, "Loaded service logo = " + _serviceConf.logo_path());
     if (!images->load_service_big_logo(_serviceConf.id(), _serviceConf.logo_big_path())) {
       return false;
     }
-    WsjcppLog::info(TAG, "Loaded service logo-big = " + _serviceConf.logo_big_path());
+    ctf01d::log::info(TAG, "Loaded service logo-big = " + _serviceConf.logo_big_path());
 
     m_vServicesConf.push_back(_serviceConf);
 
     // set write permissions for all to directory with checker
     if (!WsjcppCore::setFilePermissions(_serviceConf.script_dir(), WsjcppFilePermissions(0x777), err)) {
-      WsjcppLog::err(TAG, err);
+      ctf01d::log::err(TAG, err);
       return false;
     }
 
     std::string script_absolute_path = wsjcpp::normalizeFilePath(_serviceConf.script_dir() + "/" + _serviceConf.script_path());
     if (!WsjcppCore::fileExists(script_absolute_path)) {
-      WsjcppLog::err(TAG, "File " + script_absolute_path + " did not exists");
+      ctf01d::log::err(TAG, "File " + script_absolute_path + " did not exists");
       return false;
     }
     // set write permissions for all to script of checker
     if (!WsjcppCore::setFilePermissions(script_absolute_path, WsjcppFilePermissions(0x777), err)) {
-      WsjcppLog::err(TAG, err);
+      ctf01d::log::err(TAG, err);
       return false;
     }
 
-    WsjcppLog::ok(TAG, "Registered checker for service " + _serviceConf.id());
+    ctf01d::log::ok(TAG, "Registered checker for service " + _serviceConf.id());
   }
 
   if (m_vServicesConf.size() == 0) {
-    WsjcppLog::err(TAG, "No one defined services in config");
+    ctf01d::log::err(TAG, "No one defined services in config");
     return false;
   }
 
@@ -642,18 +643,18 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
   WsjcppYamlCursor cursor = yamlConfig["teams"];
   std::string err;
   if (!m_teams_config.read(cursor, err)) {
-    WsjcppLog::err(TAG, err);
+    ctf01d::log::err(TAG, err);
     return false;
   }
 
   if (!cursor.hasKey("list")) {
-    WsjcppLog::err(TAG, "Missing teams.list");
+    ctf01d::log::err(TAG, "Missing teams.list");
     return false;
   }
   cursor = cursor["list"];
 
   if (cursor.size() == 0) {
-    WsjcppLog::err(TAG, "Teams does not defined");
+    ctf01d::log::err(TAG, "Teams does not defined");
     return false;
   }
 
@@ -672,13 +673,13 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
 
     // TODO check sTeamId format
     if (!_team_config.is_active()) {
-      WsjcppLog::warn(TAG, "Team " + _team_config.id() + " - deactivated");
+      ctf01d::log::warn(TAG, "Team " + _team_config.id() + " - deactivated");
       continue;
     }
 
     for (unsigned int i = 0; i < m_vTeamsConf.size(); i++) {
       if (m_vTeamsConf[i].id() == _team_config.id()) {
-        WsjcppLog::err(TAG, "Already registered team with id " + _team_config.id());
+        ctf01d::log::err(TAG, "Already registered team with id " + _team_config.id());
         return false;
       }
     }
@@ -687,25 +688,25 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
     if (std::find(ip_or_host_teams.begin(), ip_or_host_teams.end(), _team_config.ip_or_host()) == ip_or_host_teams.end()) {
       ip_or_host_teams.push_back(_team_config.ip_or_host());
     } else {
-      WsjcppLog::err(TAG, "Found duplicate IP or Host address: " + _team_config.ip_or_host());
+      ctf01d::log::err(TAG, "Found duplicate IP or Host address: " + _team_config.ip_or_host());
       return false;
     }
 
     if (!images->load_team_logo(_team_config.id(), _team_config.logo_path())) {
       return false;
     }
-    WsjcppLog::info(TAG, "Loaded team logo = " + _team_config.logo_path());
+    ctf01d::log::info(TAG, "Loaded team logo = " + _team_config.logo_path());
     if (!images->load_team_big_logo(_team_config.id(), _team_config.logo_big_path())) {
       return false;
     }
-    WsjcppLog::info(TAG, "Loaded team logo-big = " + _team_config.logo_path());
+    ctf01d::log::info(TAG, "Loaded team logo-big = " + _team_config.logo_path());
 
     m_vTeamsConf.push_back(_team_config);
-    WsjcppLog::ok(TAG, "Registered team " + _team_config.id());
+    ctf01d::log::ok(TAG, "Registered team " + _team_config.id());
   }
 
   if (m_vTeamsConf.size() == 0) {
-    WsjcppLog::err(TAG, "No one defined team in config");
+    ctf01d::log::err(TAG, "No one defined team in config");
     return false;
   }
 
@@ -748,14 +749,14 @@ bool EmployConfig::isValidIPv4(const std::string &sValue, std::string &sError) {
 }
 
 bool EmployConfig::initWorkDir() {
-  WsjcppLog::info(TAG, "Work Directory is " + m_sWorkDir);
+  ctf01d::log::info(TAG, "Work Directory is " + m_sWorkDir);
   std::string sWorkDir = this->getWorkDir();
   if (sWorkDir == "") {
-    WsjcppLog::throw_err(TAG, "Work Directory not defined.");
+    ctf01d::log::throw_err(TAG, "Work Directory not defined.");
     return false;
   }
   if (!WsjcppCore::dirExists(sWorkDir)) {
-    WsjcppLog::err(TAG, "Directory " + sWorkDir + " does not exists");
+    ctf01d::log::err(TAG, "Directory " + sWorkDir + " does not exists");
     return false;
   }
   return true;
@@ -767,22 +768,22 @@ bool EmployConfig::initLogger() {
   sLogDir = wsjcpp::normalizeFilePath(sLogDir);
   if (!WsjcppCore::dirExists(sLogDir)) {
     if (!WsjcppCore::makeDirsPath(sLogDir)) {
-      WsjcppLog::err(TAG, "Could not make dirs for logs: " + sLogDir);
+      ctf01d::log::err(TAG, "Could not make dirs for logs: " + sLogDir);
       return false;
     }
     std::string sError;
     if (!WsjcppCore::setFilePermissions(sLogDir, WsjcppFilePermissions(0x776), sError)) {
-      WsjcppLog::throw_err(TAG, sError);
+      ctf01d::log::throw_err(TAG, sError);
     }
   }
   if (!WsjcppCore::dirExists(sLogDir)) {
     std::cout << "Error: Folder '" << sLogDir << "' does not exists and could not created, please check access rights to parent folder.\n";
     return false;
   }
-  WsjcppLog::setPrefixLogFile("ctf01d");
-  WsjcppLog::setLogDirectory(sLogDir);
-  WsjcppLog::setRotationPeriodInSec(600); // every 10 min  // TODO rotation period must be in config.yml
-  WsjcppLog::setEnableLogFile(true);
+  ctf01d::log::set_log_filename_prefix("ctf01d");
+  ctf01d::log::set_log_directory(sLogDir);
+  ctf01d::log::set_rotation_period_in_seconds(600); // every 10 min  // TODO rotation period must be in config.yml
+  ctf01d::log::set_enable_log_file(true);
   std::cout << "Logger: '" + sLogDir + "' \n";
   return true;
 }
@@ -795,7 +796,7 @@ void EmployConfig::thread_watcher() {
     if (modified_files.size() == 0) { // nothing changes
       continue;
     }
-    WsjcppLog::info(TAG, "Watcher thread found changes");
+    ctf01d::log::info(TAG, "Watcher thread found changes");
 
     // TODO images/logos update
 
@@ -806,7 +807,7 @@ void EmployConfig::thread_watcher() {
       if (filepath == m_config_filepath) {
         hot_reload_config_yaml();
       } else {
-        WsjcppLog::warn(TAG, "TODO update file watched " + filepath);
+        ctf01d::log::warn(TAG, "TODO update file watched " + filepath);
       }
     }
   }
@@ -814,13 +815,13 @@ void EmployConfig::thread_watcher() {
 
 void EmployConfig::hot_reload_config_yaml() {
   if (!WsjcppCore::fileExists(m_config_filepath)) {
-    WsjcppLog::err(TAG, "File " + m_config_filepath + " does not exists");
+    ctf01d::log::err(TAG, "File " + m_config_filepath + " does not exists");
     return;
   }
   WsjcppYaml yamlConfig;
   std::string err;
   if (!yamlConfig.loadFromFile(m_config_filepath, err)) {
-    WsjcppLog::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + err);
+    ctf01d::log::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + err);
     return;
   }
   auto cursor = yamlConfig.getCursor();
@@ -828,7 +829,7 @@ void EmployConfig::hot_reload_config_yaml() {
     bool prev_value = m_scoreboard_metrics_enabled->value();
     if (m_scoreboard_metrics_enabled->read(cursor, err)) {
       if (prev_value != m_scoreboard_metrics_enabled->value()) {
-        WsjcppLog::info(TAG, "Updated option: " + m_scoreboard_metrics_enabled->name() + " " + m_scoreboard_metrics_enabled->to_string());
+        ctf01d::log::info(TAG, "Updated option: " + m_scoreboard_metrics_enabled->name() + " " + m_scoreboard_metrics_enabled->to_string());
         findWsjcppEmploy<IWebServer>()->set_metrics_enabled(m_scoreboard_metrics_enabled->value());
       }
     };
@@ -837,7 +838,7 @@ void EmployConfig::hot_reload_config_yaml() {
   // std::shared_ptr<ctf01d::var_allowed_ip> m_scoreboard_metrics_allowed_for;
 
   // if (!m_scoreboard_vars.read(cursor, err)) {
-  //   WsjcppLog::err(TAG, err);
+  //   ctf01d::log::err(TAG, err);
   //   return;
   // }
 }

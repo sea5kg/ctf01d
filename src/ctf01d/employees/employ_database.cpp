@@ -38,6 +38,7 @@
 #include "employ_database.h"
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <cmath>
 #include <stdio.h>
 #include <string>
@@ -60,10 +61,10 @@ EmployDatabase::EmployDatabase()
 bool EmployDatabase::init(const std::string &sName, bool bSilent) {
     int driver_init_ret;
     if (!Ctf01dDatabase::initDriverSqlite3(driver_init_ret)) {
-        WsjcppLog::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
+        ctf01d::log::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
         return false;
     }
-    WsjcppLog::ok(TAG, "Initialize build-in sqlite3 library");
+    ctf01d::log::ok(TAG, "Initialize build-in sqlite3 library");
 
     m_pFlagsCheckerPutsResults = std::make_shared<Ctf01dDatabaseFile>("flags_checker_put_results.db",
         "CREATE TABLE IF NOT EXISTS flags_checker_put_results ( "
@@ -77,7 +78,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "  result VARCHAR(50) NOT NULL"
         ");"
     );
-    WsjcppLog::info(TAG, "Opening m_pFlagsCheckerPutsResults");
+    ctf01d::log::info(TAG, "Opening m_pFlagsCheckerPutsResults");
     if (!m_pFlagsCheckerPutsResults->open()) {
         return false;
     }
@@ -91,7 +92,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "  dt INTEGER NOT NULL"
         ");"
     );
-    WsjcppLog::info(TAG, "Opening m_pFlagsAttempts");
+    ctf01d::log::info(TAG, "Opening m_pFlagsAttempts");
     if (!m_pFlagsAttempts->open()) {
         return false;
     }
@@ -108,7 +109,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "  flag_cost INTEGER NOT NULL"
         ");"
     );
-    WsjcppLog::info(TAG, "Opening m_pFlagsDefense");
+    ctf01d::log::info(TAG, "Opening m_pFlagsDefense");
     if (!m_pFlagsDefense->open()) {
         return false;
     }
@@ -125,7 +126,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "  reason VARCHAR(50) NOT NULL "
         ");"
     );
-    WsjcppLog::info(TAG, "Opening m_pFlagsCheckFails");
+    ctf01d::log::info(TAG, "Opening m_pFlagsCheckFails");
     if (!m_pFlagsCheckFails->open()) {
         return false;
     }
@@ -148,7 +149,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
     // "  INDEX(`serviceid`), "
     // "  INDEX(`serviceid`, `thief_teamid`), "
     // "  UNIQUE KEY(`serviceid`, `thief_teamid`, `flag_id`, `flag`)"
-    WsjcppLog::info(TAG, "Opening m_pFlagsStolen");
+    ctf01d::log::info(TAG, "Opening m_pFlagsStolen");
     if (!m_pFlagsStolen->open()) {
         return false;
     }
@@ -157,7 +158,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
 }
 
 bool EmployDatabase::deinit(const std::string &sName, bool bSilent) {
-    WsjcppLog::info(TAG, "deinit");
+    ctf01d::log::info(TAG, "deinit");
     Ctf01dDatabase::shutdownDriverSqlite3();
     return true;
 }
@@ -174,7 +175,7 @@ void EmployDatabase::insertToFlagsCheckerPutResult(ctf01d::flag flag, std::strin
         + "'" + sResult + "'"
         + ");";
     if (!m_pFlagsCheckerPutsResults->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert " + sQuery);
+        ctf01d::log::err(TAG, "Error insert " + sQuery);
     }
 }
 
@@ -202,7 +203,7 @@ void EmployDatabase::insertFlagAttempt(std::string sTeamId, std::string sFlag, s
         " VALUES('" + sFlag + "', '" + sTeamId + "', '" + sRequestIP + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
 
     if (!m_pFlagsAttempts->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert");
+        ctf01d::log::err(TAG, "Error insert");
     }
 }
 
@@ -225,7 +226,7 @@ void EmployDatabase::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
         + ");";
 
     if (!m_pFlagsDefense->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagsDefense");
+        ctf01d::log::err(TAG, "Error insert insertToFlagsDefense");
     }
 }
 
@@ -266,7 +267,7 @@ void EmployDatabase::insertFlagCheckFail(ctf01d::flag flag, std::string sReason)
         + ");";
 
     if (!m_pFlagsCheckFails->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagsDefense");
+        ctf01d::log::err(TAG, "Error insert insertToFlagsDefense");
     }
 }
 
@@ -302,7 +303,7 @@ std::pair<std::string, long> EmployDatabase::getFirstBloodFromStolenFlagsForServ
     pairRet.second = 0;
     auto rows = m_pFlagsStolen->selectRows(sQuery);
     if (rows == nullptr) {
-        WsjcppLog::err(TAG, "Error select getFirstBloodFromStolenFlagsForService " + sQuery);
+        ctf01d::log::err(TAG, "Error select getFirstBloodFromStolenFlagsForService " + sQuery);
         return pairRet;
     }
     if (rows->next()) {
@@ -330,7 +331,7 @@ void EmployDatabase::insertToFlagsStolen(ctf01d::flag flag, std::string sTeamId,
         + ");";
 
     if (!m_pFlagsStolen->executeQuery(sQuery)) {
-        WsjcppLog::err(TAG, "Error insert insertToFlagsDefense");
+        ctf01d::log::err(TAG, "Error insert insertToFlagsDefense");
     }
 }
 

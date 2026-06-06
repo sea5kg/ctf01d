@@ -36,6 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_files_watcher.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <filesystem>
 
@@ -47,13 +48,13 @@ files_watcher::files_watcher() {
 
 bool files_watcher::watchFile(const std::string &filepath) {
   if (!WsjcppCore::fileExists(filepath)) {
-    WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
+    ctf01d::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
   }
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it != m_files.end()) {
-    WsjcppLog::err(TAG, "File '" + filepath + "' already in watch list.");
+    ctf01d::log::err(TAG, "File '" + filepath + "' already in watch list.");
     return false;
   }
   // set real time modified
@@ -77,7 +78,7 @@ long files_watcher::getLastModifiedTimeFile(const std::string &filepath) {
     return 0;
   }
   if (!WsjcppCore::fileExists(filepath)) {
-    WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
+    ctf01d::log::err(TAG, "File '" + filepath + "' did not found");
     return 0;
   }
   return m_files[filepath];
@@ -90,7 +91,7 @@ bool files_watcher::isModifiedFile(const std::string &filepath) {
     return false;
   }
   if (!WsjcppCore::fileExists(filepath)) {
-    WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
+    ctf01d::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
   }
   std::filesystem::file_time_type ftime = std::filesystem::last_write_time(filepath.c_str());
@@ -108,7 +109,7 @@ std::map<std::string, long> files_watcher::get_modified_files() {
   for (auto it = m_files.begin(); it != m_files.end(); ++it) {
     const std::string &filepath = it->first;
     if (!WsjcppCore::fileExists(filepath)) {
-      WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
+      ctf01d::log::err(TAG, "File '" + filepath + "' did not found");
       // don't remove from m_files
       continue;
     }
