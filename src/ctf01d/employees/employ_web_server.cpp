@@ -188,40 +188,51 @@ bool EmployWebServer::deinit(const std::string &name, bool bSilent) {
   return true;
 }
 
-using namespace hv;
+static std::shared_ptr<ctf01d::logger> g_http_logger = std::shared_ptr<ctf01d::logger>(ctf01d::logger::create());
 
 void EmployWebServer_custom_logger(int level, const char *msg, int len) {
-  std::string TAG = "http";
+  static const std::string TAG = "http-hv";
   std::string message(msg, len - 1); // remove last '\n' character
   switch (level) {
   case LOG_LEVEL_DEBUG:
-    ctf01d::log::info(TAG, "debug: " + message);
+    g_http_logger->info(TAG, "debug: " + message);
     break;
   case LOG_LEVEL_INFO:
-    ctf01d::log::info(TAG, message);
+    g_http_logger->info(TAG, message);
     break;
   case LOG_LEVEL_WARN:
     ctf01d::log::warn(TAG, message);
+    g_http_logger->warn(TAG, message);
     break;
   case LOG_LEVEL_ERROR:
     ctf01d::log::err(TAG, message);
+    g_http_logger->err(TAG, message);
     break;
   case LOG_LEVEL_FATAL:
-    ctf01d::log::throw_err(TAG, message);
+    ctf01d::log::err(TAG, message);
+    g_http_logger->throw_err(TAG, message);
     break;
   default:
-    ctf01d::log::info(TAG, "Unknow level: " + message);
+    ctf01d::log::err(TAG, "Unknow level: " + message);
+    g_http_logger->err(TAG, message);
   }
 }
 
 int EmployWebServer::start() {
 
   EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
+  g_http_logger->set_log_filename_prefix("http_hv");
+  g_http_logger->set_log_dirpath(ctf01d::log::get_log_dirpath());
+  g_http_logger->set_rotation_period_in_seconds(ctf01d::log::get_rotation_period_in_seconds());
+  g_http_logger->set_enable_log_file(true);
+  g_http_logger->set_enable_console_output(false);
 
   m_sScoreboardHtmlFolder = pEmployConfig->scoreboardHtmlFolder();
   updateJsonCache();
 
-  ctf01d::log::ok(TAG, "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/");
+  std::string starting_message = "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/";
+  g_http_logger->ok(TAG, starting_message);
+  ctf01d::log::ok(TAG, starting_message);
 
   {
     logger_t *pLogger = hv_default_logger();
