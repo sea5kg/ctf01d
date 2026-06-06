@@ -3,7 +3,8 @@
 
 ## [v0.7.1] - (2026 ?? ??)
 
-- Added Prometheus exposition at GET /api/v1/metrics. Disabled by default; enable via `scoreboard.prometheus-metrics-endpoint.enabled` and restrict scrapers with `scoreboard.prometheus-metrics-endpoint.allowed-for` (comma-separated wildcard patterns, e.g. `10.10.100.*, 127.0.*`). Not listed clients get HTTP 403.
+- Added Prometheus exposition at GET /api/v1/metrics ([#113](https://github.com/sea5kg/ctf01d/pull/113)). Disabled by default; enable via `scoreboard.prometheus-metrics-endpoint.enabled` and restrict scrapers with `scoreboard.prometheus-metrics-endpoint.allowed-for` (comma-separated wildcard patterns, e.g. `10.10.100.*, 127.0.*`). Not listed clients get HTTP 403.
+- Added Grafana dashboard and Prometheus example for the metrics endpoint ([#115](https://github.com/sea5kg/ctf01d/pull/115))
 
 - Implemented suffix/prefix for ip-or-host. Also allowed host name.
 - Add thread watcher for hot reload
