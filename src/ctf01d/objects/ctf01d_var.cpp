@@ -39,6 +39,7 @@
 #include <wsjcpp_core.h>
 #include <cstring>
 #include <date.h> // HowardHinnant_date
+#include <regex>
 
 namespace ctf01d {
 
@@ -474,6 +475,116 @@ int var_datetime::convert_to_seconds(const std::string &val)
   date::sys_seconds tp;
   in >> date::parse("%Y-%m-%d %T", tp);
   return std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
+}
+
+// ---------------------------------------------------------------------
+// ctf01d::var_allowed_ip
+
+var_ip_or_host::var_ip_or_host(const std::vector<std::string> &path_name)
+: ctf01d::var(path_name, ctf01d::var_type::STRING), m_value_init(false) {
+}
+
+// static
+std::shared_ptr<var_ip_or_host> var_ip_or_host::create(
+  const std::vector<std::string> &path_name,
+  ctf01d::scope_vars &sc_vars
+) {
+  auto ret = std::make_shared<var_ip_or_host>(path_name);
+  sc_vars.add_var(ret);
+  return ret;
+}
+
+bool var_ip_or_host::read(WsjcppYamlCursor &cursor, std::string &err) {
+  auto cur = cursor_by_path(cursor, err);
+  if (cur.isValue()) {
+    return set_value(cur.valStr(), err);
+  }
+  return false;
+}
+
+std::string var_ip_or_host::to_string() {
+  return "'" +  value() + "'";
+}
+
+void var_ip_or_host::set_prefix(const std::string &prefix) {
+  m_prefix = prefix;
+  // TODO validate
+  m_final_value = m_prefix + m_value + m_suffix;
+}
+
+void var_ip_or_host::set_suffix(const std::string &suffix) {
+  m_suffix = suffix;
+  // TODO validate
+  m_final_value = m_prefix + m_value + m_suffix;
+}
+
+std::string var_ip_or_host::value() const {
+  return m_final_value;
+}
+
+bool var_ip_or_host::set_value(const std::string &val, std::string &err) {
+  std::string final_value = m_prefix + val + m_suffix;
+  // Check RFC length limit constraint (Max 255 characters total)
+  if (final_value.empty()) {
+    err = "IP or Hostname '" + final_value + "' could no be empty";
+    return false;
+  }
+
+  if (final_value.length() > 255) {
+    err = "IP or Hostname '" + final_value + "' could no be more than length 255";
+    return false;
+  }
+
+  static const std::regex pattern_ipv4("^(\\d+\\.)+\\d+$");
+  static const std::regex pattern_hostname(R"(^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$)");
+  if (std::regex_match(final_value, pattern_ipv4)) {
+    if (!is_valid_ip_v4(final_value, err)) {
+      return false;
+    }
+  } else if (!std::regex_match(final_value, pattern_hostname)) {
+    err = final_value + " is't could not be a host name";
+    return false;
+  }
+    
+  m_value = val;
+  m_final_value = final_value;
+  m_value_init = true;
+  return true;
+}
+
+bool var_ip_or_host::is_valid_ip_v4(const std::string &value, std::string &err) {
+  int n = 0;
+  std::string s[4] = {"", "", "", ""};
+  for (int i = 0; i < value.length(); i++) {
+    char c = value[i];
+    if (n > 3) {
+      err = "Groups number must be less than 5 (like '0.0.0.0'), but got value " + value;
+      return false;
+    }
+    if (c >= '0' && c <= '9') {
+      s[n] += c;
+    } else if (c == '.') {
+      n++;
+    } else {
+      err = "Unexpected character '";
+      err += c;
+      err += "'";
+      return false;
+    }
+  }
+  for (int i = 0; i < 4; i++) {
+    if (s[i].length() > 3) {
+      err =
+          "Value '" + s[i] + "' could not contains more than 3 digits in a row, but got value " + value;
+      return false;
+    }
+    int p = std::stoi(s[i]);
+    if (p > 255 || p < 0) {
+      err = "Value '" + std::to_string(p) + "' must be 0..255, but got value " + value;
+      return false;
+    }
+  }
+  return true;
 }
 
 // ---------------------------------------------------------------------

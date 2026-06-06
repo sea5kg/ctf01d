@@ -654,11 +654,14 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
     return false;
   }
 
-  std::vector<std::string> vIPAddresses;
+  std::vector<std::string> ip_or_host_teams;
 
   for (int i = 0; i < cursor.size(); i++) {
     WsjcppYamlCursor cur = cursor[i];
     ctf01d::team_config _team_config;
+    _team_config.set_ip_or_host_prefix(m_ip_or_host_prefix->value());
+    _team_config.set_ip_or_host_suffix(m_ip_or_host_suffix->value());
+
     std::string err;
     if (!_team_config.read(cur, m_sWorkDir, err)) {
       return false;
@@ -677,16 +680,11 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
       }
     }
 
-    if (!isValidIPv4(_team_config.ip_or_host(), err)) {
-      WsjcppLog::err(TAG, "Invalid IPv4 address: " + err);
-      return false;
-    }
-
     // Check duplicate IP addresses
-    if (std::find(vIPAddresses.begin(), vIPAddresses.end(), _team_config.ip_or_host()) == vIPAddresses.end()) {
-      vIPAddresses.push_back(_team_config.ip_or_host());
+    if (std::find(ip_or_host_teams.begin(), ip_or_host_teams.end(), _team_config.ip_or_host()) == ip_or_host_teams.end()) {
+      ip_or_host_teams.push_back(_team_config.ip_or_host());
     } else {
-      WsjcppLog::err(TAG, "Found duplicate IP address: " + _team_config.ip_or_host());
+      WsjcppLog::err(TAG, "Found duplicate IP or Host address: " + _team_config.ip_or_host());
       return false;
     }
 

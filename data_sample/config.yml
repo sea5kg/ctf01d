@@ -73,8 +73,8 @@ services:
 
 teams:
   config:
-    ip-or-host-prefix: ""
-    ip-or-host-suffix: ""
+    ip-or-host-prefix: "127.0."
+    ip-or-host-suffix: ".1"
   list:
     - id: "t01" # must be uniq
       type: normal
@@ -82,207 +82,208 @@ teams:
       active: yes
       logo: "./html/images/teams/team01.png"
       logo-big: "./html/images/teams/team01.png"
-      ip-or-host: "127.0.1.1"
+      ip-or-host: "1"
     - id: "t02" # must be uniq
       type: normal
       name: "Team #2"
       active: yes
       logo: "./html/images/teams/team02.png"
       logo-big: "./html/images/teams/team02.png"
-      ip-or-host: "127.0.2.1"
+      ip-or-host: "2"
     - id: "t03" # must be uniq
       type: normal
       name: "Team #3"
       active: yes
       logo: "./html/images/teams/team03.png"
       logo-big: "./html/images/teams/team03.png"
-      ip-or-host: "127.0.3.1"
+      ip-or-host: "3"
     - id: "t04" # must be uniq
       type: normal
       name: "Team #4"
       active: yes
       logo: "./html/images/teams/team04.png"
       logo-big: "./html/images/teams/team03.png"
-      ip-or-host: "127.0.4.1"
+      ip-or-host: "4"
     - id: "t05" # must be uniq
       type: normal
       name: "Team #5"
       active: yes
       logo: "./html/images/teams/team05.png"
       logo-big: "./html/images/teams/team03.png"
-      ip-or-host: "127.0.5.1"
+      ip-or-host: "5"
     - id: "t06" # must be uniq
       type: normal
       name: "Team #6"
       active: yes
       logo: "./html/images/teams/team06.png"
       logo-big: "./html/images/teams/team06.png"
-      ip-or-host: "127.0.6.1"
+      ip-or-host: "6"
     - id: "t07" # must be uniq
       type: normal
       name: "Team #7"
       active: yes
       logo: "./html/images/teams/team07.png"
       logo-big: "./html/images/teams/team07.png"
-      ip-or-host: "127.0.7.1"
+      ip-or-host: "7"
     - id: "t08" # must be uniq
       type: normal
       name: "Team #8"
       active: yes
       logo: "./html/images/teams/team08.png"
       logo-big: "./html/images/teams/team08.png"
-      ip-or-host: "127.0.8.1"
+      ip-or-host: "8"
     - id: "t09" # must be uniq
       type: normal
       name: "Team #9"
       active: yes
       logo: "./html/images/teams/team09.png"
       logo-big: "./html/images/teams/team09.png"
-      ip-or-host: "127.0.9.1"
+      ip-or-host: "9"
     - id: "t10" # must be uniq
       type: normal
       name: "Team #10"
       active: yes
       logo: "./html/images/teams/team10.png"
       logo-big: "./html/images/teams/team10.png"
-      ip-or-host: "127.0.10.1"
+      ip-or-host: "10"
     - id: "t11" # must be uniq
       type: normal
       name: "Team #11"
       active: yes
       logo: "./html/images/teams/team11.png"
       logo-big: "./html/images/teams/team11.png"
-      ip-or-host: "127.0.11.1"
+      ip-or-host: "11"
     - id: "t12" # must be uniq
       type: normal
       name: "Team #12"
       active: yes
       logo: "./html/images/teams/team12.png"
       logo-big: "./html/images/teams/team12.png"
-      ip-or-host: "127.0.12.1"
+      ip-or-host: "12"
     - id: "t13" # must be uniq
       type: normal
       name: "Team #13"
       active: yes
       logo: "./html/images/teams/team13.png"
       logo-big: "./html/images/teams/team13.png"
-      ip-or-host: "127.0.13.1"
+      ip-or-host: "13"
     - id: "t14" # must be uniq
       type: normal
       name: "Team #14"
       active: yes
       logo: "./html/images/teams/team14.png"
       logo-big: "./html/images/teams/team14.png"
-      ip-or-host: "127.0.14.1"
+      ip-or-host: "14"
     - id: "t15" # must be uniq
       type: normal
       name: "Team #15"
       active: yes
       logo: "./html/images/teams/team15.png"
       logo-big: "./html/images/teams/team15.png"
-      ip-or-host: "127.0.15.1"
+      ip-or-host: "15"
     - id: "t16" # must be uniq
       type: normal
       name: "Team #16"
       active: yes
       logo: "./html/images/teams/team16.png"
       logo-big: "./html/images/teams/team16.png"
-      ip-or-host: "127.0.16.1"
+      ip-or-host: "16"
     - id: "t17" # must be uniq
       type: normal
       name: "Team #17"
       active: yes
       logo: "./html/images/teams/team17.png"
       logo-big: "./html/images/teams/team17.png"
-      ip-or-host: "127.0.17.1"
+      ip-or-host: "17"
     - id: "t18" # must be uniq
       type: normal
       name: "Team #18"
       active: yes
       logo: "./html/images/teams/team18.png"
       logo-big: "./html/images/teams/team18.png"
-      ip-or-host: "127.0.18.1"
+      ip-or-host: "18"
     - id: "t19" # must be uniq
       type: normal
       name: "Team #19"
       active: yes
       logo: "./html/images/teams/team19.png"
       logo-big: "./html/images/teams/team19.png"
-      ip-or-host: "127.0.19.1"
+      ip-or-host: "19"
     - id: "t20" # must be uniq
       type: normal
       name: "Team #20"
       active: yes
       logo: "./html/images/teams/team20.png"
       logo-big: "./html/images/teams/team20.png"
-      ip-or-host: "127.0.20.1"
+      ip-or-host: "20"
     - id: "t21" # must be uniq
       type: normal
       name: "Team #21"
       active: yes
       logo: "./html/images/teams/team21.png"
       logo-big: "./html/images/teams/team21.png"
-      ip-or-host: "127.0.21.1"
+      ip-or-host: "21"
     - id: "t22" # must be uniq
       type: normal
       name: "Team #22"
       active: yes
       logo: "./html/images/teams/team22.png"
       logo-big: "./html/images/teams/team22.png"
-      ip-or-host: "127.0.22.1"
+      ip-or-host: "22"
     - id: "t23" # must be uniq
       type: normal
       name: "Team #23"
       active: yes
       logo: "./html/images/teams/team23.png"
       logo-big: "./html/images/teams/team23.png"
-      ip-or-host: "127.0.23.1"
+      ip-or-host: "23"
     - id: "t24" # must be uniq
       type: normal
       name: "Team #24"
       active: yes
       logo: "./html/images/teams/team24.png"
       logo-big: "./html/images/teams/team24.png"
-      ip-or-host: "127.0.24.1"
+      ip-or-host: "24"
     - id: "t25" # must be uniq
       type: normal
       name: "Team #25"
       active: yes
       logo: "./html/images/teams/team25.png"
       logo-big: "./html/images/teams/team25.png"
-      ip-or-host: "127.0.25.1"
+      ip-or-host: "25"
     - id: "t26" # must be uniq
       type: normal
       name: "Team #26"
       active: yes
       logo: "./html/images/teams/team26.png"
       logo-big: "./html/images/teams/team26.png"
-      ip-or-host: "127.0.26.1"
+      ip-or-host: "26"
     - id: "t27" # must be uniq
       type: normal
       name: "Team #27"
       active: yes
       logo: "./html/images/teams/team27.png"
       logo-big: "./html/images/teams/team27.png"
-      ip-or-host: "127.0.27.1"
+      ip-or-host: "27"
     - id: "t28" # must be uniq
       type: normal
       name: "Team #28"
       active: yes
       logo: "./html/images/teams/team28.png"
       logo-big: "./html/images/teams/team28.png"
-      ip-or-host: "127.0.28.1"
+      ip-or-host: "28"
     - id: "t29" # must be uniq
       type: normal
       name: "Team #29"
       active: yes
       logo: "./html/images/teams/team29.png"
       logo-big: "./html/images/teams/team29.png"
-      ip-or-host: "127.0.29.1"
+      ip-or-host: "29"
     - id: "t30" # must be uniq
       type: normal
       name: "Team #30 1111111111111111111111111111111"
       active: yes
       logo: "./html/images/teams/team30.png"
       logo-big: "./html/images/teams/team30.png"
-      ip-or-host: "192.168.88.3"
+      # ip-or-host: "192.168.88.3"
+      ip-or-host: "30"

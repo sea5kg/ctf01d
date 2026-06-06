@@ -52,6 +52,8 @@ public:
   std::string id() const;
   std::string name() const;
   std::string ip_or_host() const;
+  void set_ip_or_host_prefix(const std::string &);
+  void set_ip_or_host_suffix(const std::string &);
   bool is_active() const;
   std::string logo_path() const;
   std::string logo_big_path() const;
@@ -65,12 +67,11 @@ private:
   std::shared_ptr<ctf01d::var_string> m_id;
   std::shared_ptr<ctf01d::var_string> m_name;
   std::shared_ptr<ctf01d::var_string> m_type;
-  std::shared_ptr<ctf01d::var_string> m_ip_or_host;
+  std::shared_ptr<ctf01d::var_ip_or_host> m_ip_or_host;
   std::shared_ptr<ctf01d::var_file> m_logo;
   std::shared_ptr<ctf01d::var_file> m_logo_big;
   std::shared_ptr<ctf01d::var_bool> m_active;
 
-  std::string m_sIpAddress;
   int m_nLogoLastWriteTime;
 };
 

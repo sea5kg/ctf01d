@@ -195,6 +195,27 @@ private:
   int m_value_in_seconds;
 };
 
+class var_ip_or_host : public ctf01d::var {
+public:
+  var_ip_or_host(const std::vector<std::string> &path_name);
+  static std::shared_ptr<var_ip_or_host> create(const std::vector<std::string> &path_name, ctf01d::scope_vars &sc_vars);
+  virtual bool read(WsjcppYamlCursor &cursor, std::string &err) override;
+  virtual std::string to_string() override;
+  void set_prefix(const std::string &prefix);
+  void set_suffix(const std::string &suffix);
+  std::string value() const;
+  bool set_value(const std::string &val, std::string &err);
+
+private:
+  bool is_valid_ip_v4(const std::string &value, std::string &err);
+
+  std::string m_suffix;
+  std::string m_prefix;
+  std::string m_value;
+  std::string m_final_value;
+  bool m_value_init;
+};
+
 class var_allowed_ip : public ctf01d::var {
 public:
   var_allowed_ip(const std::vector<std::string> &path_name, const std::string &default_value);

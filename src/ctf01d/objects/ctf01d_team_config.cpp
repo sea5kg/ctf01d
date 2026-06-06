@@ -50,7 +50,7 @@ team_config::team_config() {
   m_active = ctf01d::var_bool::create({"active"}, true, m_vars);
   m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
   m_logo_big = ctf01d::var_file::create({"logo-big"}, "", "", m_vars);
-  m_ip_or_host = ctf01d::var_string::create({"ip-or-host"}, "", m_vars); // TODO var_ip_or_host
+  m_ip_or_host = ctf01d::var_ip_or_host::create({"ip-or-host"}, m_vars); // TODO var_ip_or_host
 }
 
 bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err) {
@@ -73,6 +73,7 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
     WsjcppLog::err(TAG, err);
     return false;
   }
+
   // m_type->value()
 
   // if (m_active->value()) {
@@ -91,6 +92,14 @@ std::string team_config::id() const {
 
 std::string team_config::name() const {
   return m_name->value();
+}
+
+void team_config::set_ip_or_host_prefix(const std::string &val) {
+  m_ip_or_host->set_prefix(val);
+}
+
+void team_config::set_ip_or_host_suffix(const std::string &val) {
+  m_ip_or_host->set_suffix(val);
 }
 
 std::string team_config::ip_or_host() const {
