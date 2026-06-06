@@ -276,24 +276,33 @@ int main(int argc, const char* argv[]) {
     // signal( SIGINT, quitApp );
     // signal( SIGTERM, quitApp );
 
-    EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
+    EmployConfig *config = findWsjcppEmploy<EmployConfig>();
 
     // TODO move to hot reload and EmployScoreboard::init
     ctf01d::log::info(TAG, "Restoring states from storage...");
-    pEmployConfig->scoreboard()->initStateFromStorage();
+    config->scoreboard()->initStateFromStorage();
     ctf01d::log::ok(TAG, "Restored state from storage.");
     std::vector<ctf01d::service_checker_thread *> vThreads;
     ctf01d::log::info(TAG, "Starting threads...");
-    for (unsigned int iservice = 0; iservice < pEmployConfig->servicesConf().size(); iservice++) {
-      for (unsigned int i_team = 0; i_team < pEmployConfig->teamsConf().size(); i_team++) {
-        ctf01d::team_config teamConf = pEmployConfig->teamsConf()[i_team];
-        ctf01d::service_config serviceConf = pEmployConfig->servicesConf()[iservice];
+    for (unsigned int iservice = 0; iservice < config->servicesConf().size(); iservice++) {
+      ctf01d::service_config service_config = config->servicesConf()[iservice];
+
+      std::shared_ptr<ctf01d::logger> service_logger(ctf01d::logger::create());
+      service_logger->set_log_dirpath(ctf01d::log::get_log_dirpath());
+      service_logger->set_rotation_period_in_seconds(ctf01d::log::get_rotation_period_in_seconds());
+      service_logger->set_log_filename_prefix("checker_" + service_config.id());
+      service_logger->set_enable_log_file(true);
+      service_logger->set_enable_console_output(false); // only errors will be to main log
+      service_logger->info(TAG, "Starting threads");
+
+      for (unsigned int i_team = 0; i_team < config->teamsConf().size(); i_team++) {
+        ctf01d::team_config team_config = config->teamsConf()[i_team];
 
         // reset status to down
-        pEmployConfig->scoreboard()->setServiceStatus(teamConf.id(), serviceConf.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
+        config->scoreboard()->setServiceStatus(team_config.id(), service_config.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
         // pConfig->scoreboard()->setTeamTries();
 
-        ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(teamConf, serviceConf);
+        ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(service_logger, service_config, team_config);
         thr->start();
         vThreads.push_back(thr);
       }

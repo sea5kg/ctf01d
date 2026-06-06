@@ -40,6 +40,7 @@
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/include/i_alive_flags.h"
+#include "ctf01d/utils/ctf01d_logger.h"
 
 namespace ctf01d {
 
@@ -51,22 +52,27 @@ public:
   static int CHECKER_CODE_MUMBLE;
   static int CHECKER_CODE_DOWN;
   static int CHECKER_CODE_SHIT;
-  service_checker_thread(const ctf01d::team_config &teamConf, const ctf01d::service_config &serviceConf);
+  service_checker_thread(
+    std::shared_ptr<ctf01d::logger> logger,
+    const ctf01d::service_config &service_config,
+    const ctf01d::team_config &team_config
+  );
   void start();
   void run();
 
 private:
+  void log_err(const std::string &message);
+  int runChecker(ctf01d::flag &flag, const std::string &command);
+
   std::string TAG;
   pthread_t m_checkerThread;
   EmployConfig *m_pConfig;
   EmployDatabase *m_pDatabase; // TODO not must be here
   IAliveFlags *m_alive_flags;
-  ctf01d::team_config m_teamConf;
-  ctf01d::service_config m_serviceConf;
 
-  int runChecker(ctf01d::flag &flag, const std::string &sCommand);
-  // int runChecker(Flag &flag, const std::string &sCommand);
-  // void run();
+  ctf01d::team_config m_team_config;
+  ctf01d::service_config m_service_config;
+  std::shared_ptr<ctf01d::logger> m_logger;
 };
 
 } // namespace ctf01d

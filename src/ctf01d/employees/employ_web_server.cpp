@@ -74,6 +74,8 @@ public:
 private:
   std::string TAG;
 
+  void log_err(const std::string &message);
+  void log_warn(const std::string &message);
   void updateJsonCache();
 
   int httpWebFolder(HttpRequest* req, HttpResponse* resp);
@@ -269,6 +271,16 @@ void EmployWebServer::set_metrics_enabled(bool val) {
   m_metrics_enabled.store(val);
 };
 
+void EmployWebServer::log_err(const std::string &message) {
+  ctf01d::log::err(TAG, message);
+  g_http_logger->err(TAG, message);
+}
+
+void EmployWebServer::log_warn(const std::string &message) {
+  ctf01d::log::warn(TAG, message);
+  g_http_logger->warn(TAG, message);
+}
+
 void EmployWebServer::updateJsonCache() {
   auto config = findWsjcppEmploy<EmployConfig>();
 
@@ -326,7 +338,7 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
   }
   request_path = wsjcpp::normalizeFilePath(request_path);
 
-  // ctf01d::log::info(TAG, "request_path = " + request_path);
+  // hlogi("request_path = " + request_path);
   if (request_path == "/flag") { // Public endpoint. Allowed without authorization.
     return this->httpApiV1Flag(req, resp);
   }
@@ -452,7 +464,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
   if (nCurrentTimeSec < config->gameStartUTCInSec()) {
     const std::string sErrorMsg = " Error(-8): Game not started yet";
-    ctf01d::log::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
+    log_err(sRequestIP_MsgSuffix + sErrorMsg);
     resp->String(sErrorMsg);
     return 400;
   }
@@ -462,14 +474,14 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     && nCurrentTimeSec < config->gameCoffeeBreakEndUTCInSec()
   ) {
     static const std::string sErrorMsg = "Error(-8): Game on coffee break now";
-    ctf01d::log::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
+    log_err(sErrorMsg + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 400;
   }
 
   if (nCurrentTimeSec > config->gameEndUTCInSec()) {
     static const std::string sErrorMsg = "Error(-9): Game already ended";
-    ctf01d::log::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
+    log_warn(sErrorMsg + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 400;
   }
@@ -482,15 +494,17 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   sFlag = WsjcppCore::toLower(sFlag);
 
   if (sTeamId == "") {
+    // TODO server statistics
     static const std::string sErrorMsg = "Error(-10): Not found get-parameter 'teamid' or parameter is empty";
-    ctf01d::log::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
+    log_err(sErrorMsg + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 400;
   }
 
   if (sFlag == "") {
+    // TODO server statistics
     static const std::string sErrorMsg = "Error(-11): Not found get-parameter 'flag' or parameter is empty";
-    ctf01d::log::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
+    log_err(sErrorMsg + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 400;
   }
@@ -505,19 +519,21 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   }
 
   if (!bTeamFound) {
-      static const std::string sErrorMsg = "Error(-130): this is team not found";
-      ctf01d::log::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
-      resp->String(sErrorMsg);
-      return 400;
+    // TODO server statistics
+    static const std::string sErrorMsg = "Error(-130): this is team not found";
+    log_err(sErrorMsg + sRequestIP_MsgSuffix);
+    resp->String(sErrorMsg);
+    return 400;
   }
 
   // TODO test speed of regexp and if will be simple compare every symbol.
   const static std::regex reFlagFormat("c01d[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}[0-9]{8,8}");
   if (!std::regex_match(sFlag, reFlagFormat)) {
-      static const std::string sErrorMsg = "Error(-140): flag has wrong format";
-      ctf01d::log::err(TAG, sErrorMsg + sRequestIP_MsgSuffix);
-      resp->String(sErrorMsg);
-      return 400;
+    // TODO server statistics
+    static const std::string sErrorMsg = "Error(-140): flag has wrong format";
+    log_err(sErrorMsg + sRequestIP_MsgSuffix);
+    resp->String(sErrorMsg);
+    return 400;
   }
   config->scoreboard()->incrementTries(sTeamId);
 
@@ -527,34 +543,36 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
   ctf01d::flag flag;
   if (!findWsjcppEmploy<IAliveFlags>()->find_alive_flag(sFlag, flag)) {
-      static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag already stole.";
-      ctf01d::log::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
-      resp->String(sErrorMsg);
-      return 403;
+    // TODO server statistics
+    static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag already stole.";
+    g_http_logger->info(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    resp->String(sErrorMsg);
+    return 403;
   }
 
   long nCurrentTimeMSec = (long)nCurrentTimeSec;
   nCurrentTimeMSec = nCurrentTimeMSec*1000;
 
   if (flag.getTimeEndInMs() < nCurrentTimeMSec) {
-      // TODO
-      static const std::string sErrorMsg = "Error(-151): flag is too old";
-      ctf01d::log::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
-      resp->String(sErrorMsg);
-      return 403;
+    // TODO server statistics
+    static const std::string sErrorMsg = "Error(-151): flag is too old";
+    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    resp->String(sErrorMsg);
+    return 403;
   }
 
   // if (flag.teamStole() == sTeamId) {
-  //     response.forbidden().sendText("Error(-160): flag already stole by your team");
-  //     ctf01d::log::err(TAG, "Error(-160): Received flag {" + sFlag + "} from {" + sTeamId + "} (flag already stole by your team)");
-  //     return true;
+  //   response.forbidden().sendText("Error(-160): flag already stole by your team");
+  //   log_err("Error(-160): Received flag {" + sFlag + "} from {" + sTeamId + "} (flag already stole by your team)");
+  //   return true;
   // }
 
   if (flag.getTeamId() == sTeamId) {
-      static const std::string sErrorMsg = "Error(-180): this is your flag";
-      ctf01d::log::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
-      resp->String(sErrorMsg);
-      return 403;
+    // TODO server statistics
+    static const std::string sErrorMsg = "Error(-180): this is your flag";
+    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    resp->String(sErrorMsg);
+    return 403;
   }
 
   std::string sServiceStatus = config->scoreboard()->serviceStatus(sTeamId, flag.getServiceId());
@@ -562,10 +580,11 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // std::cout << "sServiceStatus: " << sServiceStatus << "\n";
 
   if (sServiceStatus != Ctf01dServiceStatusCell::SERVICE_UP) {
-      static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
-      ctf01d::log::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
-      resp->String(sErrorMsg);
-      return 403;
+    // TODO server statistics
+    static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
+    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    resp->String(sErrorMsg);
+    return 403;
   }
 
   // TODO light update scoreboard
@@ -573,14 +592,17 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // so check-then-insert is atomic against concurrent submissions.
   std::optional<int> oPoints = config->scoreboard()->incrementAttackScore(flag, sTeamId);
   if (!oPoints.has_value()) {
-      static const std::string sErrorMsg = "Error(-170): flag already stolen by your team";
-      ctf01d::log::err(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
-      resp->String(sErrorMsg);
-      return 403;
+    // TODO server statistics
+    static const std::string sErrorMsg = "Error(-170): flag already stolen by your team";
+    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    resp->String(sErrorMsg);
+    return 403;
   }
   std::string sPoints = std::to_string(oPoints.value());
 
   std::string sResponse = "Accepted: Received flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
+  // really need send to current ???
+  g_http_logger->ok(TAG, sResponse + sRequestIP_MsgSuffix);
   ctf01d::log::ok(TAG, sResponse + sRequestIP_MsgSuffix);
   resp->Data(
       (void *)(sResponse.c_str()),
@@ -595,7 +617,6 @@ int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req,
   // TODO refactoring it
 
   std::string id = request_path.substr(m_logo_prefix_length, request_path.length() - m_logo_prefix_length);
-  ctf01d::log::info(TAG, "httpLogo, id = " + id);
   auto images = findWsjcppEmploy<EmployImages>();
   std::shared_ptr<ctf01d::image> img = images->find_image(id);
 

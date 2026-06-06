@@ -197,6 +197,7 @@ void private_logger_impl::do_log_rotate_update_filename(bool force) {
   long t_now_seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
   long rotate_diff = t_now_seconds - m_log_start_time;
   if (force || m_log_start_time == 0 || rotate_diff > m_rotation_period_in_seconds) {
+
     m_log_start_time = t_now_seconds;
     m_log_file_fullpath = m_log_dir + "/"
       + m_log_file_name_prefix + "_"
@@ -205,9 +206,8 @@ void private_logger_impl::do_log_rotate_update_filename(bool force) {
 }
 
 void private_logger_impl::add(ctf01d::color_modifier &clr, const std::string &sType, const std::string &tag, const std::string &message) {
-  do_log_rotate_update_filename();
-
   std::lock_guard<std::mutex> lock(m_mutex);
+  do_log_rotate_update_filename();
   ctf01d::color_modifier def(ctf01d::color_code::FG_DEFAULT);
 
   std::string sLogMessage = WsjcppCore::getCurrentTimeForLogFormat() + ", " + WsjcppCore::getThreadId()
