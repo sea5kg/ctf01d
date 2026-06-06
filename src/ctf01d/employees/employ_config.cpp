@@ -712,41 +712,6 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
   return true;
 }
 
-bool EmployConfig::isValidIPv4(const std::string &sValue, std::string &sError) {
-  int n = 0;
-  std::string s[4] = {"", "", "", ""};
-  for (int i = 0; i < sValue.length(); i++) {
-    char c = sValue[i];
-    if (n > 3) {
-      sError = "Groups number must be less than 5 (like '0.0.0.0')";
-      return false;
-    }
-    if (c >= '0' && c <= '9') {
-      s[n] += c;
-    } else if (c == '.') {
-      n++;
-    } else {
-      sError = "Unexpected character '";
-      sError += c;
-      sError += "'";
-      return false;
-    }
-  }
-  for (int i = 0; i < 4; i++) {
-    if (s[i].length() > 3) {
-      sError =
-          "Value '" + s[i] + "' could not contains more than 3 digits in a row";
-      return false;
-    }
-    int p = std::stoi(s[i]);
-    if (p > 255 || p < 0) {
-      sError = "Value '" + std::to_string(p) + "' must be 0..255";
-      return false;
-    }
-  }
-  return true;
-}
-
 bool EmployConfig::initWorkDir() {
   ctf01d::log::info(TAG, "Work Directory is " + m_sWorkDir);
   std::string sWorkDir = this->getWorkDir();

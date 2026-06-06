@@ -97,7 +97,6 @@ private:
   bool applyScoreboardPortFromEnv();
   bool applyServicesConfig(WsjcppYaml &yamlConfig);
   bool readTeamsConf(WsjcppYaml &yamlConfig);
-  bool isValidIPv4(const std::string &sValue, std::string &sError);
   bool initWorkDir();
   bool initLogger();
 
