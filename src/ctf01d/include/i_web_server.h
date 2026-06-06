@@ -37,44 +37,11 @@
 
 #pragma once
 
-#include <wsjcpp_employees.h>
 #include <string>
-#include "HttpService.h" // libhv
 
-class EmployWebServer : public WsjcppEmployBase {
+class IWebServer {
 public:
-  EmployWebServer();
-  static std::string name() { return "EmployWebServer"; }
-  virtual bool init(const std::string &name, bool bSilent) override;
-  virtual bool deinit(const std::string &name, bool bSilent) override;
-
-  int start();
-
-private:
-  std::string TAG;
-
-  void updateJsonCache();
-
-  int httpWebFolder(HttpRequest* req, HttpResponse* resp);
-  int httpApiV1Game(HttpRequest* req, HttpResponse* resp);
-  int httpApiGameCurrentTime(HttpRequest* req, HttpResponse* resp);
-  int httpApiV1Teams(HttpRequest* req, HttpResponse* resp);
-  int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
-  int httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp);
-  int httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp);
-  int httpApiV1Flag(HttpRequest* req, HttpResponse* resp);
-  int httpApiV1Metrics(HttpRequest* req, HttpResponse* resp);
-  int httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp);
-
-  std::shared_ptr<hv::HttpService> m_pHttpService;
-  std::string m_sApiPathPrefix;
-
-  // TODO refactoring it
-  std::string m_logo_prefix;
-  int m_logo_prefix_length;
-
-  std::string m_sIndexHtml;
-  std::string m_sScoreboardHtmlFolder;
-  std::string m_sCacheResponseGameJson;
-  std::string m_sCacheResponseTeamsJson;
+  static std::string name() { return "IWebServer"; }
+  virtual int start() = 0;
+  virtual void set_metrics_enabled(bool val) = 0;
 };

@@ -39,6 +39,7 @@
 
 #include <wsjcpp_employees.h>
 #include <wsjcpp_yaml.h>
+#include <thread>
 #include "ctf01d/objects/ctf01d_var.h"
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/objects/ctf01d_service_config.h"
@@ -100,6 +101,9 @@ private:
   bool initWorkDir();
   bool initLogger();
 
+  void thread_watcher();
+  void hot_reload_config_yaml();
+
   std::string TAG;
   std::string m_sWorkDir;
   std::string m_config_filepath;
@@ -137,5 +141,7 @@ private:
   std::vector<ctf01d::service_config> m_vServicesConf;
 
   // hot-reload: for reload config in runtime
+  std::thread m_thread_watcher;
+  std::mutex m_mutex_thread_watcher;
   std::shared_ptr<ctf01d::files_watcher> m_files_watcher;
 };

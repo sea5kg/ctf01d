@@ -48,6 +48,7 @@
 #include <wsjcpp_yaml.h>
 #include "ctf01d/employees/employ_images.h"
 #include "ctf01d/include/ctf01d_globals.h"
+#include "ctf01d/include/i_web_server.h"
 #include "third_party/smallsha1/smallsha1.h"
 #include <sys/stat.h>
 #include <stdio.h>
@@ -112,9 +113,6 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
 
   this->update_files_in_data();
 
-  m_config_filepath = m_sWorkDir + "/config.yml";
-  m_files_watcher->watchFile(m_config_filepath);
-
   if (!this->applyConfig()) {
     WsjcppLog::err(TAG, "Configuration file has some problems");
     return false;
@@ -124,8 +122,12 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
 }
 
 bool EmployConfig::deinit(const std::string &sName, bool bSilent) {
-    WsjcppLog::info(TAG, "deinit");
-    return true;
+  WsjcppLog::info(TAG, "deinit");
+  // wait stop threads
+  if (m_thread_watcher.joinable()) {
+    m_thread_watcher.join();
+  }
+  return true;
 }
 
 void EmployConfig::setWorkDir(const std::string &sWorkDir) {
@@ -149,7 +151,6 @@ bool EmployConfig::applyConfig() {
   m_bAppliedConfig = false;
   WsjcppLog::info(TAG, "Loading configuration...");
 
-  m_config_filepath = m_sWorkDir + "/config.yml";
   WsjcppLog::info(TAG, "Reading config: " + m_config_filepath);
 
   if (!WsjcppCore::fileExists(m_config_filepath)) {
@@ -206,6 +207,8 @@ bool EmployConfig::applyConfig() {
   );
 
   m_bAppliedConfig = true;
+  m_files_watcher->watchFile(m_config_filepath);
+  m_thread_watcher = std::thread(&EmployConfig::thread_watcher, this);
   return m_bAppliedConfig;
 }
 
@@ -782,4 +785,59 @@ bool EmployConfig::initLogger() {
   WsjcppLog::setEnableLogFile(true);
   std::cout << "Logger: '" + sLogDir + "' \n";
   return true;
+}
+
+void EmployConfig::thread_watcher() {
+
+  while (true) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
+    std::map<std::string, long> modified_files = m_files_watcher->get_modified_files();
+    if (modified_files.size() == 0) { // nothing changes
+      continue;
+    }
+    WsjcppLog::info(TAG, "Watcher thread found changes");
+
+    // TODO images/logos update
+
+    std::scoped_lock lock(m_mutex_thread_watcher);
+
+    for (auto it = modified_files.begin(); it != modified_files.end(); ++it) {
+      const std::string &filepath = it->first;
+      if (filepath == m_config_filepath) {
+        hot_reload_config_yaml();
+      } else {
+        WsjcppLog::warn(TAG, "TODO update file watched " + filepath);
+      }
+    }
+  }
+}
+
+void EmployConfig::hot_reload_config_yaml() {
+  if (!WsjcppCore::fileExists(m_config_filepath)) {
+    WsjcppLog::err(TAG, "File " + m_config_filepath + " does not exists");
+    return;
+  }
+  WsjcppYaml yamlConfig;
+  std::string err;
+  if (!yamlConfig.loadFromFile(m_config_filepath, err)) {
+    WsjcppLog::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + err);
+    return;
+  }
+  auto cursor = yamlConfig.getCursor();
+  {
+    bool prev_value = m_scoreboard_metrics_enabled->value();
+    if (m_scoreboard_metrics_enabled->read(cursor, err)) {
+      if (prev_value != m_scoreboard_metrics_enabled->value()) {
+        WsjcppLog::info(TAG, "Updated option: " + m_scoreboard_metrics_enabled->name() + " " + m_scoreboard_metrics_enabled->to_string());
+        findWsjcppEmploy<IWebServer>()->set_metrics_enabled(m_scoreboard_metrics_enabled->value());
+      }
+    };
+  }
+
+  // std::shared_ptr<ctf01d::var_allowed_ip> m_scoreboard_metrics_allowed_for;
+
+  // if (!m_scoreboard_vars.read(cursor, err)) {
+  //   WsjcppLog::err(TAG, err);
+  //   return;
+  // }
 }

@@ -35,12 +35,8 @@
  *
  ***********************************************************************************/
 
-#include "employ_web_server.h"
-#include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_images.h"
-#include "ctf01d/objects/ctf01d_service_status_cell.h"
-#include <wsjcpp_core.h>
 #include <fstream>
+#include <atomic>
 #include <cstring>
 #include <initializer_list>
 #include <optional>
@@ -48,13 +44,62 @@
 #include <sstream>
 #include <utility>
 #include <vector>
+#include <wsjcpp_employees.h>
+#include <wsjcpp_core.h>
+#include "ctf01d/include/i_web_server.h"
+#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/employees/employ_images.h"
+#include "ctf01d/objects/ctf01d_service_status_cell.h"
 
+// libhv includes
+#include "HttpService.h" // libhv
 #include "WebSocketServer.h"  // libhv
 #include "EventLoop.h"  // libhv
 #include "htime.h"  // libhv
 #include "hssl.h"  // libhv
 #include "hlog.h"  // libhv
 #include "hbase.h"  // libhv: hv_wildcard_match
+
+class EmployWebServer : public WsjcppEmployBase, public IWebServer {
+public:
+  EmployWebServer();
+  virtual bool init(const std::string &name, bool bSilent) override;
+  virtual bool deinit(const std::string &name, bool bSilent) override;
+
+  // IWebServer
+  virtual int start() override;
+  virtual void set_metrics_enabled(bool val) override;
+
+private:
+  std::string TAG;
+
+  void updateJsonCache();
+
+  int httpWebFolder(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Game(HttpRequest* req, HttpResponse* resp);
+  int httpApiGameCurrentTime(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Teams(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Flag(HttpRequest* req, HttpResponse* resp);
+  int httpApiV1Metrics(HttpRequest* req, HttpResponse* resp);
+  int httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp);
+
+  std::shared_ptr<hv::HttpService> m_pHttpService;
+  std::string m_sApiPathPrefix;
+
+  std::atomic<bool> m_metrics_enabled;
+
+  // TODO refactoring it
+  std::string m_logo_prefix;
+  int m_logo_prefix_length;
+
+  std::string m_sIndexHtml;
+  std::string m_sScoreboardHtmlFolder;
+  std::string m_sCacheResponseGameJson;
+  std::string m_sCacheResponseTeamsJson;
+};
 
 static std::string prometheusEscapeLabelValue(const std::string &sValue) {
   std::string sResult;
@@ -121,9 +166,9 @@ static bool isMetricsClientAllowed(const std::string &sClientIp, const std::stri
 REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
 
 EmployWebServer::EmployWebServer()
-: WsjcppEmployBase({ EmployWebServer::name() }, { EmployConfig::name() }) {
+: WsjcppEmployBase({ IWebServer::name() }, { EmployConfig::name() }) {
   m_sApiPathPrefix = "/api/v1/";
-
+  
   // TODO refactoring it
   m_logo_prefix = "/logo/";
   m_logo_prefix_length = m_logo_prefix.size();
@@ -131,6 +176,8 @@ EmployWebServer::EmployWebServer()
 
 bool EmployWebServer::init(const std::string &name, bool bSilent) {
   WsjcppLog::info(TAG, "init");
+  auto config = findWsjcppEmploy<EmployConfig>();
+  m_metrics_enabled.store(config->scoreboard_metrics_enabled()->value());
   return true;
 }
 
@@ -204,6 +251,10 @@ int EmployWebServer::start() {
 
   return 0;
 }
+
+void EmployWebServer::set_metrics_enabled(bool val) {
+  m_metrics_enabled.store(val);
+};
 
 void EmployWebServer::updateJsonCache() {
   auto config = findWsjcppEmploy<EmployConfig>();
@@ -282,10 +333,10 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
       return this->httpApiV1MyIp(req, resp);
     } else if (request_path == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
       return this->httpApiV1Teams(req, resp);
-    } else if (request_path == "/api/v1/metrics") { // Config-gated: disabled by default + IP allowlist (see httpApiV1Metrics).
+    } else if (request_path == "/api/v1/metrics" && m_metrics_enabled.load()) { // Config-gated: disabled by default + IP allowlist (see httpApiV1Metrics).
       return this->httpApiV1Metrics(req, resp);
     }
-    return this->httpApiV1GetPaths(req, resp);
+    return 404;
   }
 
   if (request_path == "/") {
@@ -551,12 +602,6 @@ int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req,
 int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   auto config = findWsjcppEmploy<EmployConfig>();
 
-  // Re-read config on every request so toggling the flag (or editing the
-  // allowlist) does not require restarting the webserver.
-  if (!config->scoreboard_metrics_enabled()->value()) {
-    resp->String("Forbidden: metrics endpoint is disabled");
-    return 403;
-  }
   if (!isMetricsClientAllowed(req->client_addr.ip, config->scoreboard_metrics_allowed_for()->value())) {
     resp->String("Forbidden");
     return 403;

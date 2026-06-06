@@ -35,10 +35,12 @@
  *
  ***********************************************************************************/
 
+#include <unistd.h>
+#include <sys/types.h>
 #include <wsjcpp_core.h>
 #include "ctf01d/objects/ctf01d_service_checker_thread.h"
 #include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_web_server.h"
+#include "ctf01d/include/i_web_server.h"
 
 std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
   std::vector<std::string> ret;
@@ -260,7 +262,7 @@ int main(int argc, const char* argv[]) {
         WsjcppLog::err(TAG, "Failed.");
         return -1;
     }
-    return findWsjcppEmploy<EmployWebServer>()->start();
+    return findWsjcppEmploy<IWebServer>()->start();
   }
 
   if (command == "start") {
@@ -296,7 +298,7 @@ int main(int argc, const char* argv[]) {
       }
     }
     WsjcppLog::info(TAG, std::to_string(vThreads.size()) + " threads started");
-    return findWsjcppEmploy<EmployWebServer>()->start();
+    return findWsjcppEmploy<IWebServer>()->start();
   }
 
   std::cout << "Unknown command '" << command << "'. Please run '" << programName << " help'" << std::endl;
