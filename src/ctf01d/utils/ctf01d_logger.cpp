@@ -70,10 +70,12 @@ ctf01d::color_modifier RED(ctf01d::color_code::FG_RED);
 class private_logger_impl : public ctf01d::logger {
 public:
   private_logger_impl();
-  virtual void set_log_directory(const std::string &log_dir) override;
+  virtual void set_log_dirpath(const std::string &log_dir) override;
+  virtual const std::string &get_log_dirpath() override;
   virtual void set_log_filename_prefix(const std::string &prefix) override;
   virtual const std::string &get_log_file_fullpath() override;
-  virtual void set_rotation_period_in_seconds(long val_in_seconds) override;
+  virtual void set_rotation_period_in_seconds(int val_in_seconds) override;
+  virtual int get_rotation_period_in_seconds() override;
   virtual bool get_enable_log_file() override;
   virtual void set_enable_log_file(bool val) override;
   virtual void info(const std::string &tag, const std::string &message) override;
@@ -92,7 +94,7 @@ private:
   std::string m_log_file_fullpath;
   bool m_enable_log_file;
   long m_log_start_time;
-  long m_rotation_period_in_seconds;
+  int m_rotation_period_in_seconds;
 };
 
 private_logger_impl::private_logger_impl() {
@@ -101,10 +103,10 @@ private_logger_impl::private_logger_impl() {
   m_log_file_fullpath = "";
   m_enable_log_file = false;
   m_log_start_time = 0;
-  m_rotation_period_in_seconds = 51000;
+  m_rotation_period_in_seconds = 86400; // 24h
 }
 
-void private_logger_impl::set_log_directory(const std::string &log_dir) {
+void private_logger_impl::set_log_dirpath(const std::string &log_dir) {
   m_log_dir = log_dir;
   if (m_enable_log_file) {
     if (!WsjcppCore::dirExists(m_log_dir)) {
@@ -116,6 +118,10 @@ void private_logger_impl::set_log_directory(const std::string &log_dir) {
   do_log_rotate_update_filename(true);
 }
 
+const std::string &private_logger_impl::get_log_dirpath() {
+  return m_log_dir;
+}
+
 void private_logger_impl::set_log_filename_prefix(const std::string &prefix) {
   m_log_file_name_prefix = prefix;
   do_log_rotate_update_filename(true);
@@ -125,8 +131,12 @@ const std::string &private_logger_impl::get_log_file_fullpath() {
   return m_log_file_fullpath;
 }
 
-void private_logger_impl::set_rotation_period_in_seconds(long val_in_seconds) {
+void private_logger_impl::set_rotation_period_in_seconds(int val_in_seconds) {
   m_rotation_period_in_seconds = val_in_seconds;
+}
+
+int private_logger_impl::get_rotation_period_in_seconds() {
+  return m_rotation_period_in_seconds;
 }
 
 bool private_logger_impl::get_enable_log_file() {
@@ -139,10 +149,11 @@ void private_logger_impl::set_enable_log_file(bool val) {
   if (m_enable_log_file) {
     if (!WsjcppCore::dirExists(m_log_dir)) {
       if (!WsjcppCore::makeDir(m_log_dir)) {
-        log::throw_err("set_log_directory", "Could not create log directory '" + m_log_dir + "'");
+        log::throw_err("set_enable_log_file", "Could not create log directory '" + m_log_dir + "'");
       }
     }
   }
+  do_log_rotate_update_filename(true);
 }
 
 void private_logger_impl::info(const std::string &tag, const std::string &message) {
@@ -171,10 +182,10 @@ void private_logger_impl::ok(const std::string &tag, const std::string &message)
 }
 
 void private_logger_impl::do_log_rotate_update_filename(bool force) {
-  long t_now = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-  long rotate_diff = t_now - m_log_start_time;
+  long t_now_seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+  long rotate_diff = t_now_seconds - m_log_start_time;
   if (force || m_log_start_time == 0 || rotate_diff > m_rotation_period_in_seconds) {
-    m_log_start_time = t_now;
+    m_log_start_time = t_now_seconds;
     m_log_file_fullpath = m_log_dir + "/"
       + m_log_file_name_prefix + "_"
       + WsjcppCore::formatTimeForFilename(m_log_start_time) + ".log";
@@ -230,8 +241,12 @@ void log::ok(const std::string &tag, const std::string &message) {
   log::g_WSJCPP_LOG_GLOBAL_CONF->ok(tag, message);
 }
 
-void log::set_log_directory(const std::string &log_dir) {
-  log::g_WSJCPP_LOG_GLOBAL_CONF->set_log_directory(log_dir);
+void log::set_log_dirpath(const std::string &log_dir) {
+  log::g_WSJCPP_LOG_GLOBAL_CONF->set_log_dirpath(log_dir);
+}
+
+const std::string &log::get_log_dirpath() {
+  return log::g_WSJCPP_LOG_GLOBAL_CONF->get_log_dirpath();
 }
 
 void log::set_log_filename_prefix(const std::string &prefix) {
@@ -242,8 +257,13 @@ void log::set_enable_log_file(bool val) {
   log::g_WSJCPP_LOG_GLOBAL_CONF->set_enable_log_file(val);
 }
 
-void log::set_rotation_period_in_seconds(long val_in_seconds) {
+void log::set_rotation_period_in_seconds(int val_in_seconds) {
   log::g_WSJCPP_LOG_GLOBAL_CONF->set_rotation_period_in_seconds(val_in_seconds);
 }
+
+int log::get_rotation_period_in_seconds() {
+  return log::g_WSJCPP_LOG_GLOBAL_CONF->get_rotation_period_in_seconds();
+}
+
 
 } // namespace ctf01d

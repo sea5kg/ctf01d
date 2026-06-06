@@ -745,7 +745,7 @@ bool EmployConfig::initLogger() {
     return false;
   }
   ctf01d::log::set_log_filename_prefix("ctf01d");
-  ctf01d::log::set_log_directory(sLogDir);
+  ctf01d::log::set_log_dirpath(sLogDir);
   ctf01d::log::set_rotation_period_in_seconds(600); // every 10 min  // TODO rotation period must be in config.yml
   ctf01d::log::set_enable_log_file(true);
   std::cout << "Logger: '" + sLogDir + "' \n";
