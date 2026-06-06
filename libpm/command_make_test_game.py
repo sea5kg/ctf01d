@@ -205,7 +205,7 @@ class CommandMakeTestGame:
             "    expose:",
             "      - \"" + str(_cfg["jury_port"]) + "\"",
             "    ports:",
-            "      - \"" + str(_cfg["jury_port"]) + ":" + str(_cfg["jury_port"]) + "\"",
+            "      - \"80:" + str(_cfg["jury_port"]) + "\"",
             "    restart: always",
             "    networks:",
             "      - ctf01d_net",
