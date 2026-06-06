@@ -167,11 +167,13 @@ class CommandTests:
                     _team_tries[team_id] = _score['scoreboard'][team_id]['tries']
 
                 sended_flags = 0
-                send_flags = 1000
+                send_flags = 5000
                 self.__log.info("Trying send flags: %s", str(send_flags))
                 while i < send_flags:
                     i = i + 1
                     sended_flags += 1
+                    if sended_flags % 250 == 0:
+                        print("Sended flags ", sended_flags, "/", send_flags)
                     _expected_sum_act += 1
                     team_id = list(_team_tries)[random.randint(0, len(list(_team_tries))-1)]
                     _team_tries[team_id] += 1
