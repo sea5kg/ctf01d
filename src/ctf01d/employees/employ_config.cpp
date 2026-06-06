@@ -57,7 +57,7 @@ REGISTRY_WSJCPP_EMPLOY(EmployConfig)
 EmployConfig::EmployConfig()
 : WsjcppEmployBase({ EmployConfig::name() }, {}) {
   TAG = EmployConfig::name();
-  m_files_watcher = std::make_shared<Ctf01dFilesWatcher>();
+  m_files_watcher = std::make_shared<ctf01d::files_watcher>();
 
   // game options
   m_game_id = ctf01d::var_string::create({"game", "id"}, "test", m_game_vars);
@@ -77,7 +77,7 @@ EmployConfig::EmployConfig()
   m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee_break_start"}, "2023-11-12 20:00:00", m_game_vars);
   m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee_break_end"}, "2023-11-12 21:00:00", m_game_vars);
 
-  m_bHasCoffeeBreak = false;
+  m_has_coffee_break = false;
 
   // scoreboard config
 
@@ -112,8 +112,8 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
 
   this->update_files_in_data();
 
-  m_sConfigFilepath = m_sWorkDir + "/config.yml";
-  m_files_watcher->watchFile(m_sConfigFilepath);
+  m_config_filepath = m_sWorkDir + "/config.yml";
+  m_files_watcher->watchFile(m_config_filepath);
 
   if (!this->applyConfig()) {
     WsjcppLog::err(TAG, "Configuration file has some problems");
@@ -133,7 +133,7 @@ void EmployConfig::setWorkDir(const std::string &sWorkDir) {
     std::cout << "Changed work-dir to '" + sWorkDir + "'" << std::endl;
   }
   m_sWorkDir = sWorkDir;
-  m_sConfigFilepath = m_sWorkDir + "/config.yml";
+  m_config_filepath = m_sWorkDir + "/config.yml";
   m_scoreboard_html_folder->set_root_dir(m_sWorkDir);
 }
 
@@ -149,18 +149,18 @@ bool EmployConfig::applyConfig() {
   m_bAppliedConfig = false;
   WsjcppLog::info(TAG, "Loading configuration...");
 
-  std::string sConfigFile = m_sWorkDir + "/config.yml";
-  WsjcppLog::info(TAG, "Reading config: " + sConfigFile);
+  m_config_filepath = m_sWorkDir + "/config.yml";
+  WsjcppLog::info(TAG, "Reading config: " + m_config_filepath);
 
-  if (!WsjcppCore::fileExists(sConfigFile)) {
-    WsjcppLog::err(TAG, "File " + sConfigFile + " does not exists");
+  if (!WsjcppCore::fileExists(m_config_filepath)) {
+    WsjcppLog::err(TAG, "File " + m_config_filepath + " does not exists");
     return false;
   }
 
   WsjcppYaml yamlConfig;
   std::string sError;
-  if (!yamlConfig.loadFromFile(sConfigFile, sError)) {
-    WsjcppLog::err(TAG, "Could not parse " + sConfigFile + ", reason: " + sError);
+  if (!yamlConfig.loadFromFile(m_config_filepath, sError)) {
+    WsjcppLog::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + sError);
     return false;
   }
 
@@ -264,7 +264,7 @@ int EmployConfig::gameEndUTCInSec() const {
 }
 
 bool EmployConfig::gameHasCoffeeBreak() {
-  return m_bHasCoffeeBreak;
+  return m_has_coffee_break;
 }
 
 int EmployConfig::gameCoffeeBreakStartUTCInSec() {
@@ -440,7 +440,7 @@ void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
         }
       }
     }
-    
+
     std::string previous_sha1 = "";
     if (previous_files_sha1.contains(source_filepath)) {
       previous_sha1 = previous_files_sha1[source_filepath];
@@ -459,7 +459,7 @@ void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
       // Skip. file has same content
       continue;
     }
-    
+
     if (!WsjcppCore::writeFile(target_filepath, vFiles[i]->getBuffer(), vFiles[i]->getBufferSize())) {
       std::cout << "ERROR. Could not write/override file. " << std::endl;
       continue;
@@ -524,8 +524,8 @@ bool EmployConfig::checkGameConf() {
     && m_game_start_utc->value_in_seconds() < m_game_coffee_break_end_utc->value_in_seconds()
     && m_game_coffee_break_end_utc->value_in_seconds() < m_game_end_utc->value_in_seconds()
   ) {
-    WsjcppLog::info(TAG, "Oh! Game has coffee break! nice!");
-    m_bHasCoffeeBreak = true;
+    WsjcppLog::ok(TAG, "Oh! Game has coffee break! nice!");
+    m_has_coffee_break = true;
   }
   return true;
 }

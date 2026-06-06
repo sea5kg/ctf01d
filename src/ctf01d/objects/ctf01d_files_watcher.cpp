@@ -39,11 +39,13 @@
 #include <wsjcpp_core.h>
 #include <filesystem>
 
-Ctf01dFilesWatcher::Ctf01dFilesWatcher() {
-  TAG = "Ctf01dFilesWatcher";
+namespace ctf01d {
+
+files_watcher::files_watcher() {
+  TAG = "files_watcher";
 }
 
-bool Ctf01dFilesWatcher::watchFile(const std::string &filepath) {
+bool files_watcher::watchFile(const std::string &filepath) {
   if (!WsjcppCore::fileExists(filepath)) {
     WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
     return false;
@@ -60,7 +62,7 @@ bool Ctf01dFilesWatcher::watchFile(const std::string &filepath) {
   return true;
 }
 
-void Ctf01dFilesWatcher::stopWatchingFile(const std::string &filepath) {
+void files_watcher::stopWatchingFile(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it != m_files.end()) {
@@ -68,7 +70,7 @@ void Ctf01dFilesWatcher::stopWatchingFile(const std::string &filepath) {
   }
 }
 
-long Ctf01dFilesWatcher::getLastModifiedTimeFile(const std::string &filepath) {
+long files_watcher::getLastModifiedTimeFile(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it == m_files.end()) {
@@ -81,7 +83,7 @@ long Ctf01dFilesWatcher::getLastModifiedTimeFile(const std::string &filepath) {
   return m_files[filepath];
 }
 
-bool Ctf01dFilesWatcher::isModifiedFile(const std::string &filepath) {
+bool files_watcher::isModifiedFile(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it == m_files.end()) {
@@ -100,13 +102,14 @@ bool Ctf01dFilesWatcher::isModifiedFile(const std::string &filepath) {
   return false;
 }
 
-std::map<std::string, long> Ctf01dFilesWatcher::getModifiedFiles() {
+std::map<std::string, long> files_watcher::get_modified_files() {
   std::lock_guard<std::mutex> lock(m_mutex);
   std::map<std::string, long> ret;
   for (auto it = m_files.begin(); it != m_files.end(); ++it) {
     const std::string &filepath = it->first;
     if (!WsjcppCore::fileExists(filepath)) {
       WsjcppLog::err(TAG, "File '" + filepath + "' did not found");
+      // don't remove from m_files
       continue;
     }
     std::filesystem::file_time_type ftime = std::filesystem::last_write_time(filepath.c_str());
@@ -118,3 +121,5 @@ std::map<std::string, long> Ctf01dFilesWatcher::getModifiedFiles() {
   }
   return ret;
 }
+
+} // namespace ctf01d

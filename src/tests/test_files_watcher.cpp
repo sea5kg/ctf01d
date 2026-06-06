@@ -45,7 +45,7 @@
 
 int main() {
 
-  std::shared_ptr<Ctf01dFilesWatcher> watcher = std::make_shared<Ctf01dFilesWatcher>();
+  std::shared_ptr<ctf01d::files_watcher> watcher = std::make_shared<ctf01d::files_watcher>();
 
   if (!WsjcppCore::dirExists("test_file_watcher")) {
     if (!WsjcppCore::makeDir("test_file_watcher")) {
@@ -86,7 +86,7 @@ int main() {
     return -1;
   }
 
-  std::map<std::string, long> modified_files = watcher->getModifiedFiles();
+  std::map<std::string, long> modified_files = watcher->get_modified_files();
   if (modified_files.size() != 1) {
     std::cerr << "Expected only one file modified." << std::endl;
     return -1;

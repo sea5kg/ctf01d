@@ -41,16 +41,20 @@
 #include <map>
 #include <mutex>
 
-class Ctf01dFilesWatcher {
+namespace ctf01d {
+
+class files_watcher {
 public:
-  Ctf01dFilesWatcher();
+  files_watcher();
   bool watchFile(const std::string &filepath);
   void stopWatchingFile(const std::string &filepath);
   long getLastModifiedTimeFile(const std::string &filepath);
   bool isModifiedFile(const std::string &filepath);
-  std::map<std::string, long> getModifiedFiles();
+  std::map<std::string, long> get_modified_files();
 private:
   std::string TAG;
   std::mutex m_mutex;
   std::map<std::string, long> m_files;
 };
+
+} // namespace ctf01d

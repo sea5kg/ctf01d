@@ -102,7 +102,7 @@ private:
 
   std::string TAG;
   std::string m_sWorkDir;
-  std::string m_sConfigFilepath;
+  std::string m_config_filepath;
   bool m_bAppliedConfig;
 
   // scoreboard config
@@ -122,7 +122,7 @@ private:
   std::shared_ptr<ctf01d::var_string> m_game_name;
   std::shared_ptr<ctf01d::var_datetime> m_game_start_utc;
   std::shared_ptr<ctf01d::var_datetime> m_game_end_utc;
-  bool m_bHasCoffeeBreak;
+  bool m_has_coffee_break;
   std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_start_utc;
   std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_end_utc;
 
@@ -137,5 +137,5 @@ private:
   std::vector<ctf01d::service_config> m_vServicesConf;
 
   // hot-reload: for reload config in runtime
-  std::shared_ptr<Ctf01dFilesWatcher> m_files_watcher;
+  std::shared_ptr<ctf01d::files_watcher> m_files_watcher;
 };
