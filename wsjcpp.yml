@@ -39,13 +39,6 @@ dependencies:
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_employees"
     installation-datetime: "Thu, 21 May 2026 03:16:05 GMT"
-  - name: "nlohmann/json"
-    version: "v3.12.0"
-    url: "https://github.com/wsjcpp/nlohmann_json:wsjcpp-copy-version"
-    origin: "https://github.com/"
-    installation-dir: "./src.wsjcpp/nlohmann_json"
-    installation-datetime: "Tue, 19 May 2026 14:18:13 GMT"
-
 resources:
   output-generation-dir: src/wsjcpp_resources
   files:

@@ -36,11 +36,6 @@ list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_employ
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_employees/wsjcpp_employees.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/wsjcpp_employees/wsjcpp_employees.cpp")
 
-# nlohmann/json:v3.12.0
-list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/./src.wsjcpp/nlohmann_json/")
-list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/nlohmann_json/nlohmann/json.hpp")
-list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/nlohmann_json/nlohmann/json_fwd.hpp")
-
 # resources.wsjcpp
 list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_checker_example_service4_checker_py_path013bb4.h")

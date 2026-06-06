@@ -280,6 +280,10 @@ Config files (see comments in file):
 
 *C source code as an amalgamation*
 
+**json**
+
+* [nlohmann/json](https://github.com/nlohmann/json) (v3.12.0) - Reader/Writer for json format
+
 **Icons**
 
 * [uxwing](https://uxwing.com)
