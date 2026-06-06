@@ -22,11 +22,6 @@ dependencies:
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_core"
     installation-datetime: "Tue, 19 May 2026 14:50:39 GMT"
-  - name: "HowardHinnant/date"
-    version: "v2.4.1"
-    url: "https://github.com/wsjcpp/HowardHinnant_date:master"
-    origin: "https://github.com/"
-    installation-dir: "./src.wsjcpp/HowardHinnant_date"
   - name: "wsjcpp-yaml"
     version: "v0.1.10"
     url: "https://github.com/wsjcpp/wsjcpp-yaml:master"
@@ -39,6 +34,7 @@ dependencies:
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/wsjcpp_employees"
     installation-datetime: "Thu, 21 May 2026 03:16:05 GMT"
+
 resources:
   output-generation-dir: src/wsjcpp_resources
   files:
@@ -567,7 +563,6 @@ resources:
       pack-as: "binary"
       modified: 1780581486
       sha1: "dd610c58c547b5f5bb89e04763a38c6255da67ec"
-
     - filepath: "./data_sample/html/images/services/service19-default-icon.svg"
       size: 2494
       pack-as: "binary"

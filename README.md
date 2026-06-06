@@ -284,6 +284,10 @@ Config files (see comments in file):
 
 * [nlohmann/json](https://github.com/nlohmann/json) (v3.12.0) - Reader/Writer for json format
 
+**datetime**
+
+* [HowardHinnant/date](https://github.com/HowardHinnant/date) (v3.0.4) - Parser for datetime
+
 **Icons**
 
 * [uxwing](https://uxwing.com)

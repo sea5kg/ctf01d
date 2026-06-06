@@ -40,17 +40,16 @@
 #include <sstream>
 #include <ctime>
 #include <locale>
-#include <date.h>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <wsjcpp_core.h>
 #include <wsjcpp_yaml.h>
 #include "ctf01d/employees/employ_images.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/include/ctf01d_globals.h"
 #include "ctf01d/include/i_web_server.h"
 #include "third_party/smallsha1/smallsha1.h"
+#include "third_party/HowardHinnant/date.h"
 #include <sys/stat.h>
 #include <stdio.h>
 

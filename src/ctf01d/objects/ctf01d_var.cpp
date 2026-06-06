@@ -39,7 +39,7 @@
 #include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <cstring>
-#include <date.h> // HowardHinnant_date
+#include "third_party/HowardHinnant/date.h"
 #include <regex>
 
 namespace ctf01d {

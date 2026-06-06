@@ -8,6 +8,7 @@
 - Implemented suffix/prefix for ip-or-host. Also allowed host name.
 - Add thread watcher for hot reload
 - Implemented hot reload for option: prometheus-metrics-endpoint.enabled
+- Updated HowardHinnant/date to v3.0.4
 
 ## [v0.7.0] - (2026 June 4)
 
