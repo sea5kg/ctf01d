@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_css_scoreboard_css_path67c217::getPack
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_css_scoreboard_css_path67c217::getBufferSize() const {
-  return 21395;
+  return 20868;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() const {
-  static const std::string sRet = "" // size: 21395
+  static const std::string sRet = "" // size: 20868
     "@font-face {\n"
     "  font-family: 'DejaVuSans';\n"
     "  src: url('../font/DejaVuSans.ttf');\n"
@@ -962,6 +962,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  opacity: 0;\n"
     "  animation: team-slider-overlay ease-in-out both;\n"
     "  cursor: pointer;\n"
+    "  will-change: opacity;\n"
     "}\n"
     "\n"
     "/*\n"
@@ -970,15 +971,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "\n"
     "\n"
     ".team-slider-overlay:before {\n"
-    "  content:\"\";\n"
-    "  position:absolute;\n"
-    "  left: 0;\n"
-    "  top: 0;\n"
-    "  right: 0;\n"
-    "  bottom: 0;\n"
-    "  background: repeating-linear-gradient(0deg,rgba(255,255,255,0.05) 0,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 12px);\n"
-    "  mix-blend-mode: screen;\n"
-    "  opacity: 0.55;\n"
+    "  content: none;\n"
     "}\n"
     "\n"
     ".team-slider-stage {\n"
@@ -990,7 +983,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  justify-items: center;\n"
     "  border: 1px solid rgba(220,220,220,0.22);\n"
     "  background: linear-gradient(135deg,rgba(20,20,22,0.94),rgba(9,12,16,0.92));\n"
-    "  box-shadow: 0 0 80px rgba(215,20,30,0.42),inset 0 0 70px rgba(65,205,255,0.12);\n"
+    "  box-shadow: 0 0 20px rgba(215,20,30,0.18);\n"
     "  overflow: hidden;\n"
     "}\n"
     "\n"
@@ -1031,6 +1024,7 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  padding: 54px 66px;\n"
     "  opacity: 0;\n"
     "  animation: team-slider-slide ease-in-out both;\n"
+    "  will-change: opacity, transform;\n"
     "}\n"
     "\n"
     ".team-slider-logo-wrap {\n"
@@ -1046,8 +1040,6 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  max-width: min(430px,42vw);\n"
     "  max-height: min(430px,58vh);\n"
     "  object-fit: contain;\n"
-    "  filter: drop-shadow(0 0 16px rgba(255,255,255,0.35)) drop-shadow(0 0 36px rgba(255,25,38,0.55));\n"
-    "  animation: team-slider-logo 1100ms ease-in-out infinite alternate;\n"
     "}\n"
     "\n"
     ".team-slider-info {\n"
@@ -1136,15 +1128,6 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  100% {\n"
     "    opacity: 0;\n"
     "    transform: translateX(-18%) scale(0.88);\n"
-    "  }\n"
-    "}\n"
-    "\n"
-    "@keyframes team-slider-logo {\n"
-    "  0% {\n"
-    "    transform: translateY(0) scale(1);\n"
-    "  }\n"
-    "  100% {\n"
-    "    transform: translateY(-8px) scale(1.035);\n"
     "  }\n"
     "}\n"
     "\n"
