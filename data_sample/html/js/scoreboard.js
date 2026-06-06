@@ -434,31 +434,32 @@ function silentUpdateWidthWithoutAnimation(el_id, newValue) {
 var g_is_showed_automation = false;
 
 function showActionAutomatization() {
-    if (g_is_showed_automation) {
-        return;
-    }
-    g_is_showed_automation = true;
-    var w = window.innerWidth;
-    var h = window.innerHeight;
-    var size_min_percent = 0.25;
-    var size_max_percent = 0.55;
-    var size_percent = Math.random() * (size_max_percent - size_min_percent) + size_min_percent;
-    var size_px = size_percent * w;
-    var top_px = Math.random() * (h - size_px);
-    var left_px = Math.random() * (w - size_px);
-
-    var new_id = "mass_action_" + Math.random()*10000;
-    document.getElementById('game_scoreboard').innerHTML +=
-        '<div id="' + new_id + '" class="mass-action mass-action-automatization" '
-        + ' style="top: ' + top_px + 'px; left: ' + left_px + 'px; width: ' + size_px + 'px; height: ' + size_px + 'px;"'
-        + '></div>';
-
-    var timer_automatization_2 = setTimeout(function(new_id) {
-        var node = document.getElementById(new_id);
-        node.parentNode.removeChild(node);
-        clearTimeout(timer_automatization_2);
-        g_is_showed_automation = false;
-    }, 2400, new_id);
+  if (!g_iconAnimation) {
+    return;
+  }
+  if (g_is_showed_automation) {
+    return;
+  }
+  g_is_showed_automation = true;
+  var w = window.innerWidth;
+  var h = window.innerHeight;
+  var size_min_percent = 0.25;
+  var size_max_percent = 0.55;
+  var size_percent = Math.random() * (size_max_percent - size_min_percent) + size_min_percent;
+  var size_px = size_percent * w;
+  var top_px = Math.random() * (h - size_px);
+  var left_px = Math.random() * (w - size_px);
+  var new_id = "mass_action_" + Math.random()*10000;
+  document.getElementById('game_scoreboard').innerHTML +=
+    '<div id="' + new_id + '" class="mass-action mass-action-automatization" '
+    + ' style="top: ' + top_px + 'px; left: ' + left_px + 'px; width: ' + size_px + 'px; height: ' + size_px + 'px;"'
+    + '></div>';
+  var timer_automatization_2 = setTimeout(function(new_id) {
+    var node = document.getElementById(new_id);
+    node.parentNode.removeChild(node);
+    clearTimeout(timer_automatization_2);
+    g_is_showed_automation = false;
+  }, 2400, new_id);
 }
 
 function updateUIValue(t, teamID, paramName){
