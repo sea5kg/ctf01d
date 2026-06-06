@@ -74,15 +74,6 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
     return false;
   }
 
-  // m_type->value()
-
-  // if (m_active->value()) {
-  //   m_script_dir->set_root_dir(m_work_dir);
-  //   if (!m_script_dir->set_value("checker_" + m_id->value(), err)) {
-  //     return false;
-  //   }
-  // }
-
   return true;
 }
 
@@ -117,8 +108,8 @@ std::string team_config::logo_big_path() const {
   return m_logo_big->value();
 }
 
-int team_config::getLogoLastWriteTime() {
-  return m_nLogoLastWriteTime;
+int team_config::get_logo_last_modified_time() {
+  return m_logo_last_modified_time;
 }
 
 } // namespace ctf01d

@@ -57,8 +57,7 @@ public:
   bool is_active() const;
   std::string logo_path() const;
   std::string logo_big_path() const;
-
-  int getLogoLastWriteTime();
+  int get_logo_last_modified_time();
 
 private:
   std::string TAG;
@@ -72,7 +71,7 @@ private:
   std::shared_ptr<ctf01d::var_file> m_logo_big;
   std::shared_ptr<ctf01d::var_bool> m_active;
 
-  int m_nLogoLastWriteTime;
+  int m_logo_last_modified_time;
 };
 
 } // namespace ctf01d
