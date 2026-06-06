@@ -2,7 +2,7 @@
 
 #include <wsjcpp_core.h>
 
-class RES___data_sample_html_font_README_md_path736647 : public WsjcppResourceFile {
+class RES___data_sample_html_font_AmazingGroteskDemi_otf_path7d54eb : public WsjcppResourceFile {
 public:
   virtual const std::string &getFilename() const override;
   virtual const std::string &getPackAs() const override;

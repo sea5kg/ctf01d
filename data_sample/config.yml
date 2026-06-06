@@ -267,14 +267,14 @@ teams:
       ip-or-host: "27"
     - id: "t28" # must be uniq
       type: normal
-      name: "Team #28"
+      name: "Team #28 😊️ 😐️ ☹️"
       active: yes
       logo: "./html/images/teams/team28.png"
       logo-big: "./html/images/teams/team28.png"
       ip-or-host: "28"
     - id: "t29" # must be uniq
       type: normal
-      name: "Team #29"
+      name: "Team #29 😊︎ 😐︎ ☹︎"
       active: yes
       logo: "./html/images/teams/team29.png"
       logo-big: "./html/images/teams/team29.png"
