@@ -200,6 +200,8 @@ class CommandMakeTestGame:
             "      - \"./data:/usr/share/ctf01d\"",
             "    environment:",
             "      CTF01D_WORKDIR: \"/usr/share/ctf01d\"",
+            "      CTF01D_USER: 1000",
+            "      CTF01D_PORT: " + str(_cfg["jury_port"]),
             "    expose:",
             "      - \"" + str(_cfg["jury_port"]) + "\"",
             "    ports:",
@@ -236,6 +238,9 @@ class CommandMakeTestGame:
             "  port: " + str(_cfg["jury_port"]),
             "  html-dir-path: \"./html\"",
             "  random: no",
+            "  prometheus-metrics-endpoint:",
+            "    enabled: no",
+            "    allowed-for: \"10.10.100.*, 127.0.*\"",
             "",
             "services:",
         ]
@@ -244,10 +249,14 @@ class CommandMakeTestGame:
         os.makedirs(_data_path, exist_ok=True)
         for service_i in range(1, number_of_services+1):
             _name_service = "service" + str(service_i)
+            _logo_service = "./html/images/services/"
+            _logo_service += "service" + str(service_i) + "-default-icon.svg"
             _config.extend([
                 "  - id: \"" + _name_service + "\"",
                 "    name: \"Service" + str(service_i) + "\"",
                 "    enabled: yes",
+                "    logo: \"" + _logo_service + "\"",
+                "    logo-big: \"" + _logo_service + "\"",
                 "    script-relative-path: \"./checker.py\"",
                 "    script-timeout-in-seconds: 5",
                 "    round-in-seconds: 15",
@@ -280,7 +289,7 @@ class CommandMakeTestGame:
                 "      name: \"Team #" + str(team_i) + "\"",
                 "      active: yes",
                 "      logo: \"./html/images/teams/team" + team_ti + ".png\"",
-                "      big-logo: \"./html/images/teams/team" + team_ti + ".png\"",
+                "      logo-big: \"./html/images/teams/team" + team_ti + ".png\"",
                 "      ip-or-host: \"10.10." + str(team_i) + ".3\"",
             ])
         _config.extend([""])
