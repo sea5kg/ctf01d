@@ -48,6 +48,137 @@ const escapeHtml = (unsafe) => {
     return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
 
+var base_url_path = window.location.protocol + "//" + window.location.host + window.location.pathname.replace(/[^/\\]*$/, '');
+
+// Define the class blueprint
+class ServiceInfo {
+  // The constructor initializes the object's properties
+  constructor(service_info) {
+    this.__service_info = service_info;
+    this.__id = service_info['id'];
+    this.__name = service_info['name'];
+  }
+
+  id() {
+    return this.__id;
+  }
+
+  name() {
+    return this.__name;
+  }
+
+  // // A class method to display information
+  // displayInfo() {
+  //   return `${this.brand} ${this.model} is driving at ${this.speed} km/h.`;
+  // }
+
+  // // A class method that modifies a property
+  // accelerate(amount) {
+  //   this.speed += amount;
+  //   console.log(`Accelerating... New speed: ${this.speed} km/h`);
+  // }
+  get_html() {
+    var _html = ""
+      + '<div class="service" id="' + this.__id + '-column">'
+      + '  <div class="service-row">'
+      + '    <div class="service-cell">'
+      + '      <img class="logo-service" id="logo-service-' + this.__id + '" src="' + base_url_path + 'logo/service/' + this.__id + '">'
+      + '      <div class="service-first-blood tooltip">'
+      + '        <div class="service-first-blood-icon"></div>'
+      + '        <img class="first-blood-value" src="./images/icons/gag.svg" id="' + this.__id +  '_first_blood"/>'
+      + '        <div class="tooltiptext first-blood-info">'
+      + '          <div class="first-blood-info-value">First Blood!</div><br>'
+      + '          Service:'
+      + '          <div class="first-blood-info-value">' + escapeHtml(this.__name) + '</div><br>'
+      + '          Team Name: '
+      + '          <div class="first-blood-info-value" id="' + this.__id + '_first_blood_team_name">-</div><br>'
+      + '          Time:'
+      + '          <div class="first-blood-info-value" id="' + this.__id + '_first_blood_time">-</div><br>'
+      + '        </div>'
+      + '      </div>'
+      + '    </div>'
+      + '    <div class="service-cell">'
+      + '      <b>' + this.__name + '</b><br>'
+      + '      <div class="service-att-def">'
+      + '        <div class="service-att-def-row">'
+      + '          <div class="service-att-def-cell defense-flags">'
+      + '            <div class="flags-green" id="' + this.__id + '-all-flags-def">0</div>'
+      + '          </div>'
+      + '        </div>'
+      + '        <div class="service-att-def-row">'
+      + '          <div class="service-att-def-cell stollen-flags">'
+      + '            <div class="flags-red" id="' + this.__id + '_all_flags_att">0</div>'
+      + '          </div>'
+      + '        </div>'
+      + '      </div>'
+      + '    </div>'
+      + '  </div>'
+      + "</div>"
+    ;
+    return _html;
+  }
+
+  update_status(_status, _game_status) {
+    var first_blood_id = this.__id + '_first_blood';
+    var first_blood_team_name = this.__id + '_first_blood_team_name';
+    var first_blood_time = this.__id + '_first_blood_time';
+    var prevValue = document.getElementById(first_blood_id).src;
+    var newValue = base_url_path + "logo/team/" + _status.first_blood;
+    if (_status.first_blood == "?") {
+      newValue = base_url_path + "images/icons/first-blood-unknown.svg";
+    }
+    var team_name = "-";
+    var firstBloodTimeFromStartGame = "-";
+    if (_status.first_blood_ts != 0) {
+      firstBloodTimeFromStartGame = humanTimeFromSeconds(_status.first_blood_ts - _game_status.t0);
+    }
+
+    for (var teamN in document.ctf01d_teams) {
+      if (document.ctf01d_teams[teamN].id == _status.first_blood) {
+        team_name = escapeHtml(document.ctf01d_teams[teamN].name);
+        break;
+      }
+    }
+
+    silentUpdateWithoutAnimation(this.__id + '_all_flags_att', _status.af_att)
+    silentUpdateWithoutAnimation(this.__id + '-all-flags-def', _status.af_def)
+
+    if (prevValue == (base_url_path + "images/icons/gag.svg")) {
+      document.getElementById(first_blood_id).src = newValue
+      silentUpdateWithoutAnimation(first_blood_team_name, team_name);
+      silentUpdateWithoutAnimation(first_blood_team_name, firstBloodTimeFromStartGame);
+    } else if (prevValue != newValue) {
+      // console.log(prevValue, newValue)
+      document.getElementById(first_blood_id).src = newValue
+      silentUpdate(first_blood_team_name, team_name);
+      silentUpdate(first_blood_time, firstBloodTimeFromStartGame);
+      showTeamEventSlider(_status.first_blood, 'FIRST BLOOD', 'first flag captured', 'first-blood');
+    }
+  }
+};
+
+// Define the class blueprint
+class ServicesListContainer {
+  // The constructor initializes the object's properties
+  constructor() {
+    this.__services = [];
+    this.__services_by_id = {};
+  }
+
+  add_service_info(service_info) {
+    var _service = new ServiceInfo(service_info);
+    this.__services.push(_service);
+    this.__services_by_id[_service.id()] = _service;
+    return _service;
+  }
+
+  get_service_info_by_id(_id) {
+    return this.__services_by_id[_id];
+  }
+};
+
+window.services = new ServicesListContainer();
+
 function getSafeClassName(value) {
   return ('' + value).replace(/[^a-zA-Z0-9_-]/g, '');
 }
@@ -421,14 +552,14 @@ function silentUpdateWithoutAnimation(el_id, newValue) {
 }
 
 function silentUpdateWidthWithoutAnimation(el_id, newValue) {
-    var el = document.getElementById(el_id)
-    if (!el) {
-        console.error("Not found element with id " + el_id);
-        return;
-    }
-    if (el.style.width != newValue) {
-        el.style.width = newValue;
-    }
+  var el = document.getElementById(el_id)
+  if (!el) {
+    console.error("Not found element with id " + el_id);
+    return;
+  }
+  if (el.style.width != newValue) {
+    el.style.width = newValue;
+  }
 }
 
 var g_is_showed_automation = false;
@@ -609,6 +740,10 @@ function humanTimeFromSeconds(sec) {
     return result
 }
 
+function update_first_blood(service_info) {
+
+}
+
 function updateScoreboard() {
   getAjax('/api/v1/scoreboard', function(err, resp){
     if (err) {
@@ -618,40 +753,12 @@ function updateScoreboard() {
       return;
     }
     // console.log(resp);
-    for (var serviceId in resp.s_sta) {
-      var s = resp.s_sta[serviceId]
-      var firstBloodId = serviceId + '_first_blood';
-      var firstBloodTeamName = serviceId + '_first_blood_team_name';
-      var firstBloodTime = serviceId + '_first_blood_time';
-      var prevValue = document.getElementById(firstBloodId).src;
-      var newValue = "./logo/team/" + s.first_blood;
-      if (s.first_blood == "?") {
-        newValue = "./images/icons/first-blood-unknown.svg";
+    for (var service_id in resp.s_sta) {
+      var _service = window.services.get_service_info_by_id(service_id);
+      if (_service === undefined) {
+        continue;
       }
-      var teamName = "-";
-      var firstBloodTimeFromStartGame = "-";
-      if (s.first_blood_ts != 0) {
-          firstBloodTimeFromStartGame = humanTimeFromSeconds(s.first_blood_ts - resp.game.t0);
-      }
-
-      for (var teamN in document.ctf01d_teams) {
-          if (document.ctf01d_teams[teamN].id == s.first_blood) {
-              teamName = escapeHtml(document.ctf01d_teams[teamN].name);
-              break;
-          }
-      }
-      if (prevValue == "-") {
-        // silentUpdateWithoutAnimation(firstBloodId, newValue);
-        silentUpdateWithoutAnimation(firstBloodTeamName, teamName);
-        silentUpdateWithoutAnimation(firstBloodTime, firstBloodTimeFromStartGame);
-      } else if (prevValue != newValue) {
-        document.getElementById(firstBloodId).src = newValue
-        silentUpdate(firstBloodTeamName, teamName);
-        silentUpdate(firstBloodTime, firstBloodTimeFromStartGame);
-        showTeamEventSlider(s.first_blood, 'FIRST BLOOD', 'first flag captured', 'first-blood');
-      }
-      silentUpdateWithoutAnimation(serviceId + '-all-flags-att', s.af_att)
-      silentUpdateWithoutAnimation(serviceId + '-all-flags-def', s.af_def)
+      _service.update_status(resp.s_sta[service_id], resp.game);
     }
 
     // game time
@@ -884,44 +991,9 @@ getAjax('/api/v1/game', function(err, resp){
 
   // generate teams-services table
   for (var i = 0; i < resp.services.length; i++) {
-    var s_id = resp.services[i].id;
-    service_info = ""
-      + '<div class="service" id="' + s_id + '-column">'
-      + '  <div class="service-row">'
-      + '    <div class="service-cell">'
-      + '      <img class="logo-service" id="logo-service-' + s_id + '" src="./logo/service/' + s_id + '">'
-      + '      <div class="service-first-blood tooltip">'
-      + '        <div class="service-first-blood-icon"></div>'
-      + '        <img class="first-blood-value" src="./images/icons/first-blood-unknown.svg" id="' + s_id +  '_first_blood"/>'
-      + '        <div class="tooltiptext first-blood-info">'
-      + '          <div class="first-blood-info-value">First Blood!</div><br>'
-      + '          Service:'
-      + '          <div class="first-blood-info-value">' + escapeHtml(resp.services[i].name) + '</div><br>'
-      + '          Team Name: '
-      + '          <div class="first-blood-info-value" id="' + s_id + '_first_blood_team_name">-</div><br>'
-      + '          Time:'
-      + '          <div class="first-blood-info-value" id="' + s_id + '_first_blood_time">-</div><br>'
-      + '        </div>'
-      + '      </div>'
-      + '    </div>'
-      + '    <div class="service-cell">'
-      + '      <b>' + resp.services[i].name + '</b><br>'
-      + '      <div class="service-att-def">'
-      + '        <div class="service-att-def-row">'
-      + '          <div class="service-att-def-cell defense-flags">'
-      + '            <div class="flags-green" id="' + s_id + '-all-flags-def">0</div>'
-      + '          </div>'
-      + '        </div>'
-      + '        <div class="service-att-def-row">'
-      + '          <div class="service-att-def-cell stollen-flags">'
-      + '            <div class="flags-red" id="' + s_id + '-all-flags-att">0</div>'
-      + '          </div>'
-      + '        </div>'
-      + '      </div>'
-      + '    </div>'
-      + '  </div>'
-      + "</div>";
-    document.getElementById('services_header').innerHTML += service_info;
+    console.log(resp.services[i]);
+    service = window.services.add_service_info(resp.services[i]);
+    document.getElementById('services_header').innerHTML += service.get_html();
   }
 
   var sTeamListSelect = '';

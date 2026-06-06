@@ -46,7 +46,7 @@ resources:
     - filepath: "./data_sample/checker_example_service1/checker.py"
       size: 4953
       pack-as: "text"
-      modified: 1779675622
+      modified: 1780762192
       sha1: "b14e1af5661c36e36150bb3675c5826f278a520b"
     - filepath: "./data_sample/checker_example_service2/checker.py"
       size: 4953
@@ -61,7 +61,7 @@ resources:
     - filepath: "./data_sample/config.yml"
       size: 9183
       pack-as: "text"
-      modified: 1780713385
+      modified: 1780716995
       sha1: "7d3b78b43f22807653fa8fc0e4fa6a25f42788c4"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
@@ -189,10 +189,10 @@ resources:
       modified: 1780581847
       sha1: "bc79b0f246785ed32db11d9145bec0ccc910ca31"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 37306
+      size: 39092
       pack-as: "text"
-      modified: 1780581486
-      sha1: "b146d39a2b728bf805ed5fa0be154d9f235f2046"
+      modified: 1780769300
+      sha1: "a51618e1b9da845a1408dd168ecd8d582f9bcff2"
     - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"
@@ -249,10 +249,10 @@ resources:
       modified: 1780581486
       sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
     - filepath: "./data_sample/html/css/scoreboard.css"
-      size: 21395
+      size: 20868
       pack-as: "text"
-      modified: 1780581486
-      sha1: "506552275aad76ff64e8f8410a12cac7f47c4594"
+      modified: 1780765159
+      sha1: "9c62e78968104bdd05c93ac0e26c370bcc941536"
     - filepath: "./data_sample/html/images/teams/team30.png"
       size: 6052
       pack-as: "binary"
@@ -703,4 +703,9 @@ resources:
       pack-as: "binary"
       modified: 1780581486
       sha1: "068b48652c6260a3eba1b74dcb3d58d1360987be"
+    - filepath: "./data_sample/html/images/icons/gag.svg"
+      size: 2438
+      pack-as: "binary"
+      modified: 1780768408
+      sha1: "194fafbccbb68ee7a91cc0d2509c9bfe0b63af17"
 

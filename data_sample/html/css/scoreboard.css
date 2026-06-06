@@ -936,6 +936,7 @@ img.team-logo {
   opacity: 0;
   animation: team-slider-overlay ease-in-out both;
   cursor: pointer;
+  will-change: opacity;
 }
 
 /*
@@ -944,15 +945,7 @@ background: rgba(70,95,55,0.72);
 
 
 .team-slider-overlay:before {
-  content:"";
-  position:absolute;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(0deg,rgba(255,255,255,0.05) 0,rgba(255,255,255,0.05) 1px,transparent 1px,transparent 12px);
-  mix-blend-mode: screen;
-  opacity: 0.55;
+  content: none;
 }
 
 .team-slider-stage {
@@ -964,7 +957,7 @@ background: rgba(70,95,55,0.72);
   justify-items: center;
   border: 1px solid rgba(220,220,220,0.22);
   background: linear-gradient(135deg,rgba(20,20,22,0.94),rgba(9,12,16,0.92));
-  box-shadow: 0 0 80px rgba(215,20,30,0.42),inset 0 0 70px rgba(65,205,255,0.12);
+  box-shadow: 0 0 20px rgba(215,20,30,0.18);
   overflow: hidden;
 }
 
@@ -1005,6 +998,7 @@ background: rgba(70,95,55,0.72);
   padding: 54px 66px;
   opacity: 0;
   animation: team-slider-slide ease-in-out both;
+  will-change: opacity, transform;
 }
 
 .team-slider-logo-wrap {
@@ -1020,8 +1014,6 @@ background: rgba(70,95,55,0.72);
   max-width: min(430px,42vw);
   max-height: min(430px,58vh);
   object-fit: contain;
-  filter: drop-shadow(0 0 16px rgba(255,255,255,0.35)) drop-shadow(0 0 36px rgba(255,25,38,0.55));
-  animation: team-slider-logo 1100ms ease-in-out infinite alternate;
 }
 
 .team-slider-info {
@@ -1110,15 +1102,6 @@ background: rgba(70,95,55,0.72);
   100% {
     opacity: 0;
     transform: translateX(-18%) scale(0.88);
-  }
-}
-
-@keyframes team-slider-logo {
-  0% {
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    transform: translateY(-8px) scale(1.035);
   }
 }
 

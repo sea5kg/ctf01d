@@ -300,5 +300,7 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sam
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_flags_red_svg_path37516e.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_flags_green_svg_pathdad8e9.h")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_flags_green_svg_pathdad8e9.cpp")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_gag_svg_pathaf5d8a.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_html_images_icons_gag_svg_pathaf5d8a.cpp")
 
 
