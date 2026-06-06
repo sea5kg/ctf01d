@@ -78,6 +78,8 @@ public:
   virtual int get_rotation_period_in_seconds() override;
   virtual bool get_enable_log_file() override;
   virtual void set_enable_log_file(bool val) override;
+  virtual bool get_enable_console_output() override;
+  virtual void set_enable_console_output(bool val) override;
   virtual void info(const std::string &tag, const std::string &message) override;
   virtual void err(const std::string &tag, const std::string &message) override;
   virtual void throw_err(const std::string &tag, const std::string &message) override;
@@ -93,6 +95,7 @@ private:
   std::string m_log_file_name_prefix;
   std::string m_log_file_fullpath;
   bool m_enable_log_file;
+  bool m_enable_console_output;
   long m_log_start_time;
   int m_rotation_period_in_seconds;
 };
@@ -102,6 +105,7 @@ private_logger_impl::private_logger_impl() {
   m_log_file_name_prefix = "";
   m_log_file_fullpath = "";
   m_enable_log_file = false;
+  m_enable_console_output = true;
   m_log_start_time = 0;
   m_rotation_period_in_seconds = 86400; // 24h
 }
@@ -156,6 +160,14 @@ void private_logger_impl::set_enable_log_file(bool val) {
   do_log_rotate_update_filename(true);
 }
 
+bool private_logger_impl::get_enable_console_output() {
+  return m_enable_console_output;
+}
+
+void private_logger_impl::set_enable_console_output(bool val) {
+  m_enable_console_output = val;
+}
+
 void private_logger_impl::info(const std::string &tag, const std::string &message) {
   ctf01d::color_modifier def(ctf01d::color_code::FG_DEFAULT);
   add(def, "INFO", tag, message);
@@ -200,18 +212,20 @@ void private_logger_impl::add(ctf01d::color_modifier &clr, const std::string &sT
 
   std::string sLogMessage = WsjcppCore::getCurrentTimeForLogFormat() + ", " + WsjcppCore::getThreadId()
     + " [" + sType + "] " + tag + ": " + message;
-  std::cout << clr << sLogMessage << def << std::endl;
+  if (m_enable_console_output) {
+    std::cout << clr << sLogMessage << def << std::endl;
+  }
 
   // log file
-  if (log::g_WSJCPP_LOG_GLOBAL_CONF->get_enable_log_file()) {
-    std::ofstream logFile(ctf01d::log::g_WSJCPP_LOG_GLOBAL_CONF->get_log_file_fullpath(), std::ios::app);
-    if (!logFile) {
+  if (m_enable_log_file) {
+    std::ofstream log_file(m_log_file_fullpath, std::ios::app);
+    if (!log_file) {
         std::cout << "Error Opening File" << std::endl;
         return;
     }
 
-    logFile << sLogMessage << std::endl;
-    logFile.close();
+    log_file << sLogMessage << std::endl;
+    log_file.close();
   }
 }
 

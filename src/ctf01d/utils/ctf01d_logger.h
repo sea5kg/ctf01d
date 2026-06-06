@@ -56,6 +56,8 @@ public:
   virtual int get_rotation_period_in_seconds() = 0;
   virtual bool get_enable_log_file() = 0;
   virtual void set_enable_log_file(bool val) = 0;
+  virtual bool get_enable_console_output() = 0;
+  virtual void set_enable_console_output(bool val) = 0;
   virtual void info(const std::string &tag, const std::string &message) = 0;
   virtual void err(const std::string &tag, const std::string &message) = 0;
   virtual void throw_err(const std::string &tag, const std::string &message) = 0;
