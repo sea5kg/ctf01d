@@ -46,7 +46,7 @@ REGISTRY_WSJCPP_EMPLOY(EmployAlerting)
 
 EmployAlerting::EmployAlerting()
 : WsjcppEmployBase({ EmployAlerting::name() }, { EmployConfig::name() }) {
-
+  TAG = EmployAlerting::name();
 }
 
 bool EmployAlerting::init(const std::string &sName, bool bSilent) {

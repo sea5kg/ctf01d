@@ -168,6 +168,7 @@ REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
 
 EmployWebServer::EmployWebServer()
 : WsjcppEmployBase({ IWebServer::name() }, { EmployConfig::name() }) {
+  TAG = IWebServer::name();
   m_sApiPathPrefix = "/api/v1/";
   
   // TODO refactoring it
