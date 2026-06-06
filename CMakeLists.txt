@@ -59,6 +59,9 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/third_party/sqlite3/src")
 # third_party
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/third_party/smallsha1/smallsha1.cpp")
 
+# utils
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/utils/ctf01d_logger.cpp")
+
 # employees
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_alive_flags.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/employees/employ_images.cpp")
