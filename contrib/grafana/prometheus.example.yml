@@ -1,4 +1,5 @@
-# Drop this scrape job into your existing prometheus.yml under `scrape_configs:`
+# Drop this scrape job into your existing prometheus.yml under `scrape_configs:`.
+# It feeds both dashboard.json and jury-observability-dashboard.json.
 - job_name: ctf01d
   scrape_interval: 5s
   scrape_timeout: 4s
