@@ -53,6 +53,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <wsjcpp_core.h>
+#include "ctf01d/employees/employ_observability.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
 namespace ctf01d {
@@ -62,6 +63,44 @@ int service_checker_thread::CHECKER_CODE_CORRUPT = 102;
 int service_checker_thread::CHECKER_CODE_MUMBLE = 103;
 int service_checker_thread::CHECKER_CODE_DOWN = 104;
 int service_checker_thread::CHECKER_CODE_SHIT = 400;
+
+static std::string checkerResultByExitCode(int nExitCode) {
+  if (nExitCode == service_checker_thread::CHECKER_CODE_UP) {
+    return Ctf01dServiceStatusCell::SERVICE_UP;
+  }
+  if (nExitCode == service_checker_thread::CHECKER_CODE_CORRUPT) {
+    return Ctf01dServiceStatusCell::SERVICE_CORRUPT;
+  }
+  if (nExitCode == service_checker_thread::CHECKER_CODE_MUMBLE) {
+    return Ctf01dServiceStatusCell::SERVICE_MUMBLE;
+  }
+  if (nExitCode == service_checker_thread::CHECKER_CODE_DOWN) {
+    return Ctf01dServiceStatusCell::SERVICE_DOWN;
+  }
+  if (nExitCode == service_checker_thread::CHECKER_CODE_SHIT) {
+    return Ctf01dServiceStatusCell::SERVICE_SHIT;
+  }
+  return "internal_error";
+}
+
+static int finishChecker(
+  const ctf01d::team_config &team_config,
+  const ctf01d::service_config &service_config,
+  const std::string &sCommand,
+  long nStartedMs,
+  int nExitCode
+) {
+  long nDurationMs = WsjcppCore::getCurrentTimeInMilliseconds() - nStartedMs;
+  findWsjcppEmploy<EmployObservability>()->record_checker_run(
+    team_config.id(),
+    service_config.id(),
+    sCommand,
+    nExitCode,
+    checkerResultByExitCode(nExitCode),
+    nDurationMs
+  );
+  return nExitCode;
+}
 
 service_checker_thread::service_checker_thread(
   std::shared_ptr<ctf01d::logger> logger,
@@ -98,10 +137,10 @@ void service_checker_thread::log_err(const std::string &message) {
 }
 
 int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sCommand) {
-  std::string err_log_message;
+  long nStartedMs = WsjcppCore::getCurrentTimeInMilliseconds();
   if (sCommand != "put" &&  sCommand != "check") {
     log_err("runChecker - sCommand must be 'put' or 'check' ");
-    return service_checker_thread::CHECKER_CODE_SHIT;
+    return finishChecker(m_team_config, m_service_config, sCommand, nStartedMs, service_checker_thread::CHECKER_CODE_SHIT);
   }
 
   // Used code from here
@@ -126,13 +165,13 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
 
   if (process.isTimeout()) {
     log_err("ErrorTimeout on run script service: " + process.outputString());
-    return service_checker_thread::CHECKER_CODE_MUMBLE;
+    return finishChecker(m_team_config, m_service_config, sCommand, nStartedMs, service_checker_thread::CHECKER_CODE_MUMBLE);
   }
 
   if (process.hasError()) {
     log_err("Checker is shit");
     log_err("Error on run script service: " + process.outputString());
-    return service_checker_thread::CHECKER_CODE_SHIT;
+    return finishChecker(m_team_config, m_service_config, sCommand, nStartedMs, service_checker_thread::CHECKER_CODE_SHIT);
   }
 
   int nExitCode = process.exitCode();
@@ -154,16 +193,17 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
   ) {
     log_err("Wrong checker exit code...\n"
       "\n" + process.outputString());
-    return service_checker_thread::CHECKER_CODE_SHIT;
+    return finishChecker(m_team_config, m_service_config, sCommand, nStartedMs, service_checker_thread::CHECKER_CODE_SHIT);
   }
 
-  return nExitCode;
+  return finishChecker(m_team_config, m_service_config, sCommand, nStartedMs, nExitCode);
 }
 
 void service_checker_thread::run() {
   // TODO check if game ended
 
   m_logger->info(TAG, "Starting thread...");
+  findWsjcppEmploy<EmployObservability>()->register_checker_thread(m_team_config.id(), m_service_config.id());
 
   std::string sScriptPath = m_service_config.script_path();
   /*

@@ -48,6 +48,7 @@
 #include <wsjcpp_core.h>
 #include "ctf01d/include/i_web_server.h"
 #include "ctf01d/employees/employ_config.h"
+#include "ctf01d/employees/employ_observability.h"
 #include "ctf01d/employees/employ_images.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/objects/ctf01d_service_status_cell.h"
@@ -166,10 +167,32 @@ static bool isMetricsClientAllowed(const std::string &sClientIp, const std::stri
   return false;
 }
 
+static std::string observabilityHttpPath(const std::string &sRequestPath) {
+  if (sRequestPath == "/") {
+    return "/";
+  }
+  if (sRequestPath == "/flag") {
+    return "/flag";
+  }
+  if (sRequestPath.rfind("/api/v1/", 0) == 0) {
+    return sRequestPath;
+  }
+  if (sRequestPath.rfind("/logo/", 0) == 0) {
+    return "/logo/*";
+  }
+  return "/static";
+}
+
+static int finishHttpRequest(HttpRequest* req, const std::string &sMetricPath, long nRequestStartedMs, int nStatusCode) {
+  long nDurationMs = WsjcppCore::getCurrentTimeInMilliseconds() - nRequestStartedMs;
+  findWsjcppEmploy<EmployObservability>()->record_http_request(http_method_str(req->method), sMetricPath, nStatusCode, nDurationMs);
+  return nStatusCode;
+}
+
 REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
 
 EmployWebServer::EmployWebServer()
-: WsjcppEmployBase({ IWebServer::name() }, { EmployConfig::name() }) {
+: WsjcppEmployBase({ IWebServer::name() }, { EmployConfig::name(), EmployObservability::name() }) {
   TAG = IWebServer::name();
   m_sApiPathPrefix = "/api/v1/";
   
@@ -326,6 +349,7 @@ void EmployWebServer::updateJsonCache() {
 }
 
 int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
+  long nRequestStartedMs = WsjcppCore::getCurrentTimeInMilliseconds();
   std::string sOriginalRequestPath = req->path;
   std::string request_path;
 
@@ -337,31 +361,32 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
     request_path = sOriginalRequestPath;
   }
   request_path = wsjcpp::normalizeFilePath(request_path);
+  std::string sMetricPath = observabilityHttpPath(request_path);
 
   // hlogi("request_path = " + request_path);
   if (request_path == "/flag") { // Public endpoint. Allowed without authorization.
-    return this->httpApiV1Flag(req, resp);
+    return finishHttpRequest(req, sMetricPath, nRequestStartedMs, this->httpApiV1Flag(req, resp));
   }
 
   if (request_path.rfind(m_logo_prefix, 0) == 0) {
-    return httpLogo(request_path, req, resp);
+    return finishHttpRequest(req, sMetricPath, nRequestStartedMs, httpLogo(request_path, req, resp));
   }
 
   if (request_path.rfind(m_sApiPathPrefix, 0) == 0) {
     if (request_path == "/api/v1/game") { // Public endpoint. Allowed without authorization.
-      return this->httpApiV1Game(req, resp);
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, this->httpApiV1Game(req, resp));
     } else if (request_path == "/api/v1/game/current-time") { // Public endpoint. Allowed without authorization.
-      return this->httpApiGameCurrentTime(req, resp);
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, this->httpApiGameCurrentTime(req, resp));
     } else if (request_path == "/api/v1/scoreboard") { // Public endpoint. Allowed without authorization.
-      return this->httpApiV1Scoreboard(req, resp);
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, this->httpApiV1Scoreboard(req, resp));
     } else if (request_path == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
-      return this->httpApiV1MyIp(req, resp);
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, this->httpApiV1MyIp(req, resp));
     } else if (request_path == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
-      return this->httpApiV1Teams(req, resp);
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, this->httpApiV1Teams(req, resp));
     } else if (request_path == "/api/v1/metrics" && m_metrics_enabled.load()) { // Config-gated: disabled by default + IP allowlist (see httpApiV1Metrics).
-      return this->httpApiV1Metrics(req, resp);
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, this->httpApiV1Metrics(req, resp));
     }
-    return 404;
+    return finishHttpRequest(req, sMetricPath, nRequestStartedMs, 404);
   }
 
   if (request_path == "/") {
@@ -370,10 +395,10 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
 
   std::string filepath = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder + "/" + request_path);
   if (WsjcppCore::dirExists(filepath)) {
-      return 404;
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, 404);
   }
   if (WsjcppCore::fileExists(filepath)) {
-      return resp->File(filepath.c_str());
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, resp->File(filepath.c_str()));
   }
 
   std::string sResPath = wsjcpp::normalizeFilePath("./data_sample/html/" + request_path);
@@ -385,9 +410,9 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
           true // nocopy
       );
       resp->SetContentTypeByFilename(sResPath.c_str());
-      return 200;
+      return finishHttpRequest(req, sMetricPath, nRequestStartedMs, 200);
   }
-  return 404; // Not found
+  return finishHttpRequest(req, sMetricPath, nRequestStartedMs, 404); // Not found
 }
 
 int EmployWebServer::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
@@ -457,14 +482,22 @@ int EmployWebServer::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
 
 int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   auto config = findWsjcppEmploy<EmployConfig>();
+  auto observability = findWsjcppEmploy<EmployObservability>();
   auto now = std::chrono::system_clock::now().time_since_epoch();
   int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
   std::string sRequestIP = req->client_addr.ip;
   std::string sRequestIP_MsgSuffix = " (" + sRequestIP + ")";
+  std::string sTeamId = req->GetParam("teamid");
+  sTeamId = WsjcppCore::trim(sTeamId);
+  sTeamId = WsjcppCore::toLower(sTeamId);
+  std::string sFlag = req->GetParam("flag");
+  sFlag = WsjcppCore::trim(sFlag);
+  sFlag = WsjcppCore::toLower(sFlag);
 
   if (nCurrentTimeSec < config->gameStartUTCInSec()) {
     const std::string sErrorMsg = " Error(-8): Game not started yet";
     log_err(sRequestIP_MsgSuffix + sErrorMsg);
+    observability->record_flag_submission(sTeamId, "game_not_started", "-8");
     resp->String(sErrorMsg);
     return 400;
   }
@@ -475,6 +508,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   ) {
     static const std::string sErrorMsg = "Error(-8): Game on coffee break now";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "coffee_break", "-8");
     resp->String(sErrorMsg);
     return 400;
   }
@@ -482,21 +516,16 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   if (nCurrentTimeSec > config->gameEndUTCInSec()) {
     static const std::string sErrorMsg = "Error(-9): Game already ended";
     log_warn(sErrorMsg + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "game_ended", "-9");
     resp->String(sErrorMsg);
     return 400;
   }
-
-  std::string sTeamId = req->GetParam("teamid");
-  sTeamId = WsjcppCore::trim(sTeamId);
-  sTeamId = WsjcppCore::toLower(sTeamId);
-  std::string sFlag = req->GetParam("flag");
-  sFlag = WsjcppCore::trim(sFlag);
-  sFlag = WsjcppCore::toLower(sFlag);
 
   if (sTeamId == "") {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-10): Not found get-parameter 'teamid' or parameter is empty";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "missing_team", "-10");
     resp->String(sErrorMsg);
     return 400;
   }
@@ -505,6 +534,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-11): Not found get-parameter 'flag' or parameter is empty";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "missing_flag", "-11");
     resp->String(sErrorMsg);
     return 400;
   }
@@ -522,6 +552,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-130): this is team not found";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "team_not_found", "-130");
     resp->String(sErrorMsg);
     return 400;
   }
@@ -532,6 +563,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-140): flag has wrong format";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "wrong_format", "-140");
     resp->String(sErrorMsg);
     return 400;
   }
@@ -546,6 +578,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag already stole.";
     g_http_logger->info(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "not_alive", "-150");
     resp->String(sErrorMsg);
     return 403;
   }
@@ -557,6 +590,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-151): flag is too old";
     log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "expired", "-151");
     resp->String(sErrorMsg);
     return 403;
   }
@@ -571,6 +605,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-180): this is your flag";
     log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "own_flag", "-180");
     resp->String(sErrorMsg);
     return 403;
   }
@@ -583,6 +618,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
     log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "service_not_up", "-190");
     resp->String(sErrorMsg);
     return 403;
   }
@@ -595,6 +631,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-170): flag already stolen by your team";
     log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    observability->record_flag_submission(sTeamId, "already_stolen", "-170");
     resp->String(sErrorMsg);
     return 403;
   }
@@ -604,6 +641,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // really need send to current ???
   g_http_logger->ok(TAG, sResponse + sRequestIP_MsgSuffix);
   ctf01d::log::ok(TAG, sResponse + sRequestIP_MsgSuffix);
+  observability->record_flag_submission(sTeamId, "accepted", "0");
   resp->Data(
       (void *)(sResponse.c_str()),
       sResponse.size(),
@@ -635,6 +673,7 @@ int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req,
 
 int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   auto config = findWsjcppEmploy<EmployConfig>();
+  auto observability = findWsjcppEmploy<EmployObservability>();
 
   if (!isMetricsClientAllowed(req->client_addr.ip, config->scoreboard_metrics_allowed_for()->value())) {
     resp->String("Forbidden");
@@ -648,6 +687,81 @@ int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
 
   prometheusMetricInfo(oss, "ctf01d_build_info", "gauge", "ctf01d build information.");
   oss << "ctf01d_build_info" << prometheusLabels({{"version", std::string(WSJCPP_APP_VERSION)}}) << " 1\n";
+
+  prometheusMetricInfo(oss, "ctf01d_jury_start_timestamp_seconds", "gauge", "Jury process start time.");
+  oss << "ctf01d_jury_start_timestamp_seconds " << observability->started_at_seconds() << "\n";
+  prometheusMetricInfo(oss, "ctf01d_jury_uptime_seconds", "gauge", "Jury process uptime.");
+  oss << "ctf01d_jury_uptime_seconds "
+    << (WsjcppCore::getCurrentTimeInSeconds() - observability->started_at_seconds()) << "\n";
+  prometheusMetricInfo(oss, "ctf01d_jury_checker_threads", "gauge", "Registered checker worker threads.");
+  oss << "ctf01d_jury_checker_threads " << observability->active_checker_threads() << "\n";
+
+  prometheusMetricInfo(oss, "ctf01d_jury_http_requests_total", "counter", "HTTP requests served by jury.");
+  for (auto &metric : observability->http_requests()) {
+    oss << "ctf01d_jury_http_requests_total"
+      << prometheusLabels({
+        {"method", metric.method},
+        {"path", metric.path},
+        {"code", std::to_string(metric.code)}
+      })
+      << " " << metric.count << "\n";
+  }
+  prometheusMetricInfo(oss, "ctf01d_jury_http_request_duration_seconds", "summary", "HTTP request duration.");
+  for (auto &metric : observability->http_requests()) {
+    auto labels = prometheusLabels({
+      {"method", metric.method},
+      {"path", metric.path},
+      {"code", std::to_string(metric.code)}
+    });
+    oss << "ctf01d_jury_http_request_duration_seconds_sum" << labels
+      << " " << metric.duration_seconds_sum << "\n";
+    oss << "ctf01d_jury_http_request_duration_seconds_count" << labels
+      << " " << metric.count << "\n";
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_jury_flag_submissions_total", "counter", "Flag submissions by result.");
+  for (auto &metric : observability->flag_submissions()) {
+    oss << "ctf01d_jury_flag_submissions_total"
+      << prometheusLabels({
+        {"team", metric.team},
+        {"result", metric.result},
+        {"error_code", metric.error_code}
+      })
+      << " " << metric.count << "\n";
+  }
+
+  prometheusMetricInfo(oss, "ctf01d_jury_checker_runs_total", "counter", "Checker script runs.");
+  for (auto &metric : observability->checker_runs()) {
+    oss << "ctf01d_jury_checker_runs_total"
+      << prometheusLabels({
+        {"team", metric.team},
+        {"service", metric.service},
+        {"command", metric.command},
+        {"result", metric.result},
+        {"exit_code", std::to_string(metric.exit_code)}
+      })
+      << " " << metric.count << "\n";
+  }
+  prometheusMetricInfo(oss, "ctf01d_jury_checker_last_exit_code", "gauge", "Last checker exit code.");
+  prometheusMetricInfo(oss, "ctf01d_jury_checker_last_duration_seconds", "gauge", "Last checker run duration.");
+  prometheusMetricInfo(oss, "ctf01d_jury_checker_last_run_timestamp_seconds", "gauge", "Last checker run timestamp.");
+  prometheusMetricInfo(oss, "ctf01d_jury_checker_consecutive_failures", "gauge", "Consecutive checker failures.");
+  for (auto &metric : observability->checker_states()) {
+    auto labels = prometheusLabels({
+      {"team", metric.team},
+      {"service", metric.service},
+      {"command", metric.command},
+      {"result", metric.result}
+    });
+    oss << "ctf01d_jury_checker_last_exit_code" << labels
+      << " " << metric.exit_code << "\n";
+    oss << "ctf01d_jury_checker_last_duration_seconds" << labels
+      << " " << metric.last_duration_seconds << "\n";
+    oss << "ctf01d_jury_checker_last_run_timestamp_seconds" << labels
+      << " " << metric.last_run_timestamp_seconds << "\n";
+    oss << "ctf01d_jury_checker_consecutive_failures" << labels
+      << " " << metric.consecutive_failures << "\n";
+  }
 
   prometheusMetricInfo(oss, "ctf01d_game_start_timestamp_seconds", "gauge", "Game start (UTC).");
   oss << "ctf01d_game_start_timestamp_seconds " << jsonScoreboard["game"]["t0"].get<long>() << "\n";

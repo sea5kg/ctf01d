@@ -2,7 +2,7 @@
 
 ## What this is
 
-`GET /api/v1/metrics` exports the current ctf01d game state in Prometheus exposition format. The endpoint is built from the same in-memory scoreboard JSON as `GET /api/v1/scoreboard`.
+`GET /api/v1/metrics` exports the current ctf01d game state and jury observability in Prometheus exposition format. Scoreboard metrics are built from the same in-memory scoreboard JSON as `GET /api/v1/scoreboard`; jury metrics are process-local runtime counters.
 
 Inspect the live payload with `curl` or use this metric catalog:
 
@@ -30,6 +30,17 @@ Inspect the live payload with `curl` or use this metric catalog:
 | `ctf01d_service_first_blood_timestamp_seconds` | gauge | `service`, `team` |
 | `ctf01d_flag_attempts_total` | counter | - |
 | `ctf01d_flags_live` | gauge | - |
+| `ctf01d_jury_start_timestamp_seconds` | gauge | - |
+| `ctf01d_jury_uptime_seconds` | gauge | - |
+| `ctf01d_jury_checker_threads` | gauge | - |
+| `ctf01d_jury_http_requests_total` | counter | `method`, `path`, `code` |
+| `ctf01d_jury_http_request_duration_seconds` | summary | `method`, `path`, `code` |
+| `ctf01d_jury_flag_submissions_total` | counter | `team`, `result`, `error_code` |
+| `ctf01d_jury_checker_runs_total` | counter | `team`, `service`, `command`, `result`, `exit_code` |
+| `ctf01d_jury_checker_last_exit_code` | gauge | `team`, `service`, `command`, `result` |
+| `ctf01d_jury_checker_last_duration_seconds` | gauge | `team`, `service`, `command`, `result` |
+| `ctf01d_jury_checker_last_run_timestamp_seconds` | gauge | `team`, `service`, `command`, `result` |
+| `ctf01d_jury_checker_consecutive_failures` | gauge | `team`, `service`, `command`, `result` |
 
 ## Wiring Prometheus
 
@@ -43,7 +54,7 @@ You can also send `SIGHUP` to the Prometheus process if lifecycle reloads are di
 
 ## Importing the dashboard
 
-In Grafana, open `Dashboards -> Import`, upload `dashboard.json`, and select your Prometheus datasource for the `$ds` variable.
+In Grafana, open `Dashboards -> Import`, upload `dashboard.json` for scoreboard monitoring or `jury-observability-dashboard.json` for jury runtime monitoring, and select your Prometheus datasource for the `$ds` variable.
 
 ## Sanity checks
 

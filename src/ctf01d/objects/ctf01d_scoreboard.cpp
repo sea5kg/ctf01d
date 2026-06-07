@@ -294,7 +294,7 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
   // TODO calculate
   // int nFlagPoints = m_mapServiceCostsAndStatistics[sServiceId]->getCostStolenFlag()*10; // one number after dot
   int flag_points = m_flag_cost_in_points->value(); // TODO basic
-  int nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
+  long nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
   // victim place in scoreboard
   std::map<std::string, Ctf01dTeamStatusRow *>::iterator it_victim;
   it_victim = m_mapTeamsStatuses.find(flag.getTeamId());
@@ -323,6 +323,7 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
   std::map<std::string, Ctf01dServiceStatistics *>::iterator it2;
   it2 = m_mapServiceCostsAndStatistics.find(sServiceId);
   if (it2 != m_mapServiceCostsAndStatistics.end()) {
+    it2->second->doIncrementStolenFlagsForService(1);
     if (it2->second->getFirstBloodTeamId() == "?") {
       it2->second->setFirstBloodTeamId(sTeamId, nDateAction);
     }
