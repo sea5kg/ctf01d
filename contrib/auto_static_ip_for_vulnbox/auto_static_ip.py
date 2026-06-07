@@ -128,7 +128,7 @@ def restart_networking():
     """ restart networking """
     print("> Restarting networking...")
     os.system("systemctl restart networking")
-    print("> Wait 5 sec when netwoking apply...")
+    print("> Wait 5 sec when networking apply...")
     time.sleep(5)
 
 
