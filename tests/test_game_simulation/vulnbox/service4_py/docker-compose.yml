@@ -1,16 +1,16 @@
 services:
-  service1_py:
+  service4_py:
     build: .
-    image: service1_py:latest
+    image: service4_py:latest
     volumes:
       - "./flags:/root/flags"
     ports:
-      - "4101:4101"
+      - "4104:4104"
     restart: always
     networks:
-      - service1_py_net
+      - service4_py_net
 
 networks:
-  service1_py_net:
+  service4_py_net:
     driver: bridge
         

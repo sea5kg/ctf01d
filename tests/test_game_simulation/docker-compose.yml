@@ -2,189 +2,107 @@ services:
 
   # service 1 - port 4101
   team1_service1_server:
-    build: ./example_py_service1/service/
-    image: sea5kg/example_py_service1:testing
+    build: ./vulnbox/service1_py/
+    image: ctf01d-game-simulation/service1_py:latest
     volumes:
-      - "./tmp/team1_service1_server_flags:/root/flags"
+      - "./tmp/team1_service1_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
-  
+      - ctf01d_game_simulation_team1_net
+
   team2_service1_server:
-    image: sea5kg/example_py_service1:testing
+    image: ctf01d-game-simulation/service1_py:latest
     volumes:
-      - "./tmp/team2_service1_server_flags:/root/flags"
+      - "./tmp/team2_service1_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team2_net
 
   team3_service1_server:
-    image: sea5kg/example_py_service1:testing
+    image: ctf01d-game-simulation/service1_py:latest
     volumes:
-      - "./tmp/team3_service1_server_flags:/root/flags"
+      - "./tmp/team3_service1_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
-    
-  # service 1 exploits
-  team1_service1_exploit:
-    build: ./example_py_service1/exploit/
-    image: sea5kg/example_py_service1_exploit:testing
-    restart: always
-    command: python3 attack.py "fhqjuryad_jury:8080" "team1" "team2_service1_server:4101,team3_service1_server:4101"
-    networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team3_net
 
-  team2_service1_exploit:
-    image: sea5kg/example_py_service1_exploit:testing
-    restart: always
-    command: python3 attack.py "fhqjuryad_jury:8080" "team2" "team1_service1_server:4101"
-    networks:
-      - ctf01d_game_simulation_net
-
-  team3_service1_exploit:
-    image: sea5kg/example_py_service1_exploit:testing
-    restart: always
-    command: python3 attack.py "fhqjuryad_jury:8080" "team2" "team2_service1_server:4101"
-    networks:
-      - ctf01d_game_simulation_net
-
-  # service 2
-  team1_service2_db:
-    image: mysql:5.7
-    volumes:
-      - "./tmp/team1_service2_mysql:/var/lib/mysql"
-      - "./example_go_service2/service/sql:/docker-entrypoint-initdb.d"
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: C148cMqIT2
-      MYSQL_DATABASE: go_service2
-      MYSQL_USER: service2usr
-      MYSQL_PASSWORD: service2pass
-    networks:
-      - ctf01d_game_simulation_net
-
+  # service 2 - port 4102
   team1_service2_server:
-    build: ./example_go_service2/service/
-    image: sea5kg/example_go_service2:testing
-    depends_on:
-      - team1_service2_db
-    environment:
-      MYSQL_HOST: team1_service2_db
-      MYSQL_DATABASE: go_service2
-      MYSQL_USER: service2usr
-      MYSQL_PASSWORD: service2pass
-    restart: always
-    networks:
-      - ctf01d_game_simulation_net
-
-  # team2 - service2
-  team2_service2_db:
-    image: mysql:5.7
+    build: ./vulnbox/service2_py/
+    image: ctf01d-game-simulation/service2_py:latest
     volumes:
-      - "./tmp/team2_service2_mysql:/var/lib/mysql"
-      - "./example_go_service2/service/sql:/docker-entrypoint-initdb.d"
+      - "./tmp/team1_service2_py_flags:/root/flags"
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: C148cMqIT2
-      MYSQL_DATABASE: go_service2
-      MYSQL_USER: service2usr
-      MYSQL_PASSWORD: service2pass
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team1_net
 
   team2_service2_server:
-    image: sea5kg/example_go_service2:testing
-    depends_on:
-      - team2_service2_db
-    environment:
-      MYSQL_HOST: team2_service2_db
-      MYSQL_DATABASE: go_service2
-      MYSQL_USER: service2usr
-      MYSQL_PASSWORD: service2pass
-    restart: always
-    networks:
-      - ctf01d_game_simulation_net
-
-  # team3 - service2
-  team3_service2_db:
-    image: mysql:5.7
+    image: ctf01d-game-simulation/service2_py:latest
     volumes:
-      - "./tmp/team3_service2_mysql:/var/lib/mysql"
-      - "./example_go_service2/service/sql:/docker-entrypoint-initdb.d"
+      - "./tmp/team2_service2_py_flags:/root/flags"
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: C148cMqIT2
-      MYSQL_DATABASE: go_service2
-      MYSQL_USER: service2usr
-      MYSQL_PASSWORD: service2pass
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team2_net
 
   team3_service2_server:
-    image: sea5kg/example_go_service2:testing
-    depends_on:
-      - team3_service2_db
-    environment:
-      MYSQL_HOST: team3_service2_db
-      MYSQL_DATABASE: go_service2
-      MYSQL_USER: service2usr
-      MYSQL_PASSWORD: service2pass
+    image: ctf01d-game-simulation/service2_py:latest
+    volumes:
+      - "./tmp/team3_service2_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team3_net
 
   # service 3 - port 4103
   team1_service3_server:
-    build: ./example_py_service3/service/
-    image: sea5kg/example_py_service3:testing
+    build: ./vulnbox/service3_py/
+    image: ctf01d-game-simulation/service3_py:latest
     volumes:
-      - "./tmp/team1_service3_server_flags:/root/flags"
+      - "./tmp/team1_service3_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
-  
+      - ctf01d_game_simulation_team1_net
+
   team2_service3_server:
-    image: sea5kg/example_py_service3:testing
+    image: ctf01d-game-simulation/service3_py:latest
     volumes:
-      - "./tmp/team2_service3_server_flags:/root/flags"
+      - "./tmp/team2_service3_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team2_net
 
   team3_service3_server:
-    image: sea5kg/example_py_service3:testing
+    image: ctf01d-game-simulation/service3_py:latest
     volumes:
-      - "./tmp/team3_service3_server_flags:/root/flags"
+      - "./tmp/team3_service3_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team3_net
 
   # service 4 - port 4104
   team1_service4_server:
-    build: ./example_py_service4/service/
-    image: sea5kg/example_py_service4:testing
+    build: ./vulnbox/service4_py/
+    image: ctf01d-game-simulation/service4_py:latest
     volumes:
-      - "./tmp/team1_service4_server_flags:/root/flags"
+      - "./tmp/team1_service4_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
-  
+      - ctf01d_game_simulation_team1_net
+
   team2_service4_server:
-    image: sea5kg/example_py_service4:testing
+    image: ctf01d-game-simulation/service4_py:latest
     volumes:
-      - "./tmp/team2_service4_server_flags:/root/flags"
+      - "./tmp/team2_service4_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team2_net
 
   team3_service4_server:
-    image: sea5kg/example_py_service4:testing
+    image: ctf01d-game-simulation/service4_py:latest
     volumes:
-      - "./tmp/team3_service4_server_flags:/root/flags"
+      - "./tmp/team3_service4_py_flags:/root/flags"
     restart: always
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team3_net
 
   # team1
   team1_server:
@@ -199,12 +117,12 @@ services:
     command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg
     restart: always
     ports:
-      - "4101:4101"
-      - "4102:4102"
-      - "4103:4103"
-      - "4104:4104"
+      - "10.10.11.1:4101:4101"
+      - "10.10.11.1:4102:4102"
+      - "10.10.11.1:4103:4103"
+      - "10.10.11.1:4104:4104"
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team1_net
 
   # team2
   team2_server:
@@ -219,13 +137,13 @@ services:
     command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg
     restart: always
     ports:
-      - "4201:4101"
-      - "4202:4102"
-      - "4203:4103"
-      - "4204:4104"
+      - "10.10.12.1:4101:4101"
+      - "10.10.12.1:4102:4102"
+      - "10.10.12.1:4103:4103"
+      - "10.10.12.1:4104:4104"
     networks:
-      - ctf01d_game_simulation_net
-  
+      - ctf01d_game_simulation_team2_net
+
   # team3
   team3_server:
     image: haproxy:2.0
@@ -239,52 +157,54 @@ services:
     command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg
     restart: always
     ports:
-      - "4301:4101"
-      - "4302:4102"
-      - "4303:4103"
-      - "4304:4104"
+      - "10.10.13.1:4101:4101"
+      - "10.10.13.1:4102:4102"
+      - "10.10.13.1:4103:4103"
+      - "10.10.13.1:4104:4104"
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_team3_net
 
   # jury
-  fhqjuryad_db:
-    image: mysql:5.7
-    volumes:
-      - "./tmp/jury_mysql:/var/lib/mysql"
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: KzhyntJxwt
-      MYSQL_DATABASE: fhqjuryad
-      MYSQL_USER: fhqjuryad
-      MYSQL_PASSWORD: fhqjuryad
-    networks:
-      - ctf01d_game_simulation_net
-
   ctf01d_game_simulation_jury:
-    build: ../
-    depends_on:
-      - fhqjuryad_db
-    image: sea5kg/ctf01d_game_simulation:latest
+    build: ../..
+    image: sea5kg/ctf01d:latest
     volumes:
-      - "./jury.d:/usr/share/ctf01d/data"
-      - "./tmp/jury_logs:/usr/share/ctf01d/data/logs"
-      - "./example_py_service1/checker:/usr/share/ctf01d/jury.d/checkers/example_py_service1"
-      - "./example_go_service2/checker:/usr/share/ctf01d/jury.d/checkers/example_go_service2"
-      - "./example_py_service3/checker:/usr/share/ctf01d/jury.d/checkers/example_py_service3"
-      - "./example_py_service4/checker:/usr/share/ctf01d/jury.d/checkers/example_py_service4"
+      - "./data:/root/data"
     ports:
       - "8080:8080"
     restart: always
-    links:
-      - "fhqjuryad_db"
     networks:
-      - ctf01d_game_simulation_net
+      - ctf01d_game_simulation_jury_net
+      - ctf01d_game_simulation_team1_net
+      - ctf01d_game_simulation_team2_net
+      - ctf01d_game_simulation_team3_net
 
 networks:
-  ctf01d_game_simulation_net:
+  ctf01d_game_simulation_jury_net:
     driver: bridge
     ipam:
       config:
-        - subnet: "10.10.6.0/24"
-          ip_range: "10.10.6.0/24"
-          gateway: "10.10.6.1"
+        - subnet: "10.10.100.0/24"
+          ip_range: "10.10.100.0/24"
+          gateway: "10.10.100.1"
+  ctf01d_game_simulation_team1_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.10.11.0/24"
+          ip_range: "10.10.11.0/24"
+          gateway: "10.10.11.1"
+  ctf01d_game_simulation_team2_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.10.12.0/24"
+          ip_range: "10.10.12.0/24"
+          gateway: "10.10.12.1"
+  ctf01d_game_simulation_team3_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.10.13.0/24"
+          ip_range: "10.10.13.0/24"
+          gateway: "10.10.13.1"

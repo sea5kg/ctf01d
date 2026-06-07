@@ -1,8 +1,5 @@
 tmp/*
 data/logs/*.log
 data/db/*
-vulnbox/service2_go/dckr_mysql/*
-vulnbox/service3_php/src/pages/*.txt
-vulnbox/service3_php/tmp/*
 data/html/*
 !data/html/images/teams0/*
