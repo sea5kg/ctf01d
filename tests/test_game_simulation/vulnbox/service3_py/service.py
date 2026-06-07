@@ -41,7 +41,7 @@ import threading
 import re
 import os
 
-port = 4104
+port = 4103
 thrs = []
 
 class Connect(threading.Thread):
@@ -52,7 +52,7 @@ class Connect(threading.Thread):
         threading.Thread.__init__(self)
     def run (self):
         help_s = """
-Welcome to example_py_service1
+Welcome to service3_py
 Commands: put, get, delete, list, close
 > """
         self.sock.send(help_s.encode())

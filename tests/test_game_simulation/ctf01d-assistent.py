@@ -73,7 +73,13 @@ teams = [
 jury_net_prefix = "10.10.100"
 ntwrk_name_prefix = "ctf01d_net_"
 
-services_list = ["service1_py", "service2_go", "service3_php", "service4_cpp"]
+services_list = ["service1_py", "service2_py", "service3_py", "service4_py"]
+services_ports = {
+    "service1_py": 4101,
+    "service2_py": 4102,
+    "service3_py": 4103,
+    "service4_py": 4104,
+}
 img_name_prefix = "ctf01d-game-simulation/"
 
 watchdog_containers_list = []
@@ -168,7 +174,7 @@ def buildImage(images_list, image_tag, pathWithDockerfile):
     # TODO redesing to command line build
     """
         simular command:
-        docker build -t ctf01d-game-simulation/service2_go:latest ./vulnbox/service2_go/
+        docker build -t ctf01d-game-simulation/service1_py:latest ./vulnbox/service1_py/
     """
     print("Building image " + image_tag + "...")
     ret = client.images.build(
@@ -187,10 +193,9 @@ def buildJuryAndServiceImages():
         img_tag = img_name_prefix + service_name + ":latest"
         buildImage(imgs, img_tag, "./vulnbox/" + service_name)
 
-def runAllService1Py():
-    print(" ===> Starting all service1_py")
+def runAllPythonService(service_name, port):
+    print(" ===> Starting all " + service_name)
 
-    service_name = "service1_py"
     img_name = img_name_prefix + service_name + ":latest"
     for t in teams:
         dirname_flags = os.getcwd() + "/./tmp/" + t['name'] + "_" + service_name + "_flags"
@@ -218,7 +223,7 @@ def runAllService1Py():
             memswap_limit="128M",
             mounts=[mount_flags],
             network=network_name_team,
-            ports={"4101/tcp": (t['ip_prefix'] + ".1", 4101) },
+            ports={str(port) + "/tcp": (t['ip_prefix'] + ".1", port) },
             name=container_name,
             detach=True
         )
@@ -234,172 +239,6 @@ def runAllService1Py():
             --name "ctf01d_team1_service1_py" \
             ctf01d-game-simulation/service1_py:latest
         """
-
-        watchdog_containers_list.append(container_name)
-        print(container)
-    
-
-def runAllService2GoDatabase():
-    print(" ===> Starting all service2_go_db")
-    service_name = "service2_go_db"
-
-    # img_name = img_name_prefix + service_name + ":latest"
-    for t in teams:
-        dirname_mysql = os.getcwd() + "/./tmp/" + t['name'] + "_" + service_name + "_mysql_data"
-        if not os.path.isdir(dirname_mysql):
-            os.mkdir(dirname_mysql)
-        network_name_team = ntwrk_name_prefix + t['name']
-        container_name = "ctf01d_" + t['name'] + "_" + service_name
-        cntrs = client.containers.list(all=True)
-        for c in cntrs:
-            if c.name == container_name:
-                print("Stopping container " + c.name)
-                c.stop()
-                print("Removing container " + c.name)
-                c.remove()
-
-        print("Starting " + container_name)
-        mount_mysql = docker.types.Mount(
-            target="/var/lib/mysql",
-            source=dirname_mysql,
-            type="bind"
-        )
-        mount_sql = docker.types.Mount(
-            target="/docker-entrypoint-initdb.d",
-            source=os.getcwd() + "/./vulnbox/service2_go/sql",
-            type="bind"
-        )
-
-        container = client.containers.run(
-            "mysql:5.7",
-            mem_limit="512M",
-            memswap_limit="512M",
-            mounts=[mount_mysql, mount_sql],
-            environment={
-                "MYSQL_ROOT_PASSWORD": "service2_go",
-                "MYSQL_DATABASE": "service2_go",
-                "MYSQL_USER": "service2_go",
-                "MYSQL_PASSWORD": "service2_go",
-            },
-            network=network_name_team,
-            # ports={"4101/tcp": (t['ip_prefix'] + ".1", 4101) },
-            name=container_name,
-            detach=True
-        )
-        watchdog_containers_list.append(container_name)
-        print(container)
-
-def runAllService2Go():
-    print(" ===> Starting all service2_go")
-
-    service_name = "service2_go"
-    img_name = img_name_prefix + service_name + ":latest"
-    for t in teams:
-        dirname_flags = os.getcwd() + "/./tmp/" + t['name'] + "_" + service_name + "_flags"
-        if not os.path.isdir(dirname_flags):
-            os.mkdir(dirname_flags)
-        network_name_team = ntwrk_name_prefix + t['name']
-        container_name = "ctf01d_" + t['name'] + "_" + service_name
-        cntrs = client.containers.list(all=True)
-        for c in cntrs:
-            if c.name == container_name:
-                print("Stopping container " + c.name)
-                c.stop()
-                print("Removing container " + c.name)
-                c.remove()
-
-        print("Starting " + container_name)
-        container = client.containers.run(
-            img_name,
-            mem_limit="128M",
-            memswap_limit="128M",
-            network=network_name_team,
-            environment={
-                "SERVICE2_GO_MYSQL_HOST": container_name + "_db",
-                "SERVICE2_GO_MYSQL_DBNAME": "service2_go",
-                "SERVICE2_GO_MYSQL_USER": "service2_go",
-                "SERVICE2_GO_MYSQL_PASSWORD": "service2_go",
-            },
-            ports={"4102/tcp": (t['ip_prefix'] + ".1", 4102) },
-            name=container_name,
-            detach=True
-        )
-        watchdog_containers_list.append(container_name)
-        print(container)
-
-def runAllService3Php():
-    print(" ===> Starting all service3_php")
-
-    service_name = "service3_php"
-    img_name = img_name_prefix + service_name + ":latest"
-    for t in teams:
-        dirname_pages = os.getcwd() + "/./tmp/" + t['name'] + "_" + service_name + "_pages"
-        if not os.path.isdir(dirname_pages):
-            os.mkdir(dirname_pages)
-        network_name_team = ntwrk_name_prefix + t['name']
-        container_name = "ctf01d_" + t['name'] + "_" + service_name
-        cntrs = client.containers.list(all=True)
-        for c in cntrs:
-            if c.name == container_name:
-                print("Stopping container " + c.name)
-                c.stop()
-                print("Removing container " + c.name)
-                c.remove()
-
-        print("Starting " + container_name)
-        mount_pages = docker.types.Mount(
-            target="/usr/src/service3_php/pages",
-            source=dirname_pages,
-            type="bind"
-        )
-        container = client.containers.run(
-            img_name,
-            mem_limit="128M",
-            memswap_limit="128M",
-            mounts=[mount_pages],
-            network=network_name_team,
-            ports={"4103/tcp": (t['ip_prefix'] + ".1", 4103) },
-            name=container_name,
-            detach=True
-        )
-        watchdog_containers_list.append(container_name)
-        print(container)
-
-def runAllService4Cpp():
-    print(" ===> Starting all service4_cpp")
-
-    service_name = "service4_cpp"
-    img_name = img_name_prefix + service_name + ":latest"
-    for t in teams:
-        dirname_flags = os.getcwd() + "/./tmp/" + t['name'] + "_" + service_name + "_flags"
-        if not os.path.isdir(dirname_flags):
-            os.mkdir(dirname_flags)
-        network_name_team = ntwrk_name_prefix + t['name']
-        container_name = "ctf01d_" + t['name'] + "_" + service_name
-        cntrs = client.containers.list(all=True)
-        for c in cntrs:
-            if c.name == container_name:
-                print("Stopping container " + c.name)
-                c.stop()
-                print("Removing container " + c.name)
-                c.remove()
-
-        print("Starting " + container_name)
-        mount_flags = docker.types.Mount(
-            target="/root/flags",
-            source=dirname_flags,
-            type="bind"
-        )
-        container = client.containers.run(
-            img_name,
-            mem_limit="128M",
-            memswap_limit="128M",
-            mounts=[mount_flags],
-            network=network_name_team,
-            ports={"4104/tcp": (t['ip_prefix'] + ".1", 4104) },
-            name=container_name,
-            detach=True
-        )
         watchdog_containers_list.append(container_name)
         print(container)
 
@@ -534,11 +373,8 @@ if command == "start":
         os.mkdir("./tmp")
     createTeamAndJuryNetworks()
     buildJuryAndServiceImages()
-    runAllService1Py()
-    runAllService2GoDatabase()
-    runAllService2Go()
-    runAllService3Php()
-    runAllService4Cpp()
+    for service_name in services_list:
+        runAllPythonService(service_name, services_ports[service_name])
     
     runCtf01dJury()
     startWatchDog()

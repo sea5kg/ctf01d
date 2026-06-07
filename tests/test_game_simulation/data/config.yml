@@ -13,48 +13,69 @@ game:
 
 scoreboard:
   port: 8080 # http port for scoreboard
-  htmlfolder: "./html" # web page for scoreboard see index-template.html
+  html-dir-path: "./html" # web page for scoreboard see index-template.html
   random: no # If yes - will be random values in scoreboard
+  prometheus-metrics-endpoint:
+    enabled: yes
+    allowed-for: "10.10.100.*, 127.0.*"
 
-checkers:
-  - id: "service1_py" # work directory will be checker_example_service4
-    service_name: "Python"
+services:
+  - id: "service1_py"
+    name: "Python 1"
     enabled: yes
-    script_path: "./checker.py"
-    script_wait_in_sec: 5 # max time for running script
-    round_in_seconds: 15 # like a round for service
-  - id: "service2_go"
-    service_name: "Golang"
+    logo: "./html/images/services/service1-default-icon.svg"
+    logo-big: "./html/images/services/service1-default-icon.svg"
+    script-relative-path: "./checker.py"
+    script-timeout-in-seconds: 5 # max time for running script
+    round-in-seconds: 15 # like a round for service
+  - id: "service2_py"
+    name: "Python 2"
     enabled: yes
-    script_path: "./checker.py"
-    script_wait_in_sec: 5
-    round_in_seconds: 15
-  - id: "service3_php"
-    service_name: "PHP"
+    logo: "./html/images/services/service2-default-icon.svg"
+    logo-big: "./html/images/services/service2-default-icon.svg"
+    script-relative-path: "./checker.py"
+    script-timeout-in-seconds: 5
+    round-in-seconds: 15
+  - id: "service3_py"
+    name: "Python 3"
     enabled: yes
-    script_path: "./checker.py"
-    script_wait_in_sec: 5
-    round_in_seconds: 15
-  - id: "service4_cpp" # work directory will be checker_example_service4
-    service_name: "C++"
+    logo: "./html/images/services/service3-default-icon.svg"
+    logo-big: "./html/images/services/service3-default-icon.svg"
+    script-relative-path: "./checker.py"
+    script-timeout-in-seconds: 5
+    round-in-seconds: 15
+  - id: "service4_py"
+    name: "Python 4"
     enabled: yes
-    script_path: "./checker.py"
-    script_wait_in_sec: 5
-    round_in_seconds: 15
+    logo: "./html/images/services/service4-default-icon.svg"
+    logo-big: "./html/images/services/service4-default-icon.svg"
+    script-relative-path: "./checker.py"
+    script-timeout-in-seconds: 5
+    round-in-seconds: 15
 
 teams:
-  - id: "team1"
-    name: "Team 1"
-    active: yes
-    logo: "./html/images/teams0/team1.png"
-    ip_address: "10.10.11.1" # address to vulnserver
-  - id: "team2"
-    name: "Team 2"
-    active: yes
-    logo: "./html/images/teams0/team2.png"
-    ip_address: "10.10.12.1" # address to vulnserver
-  - id: "team3"
-    name: "Team 3"
-    active: yes
-    logo: "./html/images/teams0/team3.png"
-    ip_address: "10.10.13.1" # address to vulnserver
+  config:
+    ip-or-host-prefix: ""
+    ip-or-host-suffix: ""
+  list:
+    - id: "team1"
+      type: normal
+      name: "Team 1"
+      active: yes
+      logo: "./html/images/teams/team01.png"
+      logo-big: "./html/images/teams/team01.png"
+      ip-or-host: "10.10.11.1" # address to vulnserver
+    - id: "team2"
+      type: normal
+      name: "Team 2"
+      active: yes
+      logo: "./html/images/teams/team02.png"
+      logo-big: "./html/images/teams/team02.png"
+      ip-or-host: "10.10.12.1" # address to vulnserver
+    - id: "team3"
+      type: normal
+      name: "Team 3"
+      active: yes
+      logo: "./html/images/teams/team03.png"
+      logo-big: "./html/images/teams/team03.png"
+      ip-or-host: "10.10.13.1" # address to vulnserver

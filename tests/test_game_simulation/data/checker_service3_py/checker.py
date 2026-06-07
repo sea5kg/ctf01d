@@ -2,7 +2,6 @@
 import sys
 import socket
 import errno
-import requests
 
 # put-get flag to service success
 def service_up():
@@ -48,42 +47,68 @@ flag = sys.argv[4]
 
 def put_flag():
     global host, port, f_id, flag
+    # try put
     try:
-        r = requests.post(
-            'http://' + host + ':' + str(port) + '/?p=0',
-            data={
-                'action': 'send',
-                'page': '0',
-                'flagid': f_id,
-                'flag': flag,
-            },
-            timeout=1,
-            allow_redirects=True,
-        )
-        if r.status_code != 200:
-            service_corrupt()
-    except requests.exceptions.Timeout:
-        service_mumble()
-    except requests.exceptions.ConnectionError:
+        # print("try connect " + host + ":" + str(port))
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        s.connect((host, port))
+        s.recv(1024)
+        s.send(("put" + "\n").encode("utf-8"))
+        s.recv(1024)
+        s.send((f_id + "\n").encode("utf-8"))
+        s.recv(1024)
+        s.send((flag + "\n").encode("utf-8"))
+        s.recv(1024)
+        s.close()
+    except socket.timeout:
         service_down()
+    except socket.error as serr:
+        if serr.errno == errno.ECONNREFUSED:
+            service_down()
+        else:
+            debug(serr)
+            service_corrupt()
     except Exception as e:
         debug(e)
         service_corrupt()
 
 def check_flag():
     global host, port, f_id, flag
+    # try get
+    flag2 = ""
     try:
-        r = requests.get('http://' + host + ':' + str(port) + '/?p=0', timeout=1)
-        if r.status_code != 200:
-            service_corrupt()
-        if f_id not in r.text or flag not in r.text:
-            service_corrupt()
-    except requests.exceptions.Timeout:
-        service_mumble()
-    except requests.exceptions.ConnectionError:
+        # print("try connect " + host + ":" + str(port))
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        s.connect((host, port))
+        s.recv(1024)
+        s.send(("get\n").encode("utf-8"))
+        s.recv(1024)
+        s.send((f_id + "\n").encode("utf-8"))
+        result = s.recv(1024)
+        result = result.decode("utf-8", "ignore")
+        flag2 = result.strip()
+        flag2 = flag2.split("FOUND FLAG: ")
+        if len(flag2) == 2:
+            flag2 = flag2[1]
+        else:
+            flag2 = ''
+        s.close()
+    except socket.timeout:
         service_down()
+    except socket.error as serr:
+        if serr.errno == errno.ECONNREFUSED:
+            service_down()
+        else:
+            debug(serr)
+            service_corrupt()
     except Exception as e:
         debug(e)
+        service_corrupt()
+
+    if flag != flag2:
+        debug('flag: [' + flag +  '] flag2: [' + str(flag2) + ']')
         service_corrupt()
 
 
