@@ -124,7 +124,7 @@ def service_down():
 
 
 if len(sys.argv) != 5:
-    _fl_id = "abcdifghr"
+    _fl_id = "abc1if2hr"
     _fl = "123e4567-e89b-12d3-a456-426655440000"
     print(
         "\n"
@@ -275,25 +275,25 @@ $ chown $USER:$USER data/config.yml
 Remove example services and add you checker-service, like:
 
 ```yml
-checkers:
-  - id: "service_ZxjQMahnoK" # work directory will be checker_service_ZxjQMahnoK
+services:
+  - id: "ZxjQaK" # work directory will be checker_ZxjQaK
     name: "Service1"
     enabled: yes
     script_path: "./checker.py"
     script-timeout: 5 # max time for running script
     round-in-seconds: 15
 ```
-where "service_ZxjQMahnoK" is a UNIQUE id within the game config
+where "service_ZxjQaK" is a UNIQUE id within the game config
 
 4. Upload your script to specified folder
 
 Prepare folder and create ./checker.py:
 
 ```
-$ mkdir data/checker_service_ZxjQMahnoK
-$ chmod 775 data/checker_service_ZxjQMahnoK
-$ touch data/checker_service_ZxjQMahnoK/checker.py
-$ chmod +x data/checker_service_ZxjQMahnoK/checker.py
+$ mkdir data/checker_service_ZxjQaK
+$ chmod 775 data/checker_service_ZxjQaK
+$ touch data/checker_service_ZxjQaK/checker.py
+$ chmod +x data/checker_service_ZxjQaK/checker.py
 ```
 
 ### If you use a different language than Python for the checker
