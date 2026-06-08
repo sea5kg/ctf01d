@@ -126,7 +126,7 @@ void Ctf01dScoreboard::initJsonScoreboard() {
     std::string sTeamId = teamConf.id();
     nlohmann::json teamData;
     teamData["place"] = m_mapTeamsStatuses[sTeamId]->getPlace();
-    teamData["points"] = double(m_mapTeamsStatuses[sTeamId]->getPoints());
+    teamData["points"] = m_mapTeamsStatuses[sTeamId]->getPoints();
     teamData["tries"] = 0;
     teamData["logo_last_updated"] = 0;
     nlohmann::json jsonServices;
@@ -316,7 +316,7 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["att"] = pRow->getAttackFlags(sServiceId);
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["pt_att"] = pRow->getAttackPoints(sServiceId);
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["sla"] = pRow->calculateSLA(sServiceId);
-    m_jsonScoreboard["scoreboard"][sTeamId]["points"] = double(pRow->getPoints());
+    m_jsonScoreboard["scoreboard"][sTeamId]["points"] = pRow->getPoints();
     sortPlaces();
   }
 

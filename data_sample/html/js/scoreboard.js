@@ -329,7 +329,7 @@ function getTopTeamSliderSlides(limit) {
       title: 'PLACE #' + (i + 1),
       teamName: teams[i].team.name,
       logo: getTeamBigLogoUrl(teams[i].team),
-      points: teams[i].points.toFixed(1)
+      points: teams[i].points
     });
   }
   return slides;
@@ -596,7 +596,7 @@ function showActionAutomatization() {
 function updateUIValue(t, teamID, paramName){
     var newValue = '';
     if (paramName == 'points') {
-        newValue = t[paramName].toFixed(1);
+        newValue = t[paramName];
     } else {
         newValue = '' + t[paramName];
     }
@@ -843,8 +843,8 @@ function updateScoreboard() {
             }
 
             var elPointsTrend = document.getElementById(teamID + '-points-trend');
-            var prevPoints = parseFloat(document.getElementById(teamID + '-points').innerHTML);
-            var newPoints = parseFloat(t.points.toFixed(1));
+            var prevPoints = parseInt(document.getElementById(teamID + '-points').innerHTML);
+            var newPoints = parseInt(t.points);
             if (elPointsTrend.innerHTML == "??") {
                 elPointsTrend.classList.add("trend-middle")
                 elPointsTrend.classList.remove("trend-up")
@@ -860,15 +860,15 @@ function updateScoreboard() {
                     elPointsTrend.classList.remove("trend-middle")
                     elPointsTrend.classList.add("trend-up")
                     elPointsTrend.classList.remove("trend-down")
-                    elPointsTrend.innerHTML = "+" + (newPoints - prevPoints).toFixed(1);
+                    elPointsTrend.innerHTML = "+" + (newPoints - prevPoints);
                 } else {
                     elPointsTrend.classList.remove("trend-middle")
                     elPointsTrend.classList.remove("trend-up")
                     elPointsTrend.classList.add("trend-down")
-                    elPointsTrend.innerHTML = "-" + (prevPoints - newPoints).toFixed(1);
+                    elPointsTrend.innerHTML = "-" + (prevPoints - newPoints);
                 }
             }
-            silentUpdate(teamID + '-points', newPoints.toFixed(1));
+            silentUpdate(teamID + '-points', newPoints);
 
             updateUIValue(t, teamID, 'place');
             // updateUIValue(t, teamID, 'points');
@@ -900,11 +900,12 @@ function updateScoreboard() {
                 }
                 var sCell = teamID + '-' + sService;
                 // console.log(sCell);
-                silentUpdate('att-' + sCell, newAttackFlags)
+                // TODO to team page
+                // silentUpdate('att-' + sCell, newAttackFlags)
                 // silentUpdate('def-' + sCell, newDefenseFlags)
-                silentUpdate('pt_att-' + sCell, newAttackPoints.toFixed(2))
-                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefensePoints.toFixed(0))
-                silentUpdate('sla-' + sCell, "SLA: " + newSLA + "%")
+                silentUpdate('pt_att-' + sCell, newAttackPoints)
+                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefensePoints)
+                // silentUpdate('sla-' + sCell, "SLA: " + newSLA + "%")
                 silentUpdateWidthWithoutAnimation('sla-progress-' + sCell, newSLA + "%")
             }
         }
@@ -1028,18 +1029,18 @@ getAjax('/api/v1/game', function(err, resp){
       + '   <div class="service-att-def">'
       + '       <div class="service-att-def-row">'
       + '           <div class="service-att-def-cell first-column defense-points" id="pt_def-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
-      + '           <div class="service-att-def-cell attack-points">'
-      + '              <div class="tooltip">'
-      + '                 <div class="attack-points-value" id="pt_att-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
-      + '                 <span class="tooltiptext stollen-flags" id="att-' + sTeamId +  '-' + sServiceID + '">0</span>'
-      + '              </div>'
-      + '           </div>'
+      + '           <div class="service-att-def-cell attack-points" id="pt_att-' + sTeamId +  '-' + sServiceID + '">0</div>'
+      // + '              <div class="tooltip">'
+      // + '                 <div class="attack-points-value" id="pt_att-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
+      // + '                 <span class="tooltiptext stollen-flags" id="att-' + sTeamId +  '-' + sServiceID + '">0</span>'
+      // + '              </div>'
+      // + '           </div>'
       + '       </div>'
       + '   </div>'
       + '  </div>'
-      + '  <div class="service-sla-notify-container tooltip">'
+      + '  <div class="service-sla-notify-container">'
       + '    <div class="service-sla-notify-progress" id="sla-progress-' + sTeamId +  '-' + sServiceID + '"></div>'
-      + '    <span class="tooltiptext sla" id="sla-' + sTeamId +  '-' + sServiceID + '">SLA: 100%</span>'
+      // + '    <span class="tooltiptext sla" id="sla-' + sTeamId +  '-' + sServiceID + '">SLA: 100%</span>'
       + '  </div>'
       + '</div>\n';
     }

@@ -397,6 +397,7 @@ img.team-logo {
   border-left: 1px solid #444;
   padding-left: 15px;
   padding-right: 15px;
+  text-align: right;
 }
 
 .activity .activity-value {
@@ -502,13 +503,13 @@ img.team-logo {
 .service-status {
   display: inline-block;
   height: 35px;
-  width: 105px;
+  width: 121px;
   margin-left: 3px;
-  padding-left: 44px;
+  padding-left: 28px;
   background-repeat: no-repeat;
   background-size: 32px 32px;
   vertical-align: middle;
-  background-position: 5px -5px;
+  background-position: 0px -6px;
 }
 
 .service-status.down {
@@ -552,8 +553,8 @@ img.team-logo {
   line-height: 25px;
   margin: 0px;
   padding: 0px;
-  max-width: 120px;
-  width: 120px;
+  max-width: 121px;
+  width: 121px;
   table-layout: fixed
 }
 
@@ -564,22 +565,22 @@ img.team-logo {
 .service-att-def-cell {
   display: table-cell;
   vertical-align: middle;
-  padding-left: 22px;
+  padding-left: 17px;
   padding-top: 2px;
-  line-height: 20px;
-  /*overflow: hidden;*/
+  line-height: 15px;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
-  background-size: 20px 20px;
+  background-size: 15px 15px;
   background-repeat: no-repeat;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
-  background-position: 0px 0px;
+  background-position: 2px 5px;
 }
 
 .service-att-def-cell.first-column {
-  width: 21px;
+  width: 40px;
 }
 
 .attack-points-value {
@@ -603,13 +604,14 @@ img.team-logo {
 }
 
 .service-sla-notify-container {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
   height: 5px;
   width: 137px;
-  display: inline;
   color: black;
   font-size: 12px;
   font-weight: bold;
-  position: relative;
   left: -151px;
   top: -5px;
   vertical-align: bottom;
@@ -623,8 +625,7 @@ img.team-logo {
 .service-sla-notify-progress {
   height: 5px;
   width: 0%;
-  display: inline-block;
-  vertical-align: bottom;
+  display: block;
   background-color: #596a86;
   border-radius: 5px;
 }
