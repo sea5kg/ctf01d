@@ -44,7 +44,7 @@ class Ctf01dServiceStatistics {
 public:
   Ctf01dServiceStatistics(const std::string &sServiceId);
   int getAllStolenFlagsForService();
-  void doIncrementStolenFlagsForService(int nAllStolenFlags);
+  void doIncrementStolenFlagsForService();
   void setStolenFlagsForService(int nStolenFlags);
 
   int getAllDefenseFlagsForService();

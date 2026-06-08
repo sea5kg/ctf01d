@@ -323,6 +323,7 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
   std::map<std::string, Ctf01dServiceStatistics *>::iterator it2;
   it2 = m_mapServiceCostsAndStatistics.find(sServiceId);
   if (it2 != m_mapServiceCostsAndStatistics.end()) {
+    it2->second->doIncrementStolenFlagsForService();
     if (it2->second->getFirstBloodTeamId() == "?") {
       it2->second->setFirstBloodTeamId(sTeamId, nDateAction);
     }

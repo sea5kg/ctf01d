@@ -50,7 +50,7 @@ int Ctf01dServiceStatistics::getAllStolenFlagsForService() {
   return m_nAllStolenFlagsForService;
 }
 
-void Ctf01dServiceStatistics::doIncrementStolenFlagsForService(int nAllStolenFlags) {
+void Ctf01dServiceStatistics::doIncrementStolenFlagsForService() {
   m_nAllStolenFlagsForService++;
 }
 
