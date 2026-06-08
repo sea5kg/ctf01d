@@ -1,6 +1,9 @@
 # Changelog
 
-## [v0.7.2] - (2026 June ??)
+## [v0.7.3] - (2026 ?? ??)
+
+
+## [v0.7.2] - (2026 June 09)
 
 - Fixed increment summary flags stollen
 - Fixed UI
