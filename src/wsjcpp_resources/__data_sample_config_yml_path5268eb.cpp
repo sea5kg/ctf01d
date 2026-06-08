@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 9183;
+  return 9229;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 9183
+  static const std::string sRet = "" // size: 9229
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -293,14 +293,14 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "      ip-or-host: \"27\"\n"
     "    - id: \"t28\" # must be uniq\n"
     "      type: normal\n"
-    "      name: \"Team #28\"\n"
+    "      name: \"Team #28 😊️ 😐️ ☹️\"\n"
     "      active: yes\n"
     "      logo: \"./html/images/teams/team28.png\"\n"
     "      logo-big: \"./html/images/teams/team28.png\"\n"
     "      ip-or-host: \"28\"\n"
     "    - id: \"t29\" # must be uniq\n"
     "      type: normal\n"
-    "      name: \"Team #29\"\n"
+    "      name: \"Team #29 😊︎ 😐︎ ☹︎\"\n"
     "      active: yes\n"
     "      logo: \"./html/images/teams/team29.png\"\n"
     "      logo-big: \"./html/images/teams/team29.png\"\n"

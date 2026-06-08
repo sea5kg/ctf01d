@@ -59,10 +59,10 @@ resources:
       modified: 1779675622
       sha1: "888e571c3f5f5611c74d757392c11f5fddf608dc"
     - filepath: "./data_sample/config.yml"
-      size: 9183
+      size: 9229
       pack-as: "text"
-      modified: 1780716995
-      sha1: "7d3b78b43f22807653fa8fc0e4fa6a25f42788c4"
+      modified: 1780772295
+      sha1: "1f35d08688dd98a47f93fc481f0a5b98ea05e2d7"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
       pack-as: "binary"
@@ -189,10 +189,10 @@ resources:
       modified: 1780581847
       sha1: "bc79b0f246785ed32db11d9145bec0ccc910ca31"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 39092
+      size: 39098
       pack-as: "text"
-      modified: 1780769300
-      sha1: "a51618e1b9da845a1408dd168ecd8d582f9bcff2"
+      modified: 1780893342
+      sha1: "359dbbeeb023b2de96906f1749c70878be915303"
     - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"
@@ -249,10 +249,10 @@ resources:
       modified: 1780581486
       sha1: "385c9deb6c30487dfb28c8860b96bb0da402facf"
     - filepath: "./data_sample/html/css/scoreboard.css"
-      size: 20868
+      size: 20876
       pack-as: "text"
-      modified: 1780765159
-      sha1: "9c62e78968104bdd05c93ac0e26c370bcc941536"
+      modified: 1780772526
+      sha1: "f12467592208192d22274a2a4b3807679750e049"
     - filepath: "./data_sample/html/images/teams/team30.png"
       size: 6052
       pack-as: "binary"
@@ -307,7 +307,7 @@ resources:
       size: 757076
       pack-as: "binary"
       modified: 1780581486
-      sha1: "bbf4ffb55ff0245a88e185353c010a4edaca80ea"
+      sha1: "Could not open file"
     - filepath: "./data_sample/game_result_calculation.py"
       size: 14259
       pack-as: "binary"
@@ -671,7 +671,7 @@ resources:
     - filepath: "./data_sample/html/images/icons/gag.svg"
       size: 2438
       pack-as: "binary"
-      modified: 1780768408
+      modified: 1780771648
       sha1: "194fafbccbb68ee7a91cc0d2509c9bfe0b63af17"
     - filepath: "./data_sample/html/font/AmazingGroteskDemi.otf"
       size: 132460

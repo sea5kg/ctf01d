@@ -62,17 +62,17 @@ def get_myip():
     ]
     for _juryhost in jury_hosts:
         try:
-            _jury_url = "http://" + _juryhost + "/api/v1/myip"
+            _jury_url = "http://" + _juryhost + "/api/v1/my-ip"
             print("  * Try ", _jury_url)
             resp = requests.get(_jury_url, timeout=3)
-            ret = resp.json()['myip']
+            ret = resp.json()['my-ip']
             break
         except Exception as _err:  # pylint: disable=broad-except
             print("  * Error:", str(_err))
             continue
     print("return", ret)
     if ret is None:
-        print("FAILED: could not get myip from jury")
+        print("FAILED: could not get my-ip from jury")
         # sys.exit(-1)
     return ret
 

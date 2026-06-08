@@ -183,7 +183,7 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
  * `http://{HOST}:{PORT}/api/v1/services` - list of services
  * `http://{HOST}:{PORT}/api/v1/scoreboard` - scoreboard table teams-services
  * `http://{HOST}:{PORT}/team-logo/{TEAMID}` - team logos
- * `http://{HOST}:{PORT}/api/v1/myip` - client ip
+ * `http://{HOST}:{PORT}/api/v1/my-ip` - client ip
 
 
 ## Rules

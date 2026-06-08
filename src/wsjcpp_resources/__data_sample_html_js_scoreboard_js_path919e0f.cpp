@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 39092;
+  return 39098;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 39092
+  static const std::string sRet = "" // size: 39098
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -407,23 +407,23 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "}\n"
     "\n"
     "function updateTeamRequiredFields() {\n"
-    "  getAjax('/api/v1/myip', function(err, resp){\n"
+    "  getAjax('/api/v1/my-ip', function(err, resp){\n"
     "    if (err) {\n"
     "      console.error(\"err = \", err, \"resp =\", resp);\n"
     "      return;\n"
     "    }\n"
-    "    window.myip = resp[\"myip\"];\n"
-    "    console.log(\"MyIP: \" + window.myip);\n"
+    "    window.my_ip = resp[\"my-ip\"];\n"
+    "    console.log(\"MyIP: \" + window.my_ip);\n"
     "    window.found_teamid = undefined;\n"
     "    var found_teams = []\n"
     "    // search by exact match ip\n"
     "    for (var i = 0; i < window.teams.length; i++) {\n"
-    "      if (window.teams[i].ip_address == window.myip) {\n"
+    "      if (window.teams[i].ip_address == window.my_ip) {\n"
     "        found_teams.push(window.teams[i].id)\n"
     "      }\n"
     "    }\n"
     "    if (found_teams.length == 0) {\n"
-    "      var mysubnet = get_subnet(window.myip)\n"
+    "      var mysubnet = get_subnet(window.my_ip)\n"
     "      console.log(\"mysubnet \" + mysubnet)\n"
     "      // search by subnet match\n"
     "      for (var i = 0; i < window.teams.length; i++) {\n"

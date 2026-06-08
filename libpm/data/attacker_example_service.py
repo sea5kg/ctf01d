@@ -85,11 +85,11 @@ with sqlite3.connect("flags/flags.db") as conn:
 
 def get_my_ip():
     """ request jury api """
-    url = 'http://' + JURY_HOST + '/api/v1/myip'
+    url = 'http://' + JURY_HOST + '/api/v1/my-ip'
     try:
         resp = requests.get(url, timeout=5)
         if resp.status_code == 200:
-            return resp.json()["myip"]
+            return resp.json()["my-ip"]
     except Exception as err:  # pylint: disable=broad-except
         print("get_my_ip, Could not connect to jury " + url, str(err))
         print(traceback.format_exc())

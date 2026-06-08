@@ -1,7 +1,7 @@
 # Changelog
 
 
-## [v0.7.1] - (2026 ?? ??)
+## [v0.7.1] - (2026 June 08)
 
 - Added Prometheus exposition at GET /api/v1/metrics ([#113](https://github.com/sea5kg/ctf01d/pull/113)). Disabled by default; enable via `scoreboard.prometheus-metrics-endpoint.enabled` and restrict scrapers with `scoreboard.prometheus-metrics-endpoint.allowed-for` (comma-separated wildcard patterns, e.g. `10.10.100.*, 127.0.*`). Not listed clients get HTTP 403.
 - Added Grafana dashboard and Prometheus example for the metrics endpoint ([#115](https://github.com/sea5kg/ctf01d/pull/115))
@@ -15,6 +15,7 @@
 - Redesign logging system for checker (every checker now will be write info messages to self log file)
 - Fixed infinity first-blood
 - Replaced to free font 'AmazingGroteskDemi'
+- Renamed /api/v1/myip -> /api/v1/my-ip
 
 ## [v0.7.0] - (2026 June 4)
 

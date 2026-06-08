@@ -119,7 +119,7 @@ class CommandTests:
                 time.sleep(0.5)
 
             _urls = {
-                "http://localhost:8080/api/v1/myip": 200,
+                "http://localhost:8080/api/v1/my-ip": 200,
                 "http://localhost:8080/flag?teamid=t02&flag=" + UtilsTests.random_flag(): 403,
                 "http://localhost:8080/api/v1/teams": 200,
                 "http://localhost:8080/api/v1/services": 200,

@@ -381,23 +381,23 @@ function get_subnet(ip) {
 }
 
 function updateTeamRequiredFields() {
-  getAjax('/api/v1/myip', function(err, resp){
+  getAjax('/api/v1/my-ip', function(err, resp){
     if (err) {
       console.error("err = ", err, "resp =", resp);
       return;
     }
-    window.myip = resp["myip"];
-    console.log("MyIP: " + window.myip);
+    window.my_ip = resp["my-ip"];
+    console.log("MyIP: " + window.my_ip);
     window.found_teamid = undefined;
     var found_teams = []
     // search by exact match ip
     for (var i = 0; i < window.teams.length; i++) {
-      if (window.teams[i].ip_address == window.myip) {
+      if (window.teams[i].ip_address == window.my_ip) {
         found_teams.push(window.teams[i].id)
       }
     }
     if (found_teams.length == 0) {
-      var mysubnet = get_subnet(window.myip)
+      var mysubnet = get_subnet(window.my_ip)
       console.log("mysubnet " + mysubnet)
       // search by subnet match
       for (var i = 0; i < window.teams.length; i++) {

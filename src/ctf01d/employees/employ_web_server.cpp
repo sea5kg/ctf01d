@@ -354,7 +354,7 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
       return this->httpApiGameCurrentTime(req, resp);
     } else if (request_path == "/api/v1/scoreboard") { // Public endpoint. Allowed without authorization.
       return this->httpApiV1Scoreboard(req, resp);
-    } else if (request_path == "/api/v1/myip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
+    } else if (request_path == "/api/v1/my-ip") { // it's ok. Because network game is public space. This endpoint need for automatic configuration network.
       return this->httpApiV1MyIp(req, resp);
     } else if (request_path == "/api/v1/teams") { // Public endpoint. Allowed without authorization.
       return this->httpApiV1Teams(req, resp);
@@ -429,7 +429,7 @@ int EmployWebServer::httpApiV1Teams(HttpRequest* req, HttpResponse* resp) {
 }
 
 int EmployWebServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
-  resp->json["myip"] = req->client_addr.ip;
+  resp->json["my-ip"] = req->client_addr.ip;
   return 200;
 }
 
