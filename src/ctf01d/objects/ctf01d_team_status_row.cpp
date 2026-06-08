@@ -137,6 +137,18 @@ void Ctf01dTeamStatusRow::setServiceDefenseFlagsAndPoints(const std::string &ser
   updatePoints();
 }
 
+void Ctf01dTeamStatusRow::decrementFlagStollen(const std::string &service_id) {
+  m_mapServicesStatus[service_id]->decrementFlagsStollen();
+}
+
+int Ctf01dTeamStatusRow::getFlagsStollen(const std::string &service_id) {
+  return m_mapServicesStatus[service_id]->getFlagsStollen();
+}
+
+void Ctf01dTeamStatusRow::setFlagsStollen(const std::string &service_id, int val) {
+  return m_mapServicesStatus[service_id]->setFlagsStollen(val);
+}
+
 void Ctf01dTeamStatusRow::incrementAttack(const std::string &service_id, int nFlagPoints) {
   {
     std::lock_guard<std::mutex> lock(m_mutex);

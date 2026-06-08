@@ -281,6 +281,15 @@ int EmployDatabase::numberOfFlagsStollen(std::string sTeamId, std::string sServi
     );
 }
 
+int EmployDatabase::numberOfFlagsStollenByVictim(std::string sTeamId, std::string sServiceId) {
+  return m_pFlagsStolen->selectSumOrCount(
+    "SELECT COUNT(*) as cnt FROM flags_stolen "
+    "   WHERE serviceid = '" + sServiceId + "' "
+    "   AND teamid = '" + sTeamId + "' "
+    ";"
+  );
+}
+
 int EmployDatabase::sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId) {
     return m_pFlagsStolen->selectSumOrCount(
         "SELECT SUM(flag_cost) as points FROM flags_stolen "

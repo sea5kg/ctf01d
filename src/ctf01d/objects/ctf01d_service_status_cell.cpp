@@ -55,6 +55,7 @@ Ctf01dServiceStatusCell::Ctf01dServiceStatusCell(const std::string &sServiceId) 
   m_nAttackFlags = 0;
   m_nAttackPoints = 0;
   m_nDefensePoints = 0;
+  m_flags_stollen.store(0);
 }
 
 const std::string &Ctf01dServiceStatusCell::serviceId() {
@@ -101,6 +102,18 @@ int Ctf01dServiceStatusCell::getAttackFlags() {
 void Ctf01dServiceStatusCell::incrementAttackFlags() {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nAttackFlags++;
+}
+
+void Ctf01dServiceStatusCell::setFlagsStollen(int val) {
+  m_flags_stollen.store(val);
+}
+
+int Ctf01dServiceStatusCell::getFlagsStollen() {
+  return m_flags_stollen.load();
+}
+
+void Ctf01dServiceStatusCell::decrementFlagsStollen() {
+  m_flags_stollen.store(m_flags_stollen.load() - 1);
 }
 
 void Ctf01dServiceStatusCell::setAttackPoints(int nAttackPoints) {

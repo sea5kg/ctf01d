@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 40029;
+  return 40465;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 40029
+  static const std::string sRet = "" // size: 40465
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -863,7 +863,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "                    'game time: ' + humanTimeFromSeconds(resp.game.tc - resp.game.t0) + ' and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.game.tc)\n"
     "                );\n"
     "            }\n"
-    "        } else if (resp.game.tc > resp.game.t0 && resp.game.tc < resp.game.t3) { // before coffe break\n"
+    "        } else if (resp.game.tc > resp.game.t0 && resp.game.tc < resp.game.t3) { // before coffee break\n"
     "            silentUpdateWithoutAnimation('game_current_time', 'game time: ' + humanTimeFromSeconds(resp.game.tc - resp.game.t0) + ', and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.game.tc));\n"
     "            document.getElementById('game_progress_time').style.display = 'block';\n"
     "            document.getElementById('game_progress_time').style.width = Math.ceil((game_passed_time / game_len_time)*100) + '%';\n"
@@ -921,6 +921,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "            for(var sService in t.ts_sta){\n"
     "                var newState = t.ts_sta[sService]['status'];\n"
     "                var newAttackFlags = t.ts_sta[sService]['att'];\n"
+    "                var newFlagsStollen = t.ts_sta[sService]['att_st'];\n"
     "                // var newDefenseFlags = t.ts_sta[sService]['def'];\n"
     "                var newAttackPoints = t.ts_sta[sService]['pt_att'];\n"
     "                var newDefensePoints = t.ts_sta[sService]['pt_def'];\n"
@@ -952,6 +953,10 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "                silentUpdateWithoutAnimation('pt_def-' + sCell, newDefensePoints)\n"
     "                // silentUpdate('sla-' + sCell, \"SLA: \" + newSLA + \"%\")\n"
     "                silentUpdateWidthWithoutAnimation('sla-progress-' + sCell, newSLA + \"%\")\n"
+    "                if (newFlagsStollen < 0) {\n"
+    "                  document.getElementById('flags_stollen_' + sCell).style.display = \"inline-block\";\n"
+    "                  silentUpdate('flags_stollen_' + sCell, newFlagsStollen)\n"
+    "                }\n"
     "            }\n"
     "        }\n"
     "\n"
@@ -1087,6 +1092,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "      + '    <div class=\"service-sla-notify-progress\" id=\"sla-progress-' + sTeamId +  '-' + sServiceID + '\"></div>'\n"
     "      // + '    <span class=\"tooltiptext sla\" id=\"sla-' + sTeamId +  '-' + sServiceID + '\">SLA: 100%</span>'\n"
     "      + '  </div>'\n"
+    "      + '  <div class=\"service-flags-stollen\" style=\"display: none\" id=\"flags_stollen_' + sTeamId +  '-' + sServiceID + '\">0</div>'\n"
     "      + '</div>\\n';\n"
     "    }\n"
     "    team_rows += \"\"\n"

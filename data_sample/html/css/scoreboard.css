@@ -153,7 +153,7 @@ button {
   -webkit-transition: top 1.2s;
   -o-transition: top 1.2s;
   transition: top 1.2s;*/
-  height: 38px;
+  height: 40px;
   border-bottom: 1px solid #444;
   padding-top: 15px;
   position: absolute;
@@ -253,7 +253,7 @@ img.team-logo {
 
 .service {
   display: inline-block;
-  height: 35px;
+  height: 40px;
   vertical-align: top;
   width: 150px;
   line-height: 25px;
@@ -507,14 +507,14 @@ img.team-logo {
 
 .service-status {
   display: inline-block;
-  height: 35px;
+  height: 40px;
   width: 121px;
   margin-left: 3px;
   padding-left: 28px;
   background-repeat: no-repeat;
   background-size: 32px 32px;
   vertical-align: middle;
-  background-position: 0px -6px;
+  background-position: 0px -3px;
 }
 
 .service-status.down {
@@ -570,9 +570,9 @@ img.team-logo {
 .service-att-def-cell {
   display: table-cell;
   vertical-align: middle;
-  padding-left: 17px;
+  padding-left: 19px;
   padding-top: 2px;
-  line-height: 15px;
+  line-height: 22px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -613,7 +613,7 @@ img.team-logo {
   display: inline-block;
   max-width: 100%;
   height: 5px;
-  width: 137px;
+  width: 82px;
   color: black;
   font-size: 12px;
   font-weight: bold;
@@ -625,6 +625,27 @@ img.team-logo {
   border: 1px solid #627eac;
   text-align: left;
   /*padding: 2px;*/
+}
+
+
+.service-flags-stollen {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  height: 11px;
+  line-height: 11px;
+  width: 35px;
+  color: #ff6700;
+  font-size: 11px;
+  left: -153px;
+  top: -3px;
+  vertical-align: bottom;
+  text-align: right;
+  padding-right: 22px;
+  background-image: url("../images/icons/flags-red.svg");
+  background-repeat: no-repeat;
+  background-size: 22px 9px;
+  background-position-x: 38px;
 }
 
 .service-sla-notify-progress {

@@ -254,20 +254,26 @@ void Ctf01dScoreboard::initStateFromStorage() {
       std::string sServiceID = vServices[i].id();
 
       // calculate defense
+      ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate defense");
       int nDefenseFlags = m_pDatabase->numberOfFlagsDefense(pRow->teamId(), sServiceID);
       int nDefensePoints = m_pDatabase->sumPointsOfFlagsDefense(pRow->teamId(), sServiceID);
       pRow->setServiceDefenseFlagsAndPoints(sServiceID, nDefenseFlags, nDefensePoints);
       m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["def"] = nDefenseFlags;
-      m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_def"] = double(nDefensePoints);
+      m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_def"] = nDefensePoints;
 
       // calculate attack
+      ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate attack and flags stollen");
       int nAttackFlags = m_pDatabase->numberOfFlagsStollen(pRow->teamId(), sServiceID);
+      int nFlagsStollen = -1 * m_pDatabase->numberOfFlagsStollenByVictim(pRow->teamId(), sServiceID);
       int nAttackPoints = m_pDatabase->sumPointsOfFlagsStollen(pRow->teamId(), sServiceID);
       pRow->setServiceAttackFlagsAndPoints(sServiceID, nAttackFlags, nAttackPoints);
+      pRow->setFlagsStollen(sServiceID, nFlagsStollen);
+      m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["att_st"] = nFlagsStollen;
       m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["att"] = nAttackFlags;
-      m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_att"] = double(nAttackPoints);
+      m_jsonScoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_att"] = nAttackPoints;
 
       // calculate uptime / sla
+      ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") uptime / sla");
       int nPutsFlagsAllResults = m_pDatabase->numberOfFlagFlagsCheckerPutAllResults(pRow->teamId(), sServiceID);
       int nPutsFlagsSuccessResults = m_pDatabase->numberOfFlagFlagsCheckerPutSuccessResult(pRow->teamId(), sServiceID);
       pRow->setServiceFlagsForCalculateSLA(sServiceID, nPutsFlagsAllResults, nPutsFlagsSuccessResults);
@@ -299,8 +305,10 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
   std::map<std::string, Ctf01dTeamStatusRow *>::iterator it_victim;
   it_victim = m_mapTeamsStatuses.find(flag.getTeamId());
   int victim_place = 0;
+  Ctf01dTeamStatusRow *row_victim = nullptr;
   if (it_victim != m_mapTeamsStatuses.end()) {
-    victim_place = it_victim->second->getPlace();
+    row_victim = it_victim->second;
+    victim_place = row_victim->getPlace();
   }
 
   std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
@@ -309,10 +317,13 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
     Ctf01dTeamStatusRow *pRow = it->second;
     int thief_place = pRow->getPlace();
     flag_points = m_formulas->calcStolen(flag_points, victim_place, thief_place, m_nTeamCount);
-
     m_pDatabase->insertToFlagsStolen(flag, sTeamId, flag_points, nDateAction, victim_place, thief_place);
     pRow->incrementAttack(sServiceId, flag_points);
     pRow->updatePoints();
+    if (row_victim != nullptr) {
+      row_victim->decrementFlagStollen(sServiceId);
+      m_jsonScoreboard["scoreboard"][flag.getTeamId()]["ts_sta"][sServiceId]["att_st"] = row_victim->getFlagsStollen(sServiceId);
+    }
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["att"] = pRow->getAttackFlags(sServiceId);
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["pt_att"] = pRow->getAttackPoints(sServiceId);
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["sla"] = pRow->calculateSLA(sServiceId);

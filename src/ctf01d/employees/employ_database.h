@@ -64,6 +64,7 @@ public:
 
   // flags_stollen
   int numberOfFlagsStollen(std::string sTeamId, std::string sServiceId);
+  int numberOfFlagsStollenByVictim(std::string sTeamId, std::string sServiceId);
   int sumPointsOfFlagsStollen(std::string sTeamId, std::string sServiceId);
   int numberOfStolenFlagsForService(std::string sServiceId);
   std::pair<std::string, long> getFirstBloodFromStolenFlagsForService(std::string sServiceId);

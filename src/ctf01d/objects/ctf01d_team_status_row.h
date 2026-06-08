@@ -65,6 +65,10 @@ public:
   int getDefensePoints(const std::string &service_id);
   void setServiceDefenseFlagsAndPoints(const std::string &service_id, int nDefenseFlags, int nDefensePoints);
 
+  void decrementFlagStollen(const std::string &service_id);
+  int getFlagsStollen(const std::string &service_id);
+  void setFlagsStollen(const std::string &service_id, int val);
+
   void incrementAttack(const std::string &service_id, int nFlagPoints);
   void setServiceAttackFlagsAndPoints(const std::string &service_id, int nAttackFlags, int nAttackPoints);
   int getAttackFlags(const std::string &service_id);

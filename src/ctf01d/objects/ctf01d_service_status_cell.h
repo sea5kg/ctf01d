@@ -39,6 +39,7 @@
 
 #include <string>
 #include <mutex>
+#include <atomic>
 
 enum class Ctf01dServiceStatus : char {
   SERVICE_UP = 'u',
@@ -76,6 +77,10 @@ public:
   int getAttackFlags();
   void incrementAttackFlags();
 
+  void setFlagsStollen(int val);
+  int getFlagsStollen();
+  void decrementFlagsStollen();
+
   void setAttackPoints(int nAttackPoints);
   int getAttackPoints();
   void addAttackPoints(int nAttackPoints);
@@ -97,6 +102,7 @@ private:
   int m_nDefenseFlags;
   int m_nAttackFlags;
   int m_nAttackPoints;
+  std::atomic<int> m_flags_stollen;
   int m_nDefensePoints;
   int m_nUpPointTimeInSec;
 

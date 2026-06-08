@@ -6,6 +6,7 @@
 - Fixed UI
 - Added auto font sizing for team names
 - Added auto font sizing for services names
+- Fixed #77 Implemented showing count stolen flags close with defended points
 
 ## [v0.7.1] - (2026 June 08)
 

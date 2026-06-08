@@ -837,7 +837,7 @@ function updateScoreboard() {
                     'game time: ' + humanTimeFromSeconds(resp.game.tc - resp.game.t0) + ' and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.game.tc)
                 );
             }
-        } else if (resp.game.tc > resp.game.t0 && resp.game.tc < resp.game.t3) { // before coffe break
+        } else if (resp.game.tc > resp.game.t0 && resp.game.tc < resp.game.t3) { // before coffee break
             silentUpdateWithoutAnimation('game_current_time', 'game time: ' + humanTimeFromSeconds(resp.game.tc - resp.game.t0) + ', and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.game.tc));
             document.getElementById('game_progress_time').style.display = 'block';
             document.getElementById('game_progress_time').style.width = Math.ceil((game_passed_time / game_len_time)*100) + '%';
@@ -895,6 +895,7 @@ function updateScoreboard() {
             for(var sService in t.ts_sta){
                 var newState = t.ts_sta[sService]['status'];
                 var newAttackFlags = t.ts_sta[sService]['att'];
+                var newFlagsStollen = t.ts_sta[sService]['att_st'];
                 // var newDefenseFlags = t.ts_sta[sService]['def'];
                 var newAttackPoints = t.ts_sta[sService]['pt_att'];
                 var newDefensePoints = t.ts_sta[sService]['pt_def'];
@@ -926,6 +927,10 @@ function updateScoreboard() {
                 silentUpdateWithoutAnimation('pt_def-' + sCell, newDefensePoints)
                 // silentUpdate('sla-' + sCell, "SLA: " + newSLA + "%")
                 silentUpdateWidthWithoutAnimation('sla-progress-' + sCell, newSLA + "%")
+                if (newFlagsStollen < 0) {
+                  document.getElementById('flags_stollen_' + sCell).style.display = "inline-block";
+                  silentUpdate('flags_stollen_' + sCell, newFlagsStollen)
+                }
             }
         }
 
@@ -1061,6 +1066,7 @@ getAjax('/api/v1/game', function(err, resp){
       + '    <div class="service-sla-notify-progress" id="sla-progress-' + sTeamId +  '-' + sServiceID + '"></div>'
       // + '    <span class="tooltiptext sla" id="sla-' + sTeamId +  '-' + sServiceID + '">SLA: 100%</span>'
       + '  </div>'
+      + '  <div class="service-flags-stollen" style="display: none" id="flags_stollen_' + sTeamId +  '-' + sServiceID + '">0</div>'
       + '</div>\n';
     }
     team_rows += ""
