@@ -184,15 +184,15 @@ resources:
       modified: 1780581486
       sha1: "7726bf6746d80d7ac2c2726d0415487461dfb19c"
     - filepath: "./data_sample/html/index.html"
-      size: 10071
+      size: 10073
       pack-as: "text"
-      modified: 1780581847
-      sha1: "bc79b0f246785ed32db11d9145bec0ccc910ca31"
+      modified: 1780927650
+      sha1: "29f89f7499c896aee453da6c446dc09c656cbab2"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 39114
+      size: 38984
       pack-as: "text"
-      modified: 1780926707
-      sha1: "49f0512b24f330344c5413a6195d0ce650d5f06f"
+      modified: 1780927800
+      sha1: "66f433856c249134cc7afb35a84c5cfb3ccc7986"
     - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"

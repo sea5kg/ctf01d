@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_index_html_path6838f8::getPackAs() con
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_index_html_path6838f8::getBufferSize() const {
-  return 10071;
+  return 10073;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
-  static const std::string sRet = "" // size: 10071
+  static const std::string sRet = "" // size: 10073
     "<!DOCTYPE html>\n"
     "<html>\n"
     "<head>\n"
@@ -34,7 +34,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "  <link rel=\"stylesheet\" href=\"css/scoreboard.css\">\n"
     "</head>\n"
     "<body>\n"
-    "  <div class=\"ctf01d-global-page-switcher\" id=\"menu_btn\" nextcontentid=\"game_details\"></div>\n"
+    "  <div class=\"ctf01d-global-page-switcher\" id=\"menu_btn\" next-content-id=\"game_details\"></div>\n"
     "  <div class=\"ctf01d-page-content\" id=\"game_details\">\n"
     "    <div class=\"game-name\" id=\"game_name\"></div>\n"
     "    <div class=\"game-time-range\" id=\"game_time_range\"></div>\n"

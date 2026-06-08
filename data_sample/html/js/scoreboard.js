@@ -26,22 +26,12 @@ var menu_btn = document.getElementsByClassName('ctf01d-global-page-switcher')[0]
 var tabs_content = document.getElementsByClassName('ctf01d-page-content');
 
 menu_btn.onclick = function() {
-    // menu_btn
-    for (var i = 0; i < tabs_content.length; i++) {
-        tabs_content[i].style.display = '';
-    }
-
-    var nextcontentid = this.getAttribute('nextcontentid');
-    document.getElementById(nextcontentid).style.display = 'block';
-
-    if (nextcontentid == 'game_details') {
-        this.setAttribute('nextcontentid', 'game_scoreboard');
-    } else {
-        this.setAttribute('nextcontentid', 'game_details');
-    }
-
-    console.log(nextcontentid)
-
+  for (var i = 0; i < tabs_content.length; i++) {
+    tabs_content[i].style.display = '';
+  }
+  var next_content_id = this.getAttribute('next-content-id');
+  document.getElementById(next_content_id).style.display = 'block';
+  this.setAttribute('next-content-id', next_content_id == 'game_details' ? 'game_scoreboard' : 'game_details');
 }
 
 const escapeHtml = (unsafe) => {

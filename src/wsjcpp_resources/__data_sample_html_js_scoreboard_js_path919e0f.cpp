@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 39114;
+  return 38984;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 39114
+  static const std::string sRet = "" // size: 38984
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -52,22 +52,12 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "var tabs_content = document.getElementsByClassName('ctf01d-page-content');\n"
     "\n"
     "menu_btn.onclick = function() {\n"
-    "    // menu_btn\n"
-    "    for (var i = 0; i < tabs_content.length; i++) {\n"
-    "        tabs_content[i].style.display = '';\n"
-    "    }\n"
-    "\n"
-    "    var nextcontentid = this.getAttribute('nextcontentid');\n"
-    "    document.getElementById(nextcontentid).style.display = 'block';\n"
-    "\n"
-    "    if (nextcontentid == 'game_details') {\n"
-    "        this.setAttribute('nextcontentid', 'game_scoreboard');\n"
-    "    } else {\n"
-    "        this.setAttribute('nextcontentid', 'game_details');\n"
-    "    }\n"
-    "\n"
-    "    console.log(nextcontentid)\n"
-    "\n"
+    "  for (var i = 0; i < tabs_content.length; i++) {\n"
+    "    tabs_content[i].style.display = '';\n"
+    "  }\n"
+    "  var next_content_id = this.getAttribute('next-content-id');\n"
+    "  document.getElementById(next_content_id).style.display = 'block';\n"
+    "  this.setAttribute('next-content-id', next_content_id == 'game_details' ? 'game_scoreboard' : 'game_details');\n"
     "}\n"
     "\n"
     "const escapeHtml = (unsafe) => {\n"
