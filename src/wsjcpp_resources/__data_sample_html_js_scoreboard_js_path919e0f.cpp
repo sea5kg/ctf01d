@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 38984;
+  return 39649;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 38984
+  static const std::string sRet = "" // size: 39649
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -62,6 +62,25 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "\n"
     "const escapeHtml = (unsafe) => {\n"
     "    return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\"', '&quot;').replaceAll(\"'\", '&#039;');\n"
+    "}\n"
+    "\n"
+    "function getTextWidth(text, fontSize) {\n"
+    "  // Create or reuse a canvas element\n"
+    "  const canvas = document.createElement('canvas');\n"
+    "  const context = canvas.getContext('2d');\n"
+    "  context.font = fontSize + \" DejaVuSans\";\n"
+    "  const metrics = context.measureText(text);\n"
+    "  return Math.ceil(metrics.width);\n"
+    "}\n"
+    "\n"
+    "function getTeamNameFontSize(team_name) {\n"
+    "  var font_size = 20; // default 20px\n"
+    "  var width = getTextWidth(team_name, font_size + \"px\");\n"
+    "  while (width > 130 && font_size > 8) {\n"
+    "    font_size = font_size - 1;\n"
+    "    width = getTextWidth(team_name, font_size + \"px\");\n"
+    "  }\n"
+    "  return font_size;\n"
     "}\n"
     "\n"
     "var base_url_path = window.location.protocol + \"//\" + window.location.host + window.location.pathname.replace(/[^/\\\\]*$/, '');\n"
@@ -1025,7 +1044,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "      + '  <div class=\"place\" id=\"place-' + sTeamId + '\" ></div>'\n"
     "      + \"  <div class='team-logo'><img class='team-logo' id='team-logo-\" + sTeamId + \"' logo_last_updated='0' src='\" + resp.teams[num_team].logo + \"'/></div>\"\n"
     "      + '  <div class=\"team tooltip\">'\n"
-    "      + '    <div class=\"team-name\">' + escapeHtml(resp.teams[num_team].name) + '</div>'\n"
+    "      + '    <div class=\"team-name\" style=\"font-size: ' + getTeamNameFontSize(resp.teams[num_team].name) + 'px\">' + escapeHtml(resp.teams[num_team].name) + '</div>'\n"
     "      + '    <span class=\"tooltiptext team-info\">'\n"
     "      + '     Team Name: ' + escapeHtml(resp.teams[num_team].name) + '<br>'\n"
     "      + '     Team ID: <input readonly id=\"' + team_id + '-copy\" value=\"' + sTeamId + '\"> <button onclick=\"copyToBuffer(\\'' + team_id + '-copy\\')\">copy</button> <br>'\n"

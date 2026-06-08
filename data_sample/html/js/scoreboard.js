@@ -38,6 +38,25 @@ const escapeHtml = (unsafe) => {
     return unsafe.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 }
 
+function getTextWidth(text, fontSize) {
+  // Create or reuse a canvas element
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  context.font = fontSize + " DejaVuSans";
+  const metrics = context.measureText(text);
+  return Math.ceil(metrics.width);
+}
+
+function getTeamNameFontSize(team_name) {
+  var font_size = 20; // default 20px
+  var width = getTextWidth(team_name, font_size + "px");
+  while (width > 130 && font_size > 8) {
+    font_size = font_size - 1;
+    width = getTextWidth(team_name, font_size + "px");
+  }
+  return font_size;
+}
+
 var base_url_path = window.location.protocol + "//" + window.location.host + window.location.pathname.replace(/[^/\\]*$/, '');
 
 // Define the class blueprint
@@ -999,7 +1018,7 @@ getAjax('/api/v1/game', function(err, resp){
       + '  <div class="place" id="place-' + sTeamId + '" ></div>'
       + "  <div class='team-logo'><img class='team-logo' id='team-logo-" + sTeamId + "' logo_last_updated='0' src='" + resp.teams[num_team].logo + "'/></div>"
       + '  <div class="team tooltip">'
-      + '    <div class="team-name">' + escapeHtml(resp.teams[num_team].name) + '</div>'
+      + '    <div class="team-name" style="font-size: ' + getTeamNameFontSize(resp.teams[num_team].name) + 'px">' + escapeHtml(resp.teams[num_team].name) + '</div>'
       + '    <span class="tooltiptext team-info">'
       + '     Team Name: ' + escapeHtml(resp.teams[num_team].name) + '<br>'
       + '     Team ID: <input readonly id="' + team_id + '-copy" value="' + sTeamId + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy\')">copy</button> <br>'
