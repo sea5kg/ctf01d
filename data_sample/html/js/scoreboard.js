@@ -57,6 +57,16 @@ function getTeamNameFontSize(team_name) {
   return font_size;
 }
 
+function getServiceNameFontSize(team_name) {
+  var font_size = 20; // default 20px
+  var width = getTextWidth(team_name, font_size + "px");
+  while (width > 100 && font_size > 8) {
+    font_size = font_size - 1;
+    width = getTextWidth(team_name, font_size + "px");
+  }
+  return font_size;
+}
+
 var base_url_path = window.location.protocol + "//" + window.location.host + window.location.pathname.replace(/[^/\\]*$/, '');
 
 // Define the class blueprint
@@ -107,7 +117,7 @@ class ServiceInfo {
       + '      </div>'
       + '    </div>'
       + '    <div class="service-cell">'
-      + '      <b>' + this.__name + '</b><br>'
+      + '      <div class="service-name" style="font-size: ' + getServiceNameFontSize(this.__name) + 'px">' + this.__name + '</div>'
       + '      <div class="service-att-def">'
       + '        <div class="service-att-def-row">'
       + '          <div class="service-att-def-cell defense-flags">'

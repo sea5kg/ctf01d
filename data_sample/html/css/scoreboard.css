@@ -263,6 +263,11 @@ img.team-logo {
   text-align: center;
 }
 
+.service-name {
+  font-size: 20px;
+  font-weight: bold;
+}
+
 .headers .service {
   display: inline-table;
   height: 100px;

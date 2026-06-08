@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 9229;
+  return 9252;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 9229
+  static const std::string sRet = "" // size: 9252
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -57,7 +57,7 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "    script-timeout-in-seconds: 5 # max time for running script\n"
     "    round-in-seconds: 15\n"
     "  - id: \"example_service2\" # work directory will be checker_example_service4\n"
-    "    name: \"Service2\"\n"
+    "    name: \"Service2 😊️ 😐️ ☹️\"\n"
     "    enabled: yes\n"
     "    logo: \"./html/images/services/service2-default-icon.svg\"\n"
     "    logo-big: \"./html/images/services/service2-default-icon.svg\"\n"

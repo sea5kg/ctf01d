@@ -5,6 +5,7 @@
 - Fixed increment summary flags stollen
 - Fixed UI
 - Added auto font sizing for team names
+- Added auto font sizing for services names
 
 ## [v0.7.1] - (2026 June 08)
 

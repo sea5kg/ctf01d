@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 39649;
+  return 40029;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 39649
+  static const std::string sRet = "" // size: 40029
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -83,6 +83,16 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "  return font_size;\n"
     "}\n"
     "\n"
+    "function getServiceNameFontSize(team_name) {\n"
+    "  var font_size = 20; // default 20px\n"
+    "  var width = getTextWidth(team_name, font_size + \"px\");\n"
+    "  while (width > 100 && font_size > 8) {\n"
+    "    font_size = font_size - 1;\n"
+    "    width = getTextWidth(team_name, font_size + \"px\");\n"
+    "  }\n"
+    "  return font_size;\n"
+    "}\n"
+    "\n"
     "var base_url_path = window.location.protocol + \"//\" + window.location.host + window.location.pathname.replace(/[^/\\\\]*$/, '');\n"
     "\n"
     "// Define the class blueprint\n"
@@ -133,7 +143,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "      + '      </div>'\n"
     "      + '    </div>'\n"
     "      + '    <div class=\"service-cell\">'\n"
-    "      + '      <b>' + this.__name + '</b><br>'\n"
+    "      + '      <div class=\"service-name\" style=\"font-size: ' + getServiceNameFontSize(this.__name) + 'px\">' + this.__name + '</div>'\n"
     "      + '      <div class=\"service-att-def\">'\n"
     "      + '        <div class=\"service-att-def-row\">'\n"
     "      + '          <div class=\"service-att-def-cell defense-flags\">'\n"

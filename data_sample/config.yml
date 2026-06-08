@@ -31,7 +31,7 @@ services:
     script-timeout-in-seconds: 5 # max time for running script
     round-in-seconds: 15
   - id: "example_service2" # work directory will be checker_example_service4
-    name: "Service2"
+    name: "Service2 😊️ 😐️ ☹️"
     enabled: yes
     logo: "./html/images/services/service2-default-icon.svg"
     logo-big: "./html/images/services/service2-default-icon.svg"

@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_css_scoreboard_css_path67c217::getPack
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_css_scoreboard_css_path67c217::getBufferSize() const {
-  return 20885;
+  return 20944;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() const {
-  static const std::string sRet = "" // size: 20885
+  static const std::string sRet = "" // size: 20944
     "@font-face {\n"
     "  font-family: 'DejaVuSans';\n"
     "  src: url('../font/AmazingGroteskDemi.otf');\n"
@@ -287,6 +287,11 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  /*padding-left: 10px;\n"
     "  padding-right: 5px;*/\n"
     "  text-align: center;\n"
+    "}\n"
+    "\n"
+    ".service-name {\n"
+    "  font-size: 20px;\n"
+    "  font-weight: bold;\n"
     "}\n"
     "\n"
     ".headers .service {\n"
