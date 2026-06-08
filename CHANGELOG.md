@@ -1,5 +1,8 @@
 # Changelog
 
+## [v0.7.2] - (2026 June ??)
+
+- Fixed increment summary flags stollen
 
 ## [v0.7.1] - (2026 June 08)
 
