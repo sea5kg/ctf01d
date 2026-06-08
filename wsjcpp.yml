@@ -303,11 +303,6 @@ resources:
       pack-as: "binary"
       modified: 1780581486
       sha1: "cd35d14634e5ca97ac5162ffee14399f6a0f3091"
-    - filepath: "./data_sample/html/font/DejaVuSans.ttf"
-      size: 757076
-      pack-as: "binary"
-      modified: 1780581486
-      sha1: "Could not open file"
     - filepath: "./data_sample/game_result_calculation.py"
       size: 14259
       pack-as: "binary"
