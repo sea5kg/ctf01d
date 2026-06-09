@@ -49,7 +49,7 @@ Ctf01dTeamStatusRow::Ctf01dTeamStatusRow(
   const std::vector<ctf01d::service_config> &vServicesConf = pConfig->servicesConf();
   TAG = "Ctf01dTeamStatusRow-" + team_id;
   m_sTeamId = team_id;
-  m_nPlace = 0;
+  m_place.store(0);
   m_nPoints = 0;
 
   for (unsigned int i = 0; i < vServicesConf.size(); i++) {
@@ -59,14 +59,12 @@ Ctf01dTeamStatusRow::Ctf01dTeamStatusRow(
   }
 }
 
-void Ctf01dTeamStatusRow::setPlace(int nPlace) {
-  std::lock_guard<std::mutex> lock(m_mutex);
-  m_nPlace = nPlace;
+void Ctf01dTeamStatusRow::setPlace(int val) {
+  m_place.store(val);
 }
 
 int Ctf01dTeamStatusRow::getPlace() {
-  // std::lock_guard<std::mutex> lock(m_mutex);
-  return m_nPlace;
+  return m_place.load();
 }
 
 const std::string &Ctf01dTeamStatusRow::teamId() {

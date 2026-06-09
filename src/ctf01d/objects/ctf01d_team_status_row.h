@@ -85,7 +85,7 @@ private:
   std::mutex m_mutex;
   std::string TAG;
   std::string m_sTeamId;
-  int m_nPlace;
+  std::atomic<int> m_place;
   int m_nPoints;
   int m_nTries;
   std::map<std::string, Ctf01dServiceStatusCell *> m_mapServicesStatus;
