@@ -314,7 +314,7 @@ void EmployWebServer::updateJsonCache() {
       teamInfo["name"] = teamConf.name();
       teamInfo["ip_address"] = teamConf.ip_or_host();
       teamInfo["logo"] = "./logo/team/" + teamConf.id();
-      // teamInfo["logo"] = "./logo/big/team/" + teamConf.id();
+      teamInfo["logo-big"] = "./logo/big/team/" + teamConf.id();
       teamInfo["logo_last_write_time"] = teamConf.get_logo_last_modified_time();
 
       jsonGame["teams"].push_back(teamInfo);
