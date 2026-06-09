@@ -2,6 +2,7 @@
 
 ## [v0.7.3] - (2026 ?? ??)
 
+- Fixed slider for show first 3 teams
 
 ## [v0.7.2] - (2026 June 09)
 

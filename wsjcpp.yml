@@ -189,10 +189,10 @@ resources:
       modified: 1780927650
       sha1: "29f89f7499c896aee453da6c446dc09c656cbab2"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 40465
+      size: 40512
       pack-as: "text"
-      modified: 1780942887
-      sha1: "d429938a1dcc6a8844df1d57d1c8b558718077b6"
+      modified: 1780965154
+      sha1: "f234d78c79671a68e191b41742072f0b50c0a62b"
     - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"

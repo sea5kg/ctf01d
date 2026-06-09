@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 40465;
+  return 40512;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 40465
+  static const std::string sRet = "" // size: 40512
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -324,9 +324,9 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "\n"
     "function getTopTeamSliderSlides(limit) {\n"
     "  var teams = [];\n"
-    "  if (document.ctf01d_last_scoreboard) {\n"
-    "    for (var teamID in document.ctf01d_last_scoreboard) {\n"
-    "      var score = document.ctf01d_last_scoreboard[teamID];\n"
+    "  if (window.ctf01d_last_scoreboard) {\n"
+    "    for (var teamID in window.ctf01d_last_scoreboard) {\n"
+    "      var score = window.ctf01d_last_scoreboard[teamID];\n"
     "      var team = getTeamByID(teamID);\n"
     "      if (!team) {\n"
     "        continue;\n"
@@ -805,6 +805,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "      }\n"
     "      _service.update_status(resp.s_sta[service_id], resp.game);\n"
     "    }\n"
+    "    window.ctf01d_last_scoreboard = resp.scoreboard;\n"
     "\n"
     "    // game time\n"
     "    var game_len_time = resp.game.t3 - resp.game.t0;\n"
