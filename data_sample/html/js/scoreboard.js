@@ -165,7 +165,7 @@ class ServiceInfo {
     if (prevValue == (base_url_path + "images/icons/gag.svg")) {
       document.getElementById(first_blood_id).src = newValue
       silentUpdateWithoutAnimation(first_blood_team_name, team_name);
-      silentUpdateWithoutAnimation(first_blood_team_name, firstBloodTimeFromStartGame);
+      silentUpdateWithoutAnimation(first_blood_time, firstBloodTimeFromStartGame);
     } else if (prevValue != newValue) {
       // console.log(prevValue, newValue)
       document.getElementById(first_blood_id).src = newValue
