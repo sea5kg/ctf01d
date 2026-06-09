@@ -1053,7 +1053,7 @@ getAjax('/api/v1/game', function(err, resp){
       + '  <div class="service-status down" id="status-' + sTeamId +  '-' + sServiceID + '"> '
       + '   <div class="service-att-def">'
       + '       <div class="service-att-def-row">'
-      + '           <div class="service-att-def-cell first-column defense-points" id="pt_def-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
+      + '           <div class="service-att-def-cell first-column defense-points" id="pt_def-' + sTeamId +  '-' + sServiceID + '">0</div>'
       + '           <div class="service-att-def-cell attack-points" id="pt_att-' + sTeamId +  '-' + sServiceID + '">0</div>'
       // + '              <div class="tooltip">'
       // + '                 <div class="attack-points-value" id="pt_att-' + sTeamId +  '-' + sServiceID + '">0.0</div>'
