@@ -298,9 +298,9 @@ function showTeamSlider(slides) {
 
 function getTopTeamSliderSlides(limit) {
   var teams = [];
-  if (document.ctf01d_last_scoreboard) {
-    for (var teamID in document.ctf01d_last_scoreboard) {
-      var score = document.ctf01d_last_scoreboard[teamID];
+  if (window.ctf01d_last_scoreboard) {
+    for (var teamID in window.ctf01d_last_scoreboard) {
+      var score = window.ctf01d_last_scoreboard[teamID];
       var team = getTeamByID(teamID);
       if (!team) {
         continue;
@@ -779,6 +779,7 @@ function updateScoreboard() {
       }
       _service.update_status(resp.s_sta[service_id], resp.game);
     }
+    window.ctf01d_last_scoreboard = resp.scoreboard;
 
     // game time
     var game_len_time = resp.game.t3 - resp.game.t0;
