@@ -1,5 +1,5 @@
 name: "ctf01d"
-version: v0.7.3
+version: v0.8.0
 cmake_minimum_required: "3.0"
 cmake_cxx_standard: "17"
 description: "Jury System for a attack-defence ctf games"
@@ -189,10 +189,10 @@ resources:
       modified: 1780927650
       sha1: "29f89f7499c896aee453da6c446dc09c656cbab2"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 40512
+      size: 40505
       pack-as: "text"
-      modified: 1780965154
-      sha1: "f234d78c79671a68e191b41742072f0b50c0a62b"
+      modified: 1781017804
+      sha1: "42121793e0f18b6a595055471d61deb839e8c455"
     - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"
