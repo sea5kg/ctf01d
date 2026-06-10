@@ -1,8 +1,15 @@
 # Changelog
 
-## [v0.7.3] - (2026 ?? ??)
+## [v0.7.3] - (2026 June 10)
 
 - Fixed slider for show first 3 teams
+- Updated to latest environment (Fixed CVE-2026-45447)
+- Fixed int to long for flags_stollen
+- Fixed first blood hint
+- Fixed '0.0' -> '0' in scoreboard
+- Fixed slider for show first 3 teams
+- Missing logo-big for a team (for scoreboard)
+- Update test game simulation data
 
 ## [v0.7.2] - (2026 June 09)
 
