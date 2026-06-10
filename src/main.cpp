@@ -42,6 +42,7 @@
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/include/i_web_server.h"
 #include "ctf01d/utils/ctf01d_logger.h"
+#include <sqlite3.h>
 
 std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
   std::vector<std::string> ret;
@@ -211,6 +212,63 @@ int main(int argc, const char* argv[]) {
   if (getuid() == 0) {
     std::cout << "This program started as root." << std::endl;
   }
+
+  sqlite3 *db;
+  int nRet = sqlite3_open_v2(
+    "flags_stolen.db.orig",
+    &db,
+    SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
+    NULL
+  );
+  if (nRet != SQLITE_OK) {
+    ctf01d::log::throw_err("MAIN", "Failed to open conn: " + std::to_string(nRet));
+    return false;
+  }
+
+  sqlite3_stmt* pQuery = nullptr;
+  nRet = sqlite3_prepare_v2(db, "SELECT id, date_action_original FROM flags_stolen", -1, &pQuery, NULL);
+  // prepare the statement
+  if (nRet != SQLITE_OK) {
+    ctf01d::log::throw_err("MAIN", "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)db)) + "\n");
+    return -1;
+  }
+  long now_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()
+  ).count();
+
+  while (sqlite3_step(pQuery) == SQLITE_ROW) {
+    int id = sqlite3_column_int64(pQuery, 0);
+    int date_action_original = sqlite3_column_int64(pQuery, 1);
+    long recovered_date_action = (now_ms & ~0xFFFFFFFFLL) | (unsigned int)date_action_original;
+
+    // // Если recovered больше now_ms, откатываем на один период
+    // if (recovered > now_ms) {
+    //     recovered -= (1LL << 32);
+    // }
+    // std::cout << "Restored long: " << recovered << "\n";
+    std::cout << id << " " << date_action_original << ", recovered " << recovered_date_action << std::endl;
+    {
+      std::string squery = "UPDATE flags_stolen SET date_action = " + std::to_string(recovered_date_action) + " WHERE id = " + std::to_string(id);
+      char *zErrMsg = 0;
+      int nRet = sqlite3_exec(db, squery.c_str(), 0, 0, &zErrMsg);
+      if (nRet != SQLITE_OK) {
+        ctf01d::log::throw_err("MAIN", "Problem with insert: " + std::string(zErrMsg) + "\n SQL-query: " + squery);
+        return false;
+      }
+    }
+  }
+  sqlite3_finalize(pQuery);
+
+  // long nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
+  // std::cout << "nDateAction: " << nDateAction << std::endl;
+  // int nDateAction1 = int(nDateAction);
+  // std::cout << "nDateAction: " << nDateAction1 << std::endl;
+
+  
+
+  // long nDateAction2 = nDateAction1 + long();
+  // std::cout << "nDateAction2: " << nDateAction2 << std::endl;
+  return 0;
 
   std::string TAG = "MAIN";
   std::string appName = std::string(WSJCPP_APP_NAME);
