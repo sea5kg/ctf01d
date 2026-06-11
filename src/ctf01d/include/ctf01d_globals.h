@@ -37,7 +37,11 @@
 
 #pragma once
 
+namespace ctf01d {
+
 static int MAX_FLAG_LIFETIME_SECONDS = 1500;
 static int MAX_FLAG_COST_IN_POINTS = 1000;
 static int MIN_TCP_PORT = 11;
 static int MAX_TCP_PORT = 65435;
+
+} // namespace ctf01d

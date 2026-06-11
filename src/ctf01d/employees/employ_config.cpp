@@ -67,11 +67,11 @@ EmployConfig::EmployConfig()
   m_bAppliedConfig = false;
   m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60, m_game_vars);
   m_flag_lifetime_in_seconds->set_minimum(1);
-  m_flag_lifetime_in_seconds->set_maximum(MAX_FLAG_LIFETIME_SECONDS);
+  m_flag_lifetime_in_seconds->set_maximum(ctf01d::MAX_FLAG_LIFETIME_SECONDS);
 
   m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100, m_game_vars);
   m_flag_cost_in_points->set_minimum(1);
-  m_flag_cost_in_points->set_maximum(MAX_FLAG_COST_IN_POINTS);
+  m_flag_cost_in_points->set_maximum(ctf01d::MAX_FLAG_COST_IN_POINTS);
 
   m_game_start_utc = ctf01d::var_datetime::create({"game", "start_utc"}, "2023-11-12 16:00:00", m_game_vars);
   m_game_end_utc = ctf01d::var_datetime::create({"game", "end_utc"}, "2030-11-12 22:00:00", m_game_vars);
@@ -83,8 +83,8 @@ EmployConfig::EmployConfig()
   // scoreboard config
 
   m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080, m_scoreboard_vars);
-  m_scoreboard_port->set_minimum(MIN_TCP_PORT);
-  m_scoreboard_port->set_maximum(MAX_TCP_PORT);
+  m_scoreboard_port->set_minimum(ctf01d::MIN_TCP_PORT);
+  m_scoreboard_port->set_maximum(ctf01d::MAX_TCP_PORT);
   m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_scoreboard_vars);
   m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_sWorkDir, m_scoreboard_vars);
   m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_scoreboard_vars);
