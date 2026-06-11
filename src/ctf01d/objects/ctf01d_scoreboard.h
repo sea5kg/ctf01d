@@ -88,15 +88,15 @@ private:
   void sortPlaces(); // TODO merge this function with update costs
   void updateServicesStatistics();
 
-  // TODO move to Employ Stats
-  // std::shared_ptr<ctf01d::service_statistics> TODO 
+  // TODO move to employ scoreboard
   std::map<std::string, ctf01d::service_statistics *> m_mapServiceCostsAndStatistics;
   int m_nAllDefenseFlags;
 
   std::string randomServiceStatus();
   bool m_bRandom;
   int m_nAllTriesActivities;
-  std::map<std::string, Ctf01dTeamStatusRow *> m_mapTeamsStatuses;
+  // TODO shared ptr and move to employ scoreboard
+  std::map<std::string, ctf01d::team_status_row *> m_mapTeamsStatuses;
 
   std::mutex m_mutexJson;
   nlohmann::json m_jsonScoreboard; // prepare data for scoreboard

@@ -41,9 +41,11 @@
 #include <map>
 #include "ctf01d_service_status_cell.h"
 
-class Ctf01dTeamStatusRow {
+namespace ctf01d {
+
+class team_status_row {
 public:
-  Ctf01dTeamStatusRow(const std::string &sTeamId, int nGameStartInSec, int nGameEndInSec);
+  team_status_row(const std::string &sTeamId, int nGameStartInSec, int nGameEndInSec);
   const std::string &teamId();
 
   void setPlace(int nPlace);
@@ -90,3 +92,5 @@ private:
   int m_nTries;
   std::map<std::string, Ctf01dServiceStatusCell *> m_mapServicesStatus;
 };
+
+} // namespace ctf01d

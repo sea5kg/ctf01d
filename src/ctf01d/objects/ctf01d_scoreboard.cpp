@@ -76,7 +76,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
     ctf01d::team_config teamConf = vTeamsConf[i_team];
     std::string sTeamId = teamConf.id();
-    m_mapTeamsStatuses[sTeamId] = new Ctf01dTeamStatusRow(sTeamId, nGameStartInSec, nGameEndInSec);
+    m_mapTeamsStatuses[sTeamId] = new ctf01d::team_status_row(sTeamId, nGameStartInSec, nGameEndInSec);
     m_mapTeamsStatuses[sTeamId]->setPlace(i_team + 1);
     // random values of service for testing
     if (m_bRandom) {
@@ -177,7 +177,7 @@ void Ctf01dScoreboard::setServiceStatus(const std::string &sTeamId, const std::s
   std::lock_guard<std::mutex> lock(m_mutexJson);
   std::string sNewStatus = m_bRandom ? randomServiceStatus() : sStatus;
 
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
     if (it->second->serviceStatus(sServiceId) != sNewStatus) {
@@ -189,7 +189,7 @@ void Ctf01dScoreboard::setServiceStatus(const std::string &sTeamId, const std::s
 
 void Ctf01dScoreboard::incrementTries(const std::string &sTeamId) {
   std::lock_guard<std::mutex> lock(m_mutexJson);
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   m_nAllTriesActivities++;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
@@ -241,9 +241,9 @@ void Ctf01dScoreboard::initStateFromStorage() {
 
   ctf01d::log::info(TAG, "Setting teams statistics...");
   m_nAllTriesActivities = 0;
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   for (it = m_mapTeamsStatuses.begin(); it != m_mapTeamsStatuses.end(); it++) {
-    Ctf01dTeamStatusRow *pRow = it->second;
+    ctf01d::team_status_row *pRow = it->second;
 
     int nTries = m_pDatabase->numberOfFlagAttempts(pRow->teamId());
     m_nAllTriesActivities += nTries;
@@ -302,19 +302,19 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
   int flag_points = m_flag_cost_in_points->value(); // TODO basic
   long nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
   // victim place in scoreboard
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it_victim;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it_victim;
   it_victim = m_mapTeamsStatuses.find(flag.getTeamId());
   int victim_place = 0;
-  Ctf01dTeamStatusRow *row_victim = nullptr;
+  ctf01d::team_status_row *row_victim = nullptr;
   if (it_victim != m_mapTeamsStatuses.end()) {
     row_victim = it_victim->second;
     victim_place = row_victim->getPlace();
   }
 
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
-    Ctf01dTeamStatusRow *pRow = it->second;
+    ctf01d::team_status_row *pRow = it->second;
     int thief_place = pRow->getPlace();
     flag_points = m_formulas->calcStolen(flag_points, victim_place, thief_place, m_nTeamCount);
     m_pDatabase->insertToFlagsStolen(flag, sTeamId, flag_points, nDateAction, victim_place, thief_place);
@@ -351,10 +351,10 @@ void Ctf01dScoreboard::incrementDefenseScore(const ctf01d::flag &flag) {
   int nFlagPoints = m_flag_cost_in_points->value();
   m_pDatabase->insertToFlagsDefense(flag, nFlagPoints);
 
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
-    Ctf01dTeamStatusRow *pRow = it->second;
+    ctf01d::team_status_row *pRow = it->second;
     pRow->incrementDefense(sServiceId, nFlagPoints);
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["def"] = pRow->getDefenseFlags(sServiceId);
     m_jsonScoreboard["scoreboard"][sTeamId]["ts_sta"][sServiceId]["pt_def"] = pRow->getDefensePoints(sServiceId);
@@ -385,10 +385,10 @@ void Ctf01dScoreboard::incrementFlagsPuttedAndServiceUp(const ctf01d::flag &flag
 
   // success putted
   std::lock_guard<std::mutex> lock(m_mutexJson);
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
-    Ctf01dTeamStatusRow *pRow = it->second;
+    ctf01d::team_status_row *pRow = it->second;
     if (pRow->serviceStatus(sServiceId) != sNewStatus) {
       pRow->setServiceStatus(sServiceId, sNewStatus);
     }
@@ -410,10 +410,10 @@ void Ctf01dScoreboard::insertFlagPutFail(const ctf01d::flag &flag, const std::st
   std::string sTeamId = flag.getTeamId();
   std::string sNewStatus = m_bRandom ? randomServiceStatus() : sServiceStatus;
 
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   it = m_mapTeamsStatuses.find(flag.getTeamId());
   if (it != m_mapTeamsStatuses.end()) {
-    Ctf01dTeamStatusRow *pRow = it->second;
+    ctf01d::team_status_row *pRow = it->second;
     if (pRow->serviceStatus(sServiceId) != sNewStatus) {
       pRow->setServiceStatus(sServiceId, sNewStatus);
     }
@@ -428,10 +428,10 @@ void Ctf01dScoreboard::insertFlagPutFail(const ctf01d::flag &flag, const std::st
 
 void Ctf01dScoreboard::updateScore(const std::string &sTeamId, const std::string &sServiceId) {
   std::lock_guard<std::mutex> lock(m_mutexJson);
-  std::map<std::string,Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string,ctf01d::team_status_row *>::iterator it;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
-    Ctf01dTeamStatusRow *pRow = it->second;
+    ctf01d::team_status_row *pRow = it->second;
     // pRow->updateScore(sServiceId);
     m_jsonScoreboard["scoreboard"][sTeamId]["points"] = pRow->getPoints();
     sortPlaces();
@@ -439,7 +439,7 @@ void Ctf01dScoreboard::updateScore(const std::string &sTeamId, const std::string
 }
 
 std::string Ctf01dScoreboard::serviceStatus(const std::string &sTeamId, const std::string &sServiceId) {
-  std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+  std::map<std::string, ctf01d::team_status_row *>::iterator it;
   it = m_mapTeamsStatuses.find(sTeamId);
   if (it != m_mapTeamsStatuses.end()) {
     return it->second->serviceStatus(sServiceId);
@@ -456,7 +456,7 @@ void Ctf01dScoreboard::sortPlaces() {
   // sort places
   {
     std::vector<int> vScores;
-    std::map<std::string, Ctf01dTeamStatusRow *>::iterator it1;
+    std::map<std::string, ctf01d::team_status_row *>::iterator it1;
     for (it1 = m_mapTeamsStatuses.begin(); it1 != m_mapTeamsStatuses.end(); it1++) {
       if(std::find(vScores.begin(), vScores.end(), it1->second->getPoints()) == vScores.end()) {
         vScores.push_back(it1->second->getPoints());
@@ -472,9 +472,9 @@ void Ctf01dScoreboard::sortPlaces() {
 
   // update json
   {
-    std::map<std::string, Ctf01dTeamStatusRow *>::iterator it1;
+    std::map<std::string, ctf01d::team_status_row *>::iterator it1;
     for (it1 = m_mapTeamsStatuses.begin(); it1 != m_mapTeamsStatuses.end(); it1++) {
-      Ctf01dTeamStatusRow *pTeamStatus = it1->second;
+      ctf01d::team_status_row *pTeamStatus = it1->second;
       std::string sTeamId_ = pTeamStatus->teamId();
 
       // std::cout << sTeamNum << ": result: score: " << pTeamStatus->score() << ", place: " << pTeamStatus->getPlace() << "\n";
@@ -500,7 +500,7 @@ void Ctf01dScoreboard::updateServicesStatistics() {
 // std::string Ctf01dScoreboard::toString() {
 //   std::lock_guard<std::mutex> lock(m_mutexFlagsLive);
 //   std::string sResult = "";
-//   std::map<std::string, Ctf01dTeamStatusRow *>::iterator it;
+//   std::map<std::string, ctf01d::team_status_row *>::iterator it;
 //   for (it = m_mapTeamsStatuses.begin(); it != m_mapTeamsStatuses.end(); ++it){
 //     sResult += it->first + ": \n"
 //       "\tpoints: " + std::to_string(it->second->getPoints()) + "\n"

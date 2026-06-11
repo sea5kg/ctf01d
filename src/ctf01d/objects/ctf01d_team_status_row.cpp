@@ -40,14 +40,16 @@
 #include <wsjcpp_employees.h>
 #include "ctf01d/employees/employ_config.h"
 
-Ctf01dTeamStatusRow::Ctf01dTeamStatusRow(
+namespace ctf01d {
+
+team_status_row::team_status_row(
   const std::string &team_id,
   int nGameStartInSec,
   int nGameEndInSec
 ) {
   EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
   const std::vector<ctf01d::service_config> &vServicesConf = pConfig->servicesConf();
-  TAG = "Ctf01dTeamStatusRow-" + team_id;
+  TAG = "team_status_row-" + team_id;
   m_sTeamId = team_id;
   m_place.store(0);
   m_nPoints = 0;
@@ -59,47 +61,47 @@ Ctf01dTeamStatusRow::Ctf01dTeamStatusRow(
   }
 }
 
-void Ctf01dTeamStatusRow::setPlace(int val) {
+void team_status_row::setPlace(int val) {
   m_place.store(val);
 }
 
-int Ctf01dTeamStatusRow::getPlace() {
+int team_status_row::getPlace() {
   return m_place.load();
 }
 
-const std::string &Ctf01dTeamStatusRow::teamId() {
+const std::string &team_status_row::teamId() {
   // std::lock_guard<std::mutex> lock(m_mutex);
   return m_sTeamId;
 }
 
-void Ctf01dTeamStatusRow::setPoints(int nPoints) { // only for random
+void team_status_row::setPoints(int nPoints) { // only for random
   std::lock_guard<std::mutex> lock(m_mutex);
   m_nPoints = nPoints;
 }
 
-int Ctf01dTeamStatusRow::getPoints() {
+int team_status_row::getPoints() {
   return m_nPoints;
 }
 
-void Ctf01dTeamStatusRow::setServiceStatus(const std::string &service_id, std::string sStatus){
+void team_status_row::setServiceStatus(const std::string &service_id, std::string sStatus){
   // std::lock_guard<std::mutex> lock(m_mutex);
   m_mapServicesStatus[service_id]->setStatus(sStatus);
 }
 
-void Ctf01dTeamStatusRow::setTries(int nTries) {
+void team_status_row::setTries(int nTries) {
   m_nTries = nTries;
 }
 
-int Ctf01dTeamStatusRow::tries() {
+int team_status_row::tries() {
   return m_nTries;
 }
 
-std::string Ctf01dTeamStatusRow::serviceStatus(const std::string &service_id){
+std::string team_status_row::serviceStatus(const std::string &service_id){
   // std::lock_guard<std::mutex> lock(m_mutex);
   return m_mapServicesStatus[service_id]->status();
 }
 
-std::string Ctf01dTeamStatusRow::servicesToString() {
+std::string team_status_row::servicesToString() {
   std::lock_guard<std::mutex> lock(m_mutex);
   std::string sResult = "";
   /*std::map<int,std::string>::iterator it;
@@ -109,7 +111,7 @@ std::string Ctf01dTeamStatusRow::servicesToString() {
   return sResult;
 }
 
-void Ctf01dTeamStatusRow::incrementDefense(const std::string &service_id, int nFlagPoints) {
+void team_status_row::incrementDefense(const std::string &service_id, int nFlagPoints) {
   {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_mapServicesStatus[service_id]->incrementDefenseFlags();
@@ -118,15 +120,15 @@ void Ctf01dTeamStatusRow::incrementDefense(const std::string &service_id, int nF
   updatePoints();
 }
 
-int Ctf01dTeamStatusRow::getDefenseFlags(const std::string &service_id) {
+int team_status_row::getDefenseFlags(const std::string &service_id) {
   return m_mapServicesStatus[service_id]->getDefenseFlags();
 }
 
-int Ctf01dTeamStatusRow::getDefensePoints(const std::string &service_id) {
+int team_status_row::getDefensePoints(const std::string &service_id) {
   return m_mapServicesStatus[service_id]->getDefensePoints();
 }
 
-void Ctf01dTeamStatusRow::setServiceDefenseFlagsAndPoints(const std::string &service_id, int nDefenseFlags, int nDefensePoints) {
+void team_status_row::setServiceDefenseFlagsAndPoints(const std::string &service_id, int nDefenseFlags, int nDefensePoints) {
   {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_mapServicesStatus[service_id]->setDefenseFlags(nDefenseFlags);
@@ -135,19 +137,19 @@ void Ctf01dTeamStatusRow::setServiceDefenseFlagsAndPoints(const std::string &ser
   updatePoints();
 }
 
-void Ctf01dTeamStatusRow::decrementFlagStollen(const std::string &service_id) {
+void team_status_row::decrementFlagStollen(const std::string &service_id) {
   m_mapServicesStatus[service_id]->decrementFlagsStollen();
 }
 
-int Ctf01dTeamStatusRow::getFlagsStollen(const std::string &service_id) {
+int team_status_row::getFlagsStollen(const std::string &service_id) {
   return m_mapServicesStatus[service_id]->getFlagsStollen();
 }
 
-void Ctf01dTeamStatusRow::setFlagsStollen(const std::string &service_id, int val) {
+void team_status_row::setFlagsStollen(const std::string &service_id, int val) {
   return m_mapServicesStatus[service_id]->setFlagsStollen(val);
 }
 
-void Ctf01dTeamStatusRow::incrementAttack(const std::string &service_id, int nFlagPoints) {
+void team_status_row::incrementAttack(const std::string &service_id, int nFlagPoints) {
   {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_mapServicesStatus[service_id]->incrementAttackFlags();
@@ -156,7 +158,7 @@ void Ctf01dTeamStatusRow::incrementAttack(const std::string &service_id, int nFl
   updatePoints();
 }
 
-void Ctf01dTeamStatusRow::setServiceAttackFlagsAndPoints(const std::string &service_id, int nAttackFlags, int nAttackPoints) {
+void team_status_row::setServiceAttackFlagsAndPoints(const std::string &service_id, int nAttackFlags, int nAttackPoints) {
   {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_mapServicesStatus[service_id]->setAttackFlags(nAttackFlags);
@@ -165,15 +167,15 @@ void Ctf01dTeamStatusRow::setServiceAttackFlagsAndPoints(const std::string &serv
   updatePoints();
 }
 
-int Ctf01dTeamStatusRow::getAttackFlags(const std::string &service_id) {
+int team_status_row::getAttackFlags(const std::string &service_id) {
   return m_mapServicesStatus[service_id]->getAttackFlags();
 }
 
-int Ctf01dTeamStatusRow::getAttackPoints(const std::string &service_id) {
+int team_status_row::getAttackPoints(const std::string &service_id) {
   return m_mapServicesStatus[service_id]->getAttackPoints();
 }
 
-void Ctf01dTeamStatusRow::updatePoints() {
+void team_status_row::updatePoints() {
   std::lock_guard<std::mutex> lock(m_mutex);
   m_nPoints = 0;
   std::map<std::string, Ctf01dServiceStatusCell *>::iterator it;
@@ -188,20 +190,22 @@ void Ctf01dTeamStatusRow::updatePoints() {
   }
 }
 
-void Ctf01dTeamStatusRow::setServiceFlagsForCalculateSLA(const std::string &service_id, int nPutsFlagsAllResults, int nPutsFlagsSuccessResults) {
+void team_status_row::setServiceFlagsForCalculateSLA(const std::string &service_id, int nPutsFlagsAllResults, int nPutsFlagsSuccessResults) {
   std::lock_guard<std::mutex> lock(m_mutex);
   m_mapServicesStatus[service_id]->setFlagsPutAllResultsCounter(nPutsFlagsAllResults);
   m_mapServicesStatus[service_id]->setFlagsPutSuccessResultsCounter(nPutsFlagsSuccessResults);
 }
 
-void Ctf01dTeamStatusRow::incrementPutFlagSuccess(const std::string &service_id) {
+void team_status_row::incrementPutFlagSuccess(const std::string &service_id) {
   m_mapServicesStatus[service_id]->incrementPutFlagSuccess();
 }
 
-void Ctf01dTeamStatusRow::incrementPutFlagFail(const std::string &service_id) {
+void team_status_row::incrementPutFlagFail(const std::string &service_id) {
   m_mapServicesStatus[service_id]->incrementPutFlagFail();
 }
 
-int Ctf01dTeamStatusRow::calculateSLA(const std::string &service_id) {
+int team_status_row::calculateSLA(const std::string &service_id) {
   return m_mapServicesStatus[service_id]->calculateSLA();
 }
+
+} // namespace ctf01d
