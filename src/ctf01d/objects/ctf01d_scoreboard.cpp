@@ -72,7 +72,7 @@ scoreboard::scoreboard(
   m_flag_cost_in_points = config->get_flag_cost_in_points();
   m_team_count = vTeamsConf.size();
   m_alive_flags = findWsjcppEmploy<alive_flags>();
-  m_formulas = std::make_shared<Ctf01dFormulasForPoints_RuCtf>();
+  m_formulas = std::make_shared<ctf01d::formulas_for_points_ructf>();
 
   m_teams_statuses.clear(); // possible memory leak
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
@@ -318,7 +318,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   if (it != m_teams_statuses.end()) {
     ctf01d::team_status_row *pRow = it->second;
     int thief_place = pRow->getPlace();
-    flag_points = m_formulas->calcStolen(flag_points, victim_place, thief_place, m_team_count);
+    flag_points = m_formulas->calc_stolen(flag_points, victim_place, thief_place, m_team_count);
     m_database->insertToFlagsStolen(flag, team_id, flag_points, nDateAction, victim_place, thief_place);
     pRow->incrementAttack(service_id, flag_points);
     pRow->updatePoints();

@@ -103,7 +103,7 @@ private:
   void init_json_scoreboard();
   void update_json_scoreboard();
 
-  std::shared_ptr<Ctf01dFormulasForPoints> m_formulas;
+  std::shared_ptr<ctf01d::formulas_for_points> m_formulas;
 };
 
 } // namespace ctf01d

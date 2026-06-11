@@ -39,7 +39,9 @@
 
 #include <string>
 
-int Ctf01dFormulasForPoints_RuCtf::calcStolen(int base_points, int victim_place, int thief_place, int team_count) {
+namespace ctf01d {
+
+int formulas_for_points_ructf::calc_stolen(int base_points, int victim_place, int thief_place, int team_count) {
   if (team_count == 1 || victim_place > team_count || thief_place > team_count) {
     return 0.0;
   }
@@ -51,3 +53,5 @@ int Ctf01dFormulasForPoints_RuCtf::calcStolen(int base_points, int victim_place,
   }
   return result;
 }
+
+} // namespace ctf01d

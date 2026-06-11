@@ -43,7 +43,7 @@
 
 int main() {
 
-    std::shared_ptr<Ctf01dFormulasForPoints> formula = std::make_shared<Ctf01dFormulasForPoints_RuCtf>();
+    std::shared_ptr<ctf01d::formulas_for_points> formula = std::make_shared<ctf01d::formulas_for_points_ructf>();
 
     struct LocalDataTestRuCtf {
         LocalDataTestRuCtf(int base_points, int victim_place, int thief_place, int team_count, int expected)
@@ -78,7 +78,7 @@ int main() {
     int ret = 0;
     for (int i = 0; i < tests.size(); ++i) {
         LocalDataTestRuCtf t = tests[i];
-        int got = formula->calcStolen(t.base_points, t.victim_place, t.thief_place, t.team_count);
+        int got = formula->calc_stolen(t.base_points, t.victim_place, t.thief_place, t.team_count);
         int i_got = got;
         int i_expected = t.expected;
         if (i_got != i_expected) {

@@ -39,12 +39,16 @@
 
 #include <string>
 
-class Ctf01dFormulasForPoints {
+namespace ctf01d {
+
+class formulas_for_points {
 public:
-  virtual int calcStolen(int base_points, int victim_place, int thief_place, int team_count) = 0;
+  virtual int calc_stolen(int base_points, int victim_place, int thief_place, int team_count) = 0;
 };
 
-class Ctf01dFormulasForPoints_RuCtf : public Ctf01dFormulasForPoints {
+class formulas_for_points_ructf : public formulas_for_points {
 public:
-  virtual int calcStolen(int base_points, int victim_place, int thief_place, int team_count) override;
+  virtual int calc_stolen(int base_points, int victim_place, int thief_place, int team_count) override;
 };
+
+} // namespace ctf01d

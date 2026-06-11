@@ -24,6 +24,7 @@
         "pycache",
         "pylint",
         "REUSEADDR",
+        "ructf",
         "settimeout",
         "smallsha",
         "snakecase",
