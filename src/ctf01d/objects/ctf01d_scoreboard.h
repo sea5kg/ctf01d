@@ -47,62 +47,63 @@
 #include "ctf01d_team_status_row.h"
 #include "ctf01d_var.h"
 
-class Ctf01dScoreboard {
+namespace ctf01d {
+
+class scoreboard {
 public:
-  Ctf01dScoreboard(
-    bool bRandom,
-    int nGameStartInSec,
-    int nGameEndInSec,
-    int nGameCoffeeBreakStartInSec,
-    int nGameCoffeeBreakEndInSec
+  scoreboard(
+    bool random,
+    int game_start_in_seconds,
+    int game_end_in_seconds,
+    int game_coffee_break_start_in_seconds,
+    int game_coffee_break_end_in_seconds
   );
 
-  void setServiceStatus(const std::string &sTeamId, const std::string &sServiceId, const std::string &sStatus);
-  void incrementTries(const std::string &sTeamId);
-  void initStateFromStorage();
+  void set_service_status(const std::string &team_id, const std::string &sServiceId, const std::string &sStatus);
+  void increment_tries(const std::string &team_id);
+  void init_state_from_storage();
 
   // Returns flag points on success; std::nullopt if this team has already
   // stolen the flag (dedup check happens under the same lock as the insert
   // so concurrent submissions can't double-credit).
-  std::optional<int> incrementAttackScore(const ctf01d::flag &flag, const std::string &sTeamId);
-  void incrementDefenseScore(const ctf01d::flag &flag);
-  void incrementFlagsPuttedAndServiceUp(const ctf01d::flag &flag);
-  void insertFlagPutFail(const ctf01d::flag &flag, const std::string &sServiceStatus, const std::string &sDescrStatus);
-  void updateScore(const std::string &sTeamId, const std::string &sServiceId);
-  std::string serviceStatus(const std::string &sTeamId, const std::string &sServiceId);
-
-  // std::string toString();
-  const nlohmann::json &toJson();
+  std::optional<int> increment_attack_score(const ctf01d::flag &flag, const std::string &team_id);
+  void increment_defense_score(const ctf01d::flag &flag);
+  void increment_flags_putted_and_service_up(const ctf01d::flag &flag);
+  void insert_flag_put_fail(const ctf01d::flag &flag, const std::string &service_status, const std::string &description_status);
+  // void update_points(const std::string &team_id, const std::string &service_id);
+  std::string service_status(const std::string &team_id, const std::string &service_id);
+  const nlohmann::json &to_json();
 
 private:
   std::string TAG;
   IAliveFlags *m_alive_flags;
-  EmployDatabase *m_pDatabase;
+  EmployDatabase *m_database;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
-  int m_nGameStartInSec;
-  int m_nGameEndInSec;
-  int m_nGameCoffeeBreakStartInSec;
-  int m_nGameCoffeeBreakEndInSec;
-  int m_nTeamCount;
+  int m_game_start_in_seconds;
+  int m_game_end_in_seconds;
+  int m_game_coffee_break_start_in_seconds;
+  int m_game_coffee_break_end_in_seconds;
+  int m_team_count;
 
-  void sortPlaces(); // TODO merge this function with update costs
-  void updateServicesStatistics();
+  void sort_places(); // TODO merge this function with update costs
+  void update_services_statistics();
 
   // TODO move to employ scoreboard
-  std::map<std::string, ctf01d::service_statistics *> m_mapServiceCostsAndStatistics;
-  int m_nAllDefenseFlags;
+  std::map<std::string, ctf01d::service_statistics *> m_service_costs_and_statistics;
+  int m_all_defense_flags;
 
-  std::string randomServiceStatus();
-  bool m_bRandom;
-  int m_nAllTriesActivities;
+  std::string random_service_status();
+  bool m_random;
+  int m_all_tries_activities; // TODO move to Employ activities
   // TODO shared ptr and move to employ scoreboard
-  std::map<std::string, ctf01d::team_status_row *> m_mapTeamsStatuses;
+  std::map<std::string, ctf01d::team_status_row *> m_teams_statuses;
 
-  std::mutex m_mutexJson;
-  nlohmann::json m_jsonScoreboard; // prepare data for scoreboard
-  void initJsonScoreboard();
-  void updateJsonScoreboard();
-  // nlohmann::json m_jsonGF; // prepare data for flags costs
+  std::mutex m_mutex_scoreboard;
+  nlohmann::json m_scoreboard; // prepare data for scoreboard
+  void init_json_scoreboard();
+  void update_json_scoreboard();
 
   std::shared_ptr<Ctf01dFormulasForPoints> m_formulas;
 };
+
+} // namespace ctf01d

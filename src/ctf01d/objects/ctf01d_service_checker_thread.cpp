@@ -183,7 +183,7 @@ void service_checker_thread::run() {
       && nCurrentTime < m_pConfig->gameCoffeeBreakEndUTCInSec()
     ) {
       m_logger->info(TAG, "Game on coffee break");
-      m_pConfig->scoreboard()->setServiceStatus(m_team_config.id(), m_service_config.id(), Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK);
+      m_pConfig->scoreboard()->set_service_status(m_team_config.id(), m_service_config.id(), Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK);
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       continue;
     }
@@ -195,7 +195,7 @@ void service_checker_thread::run() {
 
     if (nCurrentTime < nGameStartUTCInSec) {
       m_logger->warn(TAG, "Game started after: " + std::to_string(nGameStartUTCInSec - nCurrentTime) + " seconds");
-      m_pConfig->scoreboard()->setServiceStatus(m_team_config.id(), m_service_config.id(), Ctf01dServiceStatusCell::SERVICE_WAIT);
+      m_pConfig->scoreboard()->set_service_status(m_team_config.id(), m_service_config.id(), Ctf01dServiceStatusCell::SERVICE_WAIT);
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       continue;
     };
@@ -221,26 +221,26 @@ void service_checker_thread::run() {
       if (nExitCode == service_checker_thread::CHECKER_CODE_UP) {
         // >>>>>>>>>>> service is UP <<<<<<<<<<<<<<
         m_logger->ok(TAG, " => service is up");
-        m_pConfig->scoreboard()->incrementFlagsPuttedAndServiceUp(flag);
+        m_pConfig->scoreboard()->increment_flags_putted_and_service_up(flag);
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_CORRUPT) {
         // >>>>>>>>>>> service is CORRUPT <<<<<<<<<<<<<<
         m_logger->warn(TAG, " => service is corrupt");
-        m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_CORRUPT, "corrupt");
+        m_pConfig->scoreboard()->insert_flag_put_fail(flag, Ctf01dServiceStatusCell::SERVICE_CORRUPT, "corrupt");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_MUMBLE) {
         // >>>>>>>>>>> service is MUMBLE <<<<<<<<<<<<<<
         m_logger->warn(TAG, " => service is mumble");
         m_logger->warn(TAG, "exit_code = " + std::to_string(nExitCode));
-        m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_MUMBLE, "mumble");
+        m_pConfig->scoreboard()->insert_flag_put_fail(flag, Ctf01dServiceStatusCell::SERVICE_MUMBLE, "mumble");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_DOWN) {
         // >>>>>>>>>>> service is DOWN <<<<<<<<<<<<<<
-        m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_DOWN, "down");
+        m_pConfig->scoreboard()->insert_flag_put_fail(flag, Ctf01dServiceStatusCell::SERVICE_DOWN, "down");
         m_logger->warn(TAG, " => service is down");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_SHIT) {
         // >>>>>>>>>>> checker is SHIT <<<<<<<<<<<<<<
-        m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_SHIT, "shit");
+        m_pConfig->scoreboard()->insert_flag_put_fail(flag, Ctf01dServiceStatusCell::SERVICE_SHIT, "shit");
         m_logger->err(TAG, " => checker is shit");
       } else {
-        m_pConfig->scoreboard()->insertFlagPutFail(flag, Ctf01dServiceStatusCell::SERVICE_SHIT, "internal_error");
+        m_pConfig->scoreboard()->insert_flag_put_fail(flag, Ctf01dServiceStatusCell::SERVICE_SHIT, "internal_error");
         m_logger->err(TAG, " => runChecker - wrong code return");
       }
     } else {
@@ -267,7 +267,7 @@ void service_checker_thread::run() {
         // service is up
         // TODO: only if last time (== flag time live) was up
         if (!m_pDatabase->isSomebodyStole(outdatedFlag)) {
-          m_pConfig->scoreboard()->incrementDefenseScore(outdatedFlag);
+          m_pConfig->scoreboard()->increment_defense_score(outdatedFlag);
         }
       }
         // }

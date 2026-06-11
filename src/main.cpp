@@ -280,7 +280,7 @@ int main(int argc, const char* argv[]) {
 
     // TODO move to hot reload and EmployScoreboard::init
     ctf01d::log::info(TAG, "Restoring states from storage...");
-    config->scoreboard()->initStateFromStorage();
+    config->scoreboard()->init_state_from_storage();
     ctf01d::log::ok(TAG, "Restored state from storage.");
     std::vector<ctf01d::service_checker_thread *> vThreads;
     ctf01d::log::info(TAG, "Starting threads...");
@@ -299,7 +299,7 @@ int main(int argc, const char* argv[]) {
         ctf01d::team_config team_config = config->teamsConf()[i_team];
 
         // reset status to down
-        config->scoreboard()->setServiceStatus(team_config.id(), service_config.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
+        config->scoreboard()->set_service_status(team_config.id(), service_config.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
         // pConfig->scoreboard()->setTeamTries();
 
         ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(service_logger, service_config, team_config);

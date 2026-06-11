@@ -93,7 +93,7 @@ EmployConfig::EmployConfig()
   m_ip_or_host_prefix = ctf01d::var_string::create({"config", "ip-or-host-prefix"}, "", m_teams_config);
   m_ip_or_host_suffix = ctf01d::var_string::create({"config", "ip-or-host-suffix"}, "", m_teams_config);
 
-  m_pScoreboard = nullptr;
+  m_scoreboard = nullptr;
 }
 
 EmployConfig::~EmployConfig() {
@@ -198,7 +198,7 @@ bool EmployConfig::applyConfig() {
   }
 
   // scoreboard
-  m_pScoreboard = std::make_shared<Ctf01dScoreboard>(
+  m_scoreboard = std::make_shared<ctf01d::scoreboard>(
     m_scoreboard_random->value(),
     m_game_start_utc->value_in_seconds(),
     m_game_end_utc->value_in_seconds(),
@@ -278,8 +278,8 @@ int EmployConfig::gameCoffeeBreakEndUTCInSec() {
   return m_game_coffee_break_end_utc->value_in_seconds();
 }
 
-std::shared_ptr<Ctf01dScoreboard> EmployConfig::scoreboard() {
-  return m_pScoreboard;
+std::shared_ptr<ctf01d::scoreboard> EmployConfig::scoreboard() {
+  return m_scoreboard;
 }
 
 // helper

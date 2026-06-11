@@ -83,7 +83,7 @@ public:
   int gameCoffeeBreakStartUTCInSec();
   int gameCoffeeBreakEndUTCInSec();
 
-  std::shared_ptr<Ctf01dScoreboard> scoreboard();
+  std::shared_ptr<ctf01d::scoreboard> scoreboard();
 
   void update_files_in_data();
 
@@ -110,7 +110,7 @@ private:
 
   // scoreboard config
   ctf01d::scope_vars m_scoreboard_vars = ctf01d::scope_vars("scoreboard_config");
-  std::shared_ptr<Ctf01dScoreboard> m_pScoreboard;
+  std::shared_ptr<ctf01d::scoreboard> m_scoreboard;
   std::shared_ptr<ctf01d::var_int> m_scoreboard_port;
   std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_random;

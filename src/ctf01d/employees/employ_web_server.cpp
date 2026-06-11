@@ -438,7 +438,7 @@ int EmployWebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
   auto config = findWsjcppEmploy<EmployConfig>();
   teamLogos->update_last_change_time();
 
-  nlohmann::json jsonScoreboard = config->scoreboard()->toJson();
+  nlohmann::json jsonScoreboard = config->scoreboard()->to_json();
   teamLogos->update_scoreboard_json(jsonScoreboard);
   std::string sScoreboardJson = jsonScoreboard.dump();
   resp->Data(
@@ -535,7 +535,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     resp->String(sErrorMsg);
     return 400;
   }
-  config->scoreboard()->incrementTries(sTeamId);
+  config->scoreboard()->increment_tries(sTeamId);
 
   findWsjcppEmploy<EmployDatabase>()->insertFlagAttempt(sTeamId, sFlag, sRequestIP);
 
@@ -575,7 +575,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 403;
   }
 
-  std::string sServiceStatus = config->scoreboard()->serviceStatus(sTeamId, flag.getServiceId());
+  std::string sServiceStatus = config->scoreboard()->service_status(sTeamId, flag.getServiceId());
 
   // std::cout << "sServiceStatus: " << sServiceStatus << "\n";
 
@@ -590,7 +590,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // TODO light update scoreboard
   // incrementAttackScore performs the dedup check under its own mutex,
   // so check-then-insert is atomic against concurrent submissions.
-  std::optional<int> oPoints = config->scoreboard()->incrementAttackScore(flag, sTeamId);
+  std::optional<int> oPoints = config->scoreboard()->increment_attack_score(flag, sTeamId);
   if (!oPoints.has_value()) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-170): flag already stolen by your team";
@@ -642,7 +642,7 @@ int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   }
 
   auto scoreboard = config->scoreboard();
-  nlohmann::json jsonScoreboard = scoreboard->toJson();
+  nlohmann::json jsonScoreboard = scoreboard->to_json();
 
   std::ostringstream oss;
 
