@@ -486,7 +486,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 400;
   }
 
-  std::string sTeamId = req->GetParam("teamid");
+  std::string sTeamId = req->GetParam("team_id");
   sTeamId = WsjcppCore::trim(sTeamId);
   sTeamId = WsjcppCore::toLower(sTeamId);
   std::string sFlag = req->GetParam("flag");
@@ -495,7 +495,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
   if (sTeamId == "") {
     // TODO server statistics
-    static const std::string sErrorMsg = "Error(-10): Not found get-parameter 'teamid' or parameter is empty";
+    static const std::string sErrorMsg = "Error(-10): Not found get-parameter 'team_id' or parameter is empty";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 400;

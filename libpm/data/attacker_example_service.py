@@ -122,10 +122,10 @@ def get_scoreboard():
     return None
 
 
-def send_flag(your_teamnum, flag):
+def send_flag(your_team_num, flag):
     """ request jury api """
     url = 'http://' + JURY_HOST + '/flag'
-    url += '?teamid=' + str(your_teamnum)
+    url += '?team_id=' + str(your_team_num)
     url += '&flag=' + flag
     try:
         resp = requests.get(url, timeout=5)
@@ -159,8 +159,8 @@ def delete_flag(ip_address, port, flag_id):
         _socket.close()
     except socket.timeout:
         print("delete_flag, socket.timeout")
-    except socket.error as serr:
-        print("delete_flag", str(serr))
+    except socket.error as _err1:
+        print("delete_flag", str(_err1))
     except Exception as err:  # pylint: disable=broad-except
         print("delete_flag", str(err))
         print(traceback.format_exc())

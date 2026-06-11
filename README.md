@@ -120,19 +120,19 @@ Where
 
 ## Acceptance of the flag
 
-* Acceptance of the flag: http://{HOST}:{PORT}/flag?teamid={TEAMID}&flag={FLAG}
+* Acceptance of the flag: http://{HOST}:{PORT}/flag?team_id={TEAM_ID}&flag={FLAG}
 
 Where
 
 * {HOST} - host or ip at which the jury is available
 * {PORT} - configured scoreboard/flag port of the jury system
-* {TEAMID} - number, your unique team-id (see scoreboard)
+* {TEAM_ID} - number, your unique team-id (see scoreboard)
 * {FLAG} - uuid, so that the jury knows that this is a flag from an enemy server
 
 Example of sending a flag (via curl):
 
 ```
-$ curl http://192.168.1.10:8080/flag?teamid=keva&flag=c01d4567-e89b-12d3-a456-426600000010
+$ curl http://192.168.1.10:8080/flag?team_id=keva&flag=c01d4567-e89b-12d3-a456-426600000010
 ```
 
 http-code responses:
@@ -144,7 +144,7 @@ http-code responses:
 Example of sending a flag (via python):
 
 ```python
-r = requests.get("http://192.168.1.10:8080/flag?teamid=keva&flag=c01d4567-e89b-12d3-a456-426600000010")
+r = requests.get("http://192.168.1.10:8080/flag?team_id=keva&flag=c01d4567-e89b-12d3-a456-426600000010")
 if r.status_code == 200:
   print("OK (flag accepted) ", r.text)
   sys.exit(0)

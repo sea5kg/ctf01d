@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 40505;
+  return 40515;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 40505
+  static const std::string sRet = "" // size: 40515
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -442,37 +442,37 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "      }\n"
     "    }\n"
     "    if (found_teams.length == 0) {\n"
-    "      var mysubnet = get_subnet(window.my_ip)\n"
-    "      console.log(\"mysubnet \" + mysubnet)\n"
+    "      var my_subnet = get_subnet(window.my_ip)\n"
+    "      console.log(\"my_subnet \" + my_subnet)\n"
     "      // search by subnet match\n"
     "      for (var i = 0; i < window.teams.length; i++) {\n"
-    "        if (get_subnet(window.teams[i].ip_address) == mysubnet) {\n"
+    "        if (get_subnet(window.teams[i].ip_address) == my_subnet) {\n"
     "          found_teams.push(window.teams[i].id)\n"
     "        }\n"
     "      }\n"
     "      if (found_teams.length == 1) {\n"
-    "          window.found_teamid = found_teams[0];\n"
-    "          console.log(\"Detected teamid by subnet: \" + window.found_teamid)\n"
+    "        window.found_team_id = found_teams[0];\n"
+    "        console.log(\"Detected team_id by subnet: \" + window.found_team_id)\n"
     "      } else if (found_teams.length > 1) {\n"
-    "          console.warn(\"Could not detected teamid by subnetwork found several teams: \" + found_teams.join(\", \"))\n"
+    "        console.warn(\"Could not detected team_id by subnetwork found several teams: \" + found_teams.join(\", \"))\n"
     "      }\n"
     "    } else if (found_teams.length == 1) {\n"
-    "      window.found_teamid = found_teams[0];\n"
-    "      console.log(\"Detected teamid by ip: \" + window.found_teamid)\n"
+    "      window.found_team_id = found_teams[0];\n"
+    "      console.log(\"Detected team_id by ip: \" + window.found_team_id)\n"
     "    }\n"
     "\n"
-    "    if (window.found_teamid) {\n"
-    "      document.getElementById('team_list').value = window.found_teamid;\n"
+    "    if (window.found_team_id) {\n"
+    "      document.getElementById('team_list').value = window.found_team_id;\n"
     "\n"
     "      var curl_example = document.getElementById(\"curl_request_send_flag\").innerHTML;\n"
-    "      curl_example = curl_example.replace(\"{YOUR_TEAM_ID}\", window.found_teamid);\n"
+    "      curl_example = curl_example.replace(\"{YOUR_TEAM_ID}\", window.found_team_id);\n"
     "      document.getElementById(\"curl_request_send_flag\").innerHTML = curl_example;\n"
     "\n"
     "      var py_example = document.getElementById(\"python_request_send_flag\").innerHTML;\n"
-    "      py_example = py_example.replace(\"{YOUR_TEAM_ID}\", window.found_teamid);\n"
+    "      py_example = py_example.replace(\"{YOUR_TEAM_ID}\", window.found_team_id);\n"
     "      document.getElementById(\"python_request_send_flag\").innerHTML = py_example;\n"
     "\n"
-    "      document.getElementById(window.found_teamid).classList.add('current-team');\n"
+    "      document.getElementById(window.found_team_id).classList.add('current-team');\n"
     "    }\n"
     "  })\n"
     "}\n"

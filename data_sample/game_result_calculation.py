@@ -109,37 +109,37 @@ for team in CONFIG["teams"]:
 #     cursor = connection.cursor()
 #     _line = "service,all"
 #     for team in CONFIG["teams"]:
-#         teamid = team["id"]
-#         _line += "," + teamid
-#         _all_flags[teamid] = 0
+#         team_id = team["id"]
+#         _line += "," + team_id
+#         _all_flags[team_id] = 0
 #     _put_flags.write(_line + "\n")
 #     for checker in CONFIG["checkers"]:
 #         _line = ""
-#         serviceid = checker["id"]
-#         _line += serviceid + ","
+#         service_id = checker["id"]
+#         _line += service_id + ","
 #         # print(checker["service_name"])
 #         cursor.execute(
-#              'SELECT COUNT(*) FROM flags_checker_put_results WHERE serviceid = ?', (serviceid,)
+#              'SELECT COUNT(*) FROM flags_checker_put_results WHERE serviceid = ?', (service_id,)
 #         )
 #         results = cursor.fetchall()
 #         for row in results:
 #             _all_flags["all"] += row[0]
 #             _line += str(row[0])
 #         for team in CONFIG["teams"]:
-#             teamid = team["id"]
+#             team_id = team["id"]
 #             cursor.execute(
-#             'SELECT COUNT(*) FROM flags_checker_put_results WHERE serviceid = ? AND teamid = ?',
-#             (serviceid,teamid,)
+#             'SELECT COUNT(*) FROM flags_checker_put_results WHERE serviceid = ? AND team_id = ?',
+#             (service_id,team_id,)
 #             )
 #             results = cursor.fetchall()
 #             for row in results:
 #                 _line += "," + str(row[0])
-#                 _all_flags[teamid] += row[0]
+#                 _all_flags[team_id] += row[0]
 #         _put_flags.write(_line + "\n")
 #     _line = "," + str(_all_flags["all"])
 #     for team in CONFIG["teams"]:
-#         teamid = team["id"]
-#         _line += "," + str(_all_flags[teamid])
+#         team_id = team["id"]
+#         _line += "," + str(_all_flags[team_id])
 #     _put_flags.write(_line + "\n")
 #     _put_flags.write(",,\n")
 #     _put_flags.write(",,\n")

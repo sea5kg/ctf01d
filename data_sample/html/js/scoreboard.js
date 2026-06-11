@@ -416,37 +416,37 @@ function updateTeamRequiredFields() {
       }
     }
     if (found_teams.length == 0) {
-      var mysubnet = get_subnet(window.my_ip)
-      console.log("mysubnet " + mysubnet)
+      var my_subnet = get_subnet(window.my_ip)
+      console.log("my_subnet " + my_subnet)
       // search by subnet match
       for (var i = 0; i < window.teams.length; i++) {
-        if (get_subnet(window.teams[i].ip_address) == mysubnet) {
+        if (get_subnet(window.teams[i].ip_address) == my_subnet) {
           found_teams.push(window.teams[i].id)
         }
       }
       if (found_teams.length == 1) {
-          window.found_teamid = found_teams[0];
-          console.log("Detected teamid by subnet: " + window.found_teamid)
+        window.found_team_id = found_teams[0];
+        console.log("Detected team_id by subnet: " + window.found_team_id)
       } else if (found_teams.length > 1) {
-          console.warn("Could not detected teamid by subnetwork found several teams: " + found_teams.join(", "))
+        console.warn("Could not detected team_id by subnetwork found several teams: " + found_teams.join(", "))
       }
     } else if (found_teams.length == 1) {
-      window.found_teamid = found_teams[0];
-      console.log("Detected teamid by ip: " + window.found_teamid)
+      window.found_team_id = found_teams[0];
+      console.log("Detected team_id by ip: " + window.found_team_id)
     }
 
-    if (window.found_teamid) {
-      document.getElementById('team_list').value = window.found_teamid;
+    if (window.found_team_id) {
+      document.getElementById('team_list').value = window.found_team_id;
 
       var curl_example = document.getElementById("curl_request_send_flag").innerHTML;
-      curl_example = curl_example.replace("{YOUR_TEAM_ID}", window.found_teamid);
+      curl_example = curl_example.replace("{YOUR_TEAM_ID}", window.found_team_id);
       document.getElementById("curl_request_send_flag").innerHTML = curl_example;
 
       var py_example = document.getElementById("python_request_send_flag").innerHTML;
-      py_example = py_example.replace("{YOUR_TEAM_ID}", window.found_teamid);
+      py_example = py_example.replace("{YOUR_TEAM_ID}", window.found_team_id);
       document.getElementById("python_request_send_flag").innerHTML = py_example;
 
-      document.getElementById(window.found_teamid).classList.add('current-team');
+      document.getElementById(window.found_team_id).classList.add('current-team');
     }
   })
 }

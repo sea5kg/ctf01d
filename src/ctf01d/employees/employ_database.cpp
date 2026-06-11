@@ -72,7 +72,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "  serviceid VARCHAR(50) NOT NULL, "
         "  flag_id VARCHAR(50) NOT NULL, "
         "  flag VARCHAR(36) NOT NULL, "
-        "  teamid VARCHAR(50) NOT NULL, "
+        "  team_id VARCHAR(50) NOT NULL, "
         "  date_start INTEGER NOT NULL,"
         "  date_end INTEGER NOT NULL,"
         "  result VARCHAR(50) NOT NULL"
@@ -87,7 +87,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "CREATE TABLE IF NOT EXISTS flags_attempts ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  flag VARCHAR(36) NOT NULL, "
-        "  teamid VARCHAR(50) NOT NULL, "
+        "  team_id VARCHAR(50) NOT NULL, "
         "  request_ip VARCHAR(50) NOT NULL, "
         "  dt INTEGER NOT NULL"
         ");"
@@ -101,7 +101,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "CREATE TABLE IF NOT EXISTS flags_defense ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
-        "  teamid VARCHAR(50) NOT NULL, "
+        "  team_id VARCHAR(50) NOT NULL, "
         "  flag_id VARCHAR(50) NOT NULL, "
         "  flag VARCHAR(36) NOT NULL, "
         "  date_start INTEGER NOT NULL, "
@@ -120,7 +120,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "  serviceid VARCHAR(50) NOT NULL, "
         "  flag_id VARCHAR(50) NOT NULL, "
         "  flag VARCHAR(36) NOT NULL, "
-        "  teamid VARCHAR(50) NOT NULL, "
+        "  team_id VARCHAR(50) NOT NULL, "
         "  date_start INTEGER NOT NULL, "
         "  date_end INTEGER NOT NULL, "
         "  reason VARCHAR(50) NOT NULL "
@@ -135,8 +135,8 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         "CREATE TABLE IF NOT EXISTS flags_stolen ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
-        "  teamid VARCHAR(50) NOT NULL, "
-        "  thief_teamid VARCHAR(50) NOT NULL, "
+        "  team_id VARCHAR(50) NOT NULL, "
+        "  thief_team_id VARCHAR(50) NOT NULL, "
         "  flag_id VARCHAR(50) NOT NULL, "
         "  flag VARCHAR(36) NOT NULL, "
         "  date_start INTEGER NOT NULL, "
@@ -147,8 +147,8 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
     );
         // TODO
     // "  INDEX(`serviceid`), "
-    // "  INDEX(`serviceid`, `thief_teamid`), "
-    // "  UNIQUE KEY(`serviceid`, `thief_teamid`, `flag_id`, `flag`)"
+    // "  INDEX(`serviceid`, `thief_team_id`), "
+    // "  UNIQUE KEY(`serviceid`, `thief_team_id`, `flag_id`, `flag`)"
     ctf01d::log::info(TAG, "Opening m_pFlagsStolen");
     if (!m_pFlagsStolen->open()) {
         return false;
@@ -164,7 +164,7 @@ bool EmployDatabase::deinit(const std::string &sName, bool bSilent) {
 }
 
 void EmployDatabase::insertToFlagsCheckerPutResult(ctf01d::flag flag, std::string sResult) {
-    std::string sQuery = "INSERT INTO flags_checker_put_results(serviceid, flag_id, flag, teamid, "
+    std::string sQuery = "INSERT INTO flags_checker_put_results(serviceid, flag_id, flag, team_id, "
         "   date_start, date_end, result) VALUES("
         "'" + flag.getServiceId() + "', "
         + "'" + flag.getId() + "', "
@@ -181,25 +181,25 @@ void EmployDatabase::insertToFlagsCheckerPutResult(ctf01d::flag flag, std::strin
 
 int EmployDatabase::numberOfFlagFlagsCheckerPutAllResults(std::string sTeamId, std::string sServiceId) {
     return m_pFlagsCheckerPutsResults->selectSumOrCount(
-        "SELECT COUNT(*) as defence FROM flags_checker_put_results "
+        "SELECT COUNT(*) as defense FROM flags_checker_put_results "
         "WHERE serviceid = '" + sServiceId + "' "
-        "   AND teamid = '" + sTeamId + "' "
+        "   AND team_id = '" + sTeamId + "' "
         ";"
     );
 }
 
 int EmployDatabase::numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId, std::string sServiceId) {
     return m_pFlagsCheckerPutsResults->selectSumOrCount(
-        "SELECT COUNT(*) as defence FROM flags_checker_put_results "
+        "SELECT COUNT(*) as defense FROM flags_checker_put_results "
         "WHERE serviceid = '" + sServiceId + "' "
-        "   AND teamid = '" + sTeamId + "' "
+        "   AND team_id = '" + sTeamId + "' "
         "   AND result = 'up' "
         ";"
     );
 }
 
 void EmployDatabase::insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP) {
-    std::string sQuery = "INSERT INTO flags_attempts(flag, teamid, request_ip, dt) "
+    std::string sQuery = "INSERT INTO flags_attempts(flag, team_id, request_ip, dt) "
         " VALUES('" + sFlag + "', '" + sTeamId + "', '" + sRequestIP + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
 
     if (!m_pFlagsAttempts->executeQuery(sQuery)) {
@@ -209,12 +209,12 @@ void EmployDatabase::insertFlagAttempt(std::string sTeamId, std::string sFlag, s
 
 int EmployDatabase::numberOfFlagAttempts(std::string sTeamId) {
     return m_pFlagsAttempts->selectSumOrCount(
-        "SELECT COUNT(*) FROM flags_attempts WHERE teamid = '" + sTeamId + "';"
+        "SELECT COUNT(*) FROM flags_attempts WHERE team_id = '" + sTeamId + "';"
     );
 }
 
 void EmployDatabase::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
-    std::string sQuery = "INSERT INTO flags_defense(serviceid, teamid, flag_id, flag, "
+    std::string sQuery = "INSERT INTO flags_defense(serviceid, team_id, flag_id, flag, "
         "   date_start, date_end, flag_cost) VALUES("
         "'" + flag.getServiceId() + "', "
         + "'" + flag.getTeamId() + "', "
@@ -232,9 +232,9 @@ void EmployDatabase::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
 
 int EmployDatabase::numberOfFlagsDefense(std::string sTeamId, std::string sServiceId) {
     return m_pFlagsDefense->selectSumOrCount(
-        "SELECT COUNT(*) as defence FROM flags_defense "
+        "SELECT COUNT(*) as defense FROM flags_defense "
         "WHERE serviceid = '" + sServiceId + "' "
-        "   AND teamid = '" + sTeamId + "' "
+        "   AND team_id = '" + sTeamId + "' "
         ";"
     );
 }
@@ -243,7 +243,7 @@ int EmployDatabase::sumPointsOfFlagsDefense(std::string sTeamId, std::string sSe
     return m_pFlagsDefense->selectSumOrCount(
         "SELECT SUM(flag_cost) as points FROM flags_defense "
         "WHERE serviceid = '" + sServiceId + "' "
-        "   AND teamid = '" + sTeamId + "' "
+        "   AND team_id = '" + sTeamId + "' "
         ";"
     );
 }
@@ -255,7 +255,7 @@ int EmployDatabase::numberOfDefenseFlagForService(std::string sServiceId) {
 }
 
 void EmployDatabase::insertFlagCheckFail(ctf01d::flag flag, std::string sReason) {
-    std::string sQuery = "INSERT INTO flags_check_fails(serviceid, flag_id, flag, teamid, "
+    std::string sQuery = "INSERT INTO flags_check_fails(serviceid, flag_id, flag, team_id, "
         "   date_start, date_end, reason) VALUES("
         "'" + flag.getServiceId() + "', "
         + "'" + flag.getId() + "', "
@@ -276,7 +276,7 @@ int EmployDatabase::numberOfFlagsStollen(std::string sTeamId, std::string sServi
     return m_pFlagsStolen->selectSumOrCount(
         "SELECT COUNT(*) as cnt FROM flags_stolen "
         "   WHERE serviceid = '" + sServiceId + "' "
-        "   AND thief_teamid = '" + sTeamId + "' "
+        "   AND thief_team_id = '" + sTeamId + "' "
         ";"
     );
 }
@@ -285,7 +285,7 @@ int EmployDatabase::numberOfFlagsStollenByVictim(std::string sTeamId, std::strin
   return m_pFlagsStolen->selectSumOrCount(
     "SELECT COUNT(*) as cnt FROM flags_stolen "
     "   WHERE serviceid = '" + sServiceId + "' "
-    "   AND teamid = '" + sTeamId + "' "
+    "   AND team_id = '" + sTeamId + "' "
     ";"
   );
 }
@@ -294,7 +294,7 @@ int EmployDatabase::sumPointsOfFlagsStollen(std::string sTeamId, std::string sSe
     return m_pFlagsStolen->selectSumOrCount(
         "SELECT SUM(flag_cost) as points FROM flags_stolen "
         "WHERE serviceid = '" + sServiceId + "' "
-        "   AND thief_teamid = '" + sTeamId + "' "
+        "   AND thief_team_id = '" + sTeamId + "' "
         ";"
     );
 }
@@ -306,7 +306,7 @@ int EmployDatabase::numberOfStolenFlagsForService(std::string sServiceId) {
 }
 
 std::pair<std::string, long> EmployDatabase::getFirstBloodFromStolenFlagsForService(std::string sServiceId) {
-    std::string sQuery = "SELECT thief_teamid, date_action FROM flags_stolen WHERE serviceid = '" + sServiceId + "' LIMIT 1";
+    std::string sQuery = "SELECT thief_team_id, date_action FROM flags_stolen WHERE serviceid = '" + sServiceId + "' LIMIT 1";
     std::pair<std::string, long> pairRet;
     pairRet.first = "?";
     pairRet.second = 0;
@@ -326,7 +326,7 @@ void EmployDatabase::insertToFlagsStolen(ctf01d::flag flag, std::string sTeamId,
     // TODO
     // nVictimPlaceInScoreBoard
     // nThiefPlaceInScoreboard
-    std::string sQuery = "INSERT INTO flags_stolen(serviceid, teamid, thief_teamid, flag_id, flag,"
+    std::string sQuery = "INSERT INTO flags_stolen(serviceid, team_id, thief_team_id, flag_id, flag,"
         "   date_start, date_end, date_action, flag_cost) VALUES("
         "'" + flag.getServiceId() + "', "
         + "'" + flag.getTeamId() + "', "
@@ -349,7 +349,7 @@ bool EmployDatabase::isAlreadyStole(ctf01d::flag flag, std::string sTeamId) {
     int nRet = m_pFlagsStolen->selectSumOrCount(
         "SELECT COUNT(*) as cnt FROM flags_stolen "
             " WHERE serviceid = '" + flag.getServiceId() + "' "
-            "   AND thief_teamid = '" + sTeamId + "'"
+            "   AND thief_team_id = '" + sTeamId + "'"
             "   AND flag_id = '" + flag.getId() + "'"
             "   AND flag = '" + flag.getValue() + "'"
     );
@@ -360,7 +360,7 @@ bool EmployDatabase::isSomebodyStole(ctf01d::flag flag) {
     int nRet = m_pFlagsStolen->selectSumOrCount(
         "SELECT COUNT(*) as cnt FROM flags_stolen "
             " WHERE serviceid = '" + flag.getServiceId() + "' "
-            "   AND teamid = '" + flag.getTeamId() + "'"
+            "   AND team_id = '" + flag.getTeamId() + "'"
             "   AND flag_id = '" + flag.getId() + "'"
             "   AND flag = '" + flag.getValue() + "'"
     );

@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_index_html_path6838f8::getPackAs() con
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_index_html_path6838f8::getBufferSize() const {
-  return 10073;
+  return 10077;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
-  static const std::string sRet = "" // size: 10073
+  static const std::string sRet = "" // size: 10077
     "<!DOCTYPE html>\n"
     "<html>\n"
     "<head>\n"
@@ -116,7 +116,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "      <div class=\"ctf01d-blockinfo-header\">Form for send flag</div>\n"
     "      <div class=\"ctf01d-blockinfo-content\">\n"
     "        <form target=\"_blank\" method=\"GET\" action=\"/flag\">\n"
-    "          By Team<select name=\"teamid\" id=\"team_list\"></select>\n"
+    "          By Team<select name=\"team_id\" id=\"team_list\"></select>\n"
     "          <input type=\"text\" size=\"36\" placeholder=\"Flag value\" name=\"flag\">\n"
     "          <button>Send</button><br>\n"
     "        </form>\n"
@@ -127,7 +127,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "      <div class=\"ctf01d-blockinfo-header\">Example of send flag use a cURL</div>\n"
     "      <div class=\"ctf01d-blockinfo-content\">\n"
     "        <div style=\"display: inline-block;\">\n"
-    "          <pre class=\"pre-flag-format\" id=\"curl_request_send_flag\">$ curl {JURY_HOST_PORT}flag?teamid={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010</pre>\n"
+    "          <pre class=\"pre-flag-format\" id=\"curl_request_send_flag\">$ curl {JURY_HOST_PORT}flag?team_id={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010</pre>\n"
     "        </div>\n"
     "      </div>\n"
     "    </div>\n"
@@ -138,7 +138,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "        <div style=\"display: inline-block;\">\n"
     "          <pre class=\"pre-flag-format\" id=\"python_request_send_flag\">import requests\n"
     "\n"
-    "resp = requests.get(\"{JURY_HOST_PORT}flag?teamid={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010\")\n"
+    "resp = requests.get(\"{JURY_HOST_PORT}flag?team_id={YOUR_TEAM_ID}&flag=c01d4567-e89b-12d3-a456-426600000010\")\n"
     "print(resp.status_code)\n"
     "print(resp.text)</pre>\n"
     "            </div>\n"
@@ -154,7 +154,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "        <p><div class=\"legend service-status corrupt\"></div> - service is corrupt</p>\n"
     "        <p><div class=\"legend service-status shit\"></div> - checker is shit (developer of checker for service must fix this)</p>\n"
     "        <p><div class=\"legend service-status wait\"></div> - Waiting start game</p>\n"
-    "        <p><div class=\"legend service-status coffee-break\"></div> - Coffeebreak</p>\n"
+    "        <p><div class=\"legend service-status coffee-break\"></div> - Coffee Break</p>\n"
     "        <p><div class=\"legend activity\"><div class=\"activity-icon\"></div></div> - activities (how much try send flags by team)</p>\n"
     "\n"
     "        <p><div class=\"legend icon-attack\"><div class=\"activity-icon\"></div></div> - Total number of successful attacks</p>\n"

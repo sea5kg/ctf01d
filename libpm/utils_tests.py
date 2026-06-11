@@ -234,7 +234,7 @@ class StartJuryTest:
 
     def req_flag(self, team_id, flag_val):
         """ request flag """
-        url = "http://localhost:8080/flag?teamid=" + team_id
+        url = "http://localhost:8080/flag?team_id=" + team_id
         url += "&flag=" + flag_val
         _resp = requests.get(url, timeout=0.2)
         # print(_resp.text)

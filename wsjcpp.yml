@@ -184,15 +184,15 @@ resources:
       modified: 1780581486
       sha1: "7726bf6746d80d7ac2c2726d0415487461dfb19c"
     - filepath: "./data_sample/html/index.html"
-      size: 10073
+      size: 10077
       pack-as: "text"
-      modified: 1780927650
-      sha1: "29f89f7499c896aee453da6c446dc09c656cbab2"
+      modified: 1781143649
+      sha1: "6ffcf564c332dd03e74444dc504cd29b1614df4d"
     - filepath: "./data_sample/html/js/scoreboard.js"
-      size: 40505
+      size: 40515
       pack-as: "text"
-      modified: 1781017804
-      sha1: "42121793e0f18b6a595055471d61deb839e8c455"
+      modified: 1781143705
+      sha1: "c1cf559ba7f0c21865f5de7a00f1748e4e99e906"
     - filepath: "./data_sample/html/images/states/coffee-break.svg"
       size: 16698
       pack-as: "text"
@@ -304,10 +304,10 @@ resources:
       modified: 1780581486
       sha1: "cd35d14634e5ca97ac5162ffee14399f6a0f3091"
     - filepath: "./data_sample/game_result_calculation.py"
-      size: 14259
+      size: 14272
       pack-as: "binary"
-      modified: 1780372176
-      sha1: "6d59ecc34b337e6dc5fe279ae2733f95defe5cfb"
+      modified: 1781143624
+      sha1: "f5395ae6fa1aaa26bc1e1211d64e3620cefb1e4f"
     - filepath: "./data_sample/html/style-hackerdom/index.html"
       size: 1589
       pack-as: "binary"

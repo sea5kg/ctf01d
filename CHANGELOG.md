@@ -2,7 +2,7 @@
 
 ## [v0.8.0] - (2026 ?? ??)
 
-
+- Renamed everywhere `teamid` -> `team_id` 
 
 ## [v0.7.3] - (2026 June 10)
 
