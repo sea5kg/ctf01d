@@ -39,6 +39,7 @@
 
 #include <string>
 #include <map>
+#include <memory>
 #include "ctf01d_service_status_cell.h"
 
 namespace ctf01d {
@@ -62,7 +63,7 @@ public:
 
   std::string servicesToString();
 
-  void incrementDefense(const std::string &service_id, int nFlagPoints);
+  void incrementDefense(const std::string &service_id, int flag_points);
   int getDefenseFlags(const std::string &service_id);
   int getDefensePoints(const std::string &service_id);
   void setServiceDefenseFlagsAndPoints(const std::string &service_id, int nDefenseFlags, int nDefensePoints);
@@ -71,7 +72,7 @@ public:
   int getFlagsStollen(const std::string &service_id);
   void setFlagsStollen(const std::string &service_id, int val);
 
-  void incrementAttack(const std::string &service_id, int nFlagPoints);
+  void incrementAttack(const std::string &service_id, int flag_points);
   void setServiceAttackFlagsAndPoints(const std::string &service_id, int nAttackFlags, int nAttackPoints);
   int getAttackFlags(const std::string &service_id);
   int getAttackPoints(const std::string &service_id);
@@ -90,7 +91,7 @@ private:
   std::atomic<int> m_place;
   int m_nPoints;
   int m_nTries;
-  std::map<std::string, Ctf01dServiceStatusCell *> m_mapServicesStatus;
+  std::map<std::string, std::shared_ptr<ctf01d::service_status_cell>> m_mapServicesStatus;
 };
 
 } // namespace ctf01d

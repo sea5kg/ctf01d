@@ -38,19 +38,22 @@
 #include "ctf01d_service_status_cell.h"
 #include <wsjcpp_core.h>
 
-const std::string Ctf01dServiceStatusCell::SERVICE_UP = "up";
-const std::string Ctf01dServiceStatusCell::SERVICE_DOWN = "down";
-const std::string Ctf01dServiceStatusCell::SERVICE_MUMBLE = "mumble";
-const std::string Ctf01dServiceStatusCell::SERVICE_CORRUPT = "corrupt";
-const std::string Ctf01dServiceStatusCell::SERVICE_SHIT = "shit";
-const std::string Ctf01dServiceStatusCell::SERVICE_WAIT = "wait";
-const std::string Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK = "coffee-break";
 
-Ctf01dServiceStatusCell::Ctf01dServiceStatusCell(const std::string &sServiceId) {
+namespace ctf01d {
+
+const std::string service_status_cell::SERVICE_UP = "up";
+const std::string service_status_cell::SERVICE_DOWN = "down";
+const std::string service_status_cell::SERVICE_MUMBLE = "mumble";
+const std::string service_status_cell::SERVICE_CORRUPT = "corrupt";
+const std::string service_status_cell::SERVICE_SHIT = "shit";
+const std::string service_status_cell::SERVICE_WAIT = "wait";
+const std::string service_status_cell::SERVICE_COFFEE_BREAK = "coffee-break";
+
+service_status_cell::service_status_cell(const std::string &sServiceId) {
   m_nUpPointTimeInSec = WsjcppCore::getCurrentTimeInSeconds();
-  TAG = "Ctf01dServiceStatusCell-" + sServiceId;
+  TAG = "service_status_cell-" + sServiceId;
   m_sServiceId = sServiceId;
-  m_sStatus = Ctf01dServiceStatusCell::SERVICE_DOWN;
+  m_sStatus = service_status_cell::SERVICE_DOWN;
   m_nDefenseFlags = 0;
   m_nAttackFlags = 0;
   m_nAttackPoints = 0;
@@ -58,96 +61,96 @@ Ctf01dServiceStatusCell::Ctf01dServiceStatusCell(const std::string &sServiceId) 
   m_flags_stollen.store(0);
 }
 
-const std::string &Ctf01dServiceStatusCell::serviceId() {
+const std::string &service_status_cell::serviceId() {
   return m_sServiceId;
 }
 
-void Ctf01dServiceStatusCell::setDefenseFlags(int nDefenseFlags) {
+void service_status_cell::setDefenseFlags(int nDefenseFlags) {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nDefenseFlags = nDefenseFlags;
 }
 
-int Ctf01dServiceStatusCell::getDefenseFlags() {
+int service_status_cell::getDefenseFlags() {
   return m_nDefenseFlags;
 }
 
-void Ctf01dServiceStatusCell::incrementDefenseFlags() {
+void service_status_cell::incrementDefenseFlags() {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nDefenseFlags++;
 }
 
-void Ctf01dServiceStatusCell::setDefensePoints(int nDefensePoints) {
+void service_status_cell::setDefensePoints(int nDefensePoints) {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nDefensePoints = nDefensePoints;
 }
 
-int Ctf01dServiceStatusCell::getDefensePoints() {
+int service_status_cell::getDefensePoints() {
   return m_nDefensePoints;
 }
 
-void Ctf01dServiceStatusCell::addDefensePoints(int nDefensePoints) {
+void service_status_cell::addDefensePoints(int nDefensePoints) {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nDefensePoints += nDefensePoints;
 }
 
-void Ctf01dServiceStatusCell::setAttackFlags(int nAttackFlags) {
+void service_status_cell::setAttackFlags(int nAttackFlags) {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nAttackFlags = nAttackFlags;
 }
 
-int Ctf01dServiceStatusCell::getAttackFlags() {
+int service_status_cell::getAttackFlags() {
   return m_nAttackFlags;
 }
 
-void Ctf01dServiceStatusCell::incrementAttackFlags() {
+void service_status_cell::incrementAttackFlags() {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nAttackFlags++;
 }
 
-void Ctf01dServiceStatusCell::setFlagsStollen(int val) {
+void service_status_cell::setFlagsStollen(int val) {
   m_flags_stollen.store(val);
 }
 
-int Ctf01dServiceStatusCell::getFlagsStollen() {
+int service_status_cell::getFlagsStollen() {
   return m_flags_stollen.load();
 }
 
-void Ctf01dServiceStatusCell::decrementFlagsStollen() {
+void service_status_cell::decrementFlagsStollen() {
   m_flags_stollen.store(m_flags_stollen.load() - 1);
 }
 
-void Ctf01dServiceStatusCell::setAttackPoints(int nAttackPoints) {
+void service_status_cell::setAttackPoints(int nAttackPoints) {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nAttackPoints = nAttackPoints;
 }
 
-int Ctf01dServiceStatusCell::getAttackPoints() {
+int service_status_cell::getAttackPoints() {
   return m_nAttackPoints;
 }
 
-void Ctf01dServiceStatusCell::addAttackPoints(int nAttackPoints) {
+void service_status_cell::addAttackPoints(int nAttackPoints) {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_nAttackPoints += nAttackPoints;
 }
 
-void Ctf01dServiceStatusCell::setFlagsPutAllResultsCounter(int nFlagsPutAllResultsCounter) {
+void service_status_cell::setFlagsPutAllResultsCounter(int nFlagsPutAllResultsCounter) {
   m_nFlagsPutAllResultsCounter = nFlagsPutAllResultsCounter;
 }
 
-void Ctf01dServiceStatusCell::setFlagsPutSuccessResultsCounter(int nFlagsPutSuccessResultsCounter) {
+void service_status_cell::setFlagsPutSuccessResultsCounter(int nFlagsPutSuccessResultsCounter) {
   m_nFlagsPutSuccessResultsCounter = nFlagsPutSuccessResultsCounter;
 }
 
-void Ctf01dServiceStatusCell::incrementPutFlagSuccess() {
+void service_status_cell::incrementPutFlagSuccess() {
   m_nFlagsPutSuccessResultsCounter++;
   m_nFlagsPutAllResultsCounter++;
 }
 
-void Ctf01dServiceStatusCell::incrementPutFlagFail() {
+void service_status_cell::incrementPutFlagFail() {
   m_nFlagsPutAllResultsCounter++;
 }
 
-int Ctf01dServiceStatusCell::calculateSLA() {
+int service_status_cell::calculateSLA() {
   if (m_nFlagsPutAllResultsCounter == 0) {
     // if (m_nFlagsPutSuccessResultsCounter != 0) {
     //   ctf01d::log::warn(TAG, "Could not possible situation!");
@@ -157,14 +160,16 @@ int Ctf01dServiceStatusCell::calculateSLA() {
   return (m_nFlagsPutSuccessResultsCounter*100) / m_nFlagsPutAllResultsCounter;
 }
 
-void Ctf01dServiceStatusCell::setStatus(const std::string &sStatus) {
+void service_status_cell::setStatus(const std::string &sStatus) {
   std::lock_guard<std::mutex> lock(m_mutexServiceStatus);
   m_sStatus = sStatus;
-  if (sStatus != Ctf01dServiceStatusCell::SERVICE_UP) {
+  if (sStatus != service_status_cell::SERVICE_UP) {
     m_nUpPointTimeInSec = WsjcppCore::getCurrentTimeInSeconds();
   }
 }
 
-std::string Ctf01dServiceStatusCell::status() {
+std::string service_status_cell::status() {
   return m_sStatus;
 }
+
+} // namespace ctf01d

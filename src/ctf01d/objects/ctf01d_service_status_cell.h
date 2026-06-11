@@ -41,6 +41,8 @@
 #include <mutex>
 #include <atomic>
 
+namespace ctf01d {
+
 enum class Ctf01dServiceStatus : char {
   SERVICE_UP = 'u',
   SERVICE_DOWN = 'd',
@@ -51,7 +53,7 @@ enum class Ctf01dServiceStatus : char {
   SERVICE_COFFEE_BREAK = 'b'
 };
 
-class Ctf01dServiceStatusCell {
+class service_status_cell {
 public:
   // enum for service status
   static const std::string SERVICE_UP;
@@ -62,7 +64,7 @@ public:
   static const std::string SERVICE_WAIT;
   static const std::string SERVICE_COFFEE_BREAK;
 
-  Ctf01dServiceStatusCell(const std::string &service_id);
+  service_status_cell(const std::string &service_id);
   const std::string &serviceId();
 
   void setDefenseFlags(int nDefenseFlags);
@@ -110,3 +112,5 @@ private:
   int m_nFlagsPutAllResultsCounter;
   int m_nFlagsPutSuccessResultsCounter;
 };
+
+} // namespace ctf01d

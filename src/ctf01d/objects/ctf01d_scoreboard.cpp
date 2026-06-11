@@ -87,7 +87,7 @@ scoreboard::scoreboard(
     }
     for (unsigned int iservice = 0; iservice < vServicesConf.size(); iservice++) {
       ctf01d::service_config service = vServicesConf[iservice];
-      m_teams_statuses[team_id]->setServiceStatus(service.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
+      m_teams_statuses[team_id]->setServiceStatus(service.id(), ctf01d::service_status_cell::SERVICE_DOWN);
       // random states of service for testing
       if (m_random) {
         m_teams_statuses[team_id]->setServiceStatus(service.id(), random_service_status());
@@ -163,14 +163,14 @@ void scoreboard::update_json_scoreboard() {
 }
 
 std::string scoreboard::random_service_status() {
-  std::string sResult = Ctf01dServiceStatusCell::SERVICE_DOWN;
+  std::string sResult = ctf01d::service_status_cell::SERVICE_DOWN;
   int nState = std::rand() % 5;
   switch (nState) {
-    case 0: sResult = Ctf01dServiceStatusCell::SERVICE_UP; break;
-    case 1: sResult = Ctf01dServiceStatusCell::SERVICE_DOWN; break;
-    case 2: sResult = Ctf01dServiceStatusCell::SERVICE_MUMBLE; break;
-    case 3: sResult = Ctf01dServiceStatusCell::SERVICE_CORRUPT; break;
-    case 4: sResult = Ctf01dServiceStatusCell::SERVICE_SHIT; break;
+    case 0: sResult = ctf01d::service_status_cell::SERVICE_UP; break;
+    case 1: sResult = ctf01d::service_status_cell::SERVICE_DOWN; break;
+    case 2: sResult = ctf01d::service_status_cell::SERVICE_MUMBLE; break;
+    case 3: sResult = ctf01d::service_status_cell::SERVICE_CORRUPT; break;
+    case 4: sResult = ctf01d::service_status_cell::SERVICE_SHIT; break;
   }
   return sResult;
 }
@@ -377,7 +377,7 @@ void scoreboard::increment_defense_score(const ctf01d::flag &flag) {
 void scoreboard::increment_flags_putted_and_service_up(const ctf01d::flag &flag) {
   std::string service_id = flag.getServiceId();
   std::string team_id = flag.getTeamId();
-  std::string sNewStatus = m_random ? random_service_status() : Ctf01dServiceStatusCell::SERVICE_UP;
+  std::string sNewStatus = m_random ? random_service_status() : ctf01d::service_status_cell::SERVICE_UP;
 
   if (m_alive_flags->insert_alive_flag(flag)) {
     // m_database->insertToFlagLive(flag);

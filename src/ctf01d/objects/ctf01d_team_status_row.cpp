@@ -57,7 +57,7 @@ team_status_row::team_status_row(
   for (unsigned int i = 0; i < vServicesConf.size(); i++) {
     ctf01d::service_config serviceConf = vServicesConf[i];
     std::string service_id = serviceConf.id();
-    m_mapServicesStatus[service_id] = new Ctf01dServiceStatusCell(serviceConf.id());
+    m_mapServicesStatus[service_id] = std::make_shared<ctf01d::service_status_cell>(serviceConf.id());
   }
 }
 
@@ -111,11 +111,11 @@ std::string team_status_row::servicesToString() {
   return sResult;
 }
 
-void team_status_row::incrementDefense(const std::string &service_id, int nFlagPoints) {
+void team_status_row::incrementDefense(const std::string &service_id, int flag_points) {
   {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_mapServicesStatus[service_id]->incrementDefenseFlags();
-    m_mapServicesStatus[service_id]->addDefensePoints(nFlagPoints);
+    m_mapServicesStatus[service_id]->addDefensePoints(flag_points);
   }
   updatePoints();
 }
@@ -149,11 +149,11 @@ void team_status_row::setFlagsStollen(const std::string &service_id, int val) {
   return m_mapServicesStatus[service_id]->setFlagsStollen(val);
 }
 
-void team_status_row::incrementAttack(const std::string &service_id, int nFlagPoints) {
+void team_status_row::incrementAttack(const std::string &service_id, int flag_points) {
   {
     std::lock_guard<std::mutex> lock(m_mutex);
     m_mapServicesStatus[service_id]->incrementAttackFlags();
-    m_mapServicesStatus[service_id]->addAttackPoints(nFlagPoints);
+    m_mapServicesStatus[service_id]->addAttackPoints(flag_points);
   }
   updatePoints();
 }
@@ -178,11 +178,11 @@ int team_status_row::getAttackPoints(const std::string &service_id) {
 void team_status_row::updatePoints() {
   std::lock_guard<std::mutex> lock(m_mutex);
   m_nPoints = 0;
-  std::map<std::string, Ctf01dServiceStatusCell *>::iterator it;
-  for (std::map<std::string, Ctf01dServiceStatusCell *>::iterator it = m_mapServicesStatus.begin(); it != m_mapServicesStatus.end(); ++it) {
-    Ctf01dServiceStatusCell *pCell = it->second;
-    int nSumAttackAndDefensePoints = pCell->getAttackPoints() + pCell->getDefensePoints();
-    nSumAttackAndDefensePoints = nSumAttackAndDefensePoints * pCell->calculateSLA();
+  std::map<std::string, ctf01d::service_status_cell *>::iterator it;
+  for (std::map<std::string, std::shared_ptr<ctf01d::service_status_cell>>::iterator it = m_mapServicesStatus.begin(); it != m_mapServicesStatus.end(); ++it) {
+    std::shared_ptr<ctf01d::service_status_cell> cell = it->second;
+    int nSumAttackAndDefensePoints = cell->getAttackPoints() + cell->getDefensePoints();
+    nSumAttackAndDefensePoints = nSumAttackAndDefensePoints * cell->calculateSLA();
     // ctf01d::log::info(TAG, "nSumAttackAndDefensePoints 1 = " + std::to_string(nSumAttackAndDefensePoints));
     nSumAttackAndDefensePoints = nSumAttackAndDefensePoints / 100;
     // ctf01d::log::info(TAG, "nSumAttackAndDefensePoints 2 = " + std::to_string(nSumAttackAndDefensePoints));

@@ -299,7 +299,7 @@ int main(int argc, const char* argv[]) {
         ctf01d::team_config team_config = config->teamsConf()[i_team];
 
         // reset status to down
-        config->scoreboard()->set_service_status(team_config.id(), service_config.id(), Ctf01dServiceStatusCell::SERVICE_DOWN);
+        config->scoreboard()->set_service_status(team_config.id(), service_config.id(), ctf01d::service_status_cell::SERVICE_DOWN);
         // pConfig->scoreboard()->setTeamTries();
 
         ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(service_logger, service_config, team_config);

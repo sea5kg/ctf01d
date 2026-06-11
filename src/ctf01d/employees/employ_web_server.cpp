@@ -579,7 +579,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
   // std::cout << "sServiceStatus: " << sServiceStatus << "\n";
 
-  if (sServiceStatus != Ctf01dServiceStatusCell::SERVICE_UP) {
+  if (sServiceStatus != ctf01d::service_status_cell::SERVICE_UP) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
     log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
@@ -686,13 +686,13 @@ int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   }
 
   static const std::vector<std::string> vStatuses = {
-    Ctf01dServiceStatusCell::SERVICE_UP,
-    Ctf01dServiceStatusCell::SERVICE_DOWN,
-    Ctf01dServiceStatusCell::SERVICE_MUMBLE,
-    Ctf01dServiceStatusCell::SERVICE_CORRUPT,
-    Ctf01dServiceStatusCell::SERVICE_SHIT,
-    Ctf01dServiceStatusCell::SERVICE_WAIT,
-    Ctf01dServiceStatusCell::SERVICE_COFFEE_BREAK
+    ctf01d::service_status_cell::SERVICE_UP,
+    ctf01d::service_status_cell::SERVICE_DOWN,
+    ctf01d::service_status_cell::SERVICE_MUMBLE,
+    ctf01d::service_status_cell::SERVICE_CORRUPT,
+    ctf01d::service_status_cell::SERVICE_SHIT,
+    ctf01d::service_status_cell::SERVICE_WAIT,
+    ctf01d::service_status_cell::SERVICE_COFFEE_BREAK
   };
 
   prometheusMetricInfo(oss, "ctf01d_team_service_status", "gauge", "Service status as one-hot: 1 if current, else 0.");
