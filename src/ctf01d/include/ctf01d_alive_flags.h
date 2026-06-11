@@ -40,6 +40,8 @@
 #include <vector>
 #include "ctf01d/objects/ctf01d_flag.h"
 
+namespace ctf01d {
+
 class alive_flags {
 public:
   static std::string name() { return "alive_flags"; }
@@ -49,3 +51,5 @@ public:
   virtual void remove_alive_flag(const ctf01d::flag &flag) = 0;
   virtual int count_alive_flags() = 0;
 };
+
+} // namespace ctf01d

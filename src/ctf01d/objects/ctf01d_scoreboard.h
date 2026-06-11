@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include "ctf01d/include/alive_flags.h"
+#include "ctf01d/include/ctf01d_alive_flags.h"
 #include "ctf01d/employees/employ_scoreboard.h"
 #include "ctf01d/employees/employ_database.h"
 #include <optional>

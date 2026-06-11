@@ -542,7 +542,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // TODO m_pEmployFlags->insertFlagAttempt(sTeamId, sFlag);
 
   ctf01d::flag flag;
-  if (!findWsjcppEmploy<alive_flags>()->find_alive_flag(sFlag, flag)) {
+  if (!findWsjcppEmploy<ctf01d::alive_flags>()->find_alive_flag(sFlag, flag)) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag already stole.";
     g_http_logger->info(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
@@ -667,7 +667,7 @@ int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   prometheusMetricInfo(oss, "ctf01d_flag_attempts_total", "counter", "Total flag submission attempts.");
   oss << "ctf01d_flag_attempts_total " << jsonScoreboard["sum_act"].get<long>() << "\n";
   prometheusMetricInfo(oss, "ctf01d_flags_live", "gauge", "Currently active flags.");
-  oss << "ctf01d_flags_live " << findWsjcppEmploy<alive_flags>()->count_alive_flags() << "\n";
+  oss << "ctf01d_flags_live " << findWsjcppEmploy<ctf01d::alive_flags>()->count_alive_flags() << "\n";
 
   prometheusMetricInfo(oss, "ctf01d_team_score", "gauge", "Team score.");
   for (auto &it : jsonScoreboard["scoreboard"].items()) {

@@ -39,7 +39,7 @@
 #include <string>
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
-#include "ctf01d/include/alive_flags.h"
+#include "ctf01d/include/ctf01d_alive_flags.h"
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
@@ -49,7 +49,7 @@
 // ---------------------------------------------------------------------
 // EmployAliveFlags definition
 
-class EmployAliveFlags : public WsjcppEmployBase, public alive_flags {
+class EmployAliveFlags : public WsjcppEmployBase, public ctf01d::alive_flags {
 public:
   EmployAliveFlags();
 
