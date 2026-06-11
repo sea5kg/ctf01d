@@ -40,9 +40,9 @@
 #include <vector>
 #include "ctf01d/objects/ctf01d_flag.h"
 
-class IAliveFlags {
+class alive_flags {
 public:
-  static std::string name() { return "IAliveFlags"; }
+  static std::string name() { return "alive_flags"; }
   virtual bool insert_alive_flag(const ctf01d::flag &flag) = 0;
   virtual std::vector<ctf01d::flag> outdated_alive_flags(const std::string &team_id, const std::string &service_id) = 0;
   virtual bool find_alive_flag(const std::string &flag_value, ctf01d::flag &flag) = 0;

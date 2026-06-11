@@ -73,7 +73,7 @@ service_checker_thread::service_checker_thread(
   m_pDatabase = findWsjcppEmploy<EmployDatabase>();
   m_team_config = team_config;
   m_service_config = service_config;
-  m_alive_flags = findWsjcppEmploy<IAliveFlags>();
+  m_alive_flags = findWsjcppEmploy<alive_flags>();
 
   TAG = "Checker: " + m_team_config.id() + std::string( 15 - m_team_config.id().length(), ' ')
     + m_service_config.id() + " ";
@@ -248,10 +248,10 @@ void service_checker_thread::run() {
       // check some service status or just update to UP (Ha-Ha I'm the real evil!)
     }
 
-    std::vector<ctf01d::flag> vEndedFlags = m_alive_flags->outdated_alive_flags(m_team_config.id(), m_service_config.id());
+    std::vector<ctf01d::flag> dead_flags = m_alive_flags->outdated_alive_flags(m_team_config.id(), m_service_config.id());
 
-    for (unsigned int i = 0; i < vEndedFlags.size(); i++) {
-      ctf01d::flag outdatedFlag = vEndedFlags[i];
+    for (unsigned int i = 0; i < dead_flags.size(); i++) {
+      ctf01d::flag outdatedFlag = dead_flags[i];
       m_alive_flags->remove_alive_flag(outdatedFlag);
 
       // if (outdatedFlag.teamStole() != "") {

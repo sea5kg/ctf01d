@@ -37,7 +37,7 @@
 
 #pragma once
 
-#include "ctf01d/include/i_alive_flags.h"
+#include "ctf01d/include/alive_flags.h"
 #include "ctf01d/employees/employ_scoreboard.h"
 #include "ctf01d/employees/employ_database.h"
 #include <optional>
@@ -76,7 +76,7 @@ public:
 
 private:
   std::string TAG;
-  IAliveFlags *m_alive_flags;
+  alive_flags *m_alive_flags;
   EmployDatabase *m_database;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   int m_game_start_in_seconds;

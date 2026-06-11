@@ -39,7 +39,7 @@
 
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/employees/employ_config.h"
-#include "ctf01d/include/i_alive_flags.h"
+#include "ctf01d/include/alive_flags.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
 namespace ctf01d {
@@ -68,7 +68,7 @@ private:
   pthread_t m_checkerThread;
   EmployConfig *m_pConfig;
   EmployDatabase *m_pDatabase; // TODO not must be here
-  IAliveFlags *m_alive_flags;
+  alive_flags *m_alive_flags;
 
   ctf01d::team_config m_team_config;
   ctf01d::service_config m_service_config;

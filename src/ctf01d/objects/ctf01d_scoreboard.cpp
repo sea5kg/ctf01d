@@ -71,7 +71,7 @@ scoreboard::scoreboard(
   m_all_tries_activities = 0;
   m_flag_cost_in_points = config->get_flag_cost_in_points();
   m_team_count = vTeamsConf.size();
-  m_alive_flags = findWsjcppEmploy<IAliveFlags>();
+  m_alive_flags = findWsjcppEmploy<alive_flags>();
   m_formulas = std::make_shared<Ctf01dFormulasForPoints_RuCtf>();
 
   m_teams_statuses.clear(); // possible memory leak
