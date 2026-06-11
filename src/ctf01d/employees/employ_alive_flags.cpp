@@ -57,7 +57,7 @@ public:
   virtual bool init(const std::string &name, bool silent) override;
   virtual bool deinit(const std::string &name, bool silent) override;
 
-  // IAliveFlags
+  // ctf01d::alive_flags
   virtual bool insert_alive_flag(const ctf01d::flag &flag) override;
   virtual std::vector<ctf01d::flag> outdated_alive_flags(const std::string &team_id, const std::string &service_id) override;
   virtual bool find_alive_flag(const std::string &flag_value, ctf01d::flag &flag) override;
@@ -80,7 +80,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(EmployAliveFlags)
 
 EmployAliveFlags::EmployAliveFlags()
-: WsjcppEmployBase({ alive_flags::name() }, { EmployConfig::name(), EmployDatabase::name() }) {
+: WsjcppEmployBase({ ctf01d::alive_flags::name() }, { EmployConfig::name(), EmployDatabase::name() }) {
   TAG = "EmployAliveFlags";
   m_alive_flags_db = nullptr;
 }

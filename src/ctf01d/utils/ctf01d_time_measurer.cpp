@@ -35,16 +35,34 @@
  *
  ***********************************************************************************/
 
-#pragma once
+
+#include "ctf01d_time_measurer.h"
+#include <chrono>
+#include "ctf01d_logger.h"
 
 namespace ctf01d {
 
-static const int MAX_FLAG_LIFETIME_SECONDS = 1500;
-static const int MAX_FLAG_COST_IN_POINTS = 1000;
-static const int MIN_TCP_PORT = 11;
-static const int MAX_TCP_PORT = 65435;
+time_measurer::time_measurer(const std::string &name, bool print_to_global_log)
+: m_name(name), m_print_to_global_log(print_to_global_log) {
+  m_start = std::chrono::steady_clock::now(); // Start timer
+  if (m_print_to_global_log) {
+    ctf01d::log::info("time_measurer", "Start '" + m_name + "'");
+  }
+// // ... (code execution)
+// auto end = std::chrono::steady_clock::now(); // End timer
+// auto elapsed = 
+}
 
-static const std::string JSON_FIELD_SUMMARY_ACTIVITIES = "sum_act";
-static const std::string JSON_FIELD_TRIES = "tries";
+time_measurer::~time_measurer() {
+  if (m_print_to_global_log) {
+    long elapsed = elapsed_milliseconds();
+    ctf01d::log::info("time_measurer", "End '" + m_name + "' (elapsed: " + std::to_string(elapsed) + "ms)");
+  }
+}
+
+long time_measurer::elapsed_milliseconds() {
+  auto end = std::chrono::steady_clock::now();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(end - m_start).count();
+}
 
 } // namespace ctf01d

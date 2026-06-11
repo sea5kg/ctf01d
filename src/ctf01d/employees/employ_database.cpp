@@ -51,7 +51,6 @@ REGISTRY_WSJCPP_EMPLOY(EmployDatabase)
 EmployDatabase::EmployDatabase()
 : WsjcppEmployBase({ EmployDatabase::name() }, { EmployConfig::name() }) {
     TAG = EmployDatabase::name();
-    m_pFlagsAttempts = nullptr;
     m_pFlagsDefense = nullptr;
     m_pFlagsCheckFails = nullptr;
     m_pFlagsStolen = nullptr;
@@ -80,20 +79,6 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
     );
     ctf01d::log::info(TAG, "Opening m_pFlagsCheckerPutsResults");
     if (!m_pFlagsCheckerPutsResults->open()) {
-        return false;
-    }
-
-    m_pFlagsAttempts = std::make_shared<Ctf01dDatabaseFile>("flags_attempts.db",
-        "CREATE TABLE IF NOT EXISTS flags_attempts ( "
-        "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
-        "  flag VARCHAR(36) NOT NULL, "
-        "  team_id VARCHAR(50) NOT NULL, "
-        "  request_ip VARCHAR(50) NOT NULL, "
-        "  dt INTEGER NOT NULL"
-        ");"
-    );
-    ctf01d::log::info(TAG, "Opening m_pFlagsAttempts");
-    if (!m_pFlagsAttempts->open()) {
         return false;
     }
 
@@ -195,21 +180,6 @@ int EmployDatabase::numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId
         "   AND team_id = '" + sTeamId + "' "
         "   AND result = 'up' "
         ";"
-    );
-}
-
-void EmployDatabase::insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP) {
-    std::string sQuery = "INSERT INTO flags_attempts(flag, team_id, request_ip, dt) "
-        " VALUES('" + sFlag + "', '" + sTeamId + "', '" + sRequestIP + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
-
-    if (!m_pFlagsAttempts->executeQuery(sQuery)) {
-        ctf01d::log::err(TAG, "Error insert");
-    }
-}
-
-int EmployDatabase::numberOfFlagAttempts(std::string sTeamId) {
-    return m_pFlagsAttempts->selectSumOrCount(
-        "SELECT COUNT(*) FROM flags_attempts WHERE team_id = '" + sTeamId + "';"
     );
 }
 

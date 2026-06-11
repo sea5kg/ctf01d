@@ -53,9 +53,6 @@ public:
   int numberOfFlagFlagsCheckerPutAllResults(std::string sTeamId, std::string sServiceId);
   int numberOfFlagFlagsCheckerPutSuccessResult(std::string sTeamId, std::string sServiceId);
 
-  void insertFlagAttempt(std::string sTeamId, std::string sFlag, std::string sRequestIP);
-  int numberOfFlagAttempts(std::string sTeamId);
-
   void insertToFlagsDefense(ctf01d::flag flag, int nPoints);
   int numberOfFlagsDefense(std::string sTeamId, std::string sServiceId);
   int sumPointsOfFlagsDefense(std::string sTeamId, std::string sServiceId);
@@ -74,8 +71,6 @@ public:
 
 private:
   std::string TAG;
-  std::mutex m_mutexCopyDatabaseToBackup;
-  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsAttempts;
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsDefense;
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckFails;
   std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsStolen;

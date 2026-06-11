@@ -37,14 +37,22 @@
 
 #pragma once
 
+#include <vector>
+#include <json.hpp>
+#include "ctf01d/objects/ctf01d_flag.h"
+
 namespace ctf01d {
 
-static const int MAX_FLAG_LIFETIME_SECONDS = 1500;
-static const int MAX_FLAG_COST_IN_POINTS = 1000;
-static const int MIN_TCP_PORT = 11;
-static const int MAX_TCP_PORT = 65435;
-
-static const std::string JSON_FIELD_SUMMARY_ACTIVITIES = "sum_act";
-static const std::string JSON_FIELD_TRIES = "tries";
+class activities {
+public:
+  static std::string name() { return "activities"; }
+  virtual void update_scoreboard(nlohmann::json &scoreboard) = 0;
+  virtual void insert_flag_attempt(
+    const std::string &thief_team_id,
+    const std::string &flag_value,
+    const std::string &request_ip,
+    nlohmann::json &scoreboard
+  ) = 0;
+};
 
 } // namespace ctf01d

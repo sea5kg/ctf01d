@@ -37,14 +37,21 @@
 
 #pragma once
 
+#include <string>
+#include <chrono>
+
 namespace ctf01d {
 
-static const int MAX_FLAG_LIFETIME_SECONDS = 1500;
-static const int MAX_FLAG_COST_IN_POINTS = 1000;
-static const int MIN_TCP_PORT = 11;
-static const int MAX_TCP_PORT = 65435;
+class time_measurer {
+public:
+  time_measurer(const std::string &name, bool print_to_global_log = true);
+  ~time_measurer();
+  long elapsed_milliseconds();
 
-static const std::string JSON_FIELD_SUMMARY_ACTIVITIES = "sum_act";
-static const std::string JSON_FIELD_TRIES = "tries";
+private:
+  std::string m_name;
+  bool m_print_to_global_log;
+  std::chrono::time_point<std::chrono::steady_clock> m_start;
+};
 
 } // namespace ctf01d

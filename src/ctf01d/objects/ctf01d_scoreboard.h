@@ -38,6 +38,7 @@
 #pragma once
 
 #include "ctf01d/include/ctf01d_alive_flags.h"
+#include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/employees/employ_scoreboard.h"
 #include "ctf01d/employees/employ_database.h"
 #include <optional>
@@ -60,7 +61,7 @@ public:
   );
 
   void set_service_status(const std::string &team_id, const std::string &sServiceId, const std::string &sStatus);
-  void increment_tries(const std::string &team_id);
+  void insert_flag_attempt(const std::string &thief_team_id, const std::string &flag_value, const std::string &request_ip);
   void init_state_from_storage();
 
   // Returns flag points on success; std::nullopt if this team has already
@@ -76,7 +77,8 @@ public:
 
 private:
   std::string TAG;
-  alive_flags *m_alive_flags;
+  ctf01d::alive_flags *m_alive_flags;
+  ctf01d::activities *m_activities;
   EmployDatabase *m_database;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   int m_game_start_in_seconds;
@@ -94,7 +96,6 @@ private:
 
   std::string random_service_status();
   bool m_random;
-  int m_all_tries_activities; // TODO move to Employ activities
   // TODO shared ptr and move to employ scoreboard
   std::map<std::string, ctf01d::team_status_row *> m_teams_statuses;
 

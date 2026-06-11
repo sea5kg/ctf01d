@@ -43,6 +43,7 @@
 #include <wsjcpp_core.h>
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
+#include "ctf01d/include/ctf01d_globals.h"
 
 namespace ctf01d {
 
@@ -68,10 +69,10 @@ scoreboard::scoreboard(
   m_game_coffee_break_start_in_seconds = game_coffee_break_start_in_seconds;
   m_game_coffee_break_end_in_seconds = game_coffee_break_end_in_seconds;
   m_all_defense_flags = 0;
-  m_all_tries_activities = 0;
   m_flag_cost_in_points = config->get_flag_cost_in_points();
   m_team_count = vTeamsConf.size();
   m_alive_flags = findWsjcppEmploy<alive_flags>();
+  m_activities = findWsjcppEmploy<ctf01d::activities>();
   m_formulas = std::make_shared<ctf01d::formulas_for_points_ructf>();
 
   m_teams_statuses.clear(); // possible memory leak
@@ -91,7 +92,7 @@ scoreboard::scoreboard(
       // random states of service for testing
       if (m_random) {
         m_teams_statuses[team_id]->setServiceStatus(service.id(), random_service_status());
-        m_teams_statuses[team_id]->setTries(std::rand() % 1000);
+        // m_teams_statuses[team_id]->setTries(std::rand() % 1000);
       }
     }
   }
@@ -120,7 +121,7 @@ void scoreboard::init_json_scoreboard() {
     jsonServicesStatistics[serviceConf.id()] = serviceStatistics;
   }
   m_scoreboard["s_sta"] = jsonServicesStatistics;
-  m_scoreboard["sum_act"] = m_all_tries_activities;
+  m_scoreboard[ctf01d::JSON_FIELD_SUMMARY_ACTIVITIES] = 0;
 
   nlohmann::json jsonScoreboard;
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
@@ -129,7 +130,7 @@ void scoreboard::init_json_scoreboard() {
     nlohmann::json teamData;
     teamData["place"] = m_teams_statuses[team_id]->getPlace();
     teamData["points"] = m_teams_statuses[team_id]->getPoints();
-    teamData["tries"] = 0;
+    teamData[ctf01d::JSON_FIELD_TRIES] = 0;
     teamData["logo_last_updated"] = 0;
     nlohmann::json jsonServices;
     for (unsigned int iservice = 0; iservice < vServices.size(); iservice++) {
@@ -189,16 +190,9 @@ void scoreboard::set_service_status(const std::string &team_id, const std::strin
   }
 }
 
-void scoreboard::increment_tries(const std::string &team_id) {
+void scoreboard::insert_flag_attempt(const std::string &thief_team_id, const std::string &flag_value, const std::string &request_ip) {
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
-  std::map<std::string, ctf01d::team_status_row *>::iterator it;
-  m_all_tries_activities++;
-  it = m_teams_statuses.find(team_id);
-  if (it != m_teams_statuses.end()) {
-    it->second->setTries(it->second->tries() + 1);
-    m_scoreboard["scoreboard"][team_id]["tries"] = it->second->tries();
-  }
-  m_scoreboard["sum_act"] = m_all_tries_activities;
+  m_activities->insert_flag_attempt(thief_team_id, flag_value, request_ip, m_scoreboard);
 }
 
 void scoreboard::init_state_from_storage() {
@@ -242,15 +236,11 @@ void scoreboard::init_state_from_storage() {
   }
 
   ctf01d::log::info(TAG, "Setting teams statistics...");
-  m_all_tries_activities = 0;
   std::map<std::string, ctf01d::team_status_row *>::iterator it;
   for (it = m_teams_statuses.begin(); it != m_teams_statuses.end(); it++) {
     ctf01d::team_status_row *pRow = it->second;
 
-    int nTries = m_database->numberOfFlagAttempts(pRow->teamId());
-    m_all_tries_activities += nTries;
-    pRow->setTries(nTries);
-    m_scoreboard["scoreboard"][pRow->teamId()]["tries"] = nTries;
+    m_scoreboard["scoreboard"][pRow->teamId()][ctf01d::JSON_FIELD_TRIES] = 0;
 
     for (unsigned int i = 0; i < vServices.size(); i++) {
       std::string sServiceID = vServices[i].id();
@@ -282,7 +272,6 @@ void scoreboard::init_state_from_storage() {
       m_scoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["sla"] = pRow->calculateSLA(sServiceID);
     }
   }
-  m_scoreboard["sum_act"] = m_all_tries_activities;
 
   ctf01d::log::info(TAG, "Sorting places and apply to json...");
   {
@@ -290,6 +279,8 @@ void scoreboard::init_state_from_storage() {
     sort_places();
     update_services_statistics();
   }
+  ctf01d::log::info(TAG, "Updating activities...");
+  m_activities->update_scoreboard(m_scoreboard);
 }
 
 std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, const std::string &team_id) {
@@ -482,7 +473,7 @@ void scoreboard::sort_places() {
       // std::cout << sTeamNum << ": result: score: " << pTeamStatus->score() << ", place: " << pTeamStatus->getPlace() << "\n";
       m_scoreboard["scoreboard"][team_id_]["points"] = pTeamStatus->getPoints();
       m_scoreboard["scoreboard"][team_id_]["place"] = pTeamStatus->getPlace();
-      m_scoreboard["scoreboard"][team_id_]["tries"] = pTeamStatus->tries();
+      // m_scoreboard["scoreboard"][team_id_]["tries"] = pTeamStatus->tries();
     }
   }
 }

@@ -88,14 +88,6 @@ void team_status_row::setServiceStatus(const std::string &service_id, std::strin
   m_mapServicesStatus[service_id]->setStatus(sStatus);
 }
 
-void team_status_row::setTries(int nTries) {
-  m_nTries = nTries;
-}
-
-int team_status_row::tries() {
-  return m_nTries;
-}
-
 std::string team_status_row::serviceStatus(const std::string &service_id){
   // std::lock_guard<std::mutex> lock(m_mutex);
   return m_mapServicesStatus[service_id]->status();

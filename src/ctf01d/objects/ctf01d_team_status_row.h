@@ -58,9 +58,6 @@ public:
   void setServiceStatus(const std::string &service_id, std::string sStatus);
   std::string serviceStatus(const std::string &service_id);
 
-  void setTries(int nScore);
-  int tries();
-
   std::string servicesToString();
 
   void incrementDefense(const std::string &service_id, int flag_points);
