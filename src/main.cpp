@@ -40,7 +40,7 @@
 #include <wsjcpp_core.h>
 #include "ctf01d/objects/ctf01d_service_checker_thread.h"
 #include "ctf01d/employees/employ_config.h"
-#include "ctf01d/include/i_web_server.h"
+#include "ctf01d/include/ctf01d_web_server.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
 std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
@@ -263,7 +263,7 @@ int main(int argc, const char* argv[]) {
         ctf01d::log::err(TAG, "Failed.");
         return -1;
     }
-    return findWsjcppEmploy<IWebServer>()->start();
+    return findWsjcppEmploy<ctf01d::web_server>()->start();
   }
 
   if (command == "start") {
@@ -308,7 +308,7 @@ int main(int argc, const char* argv[]) {
       }
     }
     ctf01d::log::info(TAG, std::to_string(vThreads.size()) + " threads started");
-    return findWsjcppEmploy<IWebServer>()->start();
+    return findWsjcppEmploy<ctf01d::web_server>()->start();
   }
 
   std::cout << "Unknown command '" << command << "'. Please run '" << programName << " help'" << std::endl;

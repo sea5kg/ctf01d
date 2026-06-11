@@ -46,7 +46,7 @@
 #include <vector>
 #include <wsjcpp_employees.h>
 #include <wsjcpp_core.h>
-#include "ctf01d/include/i_web_server.h"
+#include "ctf01d/include/ctf01d_web_server.h"
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/employees/employ_images.h"
@@ -62,9 +62,9 @@
 #include "hlog.h"  // libhv
 #include "hbase.h"  // libhv: hv_wildcard_match
 
-class EmployWebServer : public WsjcppEmployBase, public IWebServer {
+class employ_web_server : public WsjcppEmployBase, public ctf01d::web_server {
 public:
-  EmployWebServer();
+  employ_web_server();
   virtual bool init(const std::string &name, bool bSilent) override;
   virtual bool deinit(const std::string &name, bool bSilent) override;
 
@@ -169,11 +169,11 @@ static bool isMetricsClientAllowed(const std::string &sClientIp, const std::stri
   return false;
 }
 
-REGISTRY_WSJCPP_EMPLOY(EmployWebServer)
+REGISTRY_WSJCPP_EMPLOY(employ_web_server)
 
-EmployWebServer::EmployWebServer()
-: WsjcppEmployBase({ IWebServer::name() }, { EmployConfig::name(), ctf01d::activities::name() }) {
-  TAG = IWebServer::name();
+employ_web_server::employ_web_server()
+: WsjcppEmployBase({ ctf01d::web_server::name() }, { EmployConfig::name(), ctf01d::activities::name() }) {
+  TAG = ctf01d::web_server::name();
   m_sApiPathPrefix = "/api/v1/";
   
   // TODO refactoring it
@@ -183,13 +183,13 @@ EmployWebServer::EmployWebServer()
   m_config = findWsjcppEmploy<EmployConfig>();
 }
 
-bool EmployWebServer::init(const std::string &name, bool bSilent) {
+bool employ_web_server::init(const std::string &name, bool bSilent) {
   ctf01d::log::info(TAG, "init");
   m_metrics_enabled.store(m_config->scoreboard_metrics_enabled()->value());
   return true;
 }
 
-bool EmployWebServer::deinit(const std::string &name, bool bSilent) {
+bool employ_web_server::deinit(const std::string &name, bool bSilent) {
   ctf01d::log::info(TAG, "deinit");
   return true;
 }
@@ -224,7 +224,7 @@ void EmployWebServer_custom_logger(int level, const char *msg, int len) {
   }
 }
 
-int EmployWebServer::start() {
+int employ_web_server::start() {
 
   EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
   g_http_logger->set_log_filename_prefix("http_hv");
@@ -253,7 +253,7 @@ int EmployWebServer::start() {
 
   // static files
   m_pHttpService->document_root = "./html";
-  m_pHttpService->GET("*", std::bind(&EmployWebServer::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
+  m_pHttpService->GET("*", std::bind(&employ_web_server::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
 
   hv::HttpServer server(m_pHttpService.get());
   server.setPort(pEmployConfig->scoreboardPort());
@@ -271,21 +271,21 @@ int EmployWebServer::start() {
   return 0;
 }
 
-void EmployWebServer::set_metrics_enabled(bool val) {
+void employ_web_server::set_metrics_enabled(bool val) {
   m_metrics_enabled.store(val);
 };
 
-void EmployWebServer::log_err(const std::string &message) {
+void employ_web_server::log_err(const std::string &message) {
   ctf01d::log::err(TAG, message);
   g_http_logger->err(TAG, message);
 }
 
-void EmployWebServer::log_warn(const std::string &message) {
+void employ_web_server::log_warn(const std::string &message) {
   ctf01d::log::warn(TAG, message);
   g_http_logger->warn(TAG, message);
 }
 
-void EmployWebServer::updateJsonCache() {
+void employ_web_server::updateJsonCache() {
   nlohmann::json jsonGame;
   nlohmann::json jsonTeams;
 
@@ -327,7 +327,7 @@ void EmployWebServer::updateJsonCache() {
   m_sCacheResponseTeamsJson = jsonTeams.dump();
 }
 
-int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
   std::string sOriginalRequestPath = req->path;
   std::string request_path;
 
@@ -392,7 +392,7 @@ int EmployWebServer::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
   return 404; // Not found
 }
 
-int EmployWebServer::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
   // std::cout << m_sCacheResponseGameJson << std::endl;
   resp->Data(
     (void *)(m_sCacheResponseGameJson.c_str()),
@@ -403,7 +403,7 @@ int EmployWebServer::httpApiV1Game(HttpRequest* req, HttpResponse* resp) {
   return 200;
 }
 
-int EmployWebServer::httpApiGameCurrentTime(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiGameCurrentTime(HttpRequest* req, HttpResponse* resp) {
   // TODO maybe need optimization keep json response for every second.
   auto now = std::chrono::system_clock::now().time_since_epoch();
   int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
@@ -419,7 +419,7 @@ int EmployWebServer::httpApiGameCurrentTime(HttpRequest* req, HttpResponse* resp
   return 200;
 }
 
-int EmployWebServer::httpApiV1Teams(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiV1Teams(HttpRequest* req, HttpResponse* resp) {
   resp->Data(
     (void *)(m_sCacheResponseTeamsJson.c_str()),
     m_sCacheResponseTeamsJson.length(),
@@ -429,12 +429,12 @@ int EmployWebServer::httpApiV1Teams(HttpRequest* req, HttpResponse* resp) {
   return 200;
 }
 
-int EmployWebServer::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
   resp->json["my-ip"] = req->client_addr.ip;
   return 200;
 }
 
-int EmployWebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
   auto teamLogos = findWsjcppEmploy<EmployImages>();
   teamLogos->update_last_change_time();
 
@@ -450,12 +450,12 @@ int EmployWebServer::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
   return 200;
 }
 
-int EmployWebServer::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
   // TODO
   return resp->Json(m_pHttpService->Paths());
 }
 
-int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   auto now = std::chrono::system_clock::now().time_since_epoch();
   int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
   std::string request_ip = req->client_addr.ip;
@@ -610,7 +610,7 @@ int EmployWebServer::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   return 200;
 }
 
-int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp) {
   // TODO refactoring it
 
   std::string id = request_path.substr(m_logo_prefix_length, request_path.length() - m_logo_prefix_length);
@@ -630,7 +630,7 @@ int EmployWebServer::httpLogo(const std::string &request_path, HttpRequest* req,
 
 }
 
-int EmployWebServer::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
+int employ_web_server::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
 
   if (!isMetricsClientAllowed(req->client_addr.ip, m_config->scoreboard_metrics_allowed_for()->value())) {
     resp->String("Forbidden");

@@ -39,9 +39,13 @@
 
 #include <string>
 
-class IWebServer {
+namespace ctf01d {
+
+class web_server {
 public:
   static std::string name() { return "IWebServer"; }
   virtual int start() = 0;
   virtual void set_metrics_enabled(bool val) = 0;
 };
+
+} // namespace ctf01d

@@ -47,7 +47,7 @@
 #include "ctf01d/employees/employ_images.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/include/ctf01d_globals.h"
-#include "ctf01d/include/i_web_server.h"
+#include "ctf01d/include/ctf01d_web_server.h"
 #include "third_party/smallsha1/smallsha1.h"
 #include "third_party/HowardHinnant/date.h"
 #include <sys/stat.h>
@@ -794,7 +794,7 @@ void EmployConfig::hot_reload_config_yaml() {
     if (m_scoreboard_metrics_enabled->read(cursor, err)) {
       if (prev_value != m_scoreboard_metrics_enabled->value()) {
         ctf01d::log::info(TAG, "Updated option: " + m_scoreboard_metrics_enabled->name() + " " + m_scoreboard_metrics_enabled->to_string());
-        findWsjcppEmploy<IWebServer>()->set_metrics_enabled(m_scoreboard_metrics_enabled->value());
+        findWsjcppEmploy<ctf01d::web_server>()->set_metrics_enabled(m_scoreboard_metrics_enabled->value());
       }
     };
   }
