@@ -37,8 +37,10 @@
 
 #include "ctf01d_service_statistics.h"
 
-Ctf01dServiceStatistics::Ctf01dServiceStatistics(const std::string &sServiceId) {
-  TAG = "Ctf01dServiceStatistics-" + sServiceId;
+namespace ctf01d {
+
+service_statistics::service_statistics(const std::string &sServiceId) {
+  TAG = "service_statistics-" + sServiceId;
   m_sServiceId = sServiceId;
   m_nAllStolenFlagsForService = 0;
   m_nAllDefenseFlagsForService = 0;
@@ -46,46 +48,48 @@ Ctf01dServiceStatistics::Ctf01dServiceStatistics(const std::string &sServiceId) 
   m_nFirstBloodTimeInSeconds = 0;
 }
 
-int Ctf01dServiceStatistics::getAllStolenFlagsForService() {
+int service_statistics::getAllStolenFlagsForService() {
   return m_nAllStolenFlagsForService;
 }
 
-void Ctf01dServiceStatistics::doIncrementStolenFlagsForService() {
+void service_statistics::doIncrementStolenFlagsForService() {
   m_nAllStolenFlagsForService++;
 }
 
-void Ctf01dServiceStatistics::setStolenFlagsForService(int nStolenFlags) {
+void service_statistics::setStolenFlagsForService(int nStolenFlags) {
   m_nAllStolenFlagsForService = nStolenFlags;
 }
 
-int Ctf01dServiceStatistics::getAllDefenseFlagsForService() {
+int service_statistics::getAllDefenseFlagsForService() {
   return m_nAllDefenseFlagsForService;
 }
 
-void Ctf01dServiceStatistics::doIncrementDefenseFlagsForService() {
+void service_statistics::doIncrementDefenseFlagsForService() {
   m_nAllDefenseFlagsForService++;
 }
 
-void Ctf01dServiceStatistics::setDefenseFlagsForService(int nAllDefenseFlagsForService) {
+void service_statistics::setDefenseFlagsForService(int nAllDefenseFlagsForService) {
   m_nAllDefenseFlagsForService = nAllDefenseFlagsForService;
 }
 
-std::string Ctf01dServiceStatistics::getFirstBloodTeamId() {
+std::string service_statistics::getFirstBloodTeamId() {
   return m_sFirstBloodTeamId;
 }
 
-long Ctf01dServiceStatistics::getFirstBloodTime() {
+long service_statistics::getFirstBloodTime() {
   return m_nFirstBloodTimeInSeconds;
 }
 
-void Ctf01dServiceStatistics::updateJsonServiceStatistics(nlohmann::json &jsonCosts) {
+void service_statistics::updateJsonServiceStatistics(nlohmann::json &jsonCosts) {
   jsonCosts["af_att"] = m_nAllStolenFlagsForService;
   jsonCosts["af_def"] = m_nAllDefenseFlagsForService;
   jsonCosts["first_blood"] = m_sFirstBloodTeamId;
   jsonCosts["first_blood_ts"] = m_nFirstBloodTimeInSeconds;
 }
 
-void Ctf01dServiceStatistics::setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion) {
+void service_statistics::setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion) {
   m_sFirstBloodTeamId = sFirstBlood;
   m_nFirstBloodTimeInSeconds = nDateACtion / 1000;
 }
+
+} // namespace ctf01d

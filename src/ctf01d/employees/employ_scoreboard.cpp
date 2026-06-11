@@ -76,7 +76,7 @@ bool EmployScoreboard::initServicesStats() {
   // keep the list of the services ids
   for (unsigned int i = 0; i < services_conf.size(); i++) {
     std::string service_id = services_conf[i].id();
-    m_map_services_stats[service_id] = std::make_shared<Ctf01dServiceStatistics>(service_id);
+    m_map_services_stats[service_id] = std::make_shared<ctf01d::service_statistics>(service_id);
   }
   return true;
 }

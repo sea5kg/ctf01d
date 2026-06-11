@@ -54,5 +54,5 @@ private:
 
   std::string TAG;
   std::mutex m_mutex_services_stats;
-  std::map<std::string, std::shared_ptr<Ctf01dServiceStatistics>> m_map_services_stats;
+  std::map<std::string, std::shared_ptr<ctf01d::service_statistics>> m_map_services_stats;
 };

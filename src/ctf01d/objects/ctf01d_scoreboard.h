@@ -88,7 +88,9 @@ private:
   void sortPlaces(); // TODO merge this function with update costs
   void updateServicesStatistics();
 
-  std::map<std::string, Ctf01dServiceStatistics *> m_mapServiceCostsAndStatistics;
+  // TODO move to Employ Stats
+  // std::shared_ptr<ctf01d::service_statistics> TODO 
+  std::map<std::string, ctf01d::service_statistics *> m_mapServiceCostsAndStatistics;
   int m_nAllDefenseFlags;
 
   std::string randomServiceStatus();

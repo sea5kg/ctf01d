@@ -40,9 +40,11 @@
 #include <string>
 #include <json.hpp>
 
-class Ctf01dServiceStatistics {
+namespace ctf01d {
+
+class service_statistics {
 public:
-  Ctf01dServiceStatistics(const std::string &sServiceId);
+  service_statistics(const std::string &sServiceId);
   int getAllStolenFlagsForService();
   void doIncrementStolenFlagsForService();
   void setStolenFlagsForService(int nStolenFlags);
@@ -66,3 +68,5 @@ private:
   int m_nAllStolenFlagsForService;
   int m_nAllDefenseFlagsForService;
 };
+
+} // namespace ctf01d

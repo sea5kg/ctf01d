@@ -97,7 +97,7 @@ Ctf01dScoreboard::Ctf01dScoreboard(
   // keep the list of the services ids
   for (unsigned int i = 0; i < vServicesConf.size(); i++) {
     std::string sServiceId = vServicesConf[i].id();
-    m_mapServiceCostsAndStatistics[sServiceId] = new Ctf01dServiceStatistics(sServiceId);
+    m_mapServiceCostsAndStatistics[sServiceId] = new ctf01d::service_statistics(sServiceId);
   }
 
   initJsonScoreboard();
@@ -331,7 +331,7 @@ std::optional<int> Ctf01dScoreboard::incrementAttackScore(const ctf01d::flag &fl
     sortPlaces();
   }
 
-  std::map<std::string, Ctf01dServiceStatistics *>::iterator it2;
+  std::map<std::string, ctf01d::service_statistics *>::iterator it2;
   it2 = m_mapServiceCostsAndStatistics.find(sServiceId);
   if (it2 != m_mapServiceCostsAndStatistics.end()) {
     it2->second->doIncrementStolenFlagsForService();
@@ -363,7 +363,7 @@ void Ctf01dScoreboard::incrementDefenseScore(const ctf01d::flag &flag) {
   }
 
   // TODO call Employ Scoreboard
-  std::map<std::string, Ctf01dServiceStatistics *>::iterator it2;
+  std::map<std::string, ctf01d::service_statistics *>::iterator it2;
   it2 = m_mapServiceCostsAndStatistics.find(sServiceId);
   if (it2 != m_mapServiceCostsAndStatistics.end()) {
     m_nAllDefenseFlags++;
@@ -488,7 +488,7 @@ void Ctf01dScoreboard::sortPlaces() {
 void Ctf01dScoreboard::updateServicesStatistics() {
   // std::lock_guard<std::mutex> lock(m_mutexJson);
   // TODO update costs
-  std::map<std::string, Ctf01dServiceStatistics *>::iterator it1;
+  std::map<std::string, ctf01d::service_statistics *>::iterator it1;
 
   // nlohmann::json jsonCosts;
   for (it1 = m_mapServiceCostsAndStatistics.begin(); it1 != m_mapServiceCostsAndStatistics.end(); it1++) {
