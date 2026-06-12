@@ -42,32 +42,34 @@
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
-// ---------------------------------------------------------------------
-// Ctf01dDatabase
+namespace ctf01d {
 
-std::map<std::string, Ctf01dDatabaseFile *> *g_pOpenedDatabaseFiles = nullptr;
+// ---------------------------------------------------------------------
+// database
+
+std::map<std::string, database_file *> *g_pOpenedDatabaseFiles = nullptr;
 
 // static
-void Ctf01dDatabase::addOpenedDatabaseFile(const std::string &name, Ctf01dDatabaseFile *db) {
+void database::addOpenedDatabaseFile(const std::string &name, database_file *db) {
   if (g_pOpenedDatabaseFiles == nullptr) {
     // ctf01d::log::info(std::string(), "Create employees map");
-    g_pOpenedDatabaseFiles = new std::map<std::string, Ctf01dDatabaseFile*>();
+    g_pOpenedDatabaseFiles = new std::map<std::string, database_file*>();
   }
   if (g_pOpenedDatabaseFiles->find(name) != g_pOpenedDatabaseFiles->end()) {
     ctf01d::log::throw_err("WsjcppEmployees::addService", "Already registered '" + name + "'");
   } else {
-    g_pOpenedDatabaseFiles->insert(std::pair<std::string, Ctf01dDatabaseFile*>(name, db));
+    g_pOpenedDatabaseFiles->insert(std::pair<std::string, database_file*>(name, db));
   }
 }
 
 // static
-bool Ctf01dDatabase::initDriverSqlite3(int &ret) {
+bool database::initDriverSqlite3(int &ret) {
   ret = sqlite3_initialize();
   return SQLITE_OK == ret;
 }
 
 // static
-void Ctf01dDatabase::shutdownDriverSqlite3() {
+void database::shutdownDriverSqlite3() {
   // will be automatilly closed all opened databases
   if (g_pOpenedDatabaseFiles != nullptr) {
     for (const auto& pair : *g_pOpenedDatabaseFiles) {
@@ -78,12 +80,12 @@ void Ctf01dDatabase::shutdownDriverSqlite3() {
 }
 
 // ---------------------------------------------------------------------
-// Impl_Ctf01dDatabaseSelectRows
+// impl_database_select_rows
 
-class Impl_Ctf01dDatabaseSelectRows : public Ctf01dDatabaseSelectRows {
+class impl_database_select_rows : public database_select_rows {
 public:
-  Impl_Ctf01dDatabaseSelectRows();
-  ~Impl_Ctf01dDatabaseSelectRows();
+  impl_database_select_rows();
+  ~impl_database_select_rows();
   void setQuery(sqlite3_stmt* pQuery);
   virtual bool next() override;
   virtual std::string getString(int nColumnNumber) override;
@@ -94,37 +96,37 @@ private:
 };
 
 
-Impl_Ctf01dDatabaseSelectRows::Impl_Ctf01dDatabaseSelectRows() {
+impl_database_select_rows::impl_database_select_rows() {
   m_pQuery = nullptr;
 }
 
-Impl_Ctf01dDatabaseSelectRows::~Impl_Ctf01dDatabaseSelectRows() {
+impl_database_select_rows::~impl_database_select_rows() {
   if (m_pQuery != nullptr) {
     sqlite3_finalize(m_pQuery);
   }
 }
 
-void Impl_Ctf01dDatabaseSelectRows::setQuery(sqlite3_stmt* pQuery) {
+void impl_database_select_rows::setQuery(sqlite3_stmt* pQuery) {
   m_pQuery = pQuery;
 }
 
-bool Impl_Ctf01dDatabaseSelectRows::next() {
+bool impl_database_select_rows::next() {
   return  sqlite3_step(m_pQuery) == SQLITE_ROW;
 }
 
-std::string Impl_Ctf01dDatabaseSelectRows::getString(int nColumnNumber) {
+std::string impl_database_select_rows::getString(int nColumnNumber) {
   return std::string((const char *)sqlite3_column_text(m_pQuery, nColumnNumber));
 }
 
-long Impl_Ctf01dDatabaseSelectRows::getLong(int nColumnNumber) {
+long impl_database_select_rows::getLong(int nColumnNumber) {
   return sqlite3_column_int64(m_pQuery, nColumnNumber);
 }
 
 // ---------------------------------------------------------------------
-// Ctf01dDatabaseFile
+// database_file
 
-Ctf01dDatabaseFile::Ctf01dDatabaseFile(const std::string &sFilename, const std::string &sSqlCreateTable) {
-  TAG = "Ctf01dDatabaseFile-" + sFilename;
+database_file::database_file(const std::string &sFilename, const std::string &sSqlCreateTable) {
+  TAG = "database_file-" + sFilename;
   m_pDatabaseFile = nullptr;
   m_sFilename = sFilename;
   std::string sError;
@@ -154,11 +156,11 @@ Ctf01dDatabaseFile::Ctf01dDatabaseFile(const std::string &sFilename, const std::
   m_sBaseFileBackupFullpath = sDatabaseBackupDir + "/" + m_sFilename;
 };
 
-Ctf01dDatabaseFile::~Ctf01dDatabaseFile() {
+database_file::~database_file() {
   close();
 }
 
-bool Ctf01dDatabaseFile::open() {
+bool database_file::open() {
   // open connection to a DB
   sqlite3 *db = (sqlite3 *)m_pDatabaseFile;
   int nRet = sqlite3_open_v2(
@@ -187,29 +189,30 @@ bool Ctf01dDatabaseFile::open() {
   }
   ctf01d::log::ok(TAG, "Opened database file " + m_sFileFullpath);
   copyDatabaseToBackup();
-  Ctf01dDatabase::addOpenedDatabaseFile(m_sFileFullpath, this);
+  database::addOpenedDatabaseFile(m_sFileFullpath, this);
   return true;
 }
 
-void Ctf01dDatabaseFile::close() {
+void database_file::close() {
   if (m_pDatabaseFile != nullptr) {
     sqlite3_close((sqlite3 *)m_pDatabaseFile);
     m_pDatabaseFile = nullptr;
   }
 }
 
-bool Ctf01dDatabaseFile::executeQuery(std::string sSqlInsert) {
+bool database_file::executeQuery(std::string sql_query) {
   copyDatabaseToBackup();
-  char *zErrMsg = 0;
-  int nRet = sqlite3_exec((sqlite3 *)m_pDatabaseFile, sSqlInsert.c_str(), 0, 0, &zErrMsg);
+  char *errMsg = 0;
+  int nRet = sqlite3_exec((sqlite3 *)m_pDatabaseFile, sql_query.c_str(), 0, 0, &errMsg);
   if (nRet != SQLITE_OK) {
-    ctf01d::log::throw_err(TAG, "Problem with insert: " + std::string(zErrMsg) + "\n SQL-query: " + sSqlInsert);
+    ctf01d::log::throw_err(TAG, "Problem with insert: " + std::string(errMsg) + "\n SQL-query: " + sql_query);
+    sqlite3_free(errMsg);
     return false;
   }
   return true;
 }
 
-int Ctf01dDatabaseFile::selectSumOrCount(std::string sSqlSelectCount) {
+int database_file::selectSumOrCount(std::string sSqlSelectCount) {
   copyDatabaseToBackup();
   sqlite3_stmt* pQuery = nullptr;
   int ret = sqlite3_prepare_v2((sqlite3 *)m_pDatabaseFile, sSqlSelectCount.c_str(), -1, &pQuery, NULL);
@@ -227,7 +230,7 @@ int Ctf01dDatabaseFile::selectSumOrCount(std::string sSqlSelectCount) {
   return nRet;
 }
 
-std::shared_ptr<Ctf01dDatabaseSelectRows> Ctf01dDatabaseFile::selectRows(std::string sqlSelectRows) {
+std::shared_ptr<database_select_rows> database_file::selectRows(std::string sqlSelectRows) {
   copyDatabaseToBackup();
   sqlite3_stmt* pQuery = nullptr;
   int nRet = sqlite3_prepare_v2((sqlite3 *)m_pDatabaseFile, sqlSelectRows.c_str(), -1, &pQuery, NULL);
@@ -236,12 +239,12 @@ std::shared_ptr<Ctf01dDatabaseSelectRows> Ctf01dDatabaseFile::selectRows(std::st
     ctf01d::log::throw_err(TAG, "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)m_pDatabaseFile)) + "\n SQL-query: " + sqlSelectRows);
     return nullptr;
   }
-  auto selectRows = std::make_shared<Impl_Ctf01dDatabaseSelectRows>();
+  auto selectRows = std::make_shared<impl_database_select_rows>();
   selectRows->setQuery(pQuery);
   return selectRows;
 }
 
-void Ctf01dDatabaseFile::copyDatabaseToBackup() {
+void database_file::copyDatabaseToBackup() {
   std::lock_guard<std::mutex> lock(m_mutex);
   // every 1 minutes make backup
   int nCurrentTime = WsjcppCore::getCurrentTimeInSeconds();
@@ -271,3 +274,5 @@ void Ctf01dDatabaseFile::copyDatabaseToBackup() {
   }
   ctf01d::log::info(TAG, "Backup done for " + m_sFileFullpath);
 }
+
+} // namespace ctf01d

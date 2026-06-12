@@ -71,8 +71,8 @@ public:
 
 private:
   std::string TAG;
-  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsDefense;
-  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckFails;
-  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsStolen;
-  std::shared_ptr<Ctf01dDatabaseFile> m_pFlagsCheckerPutsResults;
+  std::shared_ptr<ctf01d::database_file> m_pFlagsDefense;
+  std::shared_ptr<ctf01d::database_file> m_pFlagsCheckFails;
+  std::shared_ptr<ctf01d::database_file> m_pFlagsStolen;
+  std::shared_ptr<ctf01d::database_file> m_pFlagsCheckerPutsResults;
 };

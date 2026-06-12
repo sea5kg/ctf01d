@@ -59,13 +59,13 @@ EmployDatabase::EmployDatabase()
 
 bool EmployDatabase::init(const std::string &sName, bool bSilent) {
     int driver_init_ret;
-    if (!Ctf01dDatabase::initDriverSqlite3(driver_init_ret)) {
+    if (!ctf01d::database::initDriverSqlite3(driver_init_ret)) {
         ctf01d::log::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
         return false;
     }
     ctf01d::log::ok(TAG, "Initialize build-in sqlite3 library");
 
-    m_pFlagsCheckerPutsResults = std::make_shared<Ctf01dDatabaseFile>("flags_checker_put_results.db",
+    m_pFlagsCheckerPutsResults = std::make_shared<ctf01d::database_file>("flags_checker_put_results.db",
         "CREATE TABLE IF NOT EXISTS flags_checker_put_results ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -82,7 +82,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         return false;
     }
 
-    m_pFlagsDefense = std::make_shared<Ctf01dDatabaseFile>("flags_defense.db",
+    m_pFlagsDefense = std::make_shared<ctf01d::database_file>("flags_defense.db",
         "CREATE TABLE IF NOT EXISTS flags_defense ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -99,7 +99,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         return false;
     }
 
-    m_pFlagsCheckFails = std::make_shared<Ctf01dDatabaseFile>("flags_check_fails.db",
+    m_pFlagsCheckFails = std::make_shared<ctf01d::database_file>("flags_check_fails.db",
         "CREATE TABLE IF NOT EXISTS flags_check_fails ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -116,7 +116,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
         return false;
     }
 
-    m_pFlagsStolen = std::make_shared<Ctf01dDatabaseFile>("flags_stolen.db",
+    m_pFlagsStolen = std::make_shared<ctf01d::database_file>("flags_stolen.db",
         "CREATE TABLE IF NOT EXISTS flags_stolen ( "
         "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "  serviceid VARCHAR(50) NOT NULL, "
@@ -144,7 +144,7 @@ bool EmployDatabase::init(const std::string &sName, bool bSilent) {
 
 bool EmployDatabase::deinit(const std::string &sName, bool bSilent) {
     ctf01d::log::info(TAG, "deinit");
-    Ctf01dDatabase::shutdownDriverSqlite3();
+    ctf01d::database::shutdownDriverSqlite3();
     return true;
 }
 

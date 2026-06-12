@@ -71,7 +71,7 @@ private:
 
   std::mutex m_mutex_alive_flags;
   std::map<std::string, ctf01d::flag> m_alive_flags_cache;
-  std::shared_ptr<Ctf01dDatabaseFile> m_alive_flags_db;
+  std::shared_ptr<ctf01d::database_file> m_alive_flags_db;
 };
 
 // ---------------------------------------------------------------------
@@ -89,7 +89,7 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
   ctf01d::log::info(TAG, "init");
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
 
-  m_alive_flags_db = std::make_shared<Ctf01dDatabaseFile>("alive_flags.db",
+  m_alive_flags_db = std::make_shared<ctf01d::database_file>("alive_flags.db",
     "CREATE TABLE IF NOT EXISTS alive_flags ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  service_id VARCHAR(50) NOT NULL, "

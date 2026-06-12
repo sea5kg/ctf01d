@@ -42,33 +42,35 @@
 #include <mutex>
 #include <memory>
 
-class Ctf01dDatabaseFile;
+namespace ctf01d {
 
-extern std::map<std::string, Ctf01dDatabaseFile *> *g_pOpenedDatabaseFiles;
+class database_file;
 
-class Ctf01dDatabase {
+extern std::map<std::string, database_file *> *g_pOpenedDatabaseFiles;
+
+class database {
 public:
-  static void addOpenedDatabaseFile(const std::string &name, Ctf01dDatabaseFile *db);
+  static void addOpenedDatabaseFile(const std::string &name, database_file *db);
   static bool initDriverSqlite3(int &ret);
   static void shutdownDriverSqlite3();
 };
 
-class Ctf01dDatabaseSelectRows {
+class database_select_rows {
 public:
   virtual bool next() = 0;
   virtual std::string getString(int nColumnNumber) = 0;
   virtual long getLong(int nColumnNumber) = 0;
 };
 
-class Ctf01dDatabaseFile {
+class database_file {
 public:
-  Ctf01dDatabaseFile(const std::string &sFilename, const std::string &sSqlCreateTable);
-  ~Ctf01dDatabaseFile();
+  database_file(const std::string &sFilename, const std::string &sSqlCreateTable);
+  ~database_file();
   bool open();
   void close();
   bool executeQuery(std::string sSqlInsert);
   int selectSumOrCount(std::string sSqlSelectCount);
-  std::shared_ptr<Ctf01dDatabaseSelectRows> selectRows(std::string sqlSelectRows);
+  std::shared_ptr<database_select_rows> selectRows(std::string sqlSelectRows);
 
 private:
 
@@ -83,3 +85,5 @@ private:
   std::string m_sSqlCreateTable;
   int m_nLastBackupTime;
 };
+
+} // namespace ctf01d

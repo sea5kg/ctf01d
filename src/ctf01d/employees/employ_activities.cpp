@@ -79,10 +79,12 @@ private:
   std::mutex m_mutex_teams_activities_send_flag;
   std::map<std::string, int> m_teams_activities_send_flag;
 
-  // db
+  // db attempts
   std::mutex m_mutex_flags_attempts_db;
-  std::shared_ptr<Ctf01dDatabaseFile> m_flags_attempts_db;
-  std::shared_ptr<Ctf01dDatabaseFile> m_flags_attempts_snapshots_db;
+  std::shared_ptr<ctf01d::database_file> m_flags_attempts_db;
+  // db attempts_snapshot
+  std::mutex m_mutex_flags_attempts_snapshots_db;
+  std::shared_ptr<ctf01d::database_file> m_flags_attempts_snapshots_db;
 };
 
 // ---------------------------------------------------------------------
@@ -112,8 +114,12 @@ bool employ_activities::init(const std::string &name, bool silent) {
   }
 
   {
-    auto config = findWsjcppEmploy<EmployConfig>();
     ctf01d::time_measurer measurer("restore activities from database");
+    auto config = findWsjcppEmploy<EmployConfig>();
+    long game_start = long(config->gameStartUTCInSec())*1000;
+    long game_end = long(config->gameEndUTCInSec())*1000;
+    std::string str_game_start = std::to_string(game_start);
+    std::string str_game_end = std::to_string(game_end);
     std::lock_guard<std::mutex> lock(m_mutex_teams_activities_send_flag);
     for (unsigned int i = 0; i < config->teamsConf().size(); i++) {
       const ctf01d::team_config &team_config = config->teamsConf()[i];
@@ -121,8 +127,8 @@ bool employ_activities::init(const std::string &name, bool silent) {
         "SELECT COUNT(*) FROM flags_attempts"
         "  WHERE "
         "    team_id = '" + team_config.id() + "'"
-        "    AND dt >= " + std::to_string(long(config->gameStartUTCInSec())*1000) + " "
-        "    AND dt <= " + std::to_string(long(config->gameEndUTCInSec())*1000) + " "
+        "    AND dt >= " + str_game_start + " "
+        "    AND dt <= " + str_game_end + " "
       );
       m_all_activities_send_flag += flag_attempts_sum;
       m_teams_activities_send_flag[team_config.id()] = flag_attempts_sum;
@@ -199,13 +205,13 @@ void employ_activities::insert_flag_attempt(
 }
 
 bool employ_activities::init_flags_attempts_db() {
-  m_flags_attempts_db = std::make_shared<Ctf01dDatabaseFile>("flags_attempts.db",
+  m_flags_attempts_db = std::make_shared<ctf01d::database_file>("flags_attempts.db",
     "CREATE TABLE IF NOT EXISTS flags_attempts ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  flag VARCHAR(1024) NOT NULL, "
     "  team_id VARCHAR(50) NOT NULL, "
     "  request_ip VARCHAR(50) NOT NULL, "
-    "  dt INTEGER NOT NULL"
+    "  dt INTEGER NOT NULL "
     ");"
     // TODO result of send_flag (error code or success + elapsed time)
   );
@@ -220,7 +226,8 @@ bool employ_activities::init_flags_attempts_db() {
 
 bool employ_activities::init_flags_attempts_snapshots_db()
 {
-  m_flags_attempts_snapshots_db = std::make_shared<Ctf01dDatabaseFile>("flags_attempts_snapshots.db",
+  std::lock_guard<std::mutex> lock(m_mutex_flags_attempts_snapshots_db);
+  m_flags_attempts_snapshots_db = std::make_shared<ctf01d::database_file>("flags_attempts_snapshots.db",
     "CREATE TABLE IF NOT EXISTS flags_attempts_snapshots ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  team_id VARCHAR(50) NOT NULL, "
