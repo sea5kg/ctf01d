@@ -41,7 +41,7 @@
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_activities.h"
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/utils/ctf01d_time_measurer.h"
 #include <wsjcpp_core.h>
@@ -93,7 +93,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(employ_activities)
 
 employ_activities::employ_activities()
-: WsjcppEmployBase({ ctf01d::activities::name() }, { EmployConfig::name(), ctf01d::database::name() }) {
+: WsjcppEmployBase({ ctf01d::activities::name() }, { ctf01d::config::name(), ctf01d::database::name() }) {
   TAG = "employ_activities";
   m_all_activities_send_flag = 0;
   m_flags_attempts_db = nullptr;
@@ -115,14 +115,14 @@ bool employ_activities::init(const std::string &name, bool silent) {
 
   {
     ctf01d::time_measurer measurer("restore activities from database");
-    auto config = findWsjcppEmploy<EmployConfig>();
-    long game_start = long(config->gameStartUTCInSec())*1000;
-    long game_end = long(config->gameEndUTCInSec())*1000;
+    auto config = findWsjcppEmploy<ctf01d::config>();
+    long game_start = long(config->game_start_utc_in_seconds())*1000;
+    long game_end = long(config->game_end_utc_in_seconds())*1000;
     std::string str_game_start = std::to_string(game_start);
     std::string str_game_end = std::to_string(game_end);
     std::lock_guard<std::mutex> lock(m_mutex_teams_activities_send_flag);
-    for (unsigned int i = 0; i < config->teamsConf().size(); i++) {
-      const ctf01d::team_config &team_config = config->teamsConf()[i];
+    for (unsigned int i = 0; i < config->teams().size(); i++) {
+      const ctf01d::team_config &team_config = config->teams()[i];
       int flag_attempts_sum = m_flags_attempts_db->selectSumOrCount(
         "SELECT COUNT(*) FROM flags_attempts"
         "  WHERE "

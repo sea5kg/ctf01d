@@ -41,7 +41,7 @@
 #include "ctf01d/objects/ctf01d_image.h"
 #include <wsjcpp_core.h>
 #include <filesystem>
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
 class employ_images : public WsjcppEmployBase, public ctf01d::images {
@@ -70,7 +70,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(employ_images)
 
 employ_images::employ_images()
-: WsjcppEmployBase({ ctf01d::images::name() }, { EmployConfig::name() }) {
+: WsjcppEmployBase({ ctf01d::images::name() }, { ctf01d::config::name() }) {
   TAG = ctf01d::images::name();
   m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
 }

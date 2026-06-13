@@ -35,36 +35,127 @@
  *
  ***********************************************************************************/
 
-#include "employ_config.h"
+#include <wsjcpp_employees.h>
+#include <wsjcpp_yaml.h>
 #include <wsjcpp_core.h>
 #include <sstream>
+#include <thread>
 #include <ctime>
 #include <locale>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <wsjcpp_yaml.h>
+#include "ctf01d/objects/ctf01d_files_watcher.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/include/ctf01d_images.h"
 #include "ctf01d/include/ctf01d_globals.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_web_server.h"
 #include "third_party/smallsha1/smallsha1.h"
 #include "third_party/HowardHinnant/date.h"
 #include <sys/stat.h>
 #include <stdio.h>
 
-REGISTRY_WSJCPP_EMPLOY(EmployConfig)
+class employ_config : public WsjcppEmployBase, public ctf01d::config {
+public:
+  employ_config();
+  ~employ_config();
+  virtual bool init(const std::string &name, bool silent) override;
+  virtual bool deinit(const std::string &name, bool silent) override;
 
-EmployConfig::EmployConfig()
-: WsjcppEmployBase({ EmployConfig::name() }, {}) {
-  TAG = EmployConfig::name();
+  // ctf01d::config
+  virtual void set_work_dir(const std::string &work_dir) override;
+  virtual std::string get_work_dir() override;
+  virtual bool apply_config() override;
+  virtual const std::vector<ctf01d::service_config> &services() override;
+  virtual const std::vector<ctf01d::team_config> &teams() override;
+  virtual int scoreboard_port() const override;
+  virtual std::string scoreboard_html_folder() const override;
+  virtual bool scoreboard_random() const override;
+  virtual std::shared_ptr<ctf01d::var_bool> scoreboard_metrics_enabled() const override;
+  virtual std::shared_ptr<ctf01d::var_allowed_ip> scoreboard_metrics_allowed_for() const override;
+  virtual std::string game_id() const override;
+  virtual std::string game_name() const override;
+  virtual int flag_lifetime_in_seconds() const override;
+  virtual std::shared_ptr<ctf01d::var_int> get_flag_cost_in_points() const override;
+  virtual int game_start_utc_in_seconds() const override;
+  virtual int game_end_utc_in_seconds() const override;
+  virtual bool game_has_coffee_break() const override;
+  virtual int game_coffee_break_start_utc_in_seconds() const override;
+  virtual int game_coffee_break_end_utc_in_seconds() const override;
+  virtual std::shared_ptr<ctf01d::scoreboard> scoreboard() override;
+
+private:
+  void update_files_in_data();
+  nlohmann::json load_files_sha1();
+  void save_files_sha1(nlohmann::json &files);
+  void update_data_html(nlohmann::json &files);
+
+  bool checkYamlMainKeys(WsjcppYaml &yaml);
+  bool checkGameConf();
+  bool applyScoreboardPortFromEnv();
+  bool applyServicesConfig(WsjcppYaml &yaml);
+  bool readTeamsConf(WsjcppYaml &yaml);
+  bool init_work_dir();
+  bool initLogger();
+
+  void thread_watcher();
+  void hot_reload_config_yaml();
+
+  std::string TAG;
+  std::string m_work_dir;
+  std::string m_config_filepath;
+  bool m_applied_config;
+
+  // scoreboard config
+  ctf01d::scope_vars m_scoreboard_vars = ctf01d::scope_vars("scoreboard_config");
+  std::shared_ptr<ctf01d::scoreboard> m_scoreboard;
+  std::shared_ptr<ctf01d::var_int> m_scoreboard_port;
+  std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
+  std::shared_ptr<ctf01d::var_bool> m_scoreboard_random;
+  std::shared_ptr<ctf01d::var_bool> m_scoreboard_metrics_enabled;
+  std::shared_ptr<ctf01d::var_allowed_ip> m_scoreboard_metrics_allowed_for;
+
+  // game config
+  ctf01d::scope_vars m_game_vars = ctf01d::scope_vars("game_config");
+  std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_seconds;
+  std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
+  std::shared_ptr<ctf01d::var_string> m_game_id;
+  std::shared_ptr<ctf01d::var_string> m_game_name;
+  std::shared_ptr<ctf01d::var_datetime> m_game_start_utc;
+  std::shared_ptr<ctf01d::var_datetime> m_game_end_utc;
+  bool m_has_coffee_break;
+  std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_start_utc;
+  std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_end_utc;
+
+  ctf01d::scope_vars m_teams_config_vars = ctf01d::scope_vars("teams_config");
+  std::shared_ptr<ctf01d::var_string> m_ip_or_host_prefix;
+  std::shared_ptr<ctf01d::var_string> m_ip_or_host_suffix;
+
+  // teams config
+  std::vector<ctf01d::team_config> m_teams;
+
+  // services config
+  std::vector<ctf01d::service_config> m_services;
+
+  // hot-reload: for reload config in runtime
+  std::thread m_thread_watcher;
+  std::mutex m_mutex_thread_watcher;
+  std::shared_ptr<ctf01d::files_watcher> m_files_watcher;
+};
+
+REGISTRY_WSJCPP_EMPLOY(employ_config)
+
+employ_config::employ_config()
+: WsjcppEmployBase({ ctf01d::config::name() }, {}) {
+  TAG = ctf01d::config::name();
   m_files_watcher = std::make_shared<ctf01d::files_watcher>();
 
   // game options
   m_game_id = ctf01d::var_string::create({"game", "id"}, "test", m_game_vars);
   m_game_name = ctf01d::var_string::create({"game", "name"}, "Test", m_game_vars);
 
-  m_bAppliedConfig = false;
+  m_applied_config = false;
   m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60, m_game_vars);
   m_flag_lifetime_in_seconds->set_minimum(1);
   m_flag_lifetime_in_seconds->set_maximum(ctf01d::MAX_FLAG_LIFETIME_SECONDS);
@@ -73,10 +164,10 @@ EmployConfig::EmployConfig()
   m_flag_cost_in_points->set_minimum(1);
   m_flag_cost_in_points->set_maximum(ctf01d::MAX_FLAG_COST_IN_POINTS);
 
-  m_game_start_utc = ctf01d::var_datetime::create({"game", "start_utc"}, "2023-11-12 16:00:00", m_game_vars);
-  m_game_end_utc = ctf01d::var_datetime::create({"game", "end_utc"}, "2030-11-12 22:00:00", m_game_vars);
-  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee_break_start"}, "2023-11-12 20:00:00", m_game_vars);
-  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee_break_end"}, "2023-11-12 21:00:00", m_game_vars);
+  m_game_start_utc = ctf01d::var_datetime::create({"game", "start-utc"}, "2023-11-12 16:00:00", m_game_vars);
+  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee-break-start"}, "2023-11-12 20:00:00", m_game_vars);
+  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee-break-end"}, "2023-11-12 21:00:00", m_game_vars);
+  m_game_end_utc = ctf01d::var_datetime::create({"game", "end-utc"}, "2030-11-12 22:00:00", m_game_vars);
 
   m_has_coffee_break = false;
 
@@ -86,24 +177,24 @@ EmployConfig::EmployConfig()
   m_scoreboard_port->set_minimum(ctf01d::MIN_TCP_PORT);
   m_scoreboard_port->set_maximum(ctf01d::MAX_TCP_PORT);
   m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_scoreboard_vars);
-  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_sWorkDir, m_scoreboard_vars);
+  m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_work_dir, m_scoreboard_vars);
   m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_scoreboard_vars);
   m_scoreboard_metrics_allowed_for = ctf01d::var_allowed_ip::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_scoreboard_vars);
 
-  m_ip_or_host_prefix = ctf01d::var_string::create({"config", "ip-or-host-prefix"}, "", m_teams_config);
-  m_ip_or_host_suffix = ctf01d::var_string::create({"config", "ip-or-host-suffix"}, "", m_teams_config);
+  m_ip_or_host_prefix = ctf01d::var_string::create({"config", "ip-or-host-prefix"}, "", m_teams_config_vars);
+  m_ip_or_host_suffix = ctf01d::var_string::create({"config", "ip-or-host-suffix"}, "", m_teams_config_vars);
 
   m_scoreboard = nullptr;
 }
 
-EmployConfig::~EmployConfig() {
+employ_config::~employ_config() {
   // TODO cleanup
   m_game_vars.clear();
   m_scoreboard_vars.clear();
 }
 
-bool EmployConfig::init(const std::string &sName, bool bSilent) {
-  if (!initWorkDir()) {
+bool employ_config::init(const std::string &sName, bool bSilent) {
+  if (!init_work_dir()) {
     return false;
   }
 
@@ -113,7 +204,7 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
 
   this->update_files_in_data();
 
-  if (!this->applyConfig()) {
+  if (!this->apply_config()) {
     ctf01d::log::err(TAG, "Configuration file has some problems");
     return false;
   }
@@ -121,7 +212,7 @@ bool EmployConfig::init(const std::string &sName, bool bSilent) {
   return true;
 }
 
-bool EmployConfig::deinit(const std::string &sName, bool bSilent) {
+bool employ_config::deinit(const std::string &sName, bool bSilent) {
   ctf01d::log::info(TAG, "deinit");
   // wait stop threads
   if (m_thread_watcher.joinable()) {
@@ -130,25 +221,25 @@ bool EmployConfig::deinit(const std::string &sName, bool bSilent) {
   return true;
 }
 
-void EmployConfig::setWorkDir(const std::string &sWorkDir) {
-  if (m_sWorkDir != "" && m_sWorkDir != sWorkDir) {
+void employ_config::set_work_dir(const std::string &sWorkDir) {
+  if (m_work_dir != "" && m_work_dir != sWorkDir) {
     std::cout << "Changed work-dir to '" + sWorkDir + "'" << std::endl;
   }
-  m_sWorkDir = sWorkDir;
-  m_config_filepath = m_sWorkDir + "/config.yml";
-  m_scoreboard_html_folder->set_root_dir(m_sWorkDir);
+  m_work_dir = sWorkDir;
+  m_config_filepath = m_work_dir + "/config.yml";
+  m_scoreboard_html_folder->set_root_dir(m_work_dir);
 }
 
-std::string EmployConfig::getWorkDir() {
-    return m_sWorkDir;
+std::string employ_config::get_work_dir() {
+    return m_work_dir;
 }
 
-bool EmployConfig::applyConfig() {
-  if (m_bAppliedConfig) {
+bool employ_config::apply_config() {
+  if (m_applied_config) {
     return true;
   }
 
-  m_bAppliedConfig = false;
+  m_applied_config = false;
   ctf01d::log::info(TAG, "Loading configuration...");
 
   ctf01d::log::info(TAG, "Reading config: " + m_config_filepath);
@@ -158,18 +249,18 @@ bool EmployConfig::applyConfig() {
     return false;
   }
 
-  WsjcppYaml yamlConfig;
+  WsjcppYaml yaml;
   std::string sError;
-  if (!yamlConfig.loadFromFile(m_config_filepath, sError)) {
+  if (!yaml.loadFromFile(m_config_filepath, sError)) {
     ctf01d::log::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + sError);
     return false;
   }
 
-  if (!checkYamlMainKeys(yamlConfig)) {
+  if (!checkYamlMainKeys(yaml)) {
     return false;
   }
 
-  auto cursor = yamlConfig.getCursor();
+  auto cursor = yaml.getCursor();
   std::string err;
   if (!m_game_vars.read(cursor, err)) {
     ctf01d::log::err(TAG, err);
@@ -189,11 +280,11 @@ bool EmployConfig::applyConfig() {
     return false;
   }
 
-  if (!this->applyServicesConfig(yamlConfig)) {
+  if (!this->applyServicesConfig(yaml)) {
     return false;
   }
 
-  if (!this->readTeamsConf(yamlConfig)) {
+  if (!this->readTeamsConf(yaml)) {
     return false;
   }
 
@@ -206,79 +297,79 @@ bool EmployConfig::applyConfig() {
     m_game_coffee_break_end_utc->value_in_seconds()
   );
 
-  m_bAppliedConfig = true;
+  m_applied_config = true;
   m_files_watcher->watchFile(m_config_filepath);
-  m_thread_watcher = std::thread(&EmployConfig::thread_watcher, this);
-  return m_bAppliedConfig;
+  m_thread_watcher = std::thread(&employ_config::thread_watcher, this);
+  return m_applied_config;
 }
 
-std::vector<ctf01d::team_config> &EmployConfig::teamsConf() {
-  return m_vTeamsConf;
+const std::vector<ctf01d::team_config> &employ_config::teams() {
+  return m_teams;
 }
 
-std::vector<ctf01d::service_config> &EmployConfig::servicesConf() {
-  return m_vServicesConf;
+const std::vector<ctf01d::service_config> &employ_config::services() {
+  return m_services;
 }
 
-int EmployConfig::scoreboardPort() const {
+int employ_config::scoreboard_port() const {
   return m_scoreboard_port->value();
 }
 
-std::string EmployConfig::scoreboardHtmlFolder() const {
+std::string employ_config::scoreboard_html_folder() const {
   return m_scoreboard_html_folder->value();
 }
 
-bool EmployConfig::scoreboardRandom() const {
+bool employ_config::scoreboard_random() const {
   return m_scoreboard_random->value();
 }
 
-std::shared_ptr<ctf01d::var_bool> EmployConfig::scoreboard_metrics_enabled() const {
+std::shared_ptr<ctf01d::var_bool> employ_config::scoreboard_metrics_enabled() const {
   return m_scoreboard_metrics_enabled;
 }
 
-std::shared_ptr<ctf01d::var_allowed_ip> EmployConfig::scoreboard_metrics_allowed_for() const {
+std::shared_ptr<ctf01d::var_allowed_ip> employ_config::scoreboard_metrics_allowed_for() const {
   return m_scoreboard_metrics_allowed_for;
 }
 
-std::string EmployConfig::gameId() const {
+std::string employ_config::game_id() const {
   return m_game_id->value();
 }
 
-std::string EmployConfig::gameName() const  {
+std::string employ_config::game_name() const  {
   return m_game_name->value();
 }
 
-int EmployConfig::flagLifetimeInSeconds() const  {
+int employ_config::flag_lifetime_in_seconds() const  {
   return m_flag_lifetime_in_seconds->value();
 }
 
-std::shared_ptr<ctf01d::var_int> EmployConfig::get_flag_cost_in_points() const {
+std::shared_ptr<ctf01d::var_int> employ_config::get_flag_cost_in_points() const {
   return m_flag_cost_in_points;
 }
 
-int EmployConfig::gameStartUTCInSec() const {
+int employ_config::game_start_utc_in_seconds() const {
   // TODO return var
   return m_game_start_utc->value_in_seconds();
 }
 
-int EmployConfig::gameEndUTCInSec() const {
+int employ_config::game_end_utc_in_seconds() const {
   // TODO return var
   return m_game_end_utc->value_in_seconds();
 }
 
-bool EmployConfig::gameHasCoffeeBreak() {
+bool employ_config::game_has_coffee_break() const {
   return m_has_coffee_break;
 }
 
-int EmployConfig::gameCoffeeBreakStartUTCInSec() {
+int employ_config::game_coffee_break_start_utc_in_seconds() const {
   return m_game_coffee_break_start_utc->value_in_seconds();
 }
 
-int EmployConfig::gameCoffeeBreakEndUTCInSec() {
+int employ_config::game_coffee_break_end_utc_in_seconds() const {
   return m_game_coffee_break_end_utc->value_in_seconds();
 }
 
-std::shared_ptr<ctf01d::scoreboard> EmployConfig::scoreboard() {
+std::shared_ptr<ctf01d::scoreboard> employ_config::scoreboard() {
   return m_scoreboard;
 }
 
@@ -331,18 +422,18 @@ std::string sha1_by_file(const std::string &sFilename) {
   return std::string(hexstring);
 }
 
-void EmployConfig::update_files_in_data() {
+void employ_config::update_files_in_data() {
   std::string sError;
-  if (!WsjcppCore::dirExists(m_sWorkDir + "/logs")) {
-    WsjcppCore::makeDir(m_sWorkDir + "/logs");
-    if (!WsjcppCore::setFilePermissions(m_sWorkDir + "/logs", WsjcppFilePermissions(0x755), sError)) {
+  if (!WsjcppCore::dirExists(m_work_dir + "/logs")) {
+    WsjcppCore::makeDir(m_work_dir + "/logs");
+    if (!WsjcppCore::setFilePermissions(m_work_dir + "/logs", WsjcppFilePermissions(0x755), sError)) {
       ctf01d::log::throw_err(TAG, sError);
     }
   }
 
   nlohmann::json previous_files_sha1 = load_files_sha1();
 
-  if (!WsjcppCore::fileExists(m_sWorkDir + "/config.yml")) {
+  if (!WsjcppCore::fileExists(m_work_dir + "/config.yml")) {
     ctf01d::log::warn(TAG, "Extracting config.yml and files");
     ctf01d::log::warn(TAG, "Extracting checker_example_*");
     const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
@@ -354,7 +445,7 @@ void EmployConfig::update_files_in_data() {
         std::string sDirname = vPath[2];
         vPath.erase (vPath.begin(),vPath.begin()+3);
         std::string sNewFilepath = WsjcppCore::join(vPath, "/");
-        sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/" + sNewFilepath);
+        sNewFilepath = wsjcpp::normalizeFilePath(m_work_dir + "/" + sDirname + "/" + sNewFilepath);
         if (!WsjcppCore::fileExists(sNewFilepath)) {
           std::cout << "Extracting file '" << filepath << "' to '" << sNewFilepath << "'" << std::endl;
         } else {
@@ -363,7 +454,7 @@ void EmployConfig::update_files_in_data() {
         }
 
         // prepare folder
-        std::string sFolder = wsjcpp::normalizeFilePath(m_sWorkDir + "/" + sDirname + "/");
+        std::string sFolder = wsjcpp::normalizeFilePath(m_work_dir + "/" + sDirname + "/");
         if (!WsjcppCore::dirExists(sFolder)) {
           WsjcppCore::makeDir(sFolder);
         }
@@ -386,7 +477,7 @@ void EmployConfig::update_files_in_data() {
     }
 
     WsjcppResourceFile* pConfigYml = WsjcppResourcesManager::get("./data_sample/config.yml");
-    std::string sNewFilepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/config.yml");
+    std::string sNewFilepath = wsjcpp::normalizeFilePath(m_work_dir + "/config.yml");
     if (!WsjcppCore::writeFile(sNewFilepath, pConfigYml->getBuffer(), pConfigYml->getBufferSize())) {
       std::cout << "ERROR. Could not write file. " << std::endl;
     } else {
@@ -398,24 +489,24 @@ void EmployConfig::update_files_in_data() {
   save_files_sha1(previous_files_sha1);
 }
 
-nlohmann::json EmployConfig::load_files_sha1() {
+nlohmann::json employ_config::load_files_sha1() {
   nlohmann::json files_sha1;
-  if (WsjcppCore::fileExists(m_sWorkDir + "/files_sha1.json")) {
-    std::ifstream ifs(m_sWorkDir + "/files_sha1.json");
+  if (WsjcppCore::fileExists(m_work_dir + "/files_sha1.json")) {
+    std::ifstream ifs(m_work_dir + "/files_sha1.json");
     files_sha1 = nlohmann::json::parse(ifs);
   }
   return files_sha1;
 }
 
-void EmployConfig::save_files_sha1(nlohmann::json &files) {
-  std::ofstream output(m_sWorkDir + "/files_sha1.json");
+void employ_config::save_files_sha1(nlohmann::json &files) {
+  std::ofstream output(m_work_dir + "/files_sha1.json");
   output << std::setw(2) << files << std::endl;
 }
 
-void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
+void employ_config::update_data_html(nlohmann::json &previous_files_sha1) {
   ctf01d::log::warn(TAG, "Updating files in data/html");
-  if (!WsjcppCore::dirExists(m_sWorkDir + "/html")) {
-    WsjcppCore::makeDir(m_sWorkDir + "/html");
+  if (!WsjcppCore::dirExists(m_work_dir + "/html")) {
+    WsjcppCore::makeDir(m_work_dir + "/html");
   }
   
   const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
@@ -428,11 +519,11 @@ void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
     std::vector<std::string> vPath = WsjcppCore::split(source_filepath, "/");
     vPath.erase (vPath.begin(),vPath.begin()+3);
     std::string target_filepath = WsjcppCore::join(vPath, "/");
-    target_filepath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/" + target_filepath);
+    target_filepath = wsjcpp::normalizeFilePath(m_work_dir + "/html/" + target_filepath);
 
     // prepare folders
     if (!WsjcppCore::fileExists(target_filepath)) {
-      std::string dirpath = wsjcpp::normalizeFilePath(m_sWorkDir + "/html/");
+      std::string dirpath = wsjcpp::normalizeFilePath(m_work_dir + "/html/");
       for (int p = 0; p < vPath.size()-1; p++) {
         dirpath = wsjcpp::normalizeFilePath(dirpath + "/" + vPath[p]);
         if (!WsjcppCore::dirExists(dirpath)) {
@@ -477,9 +568,9 @@ void EmployConfig::update_data_html(nlohmann::json &previous_files_sha1) {
   }
 }
 
-bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
+bool employ_config::checkYamlMainKeys(WsjcppYaml &yaml) {
   // check main keys
-  auto cur = yamlConfig.getCursor();
+  auto cur = yaml.getCursor();
   // TODO list from vars
   std::vector<std::string> expected_keys = {
     "scoreboard",
@@ -503,7 +594,7 @@ bool EmployConfig::checkYamlMainKeys(WsjcppYaml &yamlConfig) {
   return true;
 }
 
-bool EmployConfig::checkGameConf() {
+bool employ_config::checkGameConf() {
   std::string err;
 
   ctf01d::log::info(TAG, "Game start: " + m_game_start_utc->value());
@@ -533,7 +624,7 @@ bool EmployConfig::checkGameConf() {
   return true;
 }
 
-bool EmployConfig::applyScoreboardPortFromEnv() {
+bool employ_config::applyScoreboardPortFromEnv() {
   std::string str_port;
   if (WsjcppCore::getEnv("CTF01D_PORT", str_port)) {
     ctf01d::log::warn(TAG, "CTF01D_PORT='" + str_port + "'");
@@ -561,11 +652,11 @@ bool EmployConfig::applyScoreboardPortFromEnv() {
   return true;
 }
 
-bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
-  m_vServicesConf.clear();
+bool employ_config::applyServicesConfig(WsjcppYaml &yaml) {
+  m_services.clear();
   auto images = findWsjcppEmploy<ctf01d::images>();
 
-  WsjcppYamlCursor yamlCheckers = yamlConfig["services"];
+  WsjcppYamlCursor yamlCheckers = yaml["services"];
 
   if (yamlCheckers.size() == 0) {
     ctf01d::log::err(TAG, "Checkers does not defined");
@@ -579,7 +670,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
     ctf01d::service_config _serviceConf;
     std::string err;
 
-    if (!_serviceConf.read(yamlChecker, m_sWorkDir, err)) {
+    if (!_serviceConf.read(yamlChecker, m_work_dir, err)) {
       ctf01d::log::err(TAG, err);
       return false;
     }
@@ -589,8 +680,8 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
       continue;
     }
 
-    for (unsigned int i = 0; i < m_vServicesConf.size(); i++) {
-      if (m_vServicesConf[i].id() == _serviceConf.id()) {
+    for (unsigned int i = 0; i < m_services.size(); i++) {
+      if (m_services[i].id() == _serviceConf.id()) {
         ctf01d::log::err(TAG, "Already registered checker for service '" + _serviceConf.id() + "'");
         return false;
       }
@@ -605,7 +696,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
     }
     ctf01d::log::info(TAG, "Loaded service logo-big = " + _serviceConf.logo_big_path());
 
-    m_vServicesConf.push_back(_serviceConf);
+    m_services.push_back(_serviceConf);
 
     // set write permissions for all to directory with checker
     if (!WsjcppCore::setFilePermissions(_serviceConf.script_dir(), WsjcppFilePermissions(0x777), err)) {
@@ -627,7 +718,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
     ctf01d::log::ok(TAG, "Registered checker for service " + _serviceConf.id());
   }
 
-  if (m_vServicesConf.size() == 0) {
+  if (m_services.size() == 0) {
     ctf01d::log::err(TAG, "No one defined services in config");
     return false;
   }
@@ -635,13 +726,13 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
   return true;
 }
 
-bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
-  m_vTeamsConf.clear();
+bool employ_config::readTeamsConf(WsjcppYaml &yaml) {
+  m_teams.clear();
   auto images = findWsjcppEmploy<ctf01d::images>();
 
-  WsjcppYamlCursor cursor = yamlConfig["teams"];
+  WsjcppYamlCursor cursor = yaml["teams"];
   std::string err;
-  if (!m_teams_config.read(cursor, err)) {
+  if (!m_teams_config_vars.read(cursor, err)) {
     ctf01d::log::err(TAG, err);
     return false;
   }
@@ -666,7 +757,7 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
     _team_config.set_ip_or_host_suffix(m_ip_or_host_suffix->value());
 
     std::string err;
-    if (!_team_config.read(cur, m_sWorkDir, err)) {
+    if (!_team_config.read(cur, m_work_dir, err)) {
       return false;
     }
 
@@ -676,8 +767,8 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
       continue;
     }
 
-    for (unsigned int i = 0; i < m_vTeamsConf.size(); i++) {
-      if (m_vTeamsConf[i].id() == _team_config.id()) {
+    for (unsigned int i = 0; i < m_teams.size(); i++) {
+      if (m_teams[i].id() == _team_config.id()) {
         ctf01d::log::err(TAG, "Already registered team with id " + _team_config.id());
         return false;
       }
@@ -700,11 +791,11 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
     }
     ctf01d::log::info(TAG, "Loaded team logo-big = " + _team_config.logo_path());
 
-    m_vTeamsConf.push_back(_team_config);
+    m_teams.push_back(_team_config);
     ctf01d::log::ok(TAG, "Registered team " + _team_config.id());
   }
 
-  if (m_vTeamsConf.size() == 0) {
+  if (m_teams.size() == 0) {
     ctf01d::log::err(TAG, "No one defined team in config");
     return false;
   }
@@ -712,9 +803,9 @@ bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
   return true;
 }
 
-bool EmployConfig::initWorkDir() {
-  ctf01d::log::info(TAG, "Work Directory is " + m_sWorkDir);
-  std::string sWorkDir = this->getWorkDir();
+bool employ_config::init_work_dir() {
+  ctf01d::log::info(TAG, "Work Directory is " + m_work_dir);
+  std::string sWorkDir = this->get_work_dir();
   if (sWorkDir == "") {
     ctf01d::log::throw_err(TAG, "Work Directory not defined.");
     return false;
@@ -726,9 +817,9 @@ bool EmployConfig::initWorkDir() {
   return true;
 }
 
-bool EmployConfig::initLogger() {
+bool employ_config::initLogger() {
   // init logger
-  std::string sLogDir = m_sWorkDir + "/logs/" + WsjcppCore::getCurrentTimeForFilename();
+  std::string sLogDir = m_work_dir + "/logs/" + WsjcppCore::getCurrentTimeForFilename();
   sLogDir = wsjcpp::normalizeFilePath(sLogDir);
   if (!WsjcppCore::dirExists(sLogDir)) {
     if (!WsjcppCore::makeDirsPath(sLogDir)) {
@@ -752,7 +843,7 @@ bool EmployConfig::initLogger() {
   return true;
 }
 
-void EmployConfig::thread_watcher() {
+void employ_config::thread_watcher() {
 
   while (true) {
     std::this_thread::sleep_for(std::chrono::milliseconds(3000));
@@ -777,18 +868,18 @@ void EmployConfig::thread_watcher() {
   }
 }
 
-void EmployConfig::hot_reload_config_yaml() {
+void employ_config::hot_reload_config_yaml() {
   if (!WsjcppCore::fileExists(m_config_filepath)) {
     ctf01d::log::err(TAG, "File " + m_config_filepath + " does not exists");
     return;
   }
-  WsjcppYaml yamlConfig;
+  WsjcppYaml yaml;
   std::string err;
-  if (!yamlConfig.loadFromFile(m_config_filepath, err)) {
+  if (!yaml.loadFromFile(m_config_filepath, err)) {
     ctf01d::log::err(TAG, "Could not parse " + m_config_filepath + ", reason: " + err);
     return;
   }
-  auto cursor = yamlConfig.getCursor();
+  auto cursor = yaml.getCursor();
   {
     bool prev_value = m_scoreboard_metrics_enabled->value();
     if (m_scoreboard_metrics_enabled->read(cursor, err)) {

@@ -50,9 +50,9 @@ public:
   virtual bool deinit(const std::string &sName, bool bSilent) override;
 
 private:
-  bool initServicesStats();
+  bool init_services_stats();
 
   std::string TAG;
-  std::mutex m_mutex_services_stats;
-  std::map<std::string, std::shared_ptr<ctf01d::service_statistics>> m_map_services_stats;
+  std::mutex m_mutex_services_statistics;
+  std::map<std::string, std::shared_ptr<ctf01d::service_statistics>> m_services_statistics;
 };

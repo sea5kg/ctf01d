@@ -48,7 +48,7 @@
 #include <wsjcpp_core.h>
 #include "ctf01d/include/ctf01d_web_server.h"
 #include "ctf01d/include/ctf01d_activities.h"
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_images.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/objects/ctf01d_service_status_cell.h"
@@ -104,7 +104,7 @@ private:
   std::string m_sCacheResponseGameJson;
   std::string m_sCacheResponseTeamsJson;
 
-  EmployConfig *m_config;
+  ctf01d::config *m_config;
 };
 
 static std::string prometheusEscapeLabelValue(const std::string &sValue) {
@@ -172,7 +172,7 @@ static bool isMetricsClientAllowed(const std::string &sClientIp, const std::stri
 REGISTRY_WSJCPP_EMPLOY(employ_web_server)
 
 employ_web_server::employ_web_server()
-: WsjcppEmployBase({ ctf01d::web_server::name() }, { EmployConfig::name(), ctf01d::activities::name() }) {
+: WsjcppEmployBase({ ctf01d::web_server::name() }, { ctf01d::config::name(), ctf01d::activities::name() }) {
   TAG = ctf01d::web_server::name();
   m_sApiPathPrefix = "/api/v1/";
   
@@ -180,7 +180,7 @@ employ_web_server::employ_web_server()
   m_logo_prefix = "/logo/";
   m_logo_prefix_length = m_logo_prefix.size();
   
-  m_config = findWsjcppEmploy<EmployConfig>();
+  m_config = findWsjcppEmploy<ctf01d::config>();
 }
 
 bool employ_web_server::init(const std::string &name, bool bSilent) {
@@ -226,17 +226,17 @@ void EmployWebServer_custom_logger(int level, const char *msg, int len) {
 
 int employ_web_server::start() {
 
-  EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
+  auto pEmployConfig = findWsjcppEmploy<ctf01d::config>();
   g_http_logger->set_log_filename_prefix("http_hv");
   g_http_logger->set_log_dirpath(ctf01d::log::get_log_dirpath());
   g_http_logger->set_rotation_period_in_seconds(ctf01d::log::get_rotation_period_in_seconds());
   g_http_logger->set_enable_log_file(true);
   g_http_logger->set_enable_console_output(false);
 
-  m_sScoreboardHtmlFolder = pEmployConfig->scoreboardHtmlFolder();
+  m_sScoreboardHtmlFolder = pEmployConfig->scoreboard_html_folder();
   updateJsonCache();
 
-  std::string starting_message = "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboardPort()) + "/";
+  std::string starting_message = "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboard_port()) + "/";
   g_http_logger->ok(TAG, starting_message);
   ctf01d::log::ok(TAG, starting_message);
 
@@ -256,7 +256,7 @@ int employ_web_server::start() {
   m_pHttpService->GET("*", std::bind(&employ_web_server::httpWebFolder, this, std::placeholders::_1, std::placeholders::_2));
 
   hv::HttpServer server(m_pHttpService.get());
-  server.setPort(pEmployConfig->scoreboardPort());
+  server.setPort(pEmployConfig->scoreboard_port());
   server.setThreadNum(4);
   server.run();
 
@@ -289,28 +289,29 @@ void employ_web_server::updateJsonCache() {
   nlohmann::json jsonGame;
   nlohmann::json jsonTeams;
 
-  jsonGame["game_name"] = m_config->gameName();
-  jsonGame["game_start"] = WsjcppCore::formatTimeUTC(m_config->gameStartUTCInSec()) + " (UTC)";
-  jsonGame["game_end"] = WsjcppCore::formatTimeUTC(m_config->gameEndUTCInSec()) + " (UTC)";
-  jsonGame["game_has_coffee_break"] = m_config->gameHasCoffeeBreak();
-  jsonGame["game_coffee_break_start"] = WsjcppCore::formatTimeUTC(m_config->gameCoffeeBreakStartUTCInSec()) + " (UTC)";
-  jsonGame["game_coffee_break_end"] = WsjcppCore::formatTimeUTC(m_config->gameCoffeeBreakEndUTCInSec()) + " (UTC)";
+  jsonGame["game_id"] = m_config->game_id();
+  jsonGame["game_name"] = m_config->game_name();
+  jsonGame["game_start"] = WsjcppCore::formatTimeUTC(m_config->game_start_utc_in_seconds()) + " (UTC)";
+  jsonGame["game_end"] = WsjcppCore::formatTimeUTC(m_config->game_end_utc_in_seconds()) + " (UTC)";
+  jsonGame["game_has_coffee_break"] = m_config->game_has_coffee_break();
+  jsonGame["game_coffee_break_start"] = WsjcppCore::formatTimeUTC(m_config->game_coffee_break_start_utc_in_seconds()) + " (UTC)";
+  jsonGame["game_coffee_break_end"] = WsjcppCore::formatTimeUTC(m_config->game_coffee_break_end_utc_in_seconds()) + " (UTC)";
   jsonGame["teams"] = nlohmann::json::array();
   jsonGame["services"] = nlohmann::json::array();
 
-  for (unsigned int i = 0; i < m_config->servicesConf().size(); i++) {
-    ctf01d::service_config serviceConf = m_config->servicesConf()[i];
-    if (serviceConf.is_enabled()) {
-      nlohmann::json serviceInfo;
-      serviceInfo["id"] = serviceConf.id();
-      serviceInfo["name"] = serviceConf.name();
-      serviceInfo["round_time_in_sec"] = serviceConf.round_in_seconds();
-      jsonGame["services"].push_back(serviceInfo);
+  for (unsigned int i = 0; i < m_config->services().size(); i++) {
+    ctf01d::service_config service_config = m_config->services()[i];
+    if (service_config.is_enabled()) {
+      nlohmann::json service_info;
+      service_info["id"] = service_config.id();
+      service_info["name"] = service_config.name();
+      service_info["round_time_in_sec"] = service_config.round_in_seconds();
+      jsonGame["services"].push_back(service_info);
     }
   }
 
-  for (unsigned int i = 0; i < m_config->teamsConf().size(); i++) {
-      ctf01d::team_config teamConf = m_config->teamsConf()[i];
+  for (unsigned int i = 0; i < m_config->teams().size(); i++) {
+      ctf01d::team_config teamConf = m_config->teams()[i];
       nlohmann::json teamInfo;
       teamInfo["id"] = teamConf.id();
       teamInfo["name"] = teamConf.name();
@@ -408,7 +409,7 @@ int employ_web_server::httpApiGameCurrentTime(HttpRequest* req, HttpResponse* re
   auto now = std::chrono::system_clock::now().time_since_epoch();
   int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
   nlohmann::json current_time;
-  current_time["current-time"] = nCurrentTimeSec - m_config->gameStartUTCInSec();
+  current_time["current-time"] = nCurrentTimeSec - m_config->game_start_utc_in_seconds();
   std::string json_str = current_time.dump();
   resp->Data(
       (void *)(json_str.c_str()),
@@ -461,16 +462,16 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   std::string request_ip = req->client_addr.ip;
   std::string sRequestIP_MsgSuffix = " (" + request_ip + ")";
 
-  if (nCurrentTimeSec < m_config->gameStartUTCInSec()) {
+  if (nCurrentTimeSec < m_config->game_start_utc_in_seconds()) {
     const std::string sErrorMsg = " Error(-8): Game not started yet";
     log_err(sRequestIP_MsgSuffix + sErrorMsg);
     resp->String(sErrorMsg);
     return 400;
   }
 
-  if (m_config->gameHasCoffeeBreak()
-    && nCurrentTimeSec > m_config->gameCoffeeBreakStartUTCInSec()
-    && nCurrentTimeSec < m_config->gameCoffeeBreakEndUTCInSec()
+  if (m_config->game_has_coffee_break()
+    && nCurrentTimeSec > m_config->game_coffee_break_start_utc_in_seconds()
+    && nCurrentTimeSec < m_config->game_coffee_break_end_utc_in_seconds()
   ) {
     static const std::string sErrorMsg = "Error(-8): Game on coffee break now";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
@@ -478,7 +479,7 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 400;
   }
 
-  if (nCurrentTimeSec > m_config->gameEndUTCInSec()) {
+  if (nCurrentTimeSec > m_config->game_end_utc_in_seconds()) {
     static const std::string sErrorMsg = "Error(-9): Game already ended";
     log_warn(sErrorMsg + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
@@ -511,8 +512,8 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
   // TODO optimize
   bool bTeamFound = false;
-  for (unsigned int i_team = 0; i_team < m_config->teamsConf().size(); i_team++) {
-    ctf01d::team_config teamConf = m_config->teamsConf()[i_team];
+  for (unsigned int i_team = 0; i_team < m_config->teams().size(); i_team++) {
+    ctf01d::team_config teamConf = m_config->teams()[i_team];
     if (teamConf.id() == sTeamId) {
       bTeamFound = true;
     }

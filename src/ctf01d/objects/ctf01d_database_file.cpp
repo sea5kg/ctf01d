@@ -39,18 +39,15 @@
 #include <sqlite3.h>
 #include <wsjcpp_core.h>
 #include <wsjcpp_employees.h>
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
 namespace ctf01d {
 
-// ---------------------------------------------------------------------
-// databases
-
 std::map<std::string, database_file *> *g_opened_database_files = nullptr;
 
 // static
-void databases::add_opened_database_file(const std::string &name, database_file *db) {
+void global_databases::add_opened_database_file(const std::string &name, database_file *db) {
   if (g_opened_database_files == nullptr) {
     // ctf01d::log::info(std::string(), "Create employees map");
     g_opened_database_files = new std::map<std::string, database_file*>();
@@ -63,13 +60,13 @@ void databases::add_opened_database_file(const std::string &name, database_file 
 }
 
 // static
-bool databases::init_driver_sqlite3(int &ret) {
+bool global_databases::init_driver_sqlite3(int &ret) {
   ret = sqlite3_initialize();
   return SQLITE_OK == ret;
 }
 
 // static
-void databases::shutdown_driver_sqlite3() {
+void global_databases::shutdown_driver_sqlite3() {
   // will be automatically closed all opened databases
   if (g_opened_database_files != nullptr) {
     for (const auto& pair : *g_opened_database_files) {
@@ -78,9 +75,6 @@ void databases::shutdown_driver_sqlite3() {
   }
   sqlite3_shutdown();
 }
-
-// ---------------------------------------------------------------------
-// impl_database_select_rows
 
 class impl_database_select_rows : public database_select_rows {
 public:
@@ -132,8 +126,8 @@ database_file::database_file(const std::string &sFilename, const std::string &sS
   std::string sError;
   m_nLastBackupTime = 0;
   m_sSqlCreateTable = sSqlCreateTable;
-  EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  std::string sDatabaseDir = pConfig->getWorkDir() + "/db";
+  auto config = findWsjcppEmploy<ctf01d::config>();
+  std::string sDatabaseDir = config->get_work_dir() + "/db";
   if (!WsjcppCore::dirExists(sDatabaseDir)) {
     if (!WsjcppCore::makeDir(sDatabaseDir)) {
       ctf01d::log::throw_err(TAG, "Could not create dir " + sDatabaseDir);
@@ -189,7 +183,7 @@ bool database_file::open() {
   }
   ctf01d::log::ok(TAG, "Opened database file " + m_sFileFullpath);
   copy_database_to_backup();
-  ctf01d::databases::add_opened_database_file(m_sFileFullpath, this);
+  ctf01d::global_databases::add_opened_database_file(m_sFileFullpath, this);
   return true;
 }
 

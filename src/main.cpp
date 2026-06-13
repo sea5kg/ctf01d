@@ -39,7 +39,7 @@
 #include <sys/types.h>
 #include <wsjcpp_core.h>
 #include "ctf01d/objects/ctf01d_service_checker_thread.h"
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_web_server.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
@@ -242,8 +242,8 @@ int main(int argc, const char* argv[]) {
   try_apply_ctf01d_user(sWorkDir);
 
   std::cout << "WorkDir: " << sWorkDir << std::endl;
-  EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  pConfig->setWorkDir(sWorkDir);
+  auto config = findWsjcppEmploy<ctf01d::config>();
+  config->set_work_dir(sWorkDir);
 
   if (arguments.size() == 0) {
     std::cout << "Not found command. Please run '" << programName << " help'" << std::endl;
@@ -276,16 +276,14 @@ int main(int argc, const char* argv[]) {
     // signal( SIGINT, quitApp );
     // signal( SIGTERM, quitApp );
 
-    EmployConfig *config = findWsjcppEmploy<EmployConfig>();
-
     // TODO move to hot reload and EmployScoreboard::init
     ctf01d::log::info(TAG, "Restoring states from storage...");
     config->scoreboard()->init_state_from_storage();
     ctf01d::log::ok(TAG, "Restored state from storage.");
     std::vector<ctf01d::service_checker_thread *> vThreads;
     ctf01d::log::info(TAG, "Starting threads...");
-    for (unsigned int iservice = 0; iservice < config->servicesConf().size(); iservice++) {
-      ctf01d::service_config service_config = config->servicesConf()[iservice];
+    for (unsigned int iservice = 0; iservice < config->services().size(); iservice++) {
+      ctf01d::service_config service_config = config->services()[iservice];
 
       std::shared_ptr<ctf01d::logger> service_logger(ctf01d::logger::create());
       service_logger->set_log_dirpath(ctf01d::log::get_log_dirpath());
@@ -295,8 +293,8 @@ int main(int argc, const char* argv[]) {
       service_logger->set_enable_console_output(false); // only errors will be to main log
       service_logger->info(TAG, "Starting threads");
 
-      for (unsigned int i_team = 0; i_team < config->teamsConf().size(); i_team++) {
-        ctf01d::team_config team_config = config->teamsConf()[i_team];
+      for (unsigned int i_team = 0; i_team < config->teams().size(); i_team++) {
+        ctf01d::team_config team_config = config->teams()[i_team];
 
         // reset status to down
         config->scoreboard()->set_service_status(team_config.id(), service_config.id(), ctf01d::service_status_cell::SERVICE_DOWN);

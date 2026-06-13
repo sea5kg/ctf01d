@@ -41,7 +41,7 @@
 #include <iostream>
 #include <algorithm>
 #include <wsjcpp_core.h>
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/include/ctf01d_globals.h"
 
@@ -55,10 +55,10 @@ scoreboard::scoreboard(
   int game_coffee_break_end_in_seconds
 ) {
   TAG = "scoreboard";
-  auto *config = findWsjcppEmploy<EmployConfig>();
+  auto config = findWsjcppEmploy<ctf01d::config>();
   m_database = findWsjcppEmploy<ctf01d::database>();
-  const std::vector<ctf01d::team_config> &vTeamsConf = config->teamsConf();
-  const std::vector<ctf01d::service_config> &vServicesConf = config->servicesConf();
+  const std::vector<ctf01d::team_config> &vTeamsConf = config->teams();
+  const std::vector<ctf01d::service_config> &vServicesConf = config->services();
   m_random = random;
   std::string scoreboard_random = "Scoreboard random: ";
   scoreboard_random = scoreboard_random + (m_random ? "yes" : "no");
@@ -100,7 +100,7 @@ scoreboard::scoreboard(
   // keep the list of the services ids
   for (unsigned int i = 0; i < vServicesConf.size(); i++) {
     std::string service_id = vServicesConf[i].id();
-    m_service_costs_and_statistics[service_id] = new ctf01d::service_statistics(service_id);
+    m_service_statistics[service_id] = new ctf01d::service_statistics(service_id);
   }
 
   init_json_scoreboard();
@@ -109,15 +109,15 @@ scoreboard::scoreboard(
 void scoreboard::init_json_scoreboard() {
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
   m_scoreboard.clear();
-  EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<ctf01d::team_config> &vTeamsConf = pConfig->teamsConf();
-  const std::vector<ctf01d::service_config> &vServices = pConfig->servicesConf();
+  auto config = findWsjcppEmploy<ctf01d::config>();
+  const std::vector<ctf01d::team_config> &vTeamsConf = config->teams();
+  const std::vector<ctf01d::service_config> &vServices = config->services();
 
   nlohmann::json jsonServicesStatistics;
   for (unsigned int iservice = 0; iservice < vServices.size(); iservice++) {
     ctf01d::service_config serviceConf = vServices[iservice];
     nlohmann::json serviceStatistics;
-    m_service_costs_and_statistics[serviceConf.id()]->updateJsonServiceStatistics(serviceStatistics);
+    m_service_statistics[serviceConf.id()]->updateJsonServiceStatistics(serviceStatistics);
     jsonServicesStatistics[serviceConf.id()] = serviceStatistics;
   }
   m_scoreboard["s_sta"] = jsonServicesStatistics;
@@ -149,10 +149,10 @@ void scoreboard::init_json_scoreboard() {
   }
   m_scoreboard["scoreboard"] = jsonScoreboard;
   nlohmann::json jsonGame;
-  jsonGame["t0"] = pConfig->gameStartUTCInSec();
-  jsonGame["t1"] = pConfig->gameCoffeeBreakStartUTCInSec();
-  jsonGame["t2"] = pConfig->gameCoffeeBreakEndUTCInSec();
-  jsonGame["t3"] = pConfig->gameEndUTCInSec();
+  jsonGame["t0"] = config->game_start_utc_in_seconds();
+  jsonGame["t1"] = config->game_coffee_break_start_utc_in_seconds();
+  jsonGame["t2"] = config->game_coffee_break_end_utc_in_seconds();
+  jsonGame["t3"] = config->game_end_utc_in_seconds();
   jsonGame["tc"] = WsjcppCore::getCurrentTimeInSeconds();
   m_scoreboard["game"] = jsonGame;
 }
@@ -196,8 +196,8 @@ void scoreboard::insert_flag_attempt(const std::string &thief_team_id, const std
 }
 
 void scoreboard::init_state_from_storage() {
-  EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<ctf01d::service_config> &vServices = pConfig->servicesConf();
+  auto config = findWsjcppEmploy<ctf01d::config>();
+  const std::vector<ctf01d::service_config> &vServices = config->services();
 
   // load services statistics
   ctf01d::log::info(TAG, "Loading services statistics...");
@@ -228,10 +228,10 @@ void scoreboard::init_state_from_storage() {
   ctf01d::log::info(TAG, "Setting services statistics...");
   for (int i = 0; i < vFlags.size(); i++) {
     FlagsForService f = vFlags[i];
-    m_service_costs_and_statistics[f.sServiceID]->setStolenFlagsForService(f.nStolenFlags);
-    m_service_costs_and_statistics[f.sServiceID]->setDefenseFlagsForService(f.nDefenseFlags);
+    m_service_statistics[f.sServiceID]->setStolenFlagsForService(f.nStolenFlags);
+    m_service_statistics[f.sServiceID]->setDefenseFlagsForService(f.nDefenseFlags);
     if (f.nStolenFlags > 0) {
-      m_service_costs_and_statistics[f.sServiceID]->setFirstBloodTeamId(f.sFirstBloodTeamID, f.nFirstBloodTime);
+      m_service_statistics[f.sServiceID]->setFirstBloodTeamId(f.sFirstBloodTeamID, f.nFirstBloodTime);
     }
   }
 
@@ -291,7 +291,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   std::string service_id = flag.getServiceId();
 
   // TODO calculate
-  // int nFlagPoints = m_service_costs_and_statistics[service_id]->getCostStolenFlag()*10; // one number after dot
+  // int nFlagPoints = m_service_statistics[service_id]->getCostStolenFlag()*10; // one number after dot
   int flag_points = m_flag_cost_in_points->value(); // TODO basic
   long date_action = WsjcppCore::getCurrentTimeInMilliseconds();
   // victim place in scoreboard
@@ -325,8 +325,8 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   }
 
   std::map<std::string, ctf01d::service_statistics *>::iterator it2;
-  it2 = m_service_costs_and_statistics.find(service_id);
-  if (it2 != m_service_costs_and_statistics.end()) {
+  it2 = m_service_statistics.find(service_id);
+  if (it2 != m_service_statistics.end()) {
     it2->second->doIncrementStolenFlagsForService();
     if (it2->second->getFirstBloodTeamId() == "?") {
       it2->second->setFirstBloodTeamId(team_id, date_action);
@@ -357,8 +357,8 @@ void scoreboard::increment_defense_score(const ctf01d::flag &flag) {
 
   // TODO call Employ Scoreboard
   std::map<std::string, ctf01d::service_statistics *>::iterator it2;
-  it2 = m_service_costs_and_statistics.find(service_id);
-  if (it2 != m_service_costs_and_statistics.end()) {
+  it2 = m_service_statistics.find(service_id);
+  if (it2 != m_service_statistics.end()) {
     m_all_defense_flags++;
     it2->second->doIncrementDefenseFlagsForService();
     update_services_statistics();
@@ -484,7 +484,7 @@ void scoreboard::update_services_statistics() {
   std::map<std::string, ctf01d::service_statistics *>::iterator it1;
 
   // nlohmann::json jsonCosts;
-  for (it1 = m_service_costs_and_statistics.begin(); it1 != m_service_costs_and_statistics.end(); it1++) {
+  for (it1 = m_service_statistics.begin(); it1 != m_service_statistics.end(); it1++) {
     std::string sId = it1->first;
     it1->second->updateJsonServiceStatistics(m_scoreboard["s_sta"][sId]);
   }

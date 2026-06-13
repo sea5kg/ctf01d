@@ -48,7 +48,7 @@ class database_file;
 
 extern std::map<std::string, database_file *> *g_opened_database_files;
 
-class databases {
+class global_databases {
 public:
   static void add_opened_database_file(const std::string &name, database_file *db);
   static bool init_driver_sqlite3(int &ret);

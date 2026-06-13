@@ -37,7 +37,7 @@
 
 #include "employ_scoreboard.h"
 #include <wsjcpp_core.h>
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include <cmath>
 #include <stdio.h>
@@ -54,7 +54,7 @@ EmployScoreboard::EmployScoreboard()
 }
 
 bool EmployScoreboard::init(const std::string &sName, bool bSilent) {
-  if (!initServicesStats()) {
+  if (!init_services_stats()) {
     return false;
   }
   return true;
@@ -65,18 +65,18 @@ bool EmployScoreboard::deinit(const std::string &sName, bool bSilent) {
   return true;
 }
 
-bool EmployScoreboard::initServicesStats() {
-  std::lock_guard<std::mutex> lock(m_mutex_services_stats);
-  m_map_services_stats.clear();
+bool EmployScoreboard::init_services_stats() {
+  std::lock_guard<std::mutex> lock(m_mutex_services_statistics);
+  m_services_statistics.clear();
 
-  EmployConfig *pEmployConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<ctf01d::team_config> &teams_conf = pEmployConfig->teamsConf();
-  const std::vector<ctf01d::service_config> &services_conf = pEmployConfig->servicesConf();
+  auto config = findWsjcppEmploy<ctf01d::config>();
+  const std::vector<ctf01d::team_config> &teams_conf = config->teams();
+  const std::vector<ctf01d::service_config> &services_conf = config->services();
 
   // keep the list of the services ids
   for (unsigned int i = 0; i < services_conf.size(); i++) {
     std::string service_id = services_conf[i].id();
-    m_map_services_stats[service_id] = std::make_shared<ctf01d::service_statistics>(service_id);
+    m_services_statistics[service_id] = std::make_shared<ctf01d::service_statistics>(service_id);
   }
   return true;
 }

@@ -40,7 +40,7 @@
 #include "ctf01d/include/ctf01d_database.h"
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include <cmath>
 #include <stdio.h>
@@ -84,7 +84,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(employ_database)
 
 employ_database::employ_database()
-: WsjcppEmployBase({ ctf01d::database::name() }, { EmployConfig::name() }) {
+: WsjcppEmployBase({ ctf01d::database::name() }, { ctf01d::config::name() }) {
   TAG = ctf01d::database::name();
   m_flags_defense_db = nullptr;
   m_flags_check_fails = nullptr;
@@ -94,7 +94,7 @@ employ_database::employ_database()
 
 bool employ_database::init(const std::string &sName, bool bSilent) {
   int driver_init_ret;
-  if (!ctf01d::databases::init_driver_sqlite3(driver_init_ret)) {
+  if (!ctf01d::global_databases::init_driver_sqlite3(driver_init_ret)) {
     ctf01d::log::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
     return false;
   }
@@ -179,7 +179,7 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
 
 bool employ_database::deinit(const std::string &sName, bool bSilent) {
   ctf01d::log::info(TAG, "deinit");
-  ctf01d::databases::shutdown_driver_sqlite3();
+  ctf01d::global_databases::shutdown_driver_sqlite3();
   return true;
 }
 

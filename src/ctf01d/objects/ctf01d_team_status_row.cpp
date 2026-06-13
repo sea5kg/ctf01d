@@ -38,7 +38,7 @@
 #include "ctf01d_team_status_row.h"
 #include "ctf01d_service_config.h"
 #include <wsjcpp_employees.h>
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 
 namespace ctf01d {
 
@@ -47,8 +47,8 @@ team_status_row::team_status_row(
   int nGameStartInSec,
   int nGameEndInSec
 ) {
-  EmployConfig *pConfig = findWsjcppEmploy<EmployConfig>();
-  const std::vector<ctf01d::service_config> &vServicesConf = pConfig->servicesConf();
+  auto pConfig = findWsjcppEmploy<ctf01d::config>();
+  const std::vector<ctf01d::service_config> &vServicesConf = pConfig->services();
   TAG = "team_status_row-" + team_id;
   m_sTeamId = team_id;
   m_place.store(0);

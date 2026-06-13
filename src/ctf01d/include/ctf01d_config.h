@@ -38,15 +38,36 @@
 #pragma once
 
 #include "ctf01d/objects/ctf01d_team_config.h"
+#include "ctf01d/objects/ctf01d_service_config.h"
 #include "ctf01d/objects/ctf01d_var.h"
+#include "ctf01d/objects/ctf01d_scoreboard.h"
 
-class ICtf01dConfigChanged {
+namespace ctf01d {
+
+class config {
 public:
-  virtual void addTeam(const ctf01d::team_config &team) = 0;
+  static std::string name() { return "config"; }
+
+  virtual void set_work_dir(const std::string &sWorkDir) = 0;
+  virtual std::string get_work_dir() = 0;
+  virtual bool apply_config() = 0;
+  virtual const std::vector<ctf01d::service_config> &services() = 0;
+  virtual const std::vector<ctf01d::team_config> &teams() = 0;
+  virtual int scoreboard_port() const = 0;
+  virtual std::string scoreboard_html_folder() const = 0;
+  virtual bool scoreboard_random() const = 0;
+  virtual std::shared_ptr<ctf01d::var_bool> scoreboard_metrics_enabled() const = 0;
+  virtual std::shared_ptr<ctf01d::var_allowed_ip> scoreboard_metrics_allowed_for() const = 0;
+  virtual std::string game_id() const = 0;
+  virtual std::string game_name() const = 0;
+  virtual int flag_lifetime_in_seconds() const = 0;
+  virtual std::shared_ptr<ctf01d::var_int> get_flag_cost_in_points() const = 0;
+  virtual int game_start_utc_in_seconds() const = 0;
+  virtual int game_end_utc_in_seconds() const = 0;
+  virtual bool game_has_coffee_break() const = 0;
+  virtual int game_coffee_break_start_utc_in_seconds() const = 0;
+  virtual int game_coffee_break_end_utc_in_seconds() const = 0;
+  virtual std::shared_ptr<ctf01d::scoreboard> scoreboard() = 0;
 };
 
-
-class IVarChanged {
-public:
-  virtual void changed(const ctf01d::var) = 0;
-};
+} // namespace ctf01d

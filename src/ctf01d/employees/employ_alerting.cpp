@@ -40,7 +40,7 @@
 #include <mutex>
 #include <fstream>
 #include <cstring>
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 
@@ -58,7 +58,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(employ_alerting)
 
 employ_alerting::employ_alerting()
-: WsjcppEmployBase({ employ_alerting::name() }, { EmployConfig::name() }) {
+: WsjcppEmployBase({ employ_alerting::name() }, { ctf01d::config::name() }) {
   TAG = employ_alerting::name();
 }
 

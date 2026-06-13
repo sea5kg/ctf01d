@@ -91,7 +91,7 @@ private:
   void update_services_statistics();
 
   // TODO move to employ scoreboard
-  std::map<std::string, ctf01d::service_statistics *> m_service_costs_and_statistics;
+  std::map<std::string, ctf01d::service_statistics *> m_service_statistics;
   int m_all_defense_flags;
 
   std::string random_service_status();

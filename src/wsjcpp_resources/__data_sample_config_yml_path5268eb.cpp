@@ -17,23 +17,23 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 9252;
+  return 9213;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 9252
+  static const std::string sRet = "" // size: 9213
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
     "game:\n"
-    "  id: \"test\" # uniq gameid must be regexp [a-z0-9]+\n"
+    "  id: \"test\"\n"
     "  name: \"Test First Game\" # visible game name in scoreboard\n"
-    "  start_utc: \"2025-11-12 16:00:00\"\n"
-    "  end_utc: \"2030-11-12 22:00:00\"\n"
-    "  coffee_break_start: \"2025-11-12 20:00:00\"\n"
-    "  coffee_break_end: \"2025-11-12 21:00:00\"\n"
+    "  start-utc: \"2025-11-12 16:00:00\"\n"
+    "  coffee-break-start: \"2025-11-12 20:00:00\"\n"
+    "  coffee-break-end: \"2025-11-12 21:00:00\"\n"
+    "  end-utc: \"2030-11-12 22:00:00\"\n"
     "  flag_lifetime_in_seconds: 60\n"
     "  flag_cost_in_points: 100 # use a real number\n"
     "\n"

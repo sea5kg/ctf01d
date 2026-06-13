@@ -40,7 +40,7 @@
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_alive_flags.h"
-#include "ctf01d/employees/employ_config.h"
+#include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
 #include <fstream>
@@ -80,7 +80,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(EmployAliveFlags)
 
 EmployAliveFlags::EmployAliveFlags()
-: WsjcppEmployBase({ ctf01d::alive_flags::name() }, { EmployConfig::name(), ctf01d::database::name() }) {
+: WsjcppEmployBase({ ctf01d::alive_flags::name() }, { ctf01d::config::name(), ctf01d::database::name() }) {
   TAG = "EmployAliveFlags";
   m_alive_flags_db = nullptr;
 }
@@ -198,14 +198,14 @@ int EmployAliveFlags::count_alive_flags() {
 
 std::vector<ctf01d::flag> EmployAliveFlags::get_from_db_alive_flags() {
   // long nCurrentTime = WsjcppCore::getCurrentTimeInMilliseconds();
-  auto config = findWsjcppEmploy<EmployConfig>();
+  auto config = findWsjcppEmploy<ctf01d::config>();
 
   std::string sQuery =
     "SELECT flag_id, service_id, team_id, flag, date_start, date_end "
     "FROM alive_flags "
     "WHERE "
-    "   date_start > " + std::to_string(long(config->gameStartUTCInSec())*1000) + " "
-    "   AND date_end < " + std::to_string(long(config->gameEndUTCInSec())*1000) + " "
+    "   date_start > " + std::to_string(long(config->game_start_utc_in_seconds())*1000) + " "
+    "   AND date_end < " + std::to_string(long(config->game_end_utc_in_seconds())*1000) + " "
     ";";
 
   std::vector<ctf01d::flag> vResult;
