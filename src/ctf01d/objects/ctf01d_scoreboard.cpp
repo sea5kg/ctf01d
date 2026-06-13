@@ -56,7 +56,7 @@ scoreboard::scoreboard(
 ) {
   TAG = "scoreboard";
   auto *config = findWsjcppEmploy<EmployConfig>();
-  m_database = findWsjcppEmploy<EmployDatabase>();
+  m_database = findWsjcppEmploy<ctf01d::database>();
   const std::vector<ctf01d::team_config> &vTeamsConf = config->teamsConf();
   const std::vector<ctf01d::service_config> &vServicesConf = config->servicesConf();
   m_random = random;
@@ -214,10 +214,10 @@ void scoreboard::init_state_from_storage() {
     std::string sServiceID = vServices[i].id();
     FlagsForService f;
     f.sServiceID = sServiceID;
-    f.nStolenFlags = m_database->numberOfStolenFlagsForService(sServiceID);
-    f.nDefenseFlags = m_database->numberOfDefenseFlagForService(sServiceID);
+    f.nStolenFlags = m_database->number_of_stolen_flags_for_service(sServiceID);
+    f.nDefenseFlags = m_database->number_of_defense_flag_for_service(sServiceID);
     if (f.nStolenFlags > 0) {
-      std::pair<std::string, long> fb = m_database->getFirstBloodFromStolenFlagsForService(sServiceID);
+      std::pair<std::string, long> fb = m_database->get_first_blood_from_stolen_flags_for_service(sServiceID);
       f.sFirstBloodTeamID = fb.first;
       f.nFirstBloodTime = fb.second;
     }
@@ -247,17 +247,17 @@ void scoreboard::init_state_from_storage() {
 
       // calculate defense
       ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate defense");
-      int nDefenseFlags = m_database->numberOfFlagsDefense(pRow->teamId(), sServiceID);
-      int nDefensePoints = m_database->sumPointsOfFlagsDefense(pRow->teamId(), sServiceID);
+      int nDefenseFlags = m_database->number_of_flags_defense(pRow->teamId(), sServiceID);
+      int nDefensePoints = m_database->sum_points_of_flags_defense(pRow->teamId(), sServiceID);
       pRow->setServiceDefenseFlagsAndPoints(sServiceID, nDefenseFlags, nDefensePoints);
       m_scoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["def"] = nDefenseFlags;
       m_scoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_def"] = nDefensePoints;
 
       // calculate attack
       ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate attack and flags stollen");
-      int nAttackFlags = m_database->numberOfFlagsStollen(pRow->teamId(), sServiceID);
-      int nFlagsStollen = -1 * m_database->numberOfFlagsStollenByVictim(pRow->teamId(), sServiceID);
-      int nAttackPoints = m_database->sumPointsOfFlagsStollen(pRow->teamId(), sServiceID);
+      int nAttackFlags = m_database->number_of_flags_stollen(pRow->teamId(), sServiceID);
+      int nFlagsStollen = -1 * m_database->number_of_flags_stollen_by_victim(pRow->teamId(), sServiceID);
+      int nAttackPoints = m_database->sum_points_of_flags_stolen(pRow->teamId(), sServiceID);
       pRow->setServiceAttackFlagsAndPoints(sServiceID, nAttackFlags, nAttackPoints);
       pRow->setFlagsStollen(sServiceID, nFlagsStollen);
       m_scoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["att_st"] = nFlagsStollen;
@@ -266,8 +266,8 @@ void scoreboard::init_state_from_storage() {
 
       // calculate uptime / sla
       ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") uptime / sla");
-      int nPutsFlagsAllResults = m_database->numberOfFlagFlagsCheckerPutAllResults(pRow->teamId(), sServiceID);
-      int nPutsFlagsSuccessResults = m_database->numberOfFlagFlagsCheckerPutSuccessResult(pRow->teamId(), sServiceID);
+      int nPutsFlagsAllResults = m_database->number_of_flags_checker_put_all_results(pRow->teamId(), sServiceID);
+      int nPutsFlagsSuccessResults = m_database->number_of_flags_checker_put_success_result(pRow->teamId(), sServiceID);
       pRow->setServiceFlagsForCalculateSLA(sServiceID, nPutsFlagsAllResults, nPutsFlagsSuccessResults);
       m_scoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["sla"] = pRow->calculateSLA(sServiceID);
     }
@@ -285,7 +285,7 @@ void scoreboard::init_state_from_storage() {
 
 std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, const std::string &team_id) {
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
-  if (m_database->isAlreadyStole(flag, team_id)) {
+  if (m_database->is_already_stole(flag, team_id)) {
     return std::nullopt;
   }
   std::string service_id = flag.getServiceId();
@@ -293,7 +293,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   // TODO calculate
   // int nFlagPoints = m_service_costs_and_statistics[service_id]->getCostStolenFlag()*10; // one number after dot
   int flag_points = m_flag_cost_in_points->value(); // TODO basic
-  long nDateAction = WsjcppCore::getCurrentTimeInMilliseconds();
+  long date_action = WsjcppCore::getCurrentTimeInMilliseconds();
   // victim place in scoreboard
   std::map<std::string, ctf01d::team_status_row *>::iterator it_victim;
   it_victim = m_teams_statuses.find(flag.getTeamId());
@@ -310,7 +310,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
     ctf01d::team_status_row *pRow = it->second;
     int thief_place = pRow->getPlace();
     flag_points = m_formulas->calc_stolen(flag_points, victim_place, thief_place, m_team_count);
-    m_database->insertToFlagsStolen(flag, team_id, flag_points, nDateAction, victim_place, thief_place);
+    m_database->insert_to_flags_stolen(flag, team_id, flag_points, date_action, victim_place, thief_place);
     pRow->incrementAttack(service_id, flag_points);
     pRow->updatePoints();
     if (row_victim != nullptr) {
@@ -329,7 +329,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   if (it2 != m_service_costs_and_statistics.end()) {
     it2->second->doIncrementStolenFlagsForService();
     if (it2->second->getFirstBloodTeamId() == "?") {
-      it2->second->setFirstBloodTeamId(team_id, nDateAction);
+      it2->second->setFirstBloodTeamId(team_id, date_action);
     }
     update_services_statistics();
   }
@@ -372,7 +372,7 @@ void scoreboard::increment_flags_putted_and_service_up(const ctf01d::flag &flag)
 
   if (m_alive_flags->insert_alive_flag(flag)) {
     // m_database->insertToFlagLive(flag);
-    m_database->insertToFlagsCheckerPutResult(flag, "up");
+    m_database->insert_to_flags_checker_put_result(flag, "up");
     m_teams_statuses[flag.getTeamId()]->incrementPutFlagSuccess(flag.getServiceId());
   }
 
@@ -395,7 +395,7 @@ void scoreboard::increment_flags_putted_and_service_up(const ctf01d::flag &flag)
 }
 
 void scoreboard::insert_flag_put_fail(const ctf01d::flag &flag, const std::string &service_status, const std::string &descr_status) {
-  m_database->insertToFlagsCheckerPutResult(flag, descr_status);
+  m_database->insert_to_flags_checker_put_result(flag, descr_status);
 
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
 

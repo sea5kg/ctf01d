@@ -93,7 +93,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(employ_activities)
 
 employ_activities::employ_activities()
-: WsjcppEmployBase({ ctf01d::activities::name() }, { EmployConfig::name(), EmployDatabase::name() }) {
+: WsjcppEmployBase({ ctf01d::activities::name() }, { EmployConfig::name(), ctf01d::database::name() }) {
   TAG = "employ_activities";
   m_all_activities_send_flag = 0;
   m_flags_attempts_db = nullptr;

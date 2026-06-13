@@ -70,7 +70,7 @@ service_checker_thread::service_checker_thread(
 ) {
   m_logger = logger;
   m_pConfig = findWsjcppEmploy<EmployConfig>();
-  m_pDatabase = findWsjcppEmploy<EmployDatabase>();
+  m_pDatabase = findWsjcppEmploy<ctf01d::database>();
   m_team_config = team_config;
   m_service_config = service_config;
   m_alive_flags = findWsjcppEmploy<alive_flags>();
@@ -262,11 +262,11 @@ void service_checker_thread::run() {
       if (nCheckExitCode != service_checker_thread::CHECKER_CODE_UP) {
             // service is not up
             m_logger->info(TAG, "flag_check_fail " + outdatedFlag.getValue());
-            m_pDatabase->insertFlagCheckFail(outdatedFlag, "code_" + std::to_string(nCheckExitCode));
+            m_pDatabase->insert_flag_check_fail(outdatedFlag, "code_" + std::to_string(nCheckExitCode));
       } else {
         // service is up
         // TODO: only if last time (== flag time live) was up
-        if (!m_pDatabase->isSomebodyStole(outdatedFlag)) {
+        if (!m_pDatabase->is_somebody_stole(outdatedFlag)) {
           m_pConfig->scoreboard()->increment_defense_score(outdatedFlag);
         }
       }

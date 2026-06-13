@@ -39,8 +39,8 @@
 
 #include "ctf01d/include/ctf01d_alive_flags.h"
 #include "ctf01d/include/ctf01d_activities.h"
+#include "ctf01d/include/ctf01d_database.h"
 #include "ctf01d/employees/employ_scoreboard.h"
-#include "ctf01d/employees/employ_database.h"
 #include <optional>
 #include <string>
 #include <json.hpp>
@@ -79,7 +79,7 @@ private:
   std::string TAG;
   ctf01d::alive_flags *m_alive_flags;
   ctf01d::activities *m_activities;
-  EmployDatabase *m_database;
+  ctf01d::database *m_database;
   std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
   int m_game_start_in_seconds;
   int m_game_end_in_seconds;

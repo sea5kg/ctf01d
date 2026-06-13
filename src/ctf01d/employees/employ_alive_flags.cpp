@@ -80,7 +80,7 @@ private:
 REGISTRY_WSJCPP_EMPLOY(EmployAliveFlags)
 
 EmployAliveFlags::EmployAliveFlags()
-: WsjcppEmployBase({ ctf01d::alive_flags::name() }, { EmployConfig::name(), EmployDatabase::name() }) {
+: WsjcppEmployBase({ ctf01d::alive_flags::name() }, { EmployConfig::name(), ctf01d::database::name() }) {
   TAG = "EmployAliveFlags";
   m_alive_flags_db = nullptr;
 }

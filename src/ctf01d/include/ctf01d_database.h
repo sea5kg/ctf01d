@@ -37,53 +37,32 @@
 
 #pragma once
 
-#include <string>
-#include <map>
-#include <mutex>
-#include <memory>
+#include <vector>
+#include <json.hpp>
+#include "ctf01d/objects/ctf01d_flag.h"
 
 namespace ctf01d {
 
-class database_file;
-
-extern std::map<std::string, database_file *> *g_opened_database_files;
-
-class databases {
+class database {
 public:
-  static void add_opened_database_file(const std::string &name, database_file *db);
-  static bool init_driver_sqlite3(int &ret);
-  static void shutdown_driver_sqlite3();
-};
+  static std::string name() { return "database"; }
 
-class database_select_rows {
-public:
-  virtual bool next() = 0;
-  virtual std::string getString(int nColumnNumber) = 0;
-  virtual long getLong(int nColumnNumber) = 0;
-};
-
-class database_file {
-public:
-  database_file(const std::string &sFilename, const std::string &sSqlCreateTable);
-  ~database_file();
-  bool open();
-  void close();
-  bool executeQuery(std::string sSqlInsert);
-  int selectSumOrCount(std::string sSqlSelectCount);
-  std::shared_ptr<database_select_rows> selectRows(std::string sqlSelectRows);
-
-private:
-
-  void copy_database_to_backup();
-  std::mutex m_mutex;
-
-  std::string TAG;
-  void *m_database_file_db;
-  std::string m_sFilename;
-  std::string m_sFileFullpath;
-  std::string m_sBaseFileBackupFullpath;
-  std::string m_sSqlCreateTable;
-  int m_nLastBackupTime;
+  virtual void insert_to_flags_checker_put_result(ctf01d::flag flag, std::string result) = 0;
+  virtual int number_of_flags_checker_put_all_results(std::string team_id, std::string service_id) = 0;
+  virtual int number_of_flags_checker_put_success_result(std::string team_id, std::string service_id) = 0;
+  virtual void insertToFlagsDefense(ctf01d::flag flag, int nPoints) = 0;
+  virtual int number_of_flags_defense(std::string team_id, std::string service_id) = 0;
+  virtual int sum_points_of_flags_defense(std::string team_id, std::string service_id) = 0;
+  virtual int number_of_defense_flag_for_service(std::string service_id) = 0;
+  virtual void insert_flag_check_fail(ctf01d::flag flag, std::string sReason) = 0;
+  virtual int number_of_flags_stollen(std::string team_id, std::string service_id) = 0;
+  virtual int number_of_flags_stollen_by_victim(std::string team_id, std::string service_id) = 0;
+  virtual int sum_points_of_flags_stolen(std::string team_id, std::string service_id) = 0;
+  virtual int number_of_stolen_flags_for_service(std::string service_id) = 0;
+  virtual std::pair<std::string, long> get_first_blood_from_stolen_flags_for_service(std::string service_id) = 0;
+  virtual void insert_to_flags_stolen(ctf01d::flag flag, std::string team_id, int nPoints, long date_action, int victim_place_in_scoreboard, int thief_place_in_scoreboard) = 0;
+  virtual bool is_already_stole(ctf01d::flag flag, std::string team_id) = 0;
+  virtual bool is_somebody_stole(ctf01d::flag flag) = 0;
 };
 
 } // namespace ctf01d

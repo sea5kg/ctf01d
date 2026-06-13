@@ -67,7 +67,7 @@ private:
   std::string TAG;
   pthread_t m_checkerThread;
   EmployConfig *m_pConfig;
-  EmployDatabase *m_pDatabase; // TODO not must be here
+  ctf01d::database *m_pDatabase; // TODO not must be here
   alive_flags *m_alive_flags;
 
   ctf01d::team_config m_team_config;
