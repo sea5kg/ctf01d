@@ -35,26 +35,39 @@
  *
  ***********************************************************************************/
 
-#include "employ_alerting.h"
+#include <wsjcpp_employees.h>
+#include <string>
+#include <mutex>
+#include <fstream>
+#include <cstring>
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include <wsjcpp_core.h>
-#include <fstream>
-#include <cstring>
 
-REGISTRY_WSJCPP_EMPLOY(EmployAlerting)
+class employ_alerting : public WsjcppEmployBase {
+public:
+  employ_alerting();
+  static std::string name() { return "employ_alerting"; }
+  virtual bool init(const std::string &sName, bool bSilent) override;
+  virtual bool deinit(const std::string &sName, bool bSilent) override;
 
-EmployAlerting::EmployAlerting()
-: WsjcppEmployBase({ EmployAlerting::name() }, { EmployConfig::name() }) {
-  TAG = EmployAlerting::name();
+private:
+  std::string TAG;
+};
+
+REGISTRY_WSJCPP_EMPLOY(employ_alerting)
+
+employ_alerting::employ_alerting()
+: WsjcppEmployBase({ employ_alerting::name() }, { EmployConfig::name() }) {
+  TAG = employ_alerting::name();
 }
 
-bool EmployAlerting::init(const std::string &sName, bool bSilent) {
+bool employ_alerting::init(const std::string &sName, bool bSilent) {
   ctf01d::log::info(TAG, "init");
   return true;
 }
 
-bool EmployAlerting::deinit(const std::string &sName, bool bSilent) {
+bool employ_alerting::deinit(const std::string &sName, bool bSilent) {
   ctf01d::log::info(TAG, "deinit");
   return true;
 }
