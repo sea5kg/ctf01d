@@ -44,8 +44,8 @@
 #include <fstream>
 #include <iomanip>
 #include <wsjcpp_yaml.h>
-#include "ctf01d/employees/employ_images.h"
 #include "ctf01d/utils/ctf01d_logger.h"
+#include "ctf01d/include/ctf01d_images.h"
 #include "ctf01d/include/ctf01d_globals.h"
 #include "ctf01d/include/ctf01d_web_server.h"
 #include "third_party/smallsha1/smallsha1.h"
@@ -563,7 +563,7 @@ bool EmployConfig::applyScoreboardPortFromEnv() {
 
 bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
   m_vServicesConf.clear();
-  auto images = findWsjcppEmploy<EmployImages>();
+  auto images = findWsjcppEmploy<ctf01d::images>();
 
   WsjcppYamlCursor yamlCheckers = yamlConfig["services"];
 
@@ -637,7 +637,7 @@ bool EmployConfig::applyServicesConfig(WsjcppYaml &yamlConfig) {
 
 bool EmployConfig::readTeamsConf(WsjcppYaml &yamlConfig) {
   m_vTeamsConf.clear();
-  auto images = findWsjcppEmploy<EmployImages>();
+  auto images = findWsjcppEmploy<ctf01d::images>();
 
   WsjcppYamlCursor cursor = yamlConfig["teams"];
   std::string err;

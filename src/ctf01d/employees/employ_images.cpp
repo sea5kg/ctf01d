@@ -35,47 +35,73 @@
  *
  ***********************************************************************************/
 
-#include "employ_images.h"
+#include <wsjcpp_employees.h>
+#include <json.hpp>
+#include "ctf01d/include/ctf01d_images.h"
+#include "ctf01d/objects/ctf01d_image.h"
 #include <wsjcpp_core.h>
 #include <filesystem>
 #include "ctf01d/employees/employ_config.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 
-REGISTRY_WSJCPP_EMPLOY(EmployImages)
+class employ_images : public WsjcppEmployBase, public ctf01d::images {
+public:
+  employ_images();
+  virtual bool init(const std::string &name, bool silent) override;
+  virtual bool deinit(const std::string &name, bool silent) override;
 
-EmployImages::EmployImages()
-: WsjcppEmployBase({ EmployImages::name() }, { EmployConfig::name() }) {
-  TAG = EmployImages::name();
+  // ctf01d::images
+  virtual bool load_team_logo(const std::string &team_id, const std::string &filepath) override;
+  virtual bool load_team_big_logo(const std::string &team_id, const std::string &filepath) override;
+  virtual bool load_service_logo(const std::string &service_id, const std::string &filepath) override;
+  virtual bool load_service_big_logo(const std::string &service_id, const std::string &filepath) override;
+  virtual std::shared_ptr<ctf01d::image> find_image(const std::string &id) override;
+  virtual bool update_last_change_time() override;
+  virtual void update_scoreboard_json(nlohmann::json &jsonScoreboard) override;
+
+private:
+  std::string TAG;
+  bool load_logo(const std::string &id, const std::string &filepath);
+
+  std::map<std::string, std::shared_ptr<ctf01d::image>> m_images;
+  int m_nLastUpdateChangeTimeLogosInSec;
+};
+
+REGISTRY_WSJCPP_EMPLOY(employ_images)
+
+employ_images::employ_images()
+: WsjcppEmployBase({ ctf01d::images::name() }, { EmployConfig::name() }) {
+  TAG = ctf01d::images::name();
   m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
 }
 
-bool EmployImages::init(const std::string &sName, bool bSilent) {
+bool employ_images::init(const std::string &sName, bool bSilent) {
   ctf01d::log::info(TAG, "init");
   return true;
 }
 
-bool EmployImages::deinit(const std::string &sName, bool bSilent) {
+bool employ_images::deinit(const std::string &sName, bool bSilent) {
   ctf01d::log::info(TAG, "deinit");
   return true;
 }
 
-bool EmployImages::load_team_logo(const std::string &team_id, const std::string &filepath) {
+bool employ_images::load_team_logo(const std::string &team_id, const std::string &filepath) {
   return load_logo("team/" + team_id, filepath);
 }
 
-bool EmployImages::load_team_big_logo(const std::string &team_id, const std::string &filepath) {
+bool employ_images::load_team_big_logo(const std::string &team_id, const std::string &filepath) {
   return load_logo("big/team/" + team_id, filepath);
 }
 
-bool EmployImages::load_service_logo(const std::string &service_id, const std::string &filepath) {
+bool employ_images::load_service_logo(const std::string &service_id, const std::string &filepath) {
   return load_logo("service/" + service_id, filepath);
 }
 
-bool EmployImages::load_service_big_logo(const std::string &service_id, const std::string &filepath) {
+bool employ_images::load_service_big_logo(const std::string &service_id, const std::string &filepath) {
   return load_logo("big/service/" + service_id, filepath);
 }
 
-std::shared_ptr<ctf01d::image> EmployImages::find_image(const std::string &id) {
+std::shared_ptr<ctf01d::image> employ_images::find_image(const std::string &id) {
   std::map<std::string, std::shared_ptr<ctf01d::image>>::iterator it = m_images.find(id);
   if (it != m_images.end()) {
     return it->second;
@@ -83,7 +109,7 @@ std::shared_ptr<ctf01d::image> EmployImages::find_image(const std::string &id) {
   return nullptr;
 }
 
-bool EmployImages::update_last_change_time() {
+bool employ_images::update_last_change_time() {
   if (WsjcppCore::getCurrentTimeInSeconds() - m_nLastUpdateChangeTimeLogosInSec < 30) {
     return false;
   }
@@ -110,7 +136,7 @@ bool EmployImages::update_last_change_time() {
   return bHasChanges;
 }
 
-void EmployImages::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
+void employ_images::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
   // TODO
   // {
   //   std::map<std::string, std::shared_ptr<ctf01d::image>>::iterator it = m_teams_logo.begin();
@@ -130,7 +156,7 @@ void EmployImages::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
   // }
 }
 
-bool EmployImages::load_logo(const std::string &id, const std::string &filepath) {
+bool employ_images::load_logo(const std::string &id, const std::string &filepath) {
    if (!WsjcppCore::fileExists(filepath)) {
     ctf01d::log::err(TAG, "File '" + filepath + "' did not found");
     return false;

@@ -49,7 +49,7 @@
 #include "ctf01d/include/ctf01d_web_server.h"
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/employees/employ_config.h"
-#include "ctf01d/employees/employ_images.h"
+#include "ctf01d/include/ctf01d_images.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/objects/ctf01d_service_status_cell.h"
 
@@ -435,7 +435,7 @@ int employ_web_server::httpApiV1MyIp(HttpRequest* req, HttpResponse* resp) {
 }
 
 int employ_web_server::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp) {
-  auto teamLogos = findWsjcppEmploy<EmployImages>();
+  auto teamLogos = findWsjcppEmploy<ctf01d::images>();
   teamLogos->update_last_change_time();
 
   nlohmann::json jsonScoreboard = m_config->scoreboard()->to_json();
@@ -614,7 +614,7 @@ int employ_web_server::httpLogo(const std::string &request_path, HttpRequest* re
   // TODO refactoring it
 
   std::string id = request_path.substr(m_logo_prefix_length, request_path.length() - m_logo_prefix_length);
-  auto images = findWsjcppEmploy<EmployImages>();
+  auto images = findWsjcppEmploy<ctf01d::images>();
   std::shared_ptr<ctf01d::image> img = images->find_image(id);
 
   if (!img) {
