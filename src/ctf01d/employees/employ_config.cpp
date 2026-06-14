@@ -69,8 +69,11 @@ public:
   virtual bool apply_config() override;
   virtual const std::vector<ctf01d::service_config> &services() override;
   virtual const std::vector<ctf01d::team_config> &teams() override;
+  virtual bool contains_team_id(const std::string &team_id) const override;
+  virtual std::string find_team_id_by_subnet(const std::string &ip) const override;
   virtual int scoreboard_port() const override;
   virtual std::string scoreboard_html_folder() const override;
+  virtual std::shared_ptr<ctf01d::var_bool> scoreboard_auto_detection_team_id_by_subnet_ip() const override;
   virtual bool scoreboard_random() const override;
   virtual std::shared_ptr<ctf01d::var_bool> scoreboard_metrics_enabled() const override;
   virtual std::shared_ptr<ctf01d::var_allowed_ip> scoreboard_metrics_allowed_for() const override;
@@ -112,6 +115,7 @@ private:
   std::shared_ptr<ctf01d::scoreboard> m_scoreboard;
   std::shared_ptr<ctf01d::var_int> m_scoreboard_port;
   std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
+  std::shared_ptr<ctf01d::var_bool> m_scoreboard_auto_detection_team_id_by_subnet_ip;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_random;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_metrics_enabled;
   std::shared_ptr<ctf01d::var_allowed_ip> m_scoreboard_metrics_allowed_for;
@@ -134,6 +138,9 @@ private:
 
   // teams config
   std::vector<ctf01d::team_config> m_teams;
+  std::map<std::string, ctf01d::team_config> m_teams_cache;
+  std::vector<std::string> m_teams_ip_or_host;
+  std::map<std::string, std::string> m_teams_subnets;
 
   // services config
   std::vector<ctf01d::service_config> m_services;
@@ -178,6 +185,7 @@ employ_config::employ_config()
   m_scoreboard_port->set_maximum(ctf01d::MAX_TCP_PORT);
   m_scoreboard_random = ctf01d::var_bool::create({"scoreboard", "random"}, false, m_scoreboard_vars);
   m_scoreboard_html_folder = ctf01d::var_dir::create({"scoreboard", "html-dir-path"}, "./html", m_work_dir, m_scoreboard_vars);
+  m_scoreboard_auto_detection_team_id_by_subnet_ip = ctf01d::var_bool::create({"scoreboard", "auto-detection-team-id-by-subnet-ip"}, "", m_scoreboard_vars);
   m_scoreboard_metrics_enabled = ctf01d::var_bool::create({"scoreboard", "prometheus-metrics-endpoint", "enabled"}, false, m_scoreboard_vars);
   m_scoreboard_metrics_allowed_for = ctf01d::var_allowed_ip::create({"scoreboard", "prometheus-metrics-endpoint", "allowed-for"}, "127.0.*", m_scoreboard_vars);
 
@@ -307,6 +315,18 @@ const std::vector<ctf01d::team_config> &employ_config::teams() {
   return m_teams;
 }
 
+bool employ_config::contains_team_id(const std::string &team_id) const {
+  return m_teams_cache.count(team_id) != 0;
+}
+
+std::string employ_config::find_team_id_by_subnet(const std::string &ip) const {
+  std::string ip_subnet = ip.substr(0, ip.rfind('.'));
+  if (m_teams_subnets.count(ip_subnet) > 0) {
+    return m_teams_subnets.at(ip_subnet);
+  }
+  return "";
+}
+
 const std::vector<ctf01d::service_config> &employ_config::services() {
   return m_services;
 }
@@ -317,6 +337,10 @@ int employ_config::scoreboard_port() const {
 
 std::string employ_config::scoreboard_html_folder() const {
   return m_scoreboard_html_folder->value();
+}
+
+std::shared_ptr<ctf01d::var_bool> employ_config::scoreboard_auto_detection_team_id_by_subnet_ip() const {
+  return m_scoreboard_auto_detection_team_id_by_subnet_ip;
 }
 
 bool employ_config::scoreboard_random() const {
@@ -728,6 +752,9 @@ bool employ_config::applyServicesConfig(WsjcppYaml &yaml) {
 
 bool employ_config::readTeamsConf(WsjcppYaml &yaml) {
   m_teams.clear();
+  m_teams_cache.clear();
+  m_teams_ip_or_host.clear();
+  m_teams_subnets.clear();
   auto images = findWsjcppEmploy<ctf01d::images>();
 
   WsjcppYamlCursor cursor = yaml["teams"];
@@ -748,8 +775,6 @@ bool employ_config::readTeamsConf(WsjcppYaml &yaml) {
     return false;
   }
 
-  std::vector<std::string> ip_or_host_teams;
-
   for (int i = 0; i < cursor.size(); i++) {
     WsjcppYamlCursor cur = cursor[i];
     ctf01d::team_config _team_config;
@@ -758,6 +783,7 @@ bool employ_config::readTeamsConf(WsjcppYaml &yaml) {
 
     std::string err;
     if (!_team_config.read(cur, m_work_dir, err)) {
+      ctf01d::log::err(TAG, err);
       return false;
     }
 
@@ -775,8 +801,8 @@ bool employ_config::readTeamsConf(WsjcppYaml &yaml) {
     }
 
     // Check duplicate IP addresses
-    if (std::find(ip_or_host_teams.begin(), ip_or_host_teams.end(), _team_config.ip_or_host()) == ip_or_host_teams.end()) {
-      ip_or_host_teams.push_back(_team_config.ip_or_host());
+    if (std::find(m_teams_ip_or_host.begin(), m_teams_ip_or_host.end(), _team_config.ip_or_host()) == m_teams_ip_or_host.end()) {
+      m_teams_ip_or_host.push_back(_team_config.ip_or_host());
     } else {
       ctf01d::log::err(TAG, "Found duplicate IP or Host address: " + _team_config.ip_or_host());
       return false;
@@ -792,6 +818,15 @@ bool employ_config::readTeamsConf(WsjcppYaml &yaml) {
     ctf01d::log::info(TAG, "Loaded team logo-big = " + _team_config.logo_path());
 
     m_teams.push_back(_team_config);
+    m_teams_cache[_team_config.id()] = _team_config;
+    
+    if (m_scoreboard_auto_detection_team_id_by_subnet_ip->value()) {
+      if (m_teams_subnets.count(_team_config.ip_subnet()) > 0) {
+        ctf01d::log::err(TAG, "Found duplicate subnet: " + _team_config.ip_subnet());
+        return false;
+      }
+    }
+    m_teams_subnets[_team_config.ip_subnet()] = _team_config.id();
     ctf01d::log::ok(TAG, "Registered team " + _team_config.id());
   }
 
@@ -881,11 +916,25 @@ void employ_config::hot_reload_config_yaml() {
   }
   auto cursor = yaml.getCursor();
   {
-    bool prev_value = m_scoreboard_metrics_enabled->value();
-    if (m_scoreboard_metrics_enabled->read(cursor, err)) {
-      if (prev_value != m_scoreboard_metrics_enabled->value()) {
-        ctf01d::log::info(TAG, "Updated option: " + m_scoreboard_metrics_enabled->name() + " " + m_scoreboard_metrics_enabled->to_string());
-        findWsjcppEmploy<ctf01d::web_server>()->set_metrics_enabled(m_scoreboard_metrics_enabled->value());
+    std::shared_ptr<ctf01d::var_bool> reload_bool_var;
+    bool prev_value;
+
+    reload_bool_var = m_scoreboard_metrics_enabled;
+    prev_value = reload_bool_var->value();
+    if (reload_bool_var->read(cursor, err)) {
+      if (prev_value != reload_bool_var->value()) {
+        ctf01d::log::info(TAG, "Updated option: " + reload_bool_var->name() + " " + reload_bool_var->to_string());
+        findWsjcppEmploy<ctf01d::web_server>()->set_metrics_enabled(reload_bool_var->value());
+      }
+    };
+
+    // TODO: before apply option need test subnets
+    reload_bool_var = m_scoreboard_auto_detection_team_id_by_subnet_ip;
+    prev_value = reload_bool_var->value();
+    if (reload_bool_var->read(cursor, err)) {
+      if (prev_value != reload_bool_var->value()) {
+        ctf01d::log::info(TAG, "Updated option: " + reload_bool_var->name() + " " + reload_bool_var->to_string());
+        findWsjcppEmploy<ctf01d::web_server>()->set_auto_detection_team_id_by_subnet_ip(reload_bool_var->value());
       }
     };
   }

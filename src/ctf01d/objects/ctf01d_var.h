@@ -205,9 +205,11 @@ public:
   void set_suffix(const std::string &suffix);
   std::string value() const;
   bool set_value(const std::string &val, std::string &err);
+  bool is_ip_v4() const;
+  std::string ip_v4_subnet() const;
 
 private:
-  bool is_valid_ip_v4(const std::string &value, std::string &err);
+  bool is_valid_ip_v4(const std::string &value, std::string &err) const;
 
   std::string m_suffix;
   std::string m_prefix;

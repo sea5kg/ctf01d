@@ -107,7 +107,7 @@ bool scope_vars::read(WsjcppYamlCursor &cursor, std::string &err) {
     std::string err;
     if (!var->read(cursor, err)) {
       var_errors = true;
-      ctf01d::log::err(m_scope_name, err);
+      ctf01d::log::err(m_scope_name, "Problem with read: " + var->name() + ". " +  err);
       continue;
     }
     ctf01d::log::info(m_scope_name, var->name() + ": " + var->to_string());
@@ -553,8 +553,35 @@ bool var_ip_or_host::set_value(const std::string &val, std::string &err) {
   return true;
 }
 
-bool var_ip_or_host::is_valid_ip_v4(const std::string &value, std::string &err) {
+bool var_ip_or_host::is_ip_v4() const {
+  std::string err;
+  return is_valid_ip_v4(m_value, err);
+}
+
+std::string var_ip_or_host::ip_v4_subnet() const {
+  std::string err;
+  if (!is_valid_ip_v4(m_final_value, err)) {
+    return "";
+  }
+  // size_t last_dot_pos = m_value.find_last_of('.');
+  size_t last_dot_pos = m_final_value.rfind('.');
+  if (last_dot_pos == std::string::npos) {
+      return m_final_value;
+  }
+  return m_final_value.substr(0, last_dot_pos);
+}
+
+bool var_ip_or_host::is_valid_ip_v4(const std::string &value, std::string &err) const {
   int n = 0;
+  if (value.empty()) {
+    err = "'" + value + "' value is empty";
+    return false;
+  }
+  if (value.size() > 15) {
+    err = "'" + value + "' value is too long (Max IPv4 length: '255.255.255.255')";
+    return false;
+  }
+
   std::string s[4] = {"", "", "", ""};
   for (int i = 0; i < value.length(); i++) {
     char c = value[i];
@@ -575,8 +602,8 @@ bool var_ip_or_host::is_valid_ip_v4(const std::string &value, std::string &err) 
   }
   for (int i = 0; i < 4; i++) {
     if (s[i].length() > 3) {
-      err =
-          "Value '" + s[i] + "' could not contains more than 3 digits in a row, but got value " + value;
+      err = "Value '" + s[i] + "' could not contains ";
+      err += "more than 3 digits in a row, but got value " + value;
       return false;
     }
     int p = std::stoi(s[i]);

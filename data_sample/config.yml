@@ -15,6 +15,7 @@ scoreboard:
   port: 8080 # http port for scoreboard
   html-dir-path: "./html" # web page for scoreboard see index-template.html
   random: no # If yes - will be random values in scoreboard
+  auto-detection-team-id-by-subnet-ip: no
   prometheus-metrics-endpoint:
     enabled: no
     allowed-for: "10.10.100.*, 127.0.*"

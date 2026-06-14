@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 9213;
+  return 9255;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 9213
+  static const std::string sRet = "" // size: 9255
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -41,6 +41,7 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "  port: 8080 # http port for scoreboard\n"
     "  html-dir-path: \"./html\" # web page for scoreboard see index-template.html\n"
     "  random: no # If yes - will be random values in scoreboard\n"
+    "  auto-detection-team-id-by-subnet-ip: no\n"
     "  prometheus-metrics-endpoint:\n"
     "    enabled: no\n"
     "    allowed-for: \"10.10.100.*, 127.0.*\"\n"

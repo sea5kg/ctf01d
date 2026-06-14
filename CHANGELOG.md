@@ -14,6 +14,7 @@
 - Fixed slider for show first 3 teams
 - Missing logo-big for a team (for scoreboard)
 - Update test game simulation data
+- Fixed #128. Added option for auto-detection team_id by subnet from ip
 
 ## [v0.7.2] - (2026 June 09)
 

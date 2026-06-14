@@ -43,9 +43,10 @@ namespace ctf01d {
 
 class web_server {
 public:
-  static std::string name() { return "IWebServer"; }
+  static std::string name() { return "web_server"; }
   virtual int start() = 0;
   virtual void set_metrics_enabled(bool val) = 0;
+  virtual void set_auto_detection_team_id_by_subnet_ip(bool val) = 0;
 };
 
 } // namespace ctf01d

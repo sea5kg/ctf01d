@@ -52,6 +52,7 @@
 #include "ctf01d/include/ctf01d_images.h"
 #include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/objects/ctf01d_service_status_cell.h"
+#include "ctf01d/objects/ctf01d_error_info.h"
 
 // libhv includes
 #include "HttpService.h" // libhv
@@ -71,10 +72,12 @@ public:
   // IWebServer
   virtual int start() override;
   virtual void set_metrics_enabled(bool val) override;
+  virtual void set_auto_detection_team_id_by_subnet_ip(bool val) override;
 
 private:
   std::string TAG;
 
+  int response_error(int http_code, HttpRequest* req, HttpResponse* resp, const ctf01d::error_info &err);
   void log_err(const std::string &message);
   void log_warn(const std::string &message);
   void updateJsonCache();
@@ -86,7 +89,11 @@ private:
   int httpApiV1MyIp(HttpRequest* req, HttpResponse* resp);
   int httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp);
   int httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp);
+
+  bool can_handle_flags(HttpRequest* req, int current_time_in_seconds, ctf01d::error_info &err);
+  bool find_or_detect_team_id(HttpRequest* req, std::string &team_id, ctf01d::error_info &err);
   int httpApiV1Flag(HttpRequest* req, HttpResponse* resp);
+
   int httpApiV1Metrics(HttpRequest* req, HttpResponse* resp);
   int httpLogo(const std::string &request_path, HttpRequest* req, HttpResponse* resp);
 
@@ -94,6 +101,7 @@ private:
   std::string m_sApiPathPrefix;
 
   std::atomic<bool> m_metrics_enabled;
+  std::atomic<bool> m_auto_detection_team_id_by_subnet_ip;
 
   // TODO refactoring it
   std::string m_logo_prefix;
@@ -186,6 +194,7 @@ employ_web_server::employ_web_server()
 bool employ_web_server::init(const std::string &name, bool bSilent) {
   ctf01d::log::info(TAG, "init");
   m_metrics_enabled.store(m_config->scoreboard_metrics_enabled()->value());
+  m_auto_detection_team_id_by_subnet_ip.store(m_config->scoreboard_auto_detection_team_id_by_subnet_ip()->value());
   return true;
 }
 
@@ -274,6 +283,17 @@ int employ_web_server::start() {
 void employ_web_server::set_metrics_enabled(bool val) {
   m_metrics_enabled.store(val);
 };
+
+void employ_web_server::set_auto_detection_team_id_by_subnet_ip(bool val) {
+  m_auto_detection_team_id_by_subnet_ip.store(val);
+}
+
+int employ_web_server::response_error(int http_code, HttpRequest* req, HttpResponse* resp, const ctf01d::error_info &err) {
+  std::string error_message = " Error(" + std::to_string(err.error_code()) + "): " + err.error_msg() + " (" + req->client_addr.ip + ")";
+  log_err(error_message);
+  resp->String(error_message);
+  return http_code;
+}
 
 void employ_web_server::log_err(const std::string &message) {
   ctf01d::log::err(TAG, message);
@@ -456,53 +476,80 @@ int employ_web_server::httpApiV1GetPaths(HttpRequest* req, HttpResponse* resp) {
   return resp->Json(m_pHttpService->Paths());
 }
 
-int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
-  auto now = std::chrono::system_clock::now().time_since_epoch();
-  int nCurrentTimeSec = std::chrono::duration_cast<std::chrono::seconds>(now).count();
-  std::string request_ip = req->client_addr.ip;
-  std::string sRequestIP_MsgSuffix = " (" + request_ip + ")";
-
-  if (nCurrentTimeSec < m_config->game_start_utc_in_seconds()) {
-    const std::string sErrorMsg = " Error(-8): Game not started yet";
-    log_err(sRequestIP_MsgSuffix + sErrorMsg);
-    resp->String(sErrorMsg);
-    return 400;
+bool employ_web_server::can_handle_flags(HttpRequest* req, int current_time_in_seconds, ctf01d::error_info &err) {
+  if (current_time_in_seconds < m_config->game_start_utc_in_seconds()) {
+    err = ctf01d::error_info(2001, "Game not started yet");
+    return false;
   }
 
   if (m_config->game_has_coffee_break()
-    && nCurrentTimeSec > m_config->game_coffee_break_start_utc_in_seconds()
-    && nCurrentTimeSec < m_config->game_coffee_break_end_utc_in_seconds()
+    && current_time_in_seconds > m_config->game_coffee_break_start_utc_in_seconds()
+    && current_time_in_seconds < m_config->game_coffee_break_end_utc_in_seconds()
   ) {
-    static const std::string sErrorMsg = "Error(-8): Game on coffee break now";
-    log_err(sErrorMsg + sRequestIP_MsgSuffix);
-    resp->String(sErrorMsg);
-    return 400;
+    err = ctf01d::error_info(2002, "Game on coffee break now");
+    return false;
   }
 
-  if (nCurrentTimeSec > m_config->game_end_utc_in_seconds()) {
-    static const std::string sErrorMsg = "Error(-9): Game already ended";
-    log_warn(sErrorMsg + sRequestIP_MsgSuffix);
-    resp->String(sErrorMsg);
-    return 400;
+  if (current_time_in_seconds > m_config->game_end_utc_in_seconds()) {
+    err = ctf01d::error_info(2002, "Game already ended");
+    return false;
+  }
+  return true;
+}
+
+bool employ_web_server::find_or_detect_team_id(HttpRequest* req, std::string &team_id, ctf01d::error_info &err) {
+  team_id = "";
+  std::string request_ip = req->client_addr.ip;
+  if (!m_auto_detection_team_id_by_subnet_ip.load()) {
+    team_id = req->GetParam("team_id");
+    team_id = WsjcppCore::trim(team_id);
+    team_id = WsjcppCore::toLower(team_id);
+    if (team_id == "") {
+      err = ctf01d::error_info(1001, "Not found get-parameter 'team_id' or parameter is empty");
+      return false;
+    }
+  } else {
+    team_id = m_config->find_team_id_by_subnet(request_ip);
+    if (team_id == "") {
+      err = ctf01d::error_info(1002, "Could not detect 'team_id' by subnet");
+      return false;
+    }
+  }
+  if (team_id == "") {
+    err = ctf01d::error_info(1003, "Not found or not detect 'team_id'");
+    return false;
   }
 
-  std::string sTeamId = req->GetParam("team_id");
-  sTeamId = WsjcppCore::trim(sTeamId);
-  sTeamId = WsjcppCore::toLower(sTeamId);
-  std::string sFlag = req->GetParam("flag");
-  sFlag = WsjcppCore::trim(sFlag);
-  sFlag = WsjcppCore::toLower(sFlag);
-
-  // todo if enabled detect-team-by-subnet > automatically detect team_id
-  if (sTeamId == "") {
-    // TODO server statistics
-    static const std::string sErrorMsg = "Error(-10): Not found get-parameter 'team_id' or parameter is empty";
-    log_err(sErrorMsg + sRequestIP_MsgSuffix);
-    resp->String(sErrorMsg);
-    return 400;
+  if (!m_config->contains_team_id(team_id)) {
+    err = ctf01d::error_info(1004, "Team not found");
+    return false;
   }
 
-  if (sFlag == "") {
+  return true;
+}
+
+int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
+  auto now = std::chrono::system_clock::now().time_since_epoch();
+  int current_time_in_seconds = std::chrono::duration_cast<std::chrono::seconds>(now).count();
+  long current_time_in_milliseconds = long(current_time_in_seconds)*1000;
+  std::string request_ip = req->client_addr.ip;
+  std::string sRequestIP_MsgSuffix = " (" + request_ip + ")";
+  ctf01d::error_info err;
+
+  if (!can_handle_flags(req, current_time_in_seconds, err)) {
+    return response_error(400, req, resp, err);
+  }
+  
+  std::string team_id = "";
+  if (!find_or_detect_team_id(req, team_id, err)) {
+    return response_error(400, req, resp, err);
+  }
+  
+  std::string flag_value = req->GetParam("flag");
+  flag_value = WsjcppCore::trim(flag_value);
+  flag_value = WsjcppCore::toLower(flag_value);
+
+  if (flag_value == "") {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-11): Not found get-parameter 'flag' or parameter is empty";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
@@ -510,26 +557,9 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 400;
   }
 
-  // TODO optimize
-  bool bTeamFound = false;
-  for (unsigned int i_team = 0; i_team < m_config->teams().size(); i_team++) {
-    ctf01d::team_config teamConf = m_config->teams()[i_team];
-    if (teamConf.id() == sTeamId) {
-      bTeamFound = true;
-    }
-  }
-
-  if (!bTeamFound) {
-    // TODO server statistics
-    static const std::string sErrorMsg = "Error(-130): this is team not found";
-    log_err(sErrorMsg + sRequestIP_MsgSuffix);
-    resp->String(sErrorMsg);
-    return 400;
-  }
-
   // TODO test speed of regexp and if will be simple compare every symbol.
   const static std::regex reFlagFormat("c01d[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}-[a-f0-9]{4,4}[0-9]{8,8}");
-  if (!std::regex_match(sFlag, reFlagFormat)) {
+  if (!std::regex_match(flag_value, reFlagFormat)) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-140): flag has wrong format";
     log_err(sErrorMsg + sRequestIP_MsgSuffix);
@@ -537,50 +567,47 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 400;
   }
   
-  m_config->scoreboard()->insert_flag_attempt(sTeamId, sFlag, request_ip);
+  m_config->scoreboard()->insert_flag_attempt(team_id, flag_value, request_ip);
 
   ctf01d::flag flag;
-  if (!findWsjcppEmploy<ctf01d::alive_flags>()->find_alive_flag(sFlag, flag)) {
+  if (!findWsjcppEmploy<ctf01d::alive_flags>()->find_alive_flag(flag_value, flag)) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-150): flag is too old or flag never existed or flag already stole.";
-    g_http_logger->info(TAG, sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    g_http_logger->info(TAG, sErrorMsg + ". Received flag {" + flag_value + "} from {" + team_id + "}" + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 403;
   }
 
-  long nCurrentTimeMSec = (long)nCurrentTimeSec;
-  nCurrentTimeMSec = nCurrentTimeMSec*1000;
-
-  if (flag.getTimeEndInMs() < nCurrentTimeMSec) {
+  if (flag.getTimeEndInMs() < current_time_in_milliseconds) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-151): flag is too old";
-    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    log_err(sErrorMsg + ". Received flag {" + flag_value + "} from {" + team_id + "}" + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 403;
   }
 
-  // if (flag.teamStole() == sTeamId) {
+  // if (flag.teamStole() == team_id) {
   //   response.forbidden().sendText("Error(-160): flag already stole by your team");
-  //   log_err("Error(-160): Received flag {" + sFlag + "} from {" + sTeamId + "} (flag already stole by your team)");
+  //   log_err("Error(-160): Received flag {" + flag_value + "} from {" + team_id + "} (flag already stole by your team)");
   //   return true;
   // }
 
-  if (flag.getTeamId() == sTeamId) {
+  if (flag.getTeamId() == team_id) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-180): this is your flag";
-    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    log_err(sErrorMsg + ". Received flag {" + flag_value + "} from {" + team_id + "}" + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 403;
   }
 
-  std::string sServiceStatus = m_config->scoreboard()->service_status(sTeamId, flag.getServiceId());
+  std::string sServiceStatus = m_config->scoreboard()->service_status(team_id, flag.getServiceId());
 
   // std::cout << "sServiceStatus: " << sServiceStatus << "\n";
 
   if (sServiceStatus != ctf01d::service_status_cell::SERVICE_UP) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-190): Your same service is dead. Try later.";
-    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    log_err(sErrorMsg + ". Received flag {" + flag_value + "} from {" + team_id + "}" + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 403;
   }
@@ -588,17 +615,17 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // TODO light update scoreboard
   // incrementAttackScore performs the dedup check under its own mutex,
   // so check-then-insert is atomic against concurrent submissions.
-  std::optional<int> oPoints = m_config->scoreboard()->increment_attack_score(flag, sTeamId);
+  std::optional<int> oPoints = m_config->scoreboard()->increment_attack_score(flag, team_id);
   if (!oPoints.has_value()) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-170): flag already stolen by your team";
-    log_err(sErrorMsg + ". Received flag {" + sFlag + "} from {" + sTeamId + "}" + sRequestIP_MsgSuffix);
+    log_err(sErrorMsg + ". Received flag {" + flag_value + "} from {" + team_id + "}" + sRequestIP_MsgSuffix);
     resp->String(sErrorMsg);
     return 403;
   }
   std::string sPoints = std::to_string(oPoints.value());
 
-  std::string sResponse = "Accepted: Received flag {" + sFlag + "} from {" + sTeamId + "} (Accepted + " + sPoints + ")";
+  std::string sResponse = "Accepted: Received flag {" + flag_value + "} from {" + team_id + "} (Accepted + " + sPoints + ")";
   // really need send to current ???
   g_http_logger->ok(TAG, sResponse + sRequestIP_MsgSuffix);
   ctf01d::log::ok(TAG, sResponse + sRequestIP_MsgSuffix);

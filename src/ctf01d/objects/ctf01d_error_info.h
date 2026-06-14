@@ -38,41 +38,19 @@
 #pragma once
 
 #include <string>
-#include <memory>
-#include <wsjcpp_yaml.h>
-#include "ctf01d_var.h"
 
 namespace ctf01d {
 
-class team_config {
+class error_info {
 public:
-  team_config();
-  bool read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err);
-
-  std::string id() const;
-  std::string name() const;
-  std::string ip_or_host() const;
-  std::string ip_subnet() const;
-  void set_ip_or_host_prefix(const std::string &);
-  void set_ip_or_host_suffix(const std::string &);
-  bool is_active() const;
-  std::string logo_path() const;
-  std::string logo_big_path() const;
-  int get_logo_last_modified_time();
+  error_info();
+  error_info(int error_code, const std::string &error_msg);
+  int error_code() const;
+  std::string error_msg() const;
 
 private:
-  std::string TAG;
-  std::string m_work_dir;
-  ctf01d::scope_vars m_vars = ctf01d::scope_vars("team_config");
-  std::shared_ptr<ctf01d::var_string> m_id;
-  std::shared_ptr<ctf01d::var_string> m_name;
-  std::shared_ptr<ctf01d::var_string> m_type;
-  std::shared_ptr<ctf01d::var_ip_or_host> m_ip_or_host;
-  std::shared_ptr<ctf01d::var_file> m_logo;
-  std::shared_ptr<ctf01d::var_file> m_logo_big;
-  std::shared_ptr<ctf01d::var_bool> m_active;
-
-  int m_logo_last_modified_time;
+  int m_error_code;
+  std::string m_error_msg;
 };
 
 } // namespace ctf01d

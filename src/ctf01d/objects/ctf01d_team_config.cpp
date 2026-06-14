@@ -98,6 +98,10 @@ std::string team_config::ip_or_host() const {
   return m_ip_or_host->value();
 }
 
+std::string team_config::ip_subnet() const {
+  return m_ip_or_host->ip_v4_subnet();
+}
+
 bool team_config::is_active() const {
   return m_active->value();
 }
