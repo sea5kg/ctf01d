@@ -3,6 +3,11 @@
 ## [v0.8.0] - (2026 ?? ??)
 
 - Renamed everywhere `teamid` -> `team_id` 
+- Fixed #128. Added option for auto-detection team_id by subnet from ip
+- Renamed 'start_utc' to 'start-utc'
+- Renamed 'coffee_break_start' to 'coffee-break-start'
+- Renamed 'coffee_break_end' to 'coffee-break-end'
+- Renamed 'end_utc' to 'end-utc'
 
 ## [v0.7.3] - (2026 June 10)
 
@@ -14,7 +19,6 @@
 - Fixed slider for show first 3 teams
 - Missing logo-big for a team (for scoreboard)
 - Update test game simulation data
-- Fixed #128. Added option for auto-detection team_id by subnet from ip
 
 ## [v0.7.2] - (2026 June 09)
 
