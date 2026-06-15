@@ -109,6 +109,8 @@ scoreboard::scoreboard(
 void scoreboard::init_json_scoreboard() {
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
   m_scoreboard.clear();
+  m_scoreboard["s_sta"] = nlohmann::json();
+
   auto config = findWsjcppEmploy<ctf01d::config>();
   const std::vector<ctf01d::team_config> &vTeamsConf = config->teams();
   const std::vector<ctf01d::service_config> &vServices = config->services();
@@ -116,11 +118,9 @@ void scoreboard::init_json_scoreboard() {
   nlohmann::json jsonServicesStatistics;
   for (unsigned int iservice = 0; iservice < vServices.size(); iservice++) {
     ctf01d::service_config serviceConf = vServices[iservice];
-    nlohmann::json serviceStatistics;
-    m_service_statistics[serviceConf.id()]->updateJsonServiceStatistics(serviceStatistics);
-    jsonServicesStatistics[serviceConf.id()] = serviceStatistics;
+    m_scoreboard["s_sta"][serviceConf.id()] = nlohmann::json();
+    m_service_statistics[serviceConf.id()]->update_scoreboard(m_scoreboard);
   }
-  m_scoreboard["s_sta"] = jsonServicesStatistics;
   m_scoreboard[ctf01d::JSON_FIELD_SUMMARY_ACTIVITIES] = 0;
 
   nlohmann::json jsonScoreboard;
@@ -228,10 +228,10 @@ void scoreboard::init_state_from_storage() {
   ctf01d::log::info(TAG, "Setting services statistics...");
   for (int i = 0; i < vFlags.size(); i++) {
     FlagsForService f = vFlags[i];
-    m_service_statistics[f.sServiceID]->setStolenFlagsForService(f.nStolenFlags);
-    m_service_statistics[f.sServiceID]->setDefenseFlagsForService(f.nDefenseFlags);
+    m_service_statistics[f.sServiceID]->set_flags_stolen(f.nStolenFlags);
+    m_service_statistics[f.sServiceID]->set_flags_defense(f.nDefenseFlags);
     if (f.nStolenFlags > 0) {
-      m_service_statistics[f.sServiceID]->setFirstBloodTeamId(f.sFirstBloodTeamID, f.nFirstBloodTime);
+      m_service_statistics[f.sServiceID]->set_first_blood_team_id(f.sFirstBloodTeamID, f.nFirstBloodTime);
     }
   }
 
@@ -327,9 +327,9 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   std::map<std::string, ctf01d::service_statistics *>::iterator it2;
   it2 = m_service_statistics.find(service_id);
   if (it2 != m_service_statistics.end()) {
-    it2->second->doIncrementStolenFlagsForService();
-    if (it2->second->getFirstBloodTeamId() == "?") {
-      it2->second->setFirstBloodTeamId(team_id, date_action);
+    it2->second->do_increment_flags_stolen();
+    if (it2->second->first_blood_team_id() == "?") {
+      it2->second->set_first_blood_team_id(team_id, date_action);
     }
     update_services_statistics();
   }
@@ -360,7 +360,7 @@ void scoreboard::increment_defense_score(const ctf01d::flag &flag) {
   it2 = m_service_statistics.find(service_id);
   if (it2 != m_service_statistics.end()) {
     m_all_defense_flags++;
-    it2->second->doIncrementDefenseFlagsForService();
+    it2->second->do_increment_flags_defense();
     update_services_statistics();
   }
 }
@@ -486,7 +486,7 @@ void scoreboard::update_services_statistics() {
   // nlohmann::json jsonCosts;
   for (it1 = m_service_statistics.begin(); it1 != m_service_statistics.end(); it1++) {
     std::string sId = it1->first;
-    it1->second->updateJsonServiceStatistics(m_scoreboard["s_sta"][sId]);
+    it1->second->update_scoreboard(m_scoreboard);
   }
 }
 

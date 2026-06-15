@@ -44,29 +44,28 @@ namespace ctf01d {
 
 class service_statistics {
 public:
-  service_statistics(const std::string &sServiceId);
-  int getAllStolenFlagsForService();
-  void doIncrementStolenFlagsForService();
-  void setStolenFlagsForService(int nStolenFlags);
+  service_statistics(const std::string &service_id);
+  int flags_stolen() const;
+  void do_increment_flags_stolen();
+  void set_flags_stolen(int flags_stolen);
 
-  int getAllDefenseFlagsForService();
-  void doIncrementDefenseFlagsForService();
+  int flags_defense() const;
+  void do_increment_flags_defense();
 
-  void setDefenseFlagsForService(int nAllDefenseFlagsForService);
+  void set_flags_defense(int flags_defense);
 
-  std::string getFirstBloodTeamId();
-  long getFirstBloodTime();
-  void setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion);
-  void updateJsonServiceStatistics(nlohmann::json &jsonCosts);
+  std::string first_blood_team_id() const;
+  int first_blood_time_in_seconds() const;
+  void set_first_blood_team_id(const std::string &team_id, long date_action);
+  void update_scoreboard(nlohmann::json &scoreboard);
 
 private:
   std::string TAG;
-  std::string m_sServiceId;
-  std::string m_sFirstBloodTeamId;
-  long m_nFirstBloodTimeInSeconds;
-
-  int m_nAllStolenFlagsForService;
-  int m_nAllDefenseFlagsForService;
+  std::string m_service_id;
+  int m_flags_stolen;
+  int m_flags_defense;
+  std::string m_first_blood_team_id;
+  int m_first_blood_time_in_seconds;
 };
 
 } // namespace ctf01d

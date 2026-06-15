@@ -39,57 +39,57 @@
 
 namespace ctf01d {
 
-service_statistics::service_statistics(const std::string &sServiceId) {
-  TAG = "service_statistics-" + sServiceId;
-  m_sServiceId = sServiceId;
-  m_nAllStolenFlagsForService = 0;
-  m_nAllDefenseFlagsForService = 0;
-  m_sFirstBloodTeamId = "?";
-  m_nFirstBloodTimeInSeconds = 0;
+service_statistics::service_statistics(const std::string &service_id) {
+  TAG = "service_statistics-" + service_id;
+  m_service_id = service_id;
+  m_flags_stolen = 0;
+  m_flags_defense = 0;
+  m_first_blood_team_id = "?";
+  m_first_blood_time_in_seconds = 0;
 }
 
-int service_statistics::getAllStolenFlagsForService() {
-  return m_nAllStolenFlagsForService;
+int service_statistics::flags_stolen() const {
+  return m_flags_stolen;
 }
 
-void service_statistics::doIncrementStolenFlagsForService() {
-  m_nAllStolenFlagsForService++;
+void service_statistics::do_increment_flags_stolen() {
+  m_flags_stolen++;
 }
 
-void service_statistics::setStolenFlagsForService(int nStolenFlags) {
-  m_nAllStolenFlagsForService = nStolenFlags;
+void service_statistics::set_flags_stolen(int stolen_flags) {
+  m_flags_stolen = stolen_flags;
 }
 
-int service_statistics::getAllDefenseFlagsForService() {
-  return m_nAllDefenseFlagsForService;
+int service_statistics::flags_defense() const {
+  return m_flags_defense;
 }
 
-void service_statistics::doIncrementDefenseFlagsForService() {
-  m_nAllDefenseFlagsForService++;
+void service_statistics::do_increment_flags_defense() {
+  m_flags_defense++;
 }
 
-void service_statistics::setDefenseFlagsForService(int nAllDefenseFlagsForService) {
-  m_nAllDefenseFlagsForService = nAllDefenseFlagsForService;
+void service_statistics::set_flags_defense(int flags_defense) {
+  m_flags_defense = flags_defense;
 }
 
-std::string service_statistics::getFirstBloodTeamId() {
-  return m_sFirstBloodTeamId;
+int service_statistics::first_blood_time_in_seconds() const {
+  return m_first_blood_time_in_seconds;
 }
 
-long service_statistics::getFirstBloodTime() {
-  return m_nFirstBloodTimeInSeconds;
+std::string service_statistics::first_blood_team_id() const {
+  return m_first_blood_team_id;
 }
 
-void service_statistics::updateJsonServiceStatistics(nlohmann::json &jsonCosts) {
-  jsonCosts["af_att"] = m_nAllStolenFlagsForService;
-  jsonCosts["af_def"] = m_nAllDefenseFlagsForService;
-  jsonCosts["first_blood"] = m_sFirstBloodTeamId;
-  jsonCosts["first_blood_ts"] = m_nFirstBloodTimeInSeconds;
+void service_statistics::update_scoreboard(nlohmann::json &scoreboard) {
+  scoreboard["s_sta"][m_service_id]["af_att"] = m_flags_stolen;
+  scoreboard["s_sta"][m_service_id]["af_def"] = m_flags_defense;
+  scoreboard["s_sta"][m_service_id]["first_blood"] = m_first_blood_team_id;
+  scoreboard["s_sta"][m_service_id]["first_blood_ts"] = m_first_blood_time_in_seconds;
 }
 
-void service_statistics::setFirstBloodTeamId(const std::string &sFirstBlood, long nDateACtion) {
-  m_sFirstBloodTeamId = sFirstBlood;
-  m_nFirstBloodTimeInSeconds = nDateACtion / 1000;
+void service_statistics::set_first_blood_team_id(const std::string &team_id, long date_action) {
+  m_first_blood_team_id = team_id;
+  m_first_blood_time_in_seconds = date_action / 1000;
 }
 
 } // namespace ctf01d
