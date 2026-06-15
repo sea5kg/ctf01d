@@ -44,37 +44,37 @@ namespace ctf01d {
 class flag {
 public:
   flag();
-  void generateRandomFlag(int nFlagLifetimeInSeconds, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec);
+  void generate_random_flag(int flag_lifetime_in_seconds, const std::string &team_id, const std::string &service_id, int game_start_utc_in_seconds);
 
-  void generateId();
-  void setId(const std::string &sId);
+  void generate_id();
+  void set_id(const std::string &id);
   const std::string &getId() const;
 
-  void generateValue(int nGameStartUTCInSec);
-  void setValue(const std::string &sValue);
-  const std::string &getValue() const;
+  void generate_value(int game_start_utc_in_seconds);
+  void set_value(const std::string &sValue);
+  const std::string &value() const;
 
-  void setTeamId(const std::string &sTeamId);
-  const std::string &getTeamId() const;
+  void set_team_id(const std::string &team_id);
+  const std::string &team_id() const;
 
-  void setServiceId(const std::string &sServiceId);
-  const std::string &getServiceId() const;
+  void set_service_id(const std::string &service_id);
+  const std::string &service_id() const;
 
-  void setTimeStartInMs(long nTimeStart);
-  long getTimeStartInMs() const;
+  void set_time_start_in_milliseconds(long time_start);
+  long time_start_in_milliseconds() const;
 
-  void setTimeEndInMs(long nTimeEnd);
-  long getTimeEndInMs() const;
+  void set_time_end_in_milliseconds(long time_end);
+  long time_end_in_milliseconds() const;
 
-  void copyFrom(const ctf01d::flag &flag);
+  void copy_from(const ctf01d::flag &flag);
 
 private:
-  std::string m_sId;
-  std::string m_sValue;
-  std::string m_sTeamId;
-  std::string m_sServiceId;
-  long m_nTimeStartInMs;
-  long m_nTimeEndInMs;
+  std::string m_id;
+  std::string m_value;
+  std::string m_team_id;
+  std::string m_service_id;
+  long m_time_start_in_milliseconds;
+  long m_time_end_in_milliseconds;
 };
 
 } // namespace ctf01d

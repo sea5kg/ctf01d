@@ -186,12 +186,12 @@ bool employ_database::deinit(const std::string &sName, bool bSilent) {
 void employ_database::insert_to_flags_checker_put_result(ctf01d::flag flag, std::string sResult) {
   std::string sQuery = "INSERT INTO flags_checker_put_results(serviceid, flag_id, flag, team_id, "
     "   date_start, date_end, result) VALUES("
-    "'" + flag.getServiceId() + "', "
+    "'" + flag.service_id() + "', "
     + "'" + flag.getId() + "', "
-    + "'" + flag.getValue() + "', "
-    + "'" + flag.getTeamId() + "', "
-    + std::to_string(flag.getTimeStartInMs()) + ", "
-    + std::to_string(flag.getTimeEndInMs()) + ", "
+    + "'" + flag.value() + "', "
+    + "'" + flag.team_id() + "', "
+    + std::to_string(flag.time_start_in_milliseconds()) + ", "
+    + std::to_string(flag.time_end_in_milliseconds()) + ", "
     + "'" + sResult + "'"
     + ");";
   if (!m_flags_checker_puts_results->executeQuery(sQuery)) {
@@ -221,12 +221,12 @@ int employ_database::number_of_flags_checker_put_success_result(std::string team
 void employ_database::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
   std::string sQuery = "INSERT INTO flags_defense(serviceid, team_id, flag_id, flag, "
     "   date_start, date_end, flag_cost) VALUES("
-    "'" + flag.getServiceId() + "', "
-    + "'" + flag.getTeamId() + "', "
+    "'" + flag.service_id() + "', "
+    + "'" + flag.team_id() + "', "
     + "'" + flag.getId() + "', "
-    + "'" + flag.getValue() + "', "
-    + std::to_string(flag.getTimeStartInMs()) + ", "
-    + std::to_string(flag.getTimeEndInMs()) + ", "
+    + "'" + flag.value() + "', "
+    + std::to_string(flag.time_start_in_milliseconds()) + ", "
+    + std::to_string(flag.time_end_in_milliseconds()) + ", "
     + std::to_string(nPoints) + " "
     + ");";
 
@@ -262,12 +262,12 @@ int employ_database::number_of_defense_flag_for_service(std::string service_id) 
 void employ_database::insert_flag_check_fail(ctf01d::flag flag, std::string sReason) {
   std::string sQuery = "INSERT INTO flags_check_fails(serviceid, flag_id, flag, team_id, "
     "   date_start, date_end, reason) VALUES("
-    "'" + flag.getServiceId() + "', "
+    "'" + flag.service_id() + "', "
     + "'" + flag.getId() + "', "
-    + "'" + flag.getValue() + "', "
-    + "'" + flag.getTeamId() + "', "
-    + std::to_string(flag.getTimeStartInMs()) + ", "
-    + std::to_string(flag.getTimeEndInMs()) + ", "
+    + "'" + flag.value() + "', "
+    + "'" + flag.team_id() + "', "
+    + std::to_string(flag.time_start_in_milliseconds()) + ", "
+    + std::to_string(flag.time_end_in_milliseconds()) + ", "
     + "'" + sReason + "'"
     + ");";
 
@@ -333,13 +333,13 @@ void employ_database::insert_to_flags_stolen(ctf01d::flag flag, std::string team
   // thief_place_in_scoreboard
   std::string sQuery = "INSERT INTO flags_stolen(serviceid, team_id, thief_team_id, flag_id, flag,"
     "   date_start, date_end, date_action, flag_cost) VALUES("
-    "'" + flag.getServiceId() + "', "
-    + "'" + flag.getTeamId() + "', "
+    "'" + flag.service_id() + "', "
+    + "'" + flag.team_id() + "', "
     + "'" + team_id + "', "
     + "'" + flag.getId() + "', "
-    + "'" + flag.getValue() + "', "
-    + std::to_string(flag.getTimeStartInMs()) + ", "
-    + std::to_string(flag.getTimeEndInMs()) + ", "
+    + "'" + flag.value() + "', "
+    + std::to_string(flag.time_start_in_milliseconds()) + ", "
+    + std::to_string(flag.time_end_in_milliseconds()) + ", "
     + std::to_string(date_action) + ", "
     + std::to_string(nPoints) + " "
     + ");";
@@ -352,10 +352,10 @@ void employ_database::insert_to_flags_stolen(ctf01d::flag flag, std::string team
 bool employ_database::is_already_stole(ctf01d::flag flag, std::string team_id) {
   int nRet = m_flags_stolen->selectSumOrCount(
     "SELECT COUNT(*) as cnt FROM flags_stolen "
-    " WHERE serviceid = '" + flag.getServiceId() + "' "
+    " WHERE serviceid = '" + flag.service_id() + "' "
     "   AND thief_team_id = '" + team_id + "'"
     "   AND flag_id = '" + flag.getId() + "'"
-    "   AND flag = '" + flag.getValue() + "'"
+    "   AND flag = '" + flag.value() + "'"
   );
   return nRet > 0;
 }
@@ -363,10 +363,10 @@ bool employ_database::is_already_stole(ctf01d::flag flag, std::string team_id) {
 bool employ_database::is_somebody_stole(ctf01d::flag flag) {
   int nRet = m_flags_stolen->selectSumOrCount(
     "SELECT COUNT(*) as cnt FROM flags_stolen "
-    " WHERE serviceid = '" + flag.getServiceId() + "' "
-    "   AND team_id = '" + flag.getTeamId() + "'"
+    " WHERE serviceid = '" + flag.service_id() + "' "
+    "   AND team_id = '" + flag.team_id() + "'"
     "   AND flag_id = '" + flag.getId() + "'"
-    "   AND flag = '" + flag.getValue() + "'"
+    "   AND flag = '" + flag.value() + "'"
   );
   return nRet > 0;
 }

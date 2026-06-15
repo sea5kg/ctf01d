@@ -288,7 +288,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   if (m_database->is_already_stole(flag, team_id)) {
     return std::nullopt;
   }
-  std::string service_id = flag.getServiceId();
+  std::string service_id = flag.service_id();
 
   // TODO calculate
   // int nFlagPoints = m_service_statistics[service_id]->getCostStolenFlag()*10; // one number after dot
@@ -296,7 +296,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
   long date_action = WsjcppCore::getCurrentTimeInMilliseconds();
   // victim place in scoreboard
   std::map<std::string, ctf01d::team_status_row *>::iterator it_victim;
-  it_victim = m_teams_statuses.find(flag.getTeamId());
+  it_victim = m_teams_statuses.find(flag.team_id());
   int victim_place = 0;
   ctf01d::team_status_row *row_victim = nullptr;
   if (it_victim != m_teams_statuses.end()) {
@@ -315,7 +315,7 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
     pRow->updatePoints();
     if (row_victim != nullptr) {
       row_victim->decrementFlagStollen(service_id);
-      m_scoreboard["scoreboard"][flag.getTeamId()]["ts_sta"][service_id]["att_st"] = row_victim->getFlagsStollen(service_id);
+      m_scoreboard["scoreboard"][flag.team_id()]["ts_sta"][service_id]["att_st"] = row_victim->getFlagsStollen(service_id);
     }
     m_scoreboard["scoreboard"][team_id]["ts_sta"][service_id]["att"] = pRow->getAttackFlags(service_id);
     m_scoreboard["scoreboard"][team_id]["ts_sta"][service_id]["pt_att"] = pRow->getAttackPoints(service_id);
@@ -339,8 +339,8 @@ std::optional<int> scoreboard::increment_attack_score(const ctf01d::flag &flag, 
 void scoreboard::increment_defense_score(const ctf01d::flag &flag) {
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
 
-  std::string team_id = flag.getTeamId();
-  std::string service_id = flag.getServiceId();
+  std::string team_id = flag.team_id();
+  std::string service_id = flag.service_id();
   int flag_points = m_flag_cost_in_points->value();
   m_database->insertToFlagsDefense(flag, flag_points);
 
@@ -366,14 +366,14 @@ void scoreboard::increment_defense_score(const ctf01d::flag &flag) {
 }
 
 void scoreboard::increment_flags_putted_and_service_up(const ctf01d::flag &flag) {
-  std::string service_id = flag.getServiceId();
-  std::string team_id = flag.getTeamId();
+  std::string service_id = flag.service_id();
+  std::string team_id = flag.team_id();
   std::string sNewStatus = m_random ? random_service_status() : ctf01d::service_status_cell::SERVICE_UP;
 
   if (m_alive_flags->insert_alive_flag(flag)) {
     // m_database->insertToFlagLive(flag);
     m_database->insert_to_flags_checker_put_result(flag, "up");
-    m_teams_statuses[flag.getTeamId()]->incrementPutFlagSuccess(flag.getServiceId());
+    m_teams_statuses[flag.team_id()]->incrementPutFlagSuccess(flag.service_id());
   }
 
   // success putted
@@ -399,12 +399,12 @@ void scoreboard::insert_flag_put_fail(const ctf01d::flag &flag, const std::strin
 
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
 
-  std::string service_id = flag.getServiceId();
-  std::string team_id = flag.getTeamId();
+  std::string service_id = flag.service_id();
+  std::string team_id = flag.team_id();
   std::string sNewStatus = m_random ? random_service_status() : service_status;
 
   std::map<std::string, ctf01d::team_status_row *>::iterator it;
-  it = m_teams_statuses.find(flag.getTeamId());
+  it = m_teams_statuses.find(flag.team_id());
   if (it != m_teams_statuses.end()) {
     ctf01d::team_status_row *pRow = it->second;
     if (pRow->serviceStatus(service_id) != sNewStatus) {

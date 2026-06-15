@@ -111,7 +111,7 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
     + " " + m_team_config.ip_or_host()
     + " " + sCommand
     + " " + flag.getId()
-    + " " + flag.getValue();
+    + " " + flag.value();
 
   m_logger->info(TAG, "Start script " + sShellCommand);
 
@@ -120,7 +120,7 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
     m_service_config.script_path(),
     m_team_config.ip_or_host(),
     sCommand, flag.getId(),
-    flag.getValue()
+    flag.value()
   );
   process.start(m_service_config.script_timeout_in_seconds()*1000);
 
@@ -207,7 +207,7 @@ void service_checker_thread::run() {
     // then we establish a flag
     if (nCurrentTime < (m_config->game_end_utc_in_seconds() - m_config->flag_lifetime_in_seconds())) {
       ctf01d::flag flag;
-      flag.generateRandomFlag(
+      flag.generate_random_flag(
         m_config->flag_lifetime_in_seconds(),
         m_team_config.id(),
         m_service_config.id(),
@@ -261,7 +261,7 @@ void service_checker_thread::run() {
       int nCheckExitCode = this->runChecker(outdatedFlag, "check");
       if (nCheckExitCode != service_checker_thread::CHECKER_CODE_UP) {
             // service is not up
-            m_logger->info(TAG, "flag_check_fail " + outdatedFlag.getValue());
+            m_logger->info(TAG, "flag_check_fail " + outdatedFlag.value());
             m_pDatabase->insert_flag_check_fail(outdatedFlag, "code_" + std::to_string(nCheckExitCode));
       } else {
         // service is up

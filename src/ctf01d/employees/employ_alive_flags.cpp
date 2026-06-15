@@ -111,8 +111,8 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
   for (unsigned int i = 0; i < alive_flags.size(); i++) {
     // TODO check service_id and team_id
     ctf01d::flag flag = alive_flags[i];
-    m_alive_flags_cache[flag.getValue()] = flag;
-    ctf01d::log::info(TAG, "Loaded flag from previous session flags_live: id = " + flag.getId() + ", value = " + flag.getValue());
+    m_alive_flags_cache[flag.value()] = flag;
+    ctf01d::log::info(TAG, "Loaded flag from previous session flags_live: id = " + flag.getId() + ", value = " + flag.value());
   }
 
   return true;
@@ -126,21 +126,21 @@ bool EmployAliveFlags::deinit(const std::string &name, bool silent) {
 bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
   std::map<std::string, ctf01d::flag>::iterator it;
-  it = m_alive_flags_cache.find(flag.getValue());
+  it = m_alive_flags_cache.find(flag.value());
   if (it != m_alive_flags_cache.end()) {
-    ctf01d::log::err(TAG, flag.getValue() + " - flag already exists");
+    ctf01d::log::err(TAG, flag.value() + " - flag already exists");
     return false;
   }
-  m_alive_flags_cache[flag.getValue()] = flag;
+  m_alive_flags_cache[flag.value()] = flag;
 
   std::string sQuery = "INSERT INTO alive_flags(service_id, flag_id, flag, team_id, "
     "   date_start, date_end) VALUES("
-    "'" + flag.getServiceId() + "', "
+    "'" + flag.service_id() + "', "
     + "'" + flag.getId() + "', "
-    + "'" + flag.getValue() + "', "
-    + "'" + flag.getTeamId() + "', "
-    + std::to_string(flag.getTimeStartInMs()) + ", "
-    + std::to_string(flag.getTimeEndInMs())
+    + "'" + flag.value() + "', "
+    + "'" + flag.team_id() + "', "
+    + std::to_string(flag.time_start_in_milliseconds()) + ", "
+    + std::to_string(flag.time_end_in_milliseconds())
     + ");";
   if (!m_alive_flags_db->executeQuery(sQuery)) {
     ctf01d::log::err(TAG, "Error insert insertToFlagLive");
@@ -155,9 +155,9 @@ std::vector<ctf01d::flag> EmployAliveFlags::outdated_alive_flags(const std::stri
   std::map<std::string,ctf01d::flag>::iterator it;
   for (it = m_alive_flags_cache.begin(); it != m_alive_flags_cache.end(); it++) {
     ctf01d::flag flag = it->second;
-    if (flag.getTeamId() == team_id
-      && flag.getServiceId() == service_id
-      && flag.getTimeEndInMs() < current_time
+    if (flag.team_id() == team_id
+      && flag.service_id() == service_id
+      && flag.time_end_in_milliseconds() < current_time
     ) {
       vResult.push_back(flag);
     }
@@ -169,7 +169,7 @@ bool EmployAliveFlags::find_alive_flag(const std::string &sFlagValue, ctf01d::fl
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
   std::map<std::string,ctf01d::flag>::iterator it = m_alive_flags_cache.find(sFlagValue);
   if (it != m_alive_flags_cache.end()) {
-    flag.copyFrom(it->second);
+    flag.copy_from(it->second);
     return true;
   }
   return false;
@@ -178,16 +178,16 @@ bool EmployAliveFlags::find_alive_flag(const std::string &sFlagValue, ctf01d::fl
 void EmployAliveFlags::remove_alive_flag(const ctf01d::flag &flag) {
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
   std::map<std::string,ctf01d::flag>::iterator it;
-  it = m_alive_flags_cache.find(flag.getValue());
+  it = m_alive_flags_cache.find(flag.value());
   if (it != m_alive_flags_cache.end()) {
     m_alive_flags_cache.erase(it);
 
-    std::string sQuery = "DELETE FROM alive_flags WHERE flag = '" + flag.getValue() + "';";
+    std::string sQuery = "DELETE FROM alive_flags WHERE flag = '" + flag.value() + "';";
     if (!m_alive_flags_db->executeQuery(sQuery)) {
       ctf01d::log::err(TAG, "Error delete deleteFlagLive");
     }
   } else {
-    ctf01d::log::warn(TAG, flag.getValue() + " - flag did not exists");
+    ctf01d::log::warn(TAG, flag.value() + " - flag did not exists");
   }
 }
 
@@ -218,14 +218,14 @@ std::vector<ctf01d::flag> EmployAliveFlags::get_from_db_alive_flags() {
   while (rows->next()) {
     nCounter++;
     ctf01d::flag flag;
-    std::string sFlagId = rows->getString(0);
-    flag.setId(sFlagId);
-    flag.setServiceId(rows->getString(1));
-    flag.setTeamId(rows->getString(2));
-    std::string sFlagValue = rows->getString(3);
-    flag.setValue(sFlagValue);
-    flag.setTimeStartInMs(rows->getLong(4));
-    flag.setTimeEndInMs(rows->getLong(5));
+    std::string flag_id = rows->getString(0);
+    flag.set_id(flag_id);
+    flag.set_service_id(rows->getString(1));
+    flag.set_team_id(rows->getString(2));
+    std::string flag_value = rows->getString(3);
+    flag.set_value(flag_value);
+    flag.set_time_start_in_milliseconds(rows->getLong(4));
+    flag.set_time_end_in_milliseconds(rows->getLong(5));
     vResult.push_back(flag);
   }
   return vResult;

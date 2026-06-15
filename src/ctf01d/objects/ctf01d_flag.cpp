@@ -45,49 +45,49 @@ namespace ctf01d {
 
 flag::flag() {
   // flag id
-  m_sId = "qweRT12345";
+  m_id = "qweRT12345";
   // flag format
-  m_sValue = "c01d0000-0000-0000-0000-000000000000";
-  m_sTeamId = "";
-  m_sServiceId = "";
-  m_nTimeStartInMs = 0;
-  m_nTimeEndInMs = 0;
+  m_value = "c01d0000-0000-0000-0000-000000000000";
+  m_team_id = "";
+  m_service_id = "";
+  m_time_start_in_milliseconds = 0;
+  m_time_end_in_milliseconds = 0;
 }
 
-void flag::generateRandomFlag(int nFlagLifetimeInSeconds, const std::string &sTeamId, const std::string &sServiceId, int nGameStartUTCInSec) {
-  long nTimeStartInMs = WsjcppCore::getCurrentTimeInMilliseconds();
-  long nTimeEndInMs = nTimeStartInMs + nFlagLifetimeInSeconds*1000;
-  setTimeStartInMs(nTimeStartInMs);
-  setTimeEndInMs(nTimeEndInMs);
+void flag::generate_random_flag(int flag_lifetime_in_seconds, const std::string &team_id, const std::string &service_id, int game_start_utc_in_seconds) {
+  long time_start_in_milliseconds = WsjcppCore::getCurrentTimeInMilliseconds();
+  long time_end_in_milliseconds = time_start_in_milliseconds + long(flag_lifetime_in_seconds)*1000;
+  set_time_start_in_milliseconds(time_start_in_milliseconds);
+  set_time_end_in_milliseconds(time_end_in_milliseconds);
 
-  generateId();
-  generateValue(nGameStartUTCInSec);
-  m_sTeamId = sTeamId;
-  m_sServiceId = sServiceId;
+  generate_id();
+  generate_value(game_start_utc_in_seconds);
+  m_team_id = team_id;
+  m_service_id = service_id;
 }
 
-void ctf01d::flag::generateId() {
+void ctf01d::flag::generate_id() {
   static const std::string sAlphabet =
     "0123456789"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "abcdefghijklmnopqrstuvwxyz";
 
   std::string sFlagId = "";
-  int nLenId = m_sId.size();
+  int nLenId = m_id.size();
   for (int i = 0; i < 10; ++i) {
-    m_sId[i] = sAlphabet[rand() % sAlphabet.length()];
+    m_id[i] = sAlphabet[rand() % sAlphabet.length()];
   }
 }
 
-void ctf01d::flag::setId(const std::string &sId) {
-  m_sId = sId;
+void ctf01d::flag::set_id(const std::string &id) {
+  m_id = id;
 }
 
 const std::string &ctf01d::flag::getId() const {
-  return m_sId;
+  return m_id;
 }
 
-void ctf01d::flag::generateValue(int nGameStartUTCInSec) {
+void ctf01d::flag::generate_value(int game_start_utc_in_seconds) {
   // TODO redesign more freeble format
   static const std::string sAlphabet = "0123456789abcdef";
   char sUuid[37];
@@ -99,20 +99,20 @@ void ctf01d::flag::generateValue(int nGameStartUTCInSec) {
 
   for(int i = 4; i < 28; i++){
     if (i != 8 && i != 13 && i != 18 && i != 23) {
-      m_sValue[i] = sAlphabet[rand() % sAlphabet.length()];
+      m_value[i] = sAlphabet[rand() % sAlphabet.length()];
     }
   }
 
   // set timepoint
-  int dt = m_nTimeStartInMs / 1000 - nGameStartUTCInSec;
+  int dt = m_time_start_in_milliseconds / 1000 - game_start_utc_in_seconds;
   std::string sTimePoint = std::to_string(dt);
   int nTimePointLen = sTimePoint.size();
   if (nTimePointLen > 8) {
-    ctf01d::log::throw_err("ctf01d::flag::generateValue", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
+    ctf01d::log::throw_err("ctf01d::flag::generate_value", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
   }
-  int nPos = m_sValue.size() - 1;
+  int nPos = m_value.size() - 1;
   for (int i = nTimePointLen - 1; i >= 0; i--) {
-    m_sValue[nPos] = sTimePoint[i];
+    m_value[nPos] = sTimePoint[i];
     nPos--;
   }
   // 03268167
@@ -121,55 +121,55 @@ void ctf01d::flag::generateValue(int nGameStartUTCInSec) {
   // this->setValue(std::string(sUuid) + sTimePoint);
 }
 
-void ctf01d::flag::setValue(const std::string &sValue) {
+void ctf01d::flag::set_value(const std::string &val) {
   // TODO validate format
   // c01d...00000000 - prefix and time
-  m_sValue = sValue;
+  m_value = val;
 }
 
-const std::string &ctf01d::flag::getValue() const {
-  return m_sValue;
+const std::string &ctf01d::flag::value() const {
+  return m_value;
 }
 
-void ctf01d::flag::setTeamId(const std::string &sTeamId) {
-  m_sTeamId = sTeamId;
+void ctf01d::flag::set_team_id(const std::string &team_id) {
+  m_team_id = team_id;
 }
 
-const std::string &ctf01d::flag::getTeamId() const {
-  return m_sTeamId;
+const std::string &ctf01d::flag::team_id() const {
+  return m_team_id;
 }
 
-void ctf01d::flag::setServiceId(const std::string &sServiceId) {
-  m_sServiceId = sServiceId;
+void ctf01d::flag::set_service_id(const std::string &service_id) {
+  m_service_id = service_id;
 }
 
-const std::string &ctf01d::flag::getServiceId() const {
-  return m_sServiceId;
+const std::string &ctf01d::flag::service_id() const {
+  return m_service_id;
 }
 
-void ctf01d::flag::setTimeStartInMs(long nTimeStartInMs) {
-  m_nTimeStartInMs = nTimeStartInMs;
+void ctf01d::flag::set_time_start_in_milliseconds(long nTimeStartInMs) {
+  m_time_start_in_milliseconds = nTimeStartInMs;
 }
 
-long ctf01d::flag::getTimeStartInMs() const {
-  return m_nTimeStartInMs;
+long ctf01d::flag::time_start_in_milliseconds() const {
+  return m_time_start_in_milliseconds;
 }
 
-void ctf01d::flag::setTimeEndInMs(long nTimeEndInMs) {
-  m_nTimeEndInMs = nTimeEndInMs;
+void ctf01d::flag::set_time_end_in_milliseconds(long time_end) {
+  m_time_end_in_milliseconds = time_end;
 }
 
-long ctf01d::flag::getTimeEndInMs() const {
-  return m_nTimeEndInMs;
+long ctf01d::flag::time_end_in_milliseconds() const {
+  return m_time_end_in_milliseconds;
 }
 
-void ctf01d::flag::copyFrom(const ctf01d::flag &flag) {
-  this->setId(flag.getId());
-  this->setValue(flag.getValue());
-  this->setServiceId(flag.getServiceId());
-  this->setTeamId(flag.getTeamId());
-  this->setTimeStartInMs(flag.getTimeStartInMs());
-  this->setTimeEndInMs(flag.getTimeEndInMs());
+void ctf01d::flag::copy_from(const ctf01d::flag &flag) {
+  this->set_id(flag.getId());
+  this->set_value(flag.value());
+  this->set_service_id(flag.service_id());
+  this->set_team_id(flag.team_id());
+  this->set_time_start_in_milliseconds(flag.time_start_in_milliseconds());
+  this->set_time_end_in_milliseconds(flag.time_end_in_milliseconds());
 }
 
 } // namespace ctf01d

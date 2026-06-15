@@ -578,7 +578,7 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 403;
   }
 
-  if (flag.getTimeEndInMs() < current_time_in_milliseconds) {
+  if (flag.time_end_in_milliseconds() < current_time_in_milliseconds) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-151): flag is too old";
     log_err(sErrorMsg + ". Received flag {" + flag_value + "} from {" + team_id + "}" + sRequestIP_MsgSuffix);
@@ -592,7 +592,7 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   //   return true;
   // }
 
-  if (flag.getTeamId() == team_id) {
+  if (flag.team_id() == team_id) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-180): this is your flag";
     log_err(sErrorMsg + ". Received flag {" + flag_value + "} from {" + team_id + "}" + sRequestIP_MsgSuffix);
@@ -600,7 +600,7 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 403;
   }
 
-  std::string sServiceStatus = m_config->scoreboard()->service_status(team_id, flag.getServiceId());
+  std::string sServiceStatus = m_config->scoreboard()->service_status(team_id, flag.service_id());
 
   // std::cout << "sServiceStatus: " << sServiceStatus << "\n";
 

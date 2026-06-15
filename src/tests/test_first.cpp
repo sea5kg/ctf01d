@@ -52,19 +52,19 @@ int main() {
     std::cout << "nGameStartUTCInSec=" << nGameStartUTCInSec << std::endl;
 
     ctf01d::flag flag;
-    flag.generateRandomFlag(flag_lifetime_in_seconds, sTeamId, sServiceId, nGameStartUTCInSec);
+    flag.generate_random_flag(flag_lifetime_in_seconds, sTeamId, sServiceId, nGameStartUTCInSec);
 
-    if (flag.getTeamId() != sTeamId) {
+    if (flag.team_id() != sTeamId) {
         std::cerr << "Unexpected team1" << std::endl;
         return 1;
     }
 
-    if (flag.getServiceId() != sServiceId) {
+    if (flag.service_id() != sServiceId) {
         std::cerr << "Unexpected serviceid" << std::endl;
         return 2;
     }
 
-    long nFlagLifeTimeInMs = flag.getTimeEndInMs() - flag.getTimeStartInMs();
+    long nFlagLifeTimeInMs = flag.time_end_in_milliseconds() - flag.time_start_in_milliseconds();
 
     if (nFlagLifeTimeInMs != flag_lifetime_in_seconds*1000) {
         std::cerr << "flag life time 1" << std::endl;
@@ -72,92 +72,92 @@ int main() {
     }
 
     sTeamId = "team2";
-    flag.setTeamId(sTeamId);
-    if (flag.getTeamId() != sTeamId) {
+    flag.set_team_id(sTeamId);
+    if (flag.team_id() != sTeamId) {
         std::cerr << "Unexpected team-id 2" << std::endl;
         return 4;
     }
 
     sServiceId = "service2";
-    flag.setServiceId(sServiceId);
-    if (flag.getServiceId() != sServiceId) {
+    flag.set_service_id(sServiceId);
+    if (flag.service_id() != sServiceId) {
         std::cerr << "Unexpected serviceid 2" << std::endl;
         return 5;
     }
 
     long nStartTimeInMs = 100567622;
-    flag.setTimeStartInMs(nStartTimeInMs);
-    if (flag.getTimeStartInMs() != nStartTimeInMs) {
+    flag.set_time_start_in_milliseconds(nStartTimeInMs);
+    if (flag.time_start_in_milliseconds() != nStartTimeInMs) {
         std::cerr << "start time in ms 2" << std::endl;
         return 6;
     }
 
     long nEndTimeInMs = 1005667621;
-    flag.setTimeEndInMs(nEndTimeInMs);
-    if (flag.getTimeEndInMs() != nEndTimeInMs) {
+    flag.set_time_end_in_milliseconds(nEndTimeInMs);
+    if (flag.time_end_in_milliseconds() != nEndTimeInMs) {
         std::cerr << "end time in ms 2" << std::endl;
         return 7;
     }
 
     std::string sOldId = flag.getId();
-    flag.generateId();
+    flag.generate_id();
     if (flag.getId() == sOldId) {
-        std::cerr << "generateId 2" << std::endl;
+        std::cerr << "generate_id 2" << std::endl;
         return 8;
     }
 
-    std::string sFlagId = "QWHzYEKuTX";
-    flag.setId(sFlagId);
-    if (flag.getId() != sFlagId) {
+    std::string flag_id = "QWHzYEKuTX";
+    flag.set_id(flag_id);
+    if (flag.getId() != flag_id) {
         std::cerr << "flag id 2" << std::endl;
         return 9;
     }
 
-    std::string sOldValue = flag.getValue();
+    std::string sOldValue = flag.value();
     nStartTimeInMs = WsjcppCore::getCurrentTimeInMilliseconds();
-    flag.setTimeStartInMs(nStartTimeInMs);
-    flag.generateValue(nGameStartUTCInSec);
-    if (flag.getValue() == sOldValue) {
-        std::cerr << "generateValue 2" << std::endl;
+    flag.set_time_start_in_milliseconds(nStartTimeInMs);
+    flag.generate_value(nGameStartUTCInSec);
+    if (flag.value() == sOldValue) {
+        std::cerr << "generate_value 2" << std::endl;
         return 10;
     }
 
     std::string sFlagValue = "c01dbbac-bb0f-a8b7-02fe-928800000010";
-    flag.setValue(sFlagValue);
-    if (flag.getValue() != sFlagValue) {
+    flag.set_value(sFlagValue);
+    if (flag.value() != sFlagValue) {
         std::cerr << "flag value 2" << std::endl;
         return 11;
     }
 
     ctf01d::flag flag3;
-    flag3.copyFrom(flag);
+    flag3.copy_from(flag);
 
-    if (flag3.getId() != sFlagId) {
+    if (flag3.getId() != flag_id) {
         std::cerr << "flag id 3" << std::endl;
         return 12;
     }
 
-    if (flag3.getValue() != sFlagValue) {
+    if (flag3.value() != sFlagValue) {
         std::cerr << "flag value 3" << std::endl;
         return 13;
     }
 
-    if (flag3.getTeamId() != sTeamId) {
-        std::cerr << "flag teamid 3" << std::endl;
+    if (flag3.team_id() != sTeamId) {
+        std::cerr << "flag team_id 3" << std::endl;
         return 14;
     }
 
-    if (flag3.getServiceId() != sServiceId) {
+    if (flag3.service_id() != sServiceId) {
         std::cerr << "serviceid 3" << std::endl;
         return 15;
     }
 
-    if (flag3.getTimeStartInMs() != nStartTimeInMs) {
+    if (flag3.time_start_in_milliseconds() != nStartTimeInMs) {
         std::cerr << "start time in ms 3" << std::endl;
         return 16;
     }
 
-    if (flag3.getTimeEndInMs() != nEndTimeInMs) {
+    if (flag3.time_end_in_milliseconds() != nEndTimeInMs) {
         std::cerr << "end time in ms 3" << std::endl;
         return 17;
     }
