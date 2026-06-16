@@ -1,0 +1,30 @@
+wsjcpp_version: v0.0.1
+cmake_cxx_standard: 11
+cmake_minimum_required: 3.7
+
+name: sea5kg-logger
+version: v2.0.0
+description: C++ Logger Implementation
+issues: https://github.com/sea5kg/sea5kg-logger/issues
+repositories:
+  - type: main
+    url: "https://github.com/sea5kg/sea5kg-logger"
+keywords:
+  - c++
+  - cpp11
+  - logger
+
+authors:
+  - name: Evgenii Sopov
+    email: mrseakg@gmail.com
+
+distribution:
+  - source-file: src/sea5kg/logger/sea5kg_logger.cpp
+    target-file: sea5kg_logger.cpp
+    type: "source-code"
+    sha1: "df209251e374cefb53fff7227daf15cf49f17c71"
+  - source-file: src/sea5kg/logger/sea5kg_logger.h
+    target-file: sea5kg_logger.h
+    type: "source-code" # todo must be header-file
+    sha1: "1550a3685e985df46848fd9fdb71ec341f3d3b48"
+
