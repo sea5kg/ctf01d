@@ -38,10 +38,9 @@
 #include "employ_scoreboard.h"
 #include <wsjcpp_core.h>
 #include "ctf01d/include/ctf01d_config.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 #include <cmath>
 #include <stdio.h>
-#include <string>
 #include <map>
 #include <mutex>
 #include <vector>
@@ -61,7 +60,7 @@ bool EmployScoreboard::init(const std::string &sName, bool bSilent) {
 }
 
 bool EmployScoreboard::deinit(const std::string &sName, bool bSilent) {
-  ctf01d::log::info(TAG, "deinit");
+  sea5kg::log::info(TAG, "deinit");
   return true;
 }
 

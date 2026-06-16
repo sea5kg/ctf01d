@@ -36,13 +36,13 @@
  ***********************************************************************************/
 
 #include <wsjcpp_employees.h>
+#include <sea5kg_logger.h>
+#include <wsjcpp_core.h>
 #include <string>
 #include <mutex>
 #include <fstream>
 #include <cstring>
 #include "ctf01d/include/ctf01d_config.h"
-#include "ctf01d/utils/ctf01d_logger.h"
-#include <wsjcpp_core.h>
 
 class employ_alerting : public WsjcppEmployBase {
 public:
@@ -63,11 +63,11 @@ employ_alerting::employ_alerting()
 }
 
 bool employ_alerting::init(const std::string &sName, bool bSilent) {
-  ctf01d::log::info(TAG, "init");
+  sea5kg::log::info(TAG, "init");
   return true;
 }
 
 bool employ_alerting::deinit(const std::string &sName, bool bSilent) {
-  ctf01d::log::info(TAG, "deinit");
+  sea5kg::log::info(TAG, "deinit");
   return true;
 }

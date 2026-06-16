@@ -36,7 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_do_run_checker.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 #include <wsjcpp_core.h>
 #include <mutex>
 #include <sstream>
@@ -140,7 +140,7 @@ void DoRunChecker::run() {
 
   if (pipe(fd) != 0) {
     m_sOutput = "Could not open pipe";
-    ctf01d::log::err(TAG, m_sOutput);
+    sea5kg::log::err(TAG, m_sOutput);
     m_nExitCode = -1;
     m_bHasError = true;
     m_bFinishedByTimeout = false;
@@ -152,7 +152,7 @@ void DoRunChecker::run() {
 
   if (nChildPid < 0) {
     m_sOutput = "fork failed!";
-    ctf01d::log::err(TAG, m_sOutput);
+    sea5kg::log::err(TAG, m_sOutput);
     m_nExitCode = -1;
     m_bHasError = true;
     m_bFinishedByTimeout = false;
@@ -213,7 +213,7 @@ void DoRunChecker::run() {
     close(nPipeOut);
     m_bHasError = true;
     m_nExitCode = -1;
-    ctf01d::log::err("DoRunProcess", "bad alloc");
+    sea5kg::log::err("DoRunProcess", "bad alloc");
     return;
   }
 

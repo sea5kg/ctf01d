@@ -41,7 +41,7 @@
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_config.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 #include <cmath>
 #include <stdio.h>
 #include <string>
@@ -95,10 +95,10 @@ employ_database::employ_database()
 bool employ_database::init(const std::string &sName, bool bSilent) {
   int driver_init_ret;
   if (!ctf01d::global_databases::init_driver_sqlite3(driver_init_ret)) {
-    ctf01d::log::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
+    sea5kg::log::throw_err(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
     return false;
   }
-  ctf01d::log::ok(TAG, "Initialize build-in sqlite3 library");
+  sea5kg::log::ok(TAG, "Initialize build-in sqlite3 library");
 
   m_flags_checker_puts_results = std::make_shared<ctf01d::database_file>("flags_checker_put_results.db",
     "CREATE TABLE IF NOT EXISTS flags_checker_put_results ( "
@@ -112,7 +112,7 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  result VARCHAR(50) NOT NULL"
     ");"
   );
-  ctf01d::log::info(TAG, "Opening m_flags_checker_puts_results");
+  sea5kg::log::info(TAG, "Opening m_flags_checker_puts_results");
   if (!m_flags_checker_puts_results->open()) {
     return false;
   }
@@ -129,7 +129,7 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  flag_cost INTEGER NOT NULL"
     ");"
   );
-  ctf01d::log::info(TAG, "Opening m_flags_defense_db");
+  sea5kg::log::info(TAG, "Opening m_flags_defense_db");
   if (!m_flags_defense_db->open()) {
     return false;
   }
@@ -146,7 +146,7 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  reason VARCHAR(50) NOT NULL "
     ");"
   );
-  ctf01d::log::info(TAG, "Opening m_flags_check_fails");
+  sea5kg::log::info(TAG, "Opening m_flags_check_fails");
   if (!m_flags_check_fails->open()) {
     return false;
   }
@@ -169,7 +169,7 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
   // "  INDEX(`serviceid`), "
   // "  INDEX(`serviceid`, `thief_team_id`), "
   // "  UNIQUE KEY(`serviceid`, `thief_team_id`, `flag_id`, `flag`)"
-  ctf01d::log::info(TAG, "Opening m_flags_stolen");
+  sea5kg::log::info(TAG, "Opening m_flags_stolen");
   if (!m_flags_stolen->open()) {
     return false;
   }
@@ -178,7 +178,7 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
 }
 
 bool employ_database::deinit(const std::string &sName, bool bSilent) {
-  ctf01d::log::info(TAG, "deinit");
+  sea5kg::log::info(TAG, "deinit");
   ctf01d::global_databases::shutdown_driver_sqlite3();
   return true;
 }
@@ -195,7 +195,7 @@ void employ_database::insert_to_flags_checker_put_result(ctf01d::flag flag, std:
     + "'" + sResult + "'"
     + ");";
   if (!m_flags_checker_puts_results->executeQuery(sQuery)) {
-    ctf01d::log::err(TAG, "Error insert " + sQuery);
+    sea5kg::log::err(TAG, "Error insert " + sQuery);
   }
 }
 
@@ -231,7 +231,7 @@ void employ_database::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
     + ");";
 
   if (!m_flags_defense_db->executeQuery(sQuery)) {
-    ctf01d::log::err(TAG, "Error insert insertToFlagsDefense");
+    sea5kg::log::err(TAG, "Error insert insertToFlagsDefense");
   }
 }
 
@@ -272,7 +272,7 @@ void employ_database::insert_flag_check_fail(ctf01d::flag flag, std::string sRea
     + ");";
 
   if (!m_flags_check_fails->executeQuery(sQuery)) {
-    ctf01d::log::err(TAG, "Error insert insertToFlagsDefense");
+    sea5kg::log::err(TAG, "Error insert insertToFlagsDefense");
   }
 }
 
@@ -317,7 +317,7 @@ std::pair<std::string, long> employ_database::get_first_blood_from_stolen_flags_
   pairRet.second = 0;
   auto rows = m_flags_stolen->selectRows(sQuery);
   if (rows == nullptr) {
-    ctf01d::log::err(TAG, "Error select get_first_blood_from_stolen_flags_for_service " + sQuery);
+    sea5kg::log::err(TAG, "Error select get_first_blood_from_stolen_flags_for_service " + sQuery);
     return pairRet;
   }
   if (rows->next()) {
@@ -345,7 +345,7 @@ void employ_database::insert_to_flags_stolen(ctf01d::flag flag, std::string team
     + ");";
 
   if (!m_flags_stolen->executeQuery(sQuery)) {
-    ctf01d::log::err(TAG, "Error insert insertToFlagsDefense");
+    sea5kg::log::err(TAG, "Error insert insertToFlagsDefense");
   }
 }
 

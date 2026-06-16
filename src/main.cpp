@@ -38,10 +38,10 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <wsjcpp_core.h>
+#include <sea5kg_logger.h>
 #include "ctf01d/objects/ctf01d_service_checker_thread.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_web_server.h"
-#include "ctf01d/utils/ctf01d_logger.h"
 
 std::vector<std::string> argumentsToVector(int argc, const char* argv[]) {
   std::vector<std::string> ret;
@@ -217,7 +217,7 @@ int main(int argc, const char* argv[]) {
   std::string appVersion = std::string(WSJCPP_APP_VERSION);
 
   // disable log in first
-  ctf01d::log::set_log_filename_prefix("ctf01d");
+  sea5kg::log::set_log_filename_prefix("ctf01d");
 
   // parse arguments
   std::vector<std::string> arguments = argumentsToVector(argc, argv);
@@ -258,18 +258,18 @@ int main(int argc, const char* argv[]) {
   std::string command = arguments[0];
 
   if (command == "web-test") {
-    ctf01d::log::info(TAG, "Web Test...");
+    sea5kg::log::info(TAG, "Web Test...");
     if (!WsjcppEmployees::init({})) {
-        ctf01d::log::err(TAG, "Failed.");
+        sea5kg::log::err(TAG, "Failed.");
         return -1;
     }
     return findWsjcppEmploy<ctf01d::web_server>()->start();
   }
 
   if (command == "start") {
-    ctf01d::log::info(TAG, "Starting...");
+    sea5kg::log::info(TAG, "Starting...");
     if (!WsjcppEmployees::init({})) {
-      ctf01d::log::err(TAG, "Start failed on step init configs.");
+      sea5kg::log::err(TAG, "Start failed on step init configs.");
       return -1;
     }
 
@@ -277,17 +277,17 @@ int main(int argc, const char* argv[]) {
     // signal( SIGTERM, quitApp );
 
     // TODO move to hot reload and EmployScoreboard::init
-    ctf01d::log::info(TAG, "Restoring states from storage...");
+    sea5kg::log::info(TAG, "Restoring states from storage...");
     config->scoreboard()->init_state_from_storage();
-    ctf01d::log::ok(TAG, "Restored state from storage.");
+    sea5kg::log::ok(TAG, "Restored state from storage.");
     std::vector<ctf01d::service_checker_thread *> vThreads;
-    ctf01d::log::info(TAG, "Starting threads...");
+    sea5kg::log::info(TAG, "Starting threads...");
     for (unsigned int iservice = 0; iservice < config->services().size(); iservice++) {
       ctf01d::service_config service_config = config->services()[iservice];
 
-      std::shared_ptr<ctf01d::logger> service_logger(ctf01d::logger::create());
-      service_logger->set_log_dirpath(ctf01d::log::get_log_dirpath());
-      service_logger->set_rotation_period_in_seconds(ctf01d::log::get_rotation_period_in_seconds());
+      std::shared_ptr<sea5kg::logger> service_logger(sea5kg::logger::create());
+      service_logger->set_log_dirpath(sea5kg::log::get_log_dirpath());
+      service_logger->set_rotation_period_in_seconds(sea5kg::log::rotation_period_in_seconds());
       service_logger->set_log_filename_prefix("checker_" + service_config.id());
       service_logger->set_enable_log_file(true);
       service_logger->set_enable_console_output(false); // only errors will be to main log
@@ -305,7 +305,7 @@ int main(int argc, const char* argv[]) {
         vThreads.push_back(thr);
       }
     }
-    ctf01d::log::info(TAG, std::to_string(vThreads.size()) + " threads started");
+    sea5kg::log::info(TAG, std::to_string(vThreads.size()) + " threads started");
     return findWsjcppEmploy<ctf01d::web_server>()->start();
   }
 

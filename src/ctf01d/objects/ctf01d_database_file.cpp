@@ -40,7 +40,7 @@
 #include <wsjcpp_core.h>
 #include <wsjcpp_employees.h>
 #include "ctf01d/include/ctf01d_config.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 
 namespace ctf01d {
 
@@ -49,11 +49,11 @@ std::map<std::string, database_file *> *g_opened_database_files = nullptr;
 // static
 void global_databases::add_opened_database_file(const std::string &name, database_file *db) {
   if (g_opened_database_files == nullptr) {
-    // ctf01d::log::info(std::string(), "Create employees map");
+    // sea5kg::log::info(std::string(), "Create employees map");
     g_opened_database_files = new std::map<std::string, database_file*>();
   }
   if (g_opened_database_files->find(name) != g_opened_database_files->end()) {
-    ctf01d::log::throw_err("WsjcppEmployees::addService", "Already registered '" + name + "'");
+    sea5kg::log::throw_err("WsjcppEmployees::addService", "Already registered '" + name + "'");
   } else {
     g_opened_database_files->insert(std::pair<std::string, database_file*>(name, db));
   }
@@ -130,10 +130,10 @@ database_file::database_file(const std::string &sFilename, const std::string &sS
   std::string sDatabaseDir = config->get_work_dir() + "/db";
   if (!WsjcppCore::dirExists(sDatabaseDir)) {
     if (!WsjcppCore::makeDir(sDatabaseDir)) {
-      ctf01d::log::throw_err(TAG, "Could not create dir " + sDatabaseDir);
+      sea5kg::log::throw_err(TAG, "Could not create dir " + sDatabaseDir);
     }
     if (!WsjcppCore::setFilePermissions(sDatabaseDir, WsjcppFilePermissions(0x776), sError)) {
-      ctf01d::log::throw_err(TAG, sError);
+      sea5kg::log::throw_err(TAG, sError);
     }
   }
   m_sFileFullpath = sDatabaseDir + "/" + m_sFilename;
@@ -141,10 +141,10 @@ database_file::database_file(const std::string &sFilename, const std::string &sS
   std::string sDatabaseBackupDir = sDatabaseDir + "/backups";
   if (!WsjcppCore::dirExists(sDatabaseBackupDir)) {
     if (!WsjcppCore::makeDir(sDatabaseBackupDir)) {
-      ctf01d::log::throw_err(TAG, "Could not create dir " + sDatabaseBackupDir);
+      sea5kg::log::throw_err(TAG, "Could not create dir " + sDatabaseBackupDir);
     }
     if (!WsjcppCore::setFilePermissions(sDatabaseBackupDir, WsjcppFilePermissions(0x776), sError)) {
-      ctf01d::log::throw_err(TAG, sError);
+      sea5kg::log::throw_err(TAG, sError);
     }
   }
   m_sBaseFileBackupFullpath = sDatabaseBackupDir + "/" + m_sFilename;
@@ -164,7 +164,7 @@ bool database_file::open() {
     NULL
   );
   if (nRet != SQLITE_OK) {
-    ctf01d::log::throw_err(TAG, "Failed to open conn: " + std::to_string(nRet));
+    sea5kg::log::throw_err(TAG, "Failed to open conn: " + std::to_string(nRet));
     return false;
   }
   m_database_file_db = db;
@@ -173,15 +173,15 @@ bool database_file::open() {
   char *zErrMsg = 0;
   nRet = sqlite3_exec((sqlite3 *)m_database_file_db, m_sSqlCreateTable.c_str(), 0, 0, &zErrMsg);
   if (nRet != SQLITE_OK) {
-    ctf01d::log::err(TAG, "Could not create table: " + m_sSqlCreateTable);
+    sea5kg::log::err(TAG, "Could not create table: " + m_sSqlCreateTable);
     std::string error_msg = "";
     if (zErrMsg != 0) {
       error_msg = std::string(zErrMsg);
     }
-    ctf01d::log::throw_err(TAG, "Problem with create table: " + error_msg);
+    sea5kg::log::throw_err(TAG, "Problem with create table: " + error_msg);
     return false;
   }
-  ctf01d::log::ok(TAG, "Opened database file " + m_sFileFullpath);
+  sea5kg::log::ok(TAG, "Opened database file " + m_sFileFullpath);
   copy_database_to_backup();
   ctf01d::global_databases::add_opened_database_file(m_sFileFullpath, this);
   return true;
@@ -199,7 +199,7 @@ bool database_file::executeQuery(std::string sql_query) {
   char *errMsg = 0;
   int nRet = sqlite3_exec((sqlite3 *)m_database_file_db, sql_query.c_str(), 0, 0, &errMsg);
   if (nRet != SQLITE_OK) {
-    ctf01d::log::throw_err(TAG, "Problem with insert: " + std::string(errMsg) + "\n SQL-query: " + sql_query);
+    sea5kg::log::throw_err(TAG, "Problem with insert: " + std::string(errMsg) + "\n SQL-query: " + sql_query);
     sqlite3_free(errMsg);
     return false;
   }
@@ -212,12 +212,12 @@ int database_file::selectSumOrCount(std::string sSqlSelectCount) {
   int ret = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sSqlSelectCount.c_str(), -1, &pQuery, NULL);
   // prepare the statement
   if (ret != SQLITE_OK) {
-    ctf01d::log::throw_err(TAG, "Failed to prepare select count: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) + "\n SQL-query: " + sSqlSelectCount);
+    sea5kg::log::throw_err(TAG, "Failed to prepare select count: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) + "\n SQL-query: " + sSqlSelectCount);
   }
   // step to 1st row of data
   ret = sqlite3_step(pQuery);
   if (ret != SQLITE_ROW) { // see documentation, this can return more values as success
-    ctf01d::log::throw_err(TAG, "Failed to step for select count or sum: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) + "\n SQL-query: " + sSqlSelectCount);
+    sea5kg::log::throw_err(TAG, "Failed to step for select count or sum: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) + "\n SQL-query: " + sSqlSelectCount);
   }
   int nRet = sqlite3_column_int(pQuery, 0);
   if (pQuery != nullptr) sqlite3_finalize(pQuery);
@@ -230,7 +230,7 @@ std::shared_ptr<database_select_rows> database_file::selectRows(std::string sqlS
   int nRet = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sqlSelectRows.c_str(), -1, &pQuery, NULL);
   // prepare the statement
   if (nRet != SQLITE_OK) {
-    ctf01d::log::throw_err(TAG, "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) + "\n SQL-query: " + sqlSelectRows);
+    sea5kg::log::throw_err(TAG, "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) + "\n SQL-query: " + sqlSelectRows);
     return nullptr;
   }
   auto selectRows = std::make_shared<impl_database_select_rows>();
@@ -248,7 +248,7 @@ void database_file::copy_database_to_backup() {
   m_nLastBackupTime = nCurrentTime;
 
   int nMaxBackupsFiles = 9;
-  ctf01d::log::info(TAG, "Start backup for " + m_sFileFullpath);
+  sea5kg::log::info(TAG, "Start backup for " + m_sFileFullpath);
   std::string sFilebackup = m_sBaseFileBackupFullpath + "." + std::to_string(nMaxBackupsFiles);
   if (WsjcppCore::fileExists(sFilebackup)) {
     WsjcppCore::removeFile(sFilebackup);
@@ -258,15 +258,15 @@ void database_file::copy_database_to_backup() {
     std::string sFilebackupTo = m_sBaseFileBackupFullpath + "." + std::to_string(i+1);
     if (WsjcppCore::fileExists(sFilebackupFrom)) {
       if (std::rename(sFilebackupFrom.c_str(), sFilebackupTo.c_str())) {
-        ctf01d::log::throw_err(TAG, "Could not rename from " + sFilebackupFrom + " to " + sFilebackupTo);
+        sea5kg::log::throw_err(TAG, "Could not rename from " + sFilebackupFrom + " to " + sFilebackupTo);
       }
     }
   }
   sFilebackup = m_sBaseFileBackupFullpath + "." + std::to_string(0);
   if (!WsjcppCore::copyFile(m_sFileFullpath, sFilebackup)) {
-    ctf01d::log::throw_err(TAG, "Failed copy file to backup for " + m_sFileFullpath);
+    sea5kg::log::throw_err(TAG, "Failed copy file to backup for " + m_sFileFullpath);
   }
-  ctf01d::log::info(TAG, "Backup done for " + m_sFileFullpath);
+  sea5kg::log::info(TAG, "Backup done for " + m_sFileFullpath);
 }
 
 } // namespace ctf01d

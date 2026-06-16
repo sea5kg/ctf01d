@@ -42,7 +42,7 @@
 #include <algorithm>
 #include <wsjcpp_core.h>
 #include "ctf01d/include/ctf01d_config.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 #include "ctf01d/include/ctf01d_globals.h"
 
 namespace ctf01d {
@@ -62,7 +62,7 @@ scoreboard::scoreboard(
   m_random = random;
   std::string scoreboard_random = "Scoreboard random: ";
   scoreboard_random = scoreboard_random + (m_random ? "yes" : "no");
-  ctf01d::log::warn(TAG, scoreboard_random);
+  sea5kg::log::warn(TAG, scoreboard_random);
   std::srand(unsigned(std::time(0)));
   m_game_start_in_seconds = game_start_in_seconds;
   m_game_end_in_seconds = game_end_in_seconds;
@@ -200,7 +200,7 @@ void scoreboard::init_state_from_storage() {
   const std::vector<ctf01d::service_config> &vServices = config->services();
 
   // load services statistics
-  ctf01d::log::info(TAG, "Loading services statistics...");
+  sea5kg::log::info(TAG, "Loading services statistics...");
   m_all_defense_flags = 0;
   struct FlagsForService {
     std::string sServiceID;
@@ -225,7 +225,7 @@ void scoreboard::init_state_from_storage() {
     vFlags.push_back(f);
   }
 
-  ctf01d::log::info(TAG, "Setting services statistics...");
+  sea5kg::log::info(TAG, "Setting services statistics...");
   for (int i = 0; i < vFlags.size(); i++) {
     FlagsForService f = vFlags[i];
     m_service_statistics[f.sServiceID]->set_flags_stolen(f.nStolenFlags);
@@ -235,7 +235,7 @@ void scoreboard::init_state_from_storage() {
     }
   }
 
-  ctf01d::log::info(TAG, "Setting teams statistics...");
+  sea5kg::log::info(TAG, "Setting teams statistics...");
   std::map<std::string, ctf01d::team_status_row *>::iterator it;
   for (it = m_teams_statuses.begin(); it != m_teams_statuses.end(); it++) {
     ctf01d::team_status_row *pRow = it->second;
@@ -246,7 +246,7 @@ void scoreboard::init_state_from_storage() {
       std::string sServiceID = vServices[i].id();
 
       // calculate defense
-      ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate defense");
+      sea5kg::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate defense");
       int nDefenseFlags = m_database->number_of_flags_defense(pRow->teamId(), sServiceID);
       int nDefensePoints = m_database->sum_points_of_flags_defense(pRow->teamId(), sServiceID);
       pRow->setServiceDefenseFlagsAndPoints(sServiceID, nDefenseFlags, nDefensePoints);
@@ -254,7 +254,7 @@ void scoreboard::init_state_from_storage() {
       m_scoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_def"] = nDefensePoints;
 
       // calculate attack
-      ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate attack and flags stollen");
+      sea5kg::log::info(TAG, "   -> (" + pRow->teamId() + ") calculate attack and flags stollen");
       int nAttackFlags = m_database->number_of_flags_stollen(pRow->teamId(), sServiceID);
       int nFlagsStollen = -1 * m_database->number_of_flags_stollen_by_victim(pRow->teamId(), sServiceID);
       int nAttackPoints = m_database->sum_points_of_flags_stolen(pRow->teamId(), sServiceID);
@@ -265,7 +265,7 @@ void scoreboard::init_state_from_storage() {
       m_scoreboard["scoreboard"][pRow->teamId()]["ts_sta"][sServiceID]["pt_att"] = nAttackPoints;
 
       // calculate uptime / sla
-      ctf01d::log::info(TAG, "   -> (" + pRow->teamId() + ") uptime / sla");
+      sea5kg::log::info(TAG, "   -> (" + pRow->teamId() + ") uptime / sla");
       int nPutsFlagsAllResults = m_database->number_of_flags_checker_put_all_results(pRow->teamId(), sServiceID);
       int nPutsFlagsSuccessResults = m_database->number_of_flags_checker_put_success_result(pRow->teamId(), sServiceID);
       pRow->setServiceFlagsForCalculateSLA(sServiceID, nPutsFlagsAllResults, nPutsFlagsSuccessResults);
@@ -273,13 +273,13 @@ void scoreboard::init_state_from_storage() {
     }
   }
 
-  ctf01d::log::info(TAG, "Sorting places and apply to json...");
+  sea5kg::log::info(TAG, "Sorting places and apply to json...");
   {
     std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
     sort_places();
     update_services_statistics();
   }
-  ctf01d::log::info(TAG, "Updating activities...");
+  sea5kg::log::info(TAG, "Updating activities...");
   m_activities->update_scoreboard(m_scoreboard);
 }
 

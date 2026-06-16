@@ -35,18 +35,18 @@
  *
  ***********************************************************************************/
 
+#include <wsjcpp_core.h>
 #include <wsjcpp_employees.h>
+#include <sea5kg_logger.h>
 #include <string>
+#include <fstream>
+#include <cstring>
 #include "ctf01d/include/ctf01d_globals.h"
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/include/ctf01d_config.h"
-#include "ctf01d/utils/ctf01d_logger.h"
 #include "ctf01d/utils/ctf01d_time_measurer.h"
-#include <wsjcpp_core.h>
-#include <fstream>
-#include <cstring>
 
 // ---------------------------------------------------------------------
 // EmployAliveFlags definition
@@ -100,7 +100,7 @@ employ_activities::employ_activities()
 }
 
 bool employ_activities::init(const std::string &name, bool silent) {
-  ctf01d::log::info(TAG, "init");
+  sea5kg::log::info(TAG, "init");
   std::lock_guard<std::mutex> lock(m_mutex_flags_attempts_db);
   
   m_all_activities_send_flag = 0;
@@ -138,26 +138,26 @@ bool employ_activities::init(const std::string &name, bool silent) {
 }
 
 bool employ_activities::deinit(const std::string &name, bool silent) {
-  ctf01d::log::info(TAG, "deinit");
+  sea5kg::log::info(TAG, "deinit");
   return true;
 }
 
 void employ_activities::update_scoreboard(nlohmann::json &scoreboard) {
-  ctf01d::log::info(TAG, "Updating activities in scoreboard...");
+  sea5kg::log::info(TAG, "Updating activities in scoreboard...");
   std::lock_guard<std::mutex> lock(m_mutex_teams_activities_send_flag);
   std::map<std::string, int>::iterator it;
   for (it = m_teams_activities_send_flag.begin(); it != m_teams_activities_send_flag.end(); it++) {
     const std::string &team_id = it->first;
     // only if team_id exists in json
-    ctf01d::log::info(TAG, "Update for team " + team_id);
+    sea5kg::log::info(TAG, "Update for team " + team_id);
     // TODO recalculate summary if some team missing
     if (scoreboard["scoreboard"].contains(team_id)) {
-      ctf01d::log::info(TAG, "Updated for team " + team_id + " " + std::to_string(it->second));
+      sea5kg::log::info(TAG, "Updated for team " + team_id + " " + std::to_string(it->second));
       scoreboard["scoreboard"][team_id][ctf01d::JSON_FIELD_TRIES] = it->second;
     }
   }
   scoreboard[ctf01d::JSON_FIELD_SUMMARY_ACTIVITIES] = m_all_activities_send_flag;
-  ctf01d::log::info(TAG, "m_all_activities_send_flag: " + std::to_string(m_all_activities_send_flag));
+  sea5kg::log::info(TAG, "m_all_activities_send_flag: " + std::to_string(m_all_activities_send_flag));
 }
 
 // void employ_activities::increment_activity_send_flag(const std::string &team_id, nlohmann::json &scoreboard) {
@@ -177,7 +177,7 @@ void employ_activities::insert_flag_attempt(
       " VALUES('" + flag_value + "', '" + thief_team_id + "', '" + request_ip + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
 
     if (!m_flags_attempts_db->executeQuery(sQuery)) {
-      ctf01d::log::throw_err(TAG, "Error insert attempt");
+      sea5kg::log::throw_err(TAG, "Error insert attempt");
     }
   }
 
@@ -215,7 +215,7 @@ bool employ_activities::init_flags_attempts_db() {
     ");"
     // TODO result of send_flag (error code or success + elapsed time)
   );
-  ctf01d::log::info(TAG, "Opening flags_attempts.db");
+  sea5kg::log::info(TAG, "Opening flags_attempts.db");
   if (!m_flags_attempts_db->open()) {
     return false;
   }
@@ -238,7 +238,7 @@ bool employ_activities::init_flags_attempts_snapshots_db()
     ");"
     // TODO result of send_flag (error code or success + elapsed time)
   );
-  ctf01d::log::info(TAG, "Opening flags_attempts_snapshots.db");
+  sea5kg::log::info(TAG, "Opening flags_attempts_snapshots.db");
   if (!m_flags_attempts_snapshots_db->open()) {
     return false;
   }

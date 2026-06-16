@@ -42,7 +42,7 @@
 #include <wsjcpp_core.h>
 #include <filesystem>
 #include "ctf01d/include/ctf01d_config.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 
 class employ_images : public WsjcppEmployBase, public ctf01d::images {
 public:
@@ -76,12 +76,12 @@ employ_images::employ_images()
 }
 
 bool employ_images::init(const std::string &sName, bool bSilent) {
-  ctf01d::log::info(TAG, "init");
+  sea5kg::log::info(TAG, "init");
   return true;
 }
 
 bool employ_images::deinit(const std::string &sName, bool bSilent) {
-  ctf01d::log::info(TAG, "deinit");
+  sea5kg::log::info(TAG, "deinit");
   return true;
 }
 
@@ -114,7 +114,7 @@ bool employ_images::update_last_change_time() {
     return false;
   }
   m_nLastUpdateChangeTimeLogosInSec = WsjcppCore::getCurrentTimeInSeconds();
-  ctf01d::log::info(TAG, "updateLastWriteTime for team's logos");
+  sea5kg::log::info(TAG, "updateLastWriteTime for team's logos");
   bool bHasChanges = false;
   {
     std::map<std::string, std::shared_ptr<ctf01d::image>>::iterator it = m_images.begin();
@@ -158,15 +158,15 @@ void employ_images::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
 
 bool employ_images::load_logo(const std::string &id, const std::string &filepath) {
    if (!WsjcppCore::fileExists(filepath)) {
-    ctf01d::log::err(TAG, "File '" + filepath + "' did not found");
+    sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
   }
   std::shared_ptr<ctf01d::image> img = std::make_shared<ctf01d::image>(id);
   if (!img->reload_from_file(filepath)) {
-    ctf01d::log::throw_err(TAG, "Could not read file '" + filepath + "'");
+    sea5kg::log::throw_err(TAG, "Could not read file '" + filepath + "'");
     return false;
   }
   m_images[id] = img;
-  ctf01d::log::info(TAG, "Loaded image " + filepath + " for " + id + " (last write time file: " + std::to_string(img->last_modified_time()) + ")");
+  sea5kg::log::info(TAG, "Loaded image " + filepath + " for " + id + " (last write time file: " + std::to_string(img->last_modified_time()) + ")");
   return true;
 }

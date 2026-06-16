@@ -175,9 +175,9 @@ void team_status_row::updatePoints() {
     std::shared_ptr<ctf01d::service_status_cell> cell = it->second;
     int nSumAttackAndDefensePoints = cell->getAttackPoints() + cell->getDefensePoints();
     nSumAttackAndDefensePoints = nSumAttackAndDefensePoints * cell->calculateSLA();
-    // ctf01d::log::info(TAG, "nSumAttackAndDefensePoints 1 = " + std::to_string(nSumAttackAndDefensePoints));
+    // sea5kg::log::info(TAG, "nSumAttackAndDefensePoints 1 = " + std::to_string(nSumAttackAndDefensePoints));
     nSumAttackAndDefensePoints = nSumAttackAndDefensePoints / 100;
-    // ctf01d::log::info(TAG, "nSumAttackAndDefensePoints 2 = " + std::to_string(nSumAttackAndDefensePoints));
+    // sea5kg::log::info(TAG, "nSumAttackAndDefensePoints 2 = " + std::to_string(nSumAttackAndDefensePoints));
     m_nPoints += nSumAttackAndDefensePoints;
   }
 }

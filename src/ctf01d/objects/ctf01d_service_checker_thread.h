@@ -40,7 +40,7 @@
 #include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_alive_flags.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 
 namespace ctf01d {
 
@@ -53,7 +53,7 @@ public:
   static int CHECKER_CODE_DOWN;
   static int CHECKER_CODE_SHIT;
   service_checker_thread(
-    std::shared_ptr<ctf01d::logger> logger,
+    std::shared_ptr<sea5kg::logger> logger,
     const ctf01d::service_config &service_config,
     const ctf01d::team_config &team_config
   );
@@ -72,7 +72,7 @@ private:
 
   ctf01d::team_config m_team_config;
   ctf01d::service_config m_service_config;
-  std::shared_ptr<ctf01d::logger> m_logger;
+  std::shared_ptr<sea5kg::logger> m_logger;
 };
 
 } // namespace ctf01d

@@ -38,7 +38,7 @@
 
 #include "ctf01d_time_measurer.h"
 #include <chrono>
-#include "ctf01d_logger.h"
+#include "sea5kg_logger.h"
 
 namespace ctf01d {
 
@@ -46,7 +46,7 @@ time_measurer::time_measurer(const std::string &name, bool print_to_global_log)
 : m_name(name), m_print_to_global_log(print_to_global_log) {
   m_start = std::chrono::steady_clock::now(); // Start timer
   if (m_print_to_global_log) {
-    ctf01d::log::info("time_measurer", "Start '" + m_name + "'");
+    sea5kg::log::info("time_measurer", "Start '" + m_name + "'");
   }
 // // ... (code execution)
 // auto end = std::chrono::steady_clock::now(); // End timer
@@ -56,7 +56,7 @@ time_measurer::time_measurer(const std::string &name, bool print_to_global_log)
 time_measurer::~time_measurer() {
   if (m_print_to_global_log) {
     long elapsed = elapsed_milliseconds();
-    ctf01d::log::info("time_measurer", "End '" + m_name + "' (elapsed: " + std::to_string(elapsed) + "ms)");
+    sea5kg::log::info("time_measurer", "End '" + m_name + "' (elapsed: " + std::to_string(elapsed) + "ms)");
   }
 }
 

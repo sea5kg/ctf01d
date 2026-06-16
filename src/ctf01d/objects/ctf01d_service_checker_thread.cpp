@@ -53,7 +53,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <wsjcpp_core.h>
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 
 namespace ctf01d {
 
@@ -64,7 +64,7 @@ int service_checker_thread::CHECKER_CODE_DOWN = 104;
 int service_checker_thread::CHECKER_CODE_SHIT = 400;
 
 service_checker_thread::service_checker_thread(
-  std::shared_ptr<ctf01d::logger> logger,
+  std::shared_ptr<sea5kg::logger> logger,
   const ctf01d::service_config &service_config,
   const ctf01d::team_config &team_config
 ) {
@@ -94,7 +94,7 @@ void service_checker_thread::start() {
 
 void service_checker_thread::log_err(const std::string &message) {
   m_logger->err(TAG, message);
-  ctf01d::log::err(TAG, message);
+  sea5kg::log::err(TAG, message);
 }
 
 int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sCommand) {

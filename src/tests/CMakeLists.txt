@@ -50,7 +50,10 @@ list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_flag.cpp")
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_var.cpp")
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_formulas_for_points.cpp")
-list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/utils/ctf01d_logger.cpp")
+list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../../src.wsjcpp/sea5kg_logger/sea5kg_logger.cpp")
+
+# sea5kg_logger
+list (APPEND TEST_CTF01D_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../../src.wsjcpp/sea5kg_logger/")
 
 # wsjcpp-core
 list (APPEND TEST_CTF01D_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/../../src.wsjcpp/wsjcpp_core/")

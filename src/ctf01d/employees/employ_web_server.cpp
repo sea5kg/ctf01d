@@ -50,7 +50,7 @@
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_images.h"
-#include "ctf01d/utils/ctf01d_logger.h"
+#include <sea5kg_logger.h>
 #include "ctf01d/objects/ctf01d_service_status_cell.h"
 #include "ctf01d/objects/ctf01d_error_info.h"
 
@@ -192,43 +192,43 @@ employ_web_server::employ_web_server()
 }
 
 bool employ_web_server::init(const std::string &name, bool bSilent) {
-  ctf01d::log::info(TAG, "init");
+  sea5kg::log::info(TAG, "init");
   m_metrics_enabled.store(m_config->scoreboard_metrics_enabled()->value());
   m_auto_detection_team_id_by_subnet_ip.store(m_config->scoreboard_auto_detection_team_id_by_subnet_ip()->value());
   return true;
 }
 
 bool employ_web_server::deinit(const std::string &name, bool bSilent) {
-  ctf01d::log::info(TAG, "deinit");
+  sea5kg::log::info(TAG, "deinit");
   return true;
 }
 
-static std::shared_ptr<ctf01d::logger> g_http_logger = std::shared_ptr<ctf01d::logger>(ctf01d::logger::create());
+static std::shared_ptr<sea5kg::logger> g_http_logger = std::shared_ptr<sea5kg::logger>(sea5kg::logger::create());
 
 void EmployWebServer_custom_logger(int level, const char *msg, int len) {
   static const std::string TAG = "http-hv";
   std::string message(msg, len - 1); // remove last '\n' character
   switch (level) {
   case LOG_LEVEL_DEBUG:
-    g_http_logger->info(TAG, "debug: " + message);
+    g_http_logger->debug(TAG, message);
     break;
   case LOG_LEVEL_INFO:
     g_http_logger->info(TAG, message);
     break;
   case LOG_LEVEL_WARN:
-    ctf01d::log::warn(TAG, message);
+    sea5kg::log::warn(TAG, message);
     g_http_logger->warn(TAG, message);
     break;
   case LOG_LEVEL_ERROR:
-    ctf01d::log::err(TAG, message);
+    sea5kg::log::err(TAG, message);
     g_http_logger->err(TAG, message);
     break;
   case LOG_LEVEL_FATAL:
-    ctf01d::log::err(TAG, message);
+    sea5kg::log::err(TAG, message);
     g_http_logger->throw_err(TAG, message);
     break;
   default:
-    ctf01d::log::err(TAG, "Unknow level: " + message);
+    sea5kg::log::err(TAG, "Unknow level: " + message);
     g_http_logger->err(TAG, message);
   }
 }
@@ -237,8 +237,8 @@ int employ_web_server::start() {
 
   auto pEmployConfig = findWsjcppEmploy<ctf01d::config>();
   g_http_logger->set_log_filename_prefix("http_hv");
-  g_http_logger->set_log_dirpath(ctf01d::log::get_log_dirpath());
-  g_http_logger->set_rotation_period_in_seconds(ctf01d::log::get_rotation_period_in_seconds());
+  g_http_logger->set_log_dirpath(sea5kg::log::get_log_dirpath());
+  g_http_logger->set_rotation_period_in_seconds(sea5kg::log::rotation_period_in_seconds());
   g_http_logger->set_enable_log_file(true);
   g_http_logger->set_enable_console_output(false);
 
@@ -247,7 +247,7 @@ int employ_web_server::start() {
 
   std::string starting_message = "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboard_port()) + "/";
   g_http_logger->ok(TAG, starting_message);
-  ctf01d::log::ok(TAG, starting_message);
+  sea5kg::log::ok(TAG, starting_message);
 
   {
     logger_t *pLogger = hv_default_logger();
@@ -296,12 +296,12 @@ int employ_web_server::response_error(int http_code, HttpRequest* req, HttpRespo
 }
 
 void employ_web_server::log_err(const std::string &message) {
-  ctf01d::log::err(TAG, message);
+  sea5kg::log::err(TAG, message);
   g_http_logger->err(TAG, message);
 }
 
 void employ_web_server::log_warn(const std::string &message) {
-  ctf01d::log::warn(TAG, message);
+  sea5kg::log::warn(TAG, message);
   g_http_logger->warn(TAG, message);
 }
 
@@ -628,7 +628,7 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   std::string sResponse = "Accepted: Received flag {" + flag_value + "} from {" + team_id + "} (Accepted + " + sPoints + ")";
   // really need send to current ???
   g_http_logger->ok(TAG, sResponse + sRequestIP_MsgSuffix);
-  ctf01d::log::ok(TAG, sResponse + sRequestIP_MsgSuffix);
+  sea5kg::log::ok(TAG, sResponse + sRequestIP_MsgSuffix);
   resp->Data(
       (void *)(sResponse.c_str()),
       sResponse.size(),
