@@ -236,7 +236,7 @@ void EmployWebServer_custom_logger(int level, const char *msg, int len) {
 int employ_web_server::start() {
 
   auto pEmployConfig = findWsjcppEmploy<ctf01d::config>();
-  g_http_logger->set_log_filename_prefix("http_hv");
+  g_http_logger->set_log_filename_prefix("http_hv_");
   g_http_logger->set_log_dirpath(sea5kg::log::get_log_dirpath());
   g_http_logger->set_rotation_period_in_seconds(sea5kg::log::rotation_period_in_seconds());
   g_http_logger->set_enable_log_file(true);

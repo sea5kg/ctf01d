@@ -217,7 +217,7 @@ int main(int argc, const char* argv[]) {
   std::string appVersion = std::string(WSJCPP_APP_VERSION);
 
   // disable log in first
-  sea5kg::log::set_log_filename_prefix("ctf01d");
+  sea5kg::log::set_log_filename_prefix("ctf01d_");
 
   // parse arguments
   std::vector<std::string> arguments = argumentsToVector(argc, argv);
@@ -288,7 +288,7 @@ int main(int argc, const char* argv[]) {
       std::shared_ptr<sea5kg::logger> service_logger(sea5kg::logger::create());
       service_logger->set_log_dirpath(sea5kg::log::get_log_dirpath());
       service_logger->set_rotation_period_in_seconds(sea5kg::log::rotation_period_in_seconds());
-      service_logger->set_log_filename_prefix("checker_" + service_config.id());
+      service_logger->set_log_filename_prefix("checker_" + service_config.id() + "_");
       service_logger->set_enable_log_file(true);
       service_logger->set_enable_console_output(false); // only errors will be to main log
       service_logger->info(TAG, "Starting threads");
