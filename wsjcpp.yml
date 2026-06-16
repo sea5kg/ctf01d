@@ -40,7 +40,7 @@ dependencies:
     url: "https://github.com/sea5kg/sea5kg-logger:master"
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/sea5kg_logger"
-    installation-datetime: "Tue, 16 Jun 2026 01:59:57 GMT"
+    installation-datetime: "Tue, 16 Jun 2026 11:38:20 GMT"
 resources:
   output-generation-dir: src/wsjcpp_resources
   files:

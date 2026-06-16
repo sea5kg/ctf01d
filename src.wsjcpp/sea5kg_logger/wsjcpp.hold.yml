@@ -26,5 +26,5 @@ distribution:
   - source-file: src/sea5kg/logger/sea5kg_logger.h
     target-file: sea5kg_logger.h
     type: "source-code" # todo must be header-file
-    sha1: "1550a3685e985df46848fd9fdb71ec341f3d3b48"
+    sha1: "5cb0ced79a2cb1c6024089b2b8a8847a92429449"
 
