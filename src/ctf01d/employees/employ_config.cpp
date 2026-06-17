@@ -55,6 +55,9 @@
 #include "third_party/HowardHinnant/date.h"
 #include <sys/stat.h>
 #include <stdio.h>
+#include <openssl/rsa.h>
+#include <openssl/pem.h>
+#include <openssl/rand.h>
 
 class employ_config : public WsjcppEmployBase, public ctf01d::config {
 public:
@@ -90,6 +93,7 @@ public:
 
 private:
   void update_files_in_data();
+  bool update_ssl_keys();
   nlohmann::json load_files_sha1();
   void save_files_sha1(nlohmann::json &files);
   void update_data_html(nlohmann::json &files);
@@ -100,7 +104,7 @@ private:
   bool applyServicesConfig(WsjcppYaml &yaml);
   bool readTeamsConf(WsjcppYaml &yaml);
   bool init_work_dir();
-  bool initLogger();
+  bool init_logger();
 
   void thread_watcher();
   void hot_reload_config_yaml();
@@ -206,11 +210,13 @@ bool employ_config::init(const std::string &sName, bool bSilent) {
     return false;
   }
 
-  if (!initLogger()) {
+  if (!init_logger()) {
     return false;
   }
 
   this->update_files_in_data();
+
+  this->update_ssl_keys();
 
   if (!this->apply_config()) {
     sea5kg::log::err(TAG, "Configuration file has some problems");
@@ -444,6 +450,57 @@ std::string sha1_by_file(const std::string &sFilename) {
   sha1::toHexString(hash, hexstring);
   delete[] pBuffer;
   return std::string(hexstring);
+}
+
+bool employ_config::update_ssl_keys() {
+  std::string error;
+  std::string data_keys_dir = m_work_dir + "/keys";
+  if (!WsjcppCore::dirExists(data_keys_dir)) {
+    WsjcppCore::makeDir(data_keys_dir);
+    if (!WsjcppCore::setFilePermissions(data_keys_dir, WsjcppFilePermissions(0x755), error)) {
+      sea5kg::log::throw_err(TAG, error);
+    }
+  }
+  std::string flag_private_path = data_keys_dir + "/auto_flag_private";
+  std::string flag_public_path = data_keys_dir + "/auto_flag_public.pub";
+
+  int bits = 2048;
+
+  if (!WsjcppCore::fileExists(flag_private_path) || !WsjcppCore::fileExists(flag_public_path)) {
+    // 1. Инициализируем генератор случайных чисел
+    RAND_poll();
+    
+    // 2. Генерируем RSA ключ
+    RSA* rsa = RSA_new();
+    BIGNUM* exp = BN_new();
+    BN_set_word(exp, RSA_F4); // 65537 - стандартная экспонента
+    
+    if (!RSA_generate_key_ex(rsa, bits, exp, nullptr)) {
+        std::cerr << "Ошибка генерации ключа!" << std::endl;
+        return false;
+    }
+
+    BIO* priv_bio = BIO_new_file(flag_private_path.c_str(), "w");
+    if (!PEM_write_bio_RSAPrivateKey(priv_bio, rsa, nullptr, nullptr, 0, nullptr, nullptr)) {
+        std::cerr << "Ошибка сохранения приватного ключа!" << std::endl;
+        return false;
+    }
+    BIO_free(priv_bio);
+    
+    BIO* pub_bio = BIO_new_file(flag_public_path.c_str(), "w");
+    if (!PEM_write_bio_RSA_PUBKEY(pub_bio, rsa)) {
+        std::cerr << "Ошибка сохранения публичного ключа!" << std::endl;
+        return false;
+    }
+    BIO_free(pub_bio);
+    
+    // 5. Очистка
+    RSA_free(rsa);
+    BN_free(exp);
+    
+    std::cout << "✓ Ключи сгенерированы!" << std::endl;
+  }
+  return true;
 }
 
 void employ_config::update_files_in_data() {
@@ -852,7 +909,7 @@ bool employ_config::init_work_dir() {
   return true;
 }
 
-bool employ_config::initLogger() {
+bool employ_config::init_logger() {
   // init logger
   std::string sLogDir = m_work_dir + "/logs/" + WsjcppCore::getCurrentTimeForFilename();
   sLogDir = wsjcpp::normalizeFilePath(sLogDir);

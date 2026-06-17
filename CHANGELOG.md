@@ -8,6 +8,7 @@
 - Renamed 'coffee_break_start' to 'coffee-break-start'
 - Renamed 'coffee_break_end' to 'coffee-break-end'
 - Renamed 'end_utc' to 'end-utc'
+- Prepare generate rsa keys 'data/keys/auto_flag_private' and 'data/keys/auto_flag_public.pub'
 
 ## [v0.7.3] - (2026 June 10)
 

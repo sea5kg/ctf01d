@@ -38,7 +38,6 @@
 #include "ctf01d_flag.h"
 #include <sea5kg_logger.h>
 #include <wsjcpp_core.h>
-// #include <fstream>
 #include <cstring>
 
 namespace ctf01d {

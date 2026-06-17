@@ -135,7 +135,7 @@ include_directories(${WSJCPP_INCLUDE_DIRS})
 
 add_executable (ctf01d ${WSJCPP_SOURCES})
 
-target_link_libraries(ctf01d -lpthread ${WSJCPP_LIBRARIES} )
+target_link_libraries(ctf01d -lpthread -lssl -lcrypto ${WSJCPP_LIBRARIES} )
 
 install(
     TARGETS
