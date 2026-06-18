@@ -17,13 +17,13 @@ const std::string &RES___data_sample_config_yml_path5268eb::getPackAs() const {
 // ---------------------------------------------------------------------
 
 int RES___data_sample_config_yml_path5268eb::getBufferSize() const {
-  return 9255;
+  return 9257;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
-  static const std::string sRet = "" // size: 9255
+  static const std::string sRet = "" // size: 9257
     "## Combined config for ctf01d\n"
     "# use 2 spaces for tab\n"
     "\n"
@@ -31,11 +31,12 @@ const char *RES___data_sample_config_yml_path5268eb::getBuffer() const {
     "  id: \"test\"\n"
     "  name: \"Test First Game\" # visible game name in scoreboard\n"
     "  start-utc: \"2025-11-12 16:00:00\"\n"
-    "  coffee-break-start: \"2025-11-12 20:00:00\"\n"
-    "  coffee-break-end: \"2025-11-12 21:00:00\"\n"
     "  end-utc: \"2030-11-12 22:00:00\"\n"
-    "  flag_lifetime_in_seconds: 60\n"
-    "  flag_cost_in_points: 100 # use a real number\n"
+    "  coffee-break:\n"
+    "    start-utc: \"2025-11-12 20:00:00\"\n"
+    "    end-utc: \"2025-11-12 21:00:00\"\n"
+    "  flag-lifetime-in-seconds: 60\n"
+    "  flag-cost-in-points: 100 # use a real number\n"
     "\n"
     "scoreboard:\n"
     "  port: 8080 # http port for scoreboard\n"

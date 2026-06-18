@@ -65,10 +65,10 @@ resources:
       modified: 1779675622
       sha1: "888e571c3f5f5611c74d757392c11f5fddf608dc"
     - filepath: "./data_sample/config.yml"
-      size: 9255
+      size: 9257
       pack-as: "text"
-      modified: 1781407927
-      sha1: "883cf1d83e0ea2e8b127954eae6ab76a30baf9d5"
+      modified: 1781792707
+      sha1: "19d2d14fcdd74f9299f719cb0fea6bfe14cc870c"
     - filepath: "./data_sample/html/favicon.ico"
       size: 16958
       pack-as: "binary"
