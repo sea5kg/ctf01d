@@ -5,11 +5,12 @@ game:
   id: "test"
   name: "Test First Game" # visible game name in scoreboard
   start-utc: "2025-11-12 16:00:00"
-  coffee-break-start: "2025-11-12 20:00:00"
-  coffee-break-end: "2025-11-12 21:00:00"
   end-utc: "2030-11-12 22:00:00"
-  flag_lifetime_in_seconds: 60
-  flag_cost_in_points: 100 # use a real number
+  coffee-break:
+    start-utc: "2025-11-12 20:00:00"
+    end-utc: "2025-11-12 21:00:00"
+  flag-lifetime-in-seconds: 60
+  flag-cost-in-points: 100 # use a real number
 
 scoreboard:
   port: 8080 # http port for scoreboard

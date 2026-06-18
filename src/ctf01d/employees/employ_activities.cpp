@@ -153,10 +153,10 @@ void employ_activities::update_scoreboard(nlohmann::json &scoreboard) {
     // TODO recalculate summary if some team missing
     if (scoreboard["scoreboard"].contains(team_id)) {
       sea5kg::log::info(TAG, "Updated for team " + team_id + " " + std::to_string(it->second));
-      scoreboard["scoreboard"][team_id][ctf01d::JSON_FIELD_TRIES] = it->second;
+      scoreboard["scoreboard"][team_id][ctf01d::json_fields::TRIES] = it->second;
     }
   }
-  scoreboard[ctf01d::JSON_FIELD_SUMMARY_ACTIVITIES] = m_all_activities_send_flag;
+  scoreboard[ctf01d::json_fields::SUMMARY_ACTIVITIES] = m_all_activities_send_flag;
   sea5kg::log::info(TAG, "m_all_activities_send_flag: " + std::to_string(m_all_activities_send_flag));
 }
 
@@ -197,10 +197,10 @@ void employ_activities::insert_flag_attempt(
 
     // only if thief_team_id exists in json  
     if (scoreboard["scoreboard"].contains(thief_team_id)) {
-      scoreboard["scoreboard"][thief_team_id][ctf01d::JSON_FIELD_TRIES] = new_team_activity;
+      scoreboard["scoreboard"][thief_team_id][ctf01d::json_fields::TRIES] = new_team_activity;
     }
 
-    scoreboard[ctf01d::JSON_FIELD_SUMMARY_ACTIVITIES] = m_all_activities_send_flag;
+    scoreboard[ctf01d::json_fields::SUMMARY_ACTIVITIES] = m_all_activities_send_flag;
   }
 }
 

@@ -2,17 +2,18 @@
 # use 2 spaces for tab
 
 game:
-  id: "test" # uniq gameid must be regexp [a-z0-9]+
-  name: "Test First Game" # visible game name in scoreboard
-  start_utc: "2025-11-12 16:00:00" # start time of game (UTC)
-  end_utc: "2030-11-12 22:00:00" # end time of game (UTC)
-  coffee_break_start: "2025-11-12 20:00:00" # start time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
-  coffee_break_end: "2025-11-12 21:00:00" # end time of game coffee break (UTC), but it will be ignored if period more (or less) then start and end
-  flag_lifetime_in_seconds: 60 # you can change flag time live (in minutes)
-  flag_cost_in_points: 10 # basic costs stolen (attack) flag in points for adaptive scoreboard
+  id: "test"
+  name: "Test First Game"
+  start-utc: "2025-11-12 16:00:00"
+  end-utc: "2030-11-12 22:00:00"
+  coffee-break:
+    start-utc: "2025-11-12 20:00:00"
+    end-utc: "2025-11-12 21:00:00"
+  flag-lifetime-in-seconds: 60
+  flag-cost-in-points: 100
 
 scoreboard:
-  port: 8080 # http port for scoreboard
+  port: 8080
   html-dir-path: "./html" # web page for scoreboard see index-template.html
   random: no # If yes - will be random values in scoreboard
   prometheus-metrics-endpoint:

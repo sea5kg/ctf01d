@@ -37,30 +37,46 @@
 
 #pragma once
 
+#include <string>
+#include <memory>
+#include <wsjcpp_yaml.h>
+#include "ctf01d_var.h"
+
 namespace ctf01d {
 
-static const int MAX_FLAG_LIFETIME_SECONDS = 1500;
-static const int MAX_FLAG_COST_IN_POINTS = 1000;
-static const int MIN_TCP_PORT = 11;
-static const int MAX_TCP_PORT = 65435;
-static const int DEFAULT_FLAG_LIFETIME_IN_SECONDS = 60;
-
-class json_fields {
+class game_config {
 public:
-  inline static const std::string SUMMARY_ACTIVITIES = "sum_act";
-  inline static const std::string TRIES = "tries";
-};
+  game_config();
+  ~game_config();
+  bool read(WsjcppYamlCursor cursor, const std::string &work_dir, std::string &err);
 
-class yaml_keys {
-public:
-  inline static const std::string GAME = "game";
-  inline static const std::string ID = "id";
-  inline static const std::string NAME = "name";
-  inline static const std::string START_UTC = "start-utc";
-  inline static const std::string END_UTC = "end-utc";
-  inline static const std::string COFFEE_BREAK = "coffee-break";
-  inline static const std::string FLAG_LIFETIME_IN_SECONDS = "flag-lifetime-in-seconds";
-  inline static const std::string FLAG_COST_IN_POINTS = "flag-cost-in-points";
+  std::string id() const;
+  std::string name() const;
+  std::string start_utc() const;
+  int start_utc_in_seconds() const;
+  std::string end_utc() const;
+  int end_utc_in_seconds() const;
+  std::string coffee_break_start_utc() const;
+  int coffee_break_start_utc_in_seconds() const;
+  std::string coffee_break_end_utc() const;
+  int coffee_break_end_utc_in_seconds() const;
+  bool has_coffee_break() const;
+  int flag_lifetime_in_seconds() const;
+  std::shared_ptr<ctf01d::var_int> flag_cost_in_points() const;
+
+private:
+  std::string TAG;
+  std::string m_work_dir;
+  ctf01d::scope_vars m_vars = ctf01d::scope_vars("game_config");
+  std::shared_ptr<ctf01d::var_string> m_id;
+  std::shared_ptr<ctf01d::var_string> m_name;
+  std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_seconds;
+  std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
+  std::shared_ptr<ctf01d::var_datetime> m_start_utc;
+  std::shared_ptr<ctf01d::var_datetime> m_end_utc;
+  bool m_has_coffee_break;
+  std::shared_ptr<ctf01d::var_datetime> m_coffee_break_start_utc;
+  std::shared_ptr<ctf01d::var_datetime> m_coffee_break_end_utc;
 };
 
 } // namespace ctf01d

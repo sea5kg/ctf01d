@@ -44,10 +44,10 @@
 namespace ctf01d {
 
 team_config::team_config() {
+  m_id = ctf01d::var_string::create({"id"}, "", m_vars);
   // normal, red, blue, guest, inactive, disqualified
-  m_id = ctf01d::var_string::create({"id"}, "normal", m_vars);
   m_type = ctf01d::var_string::create({"type"}, "normal", m_vars); // TODO var_types
-  m_name = ctf01d::var_string::create({"name"}, "normal", m_vars);
+  m_name = ctf01d::var_string::create({"name"}, "", m_vars);
   m_active = ctf01d::var_bool::create({"active"}, true, m_vars);
   m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
   m_logo_big = ctf01d::var_file::create({"logo-big"}, "", "", m_vars);

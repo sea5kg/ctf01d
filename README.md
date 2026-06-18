@@ -184,11 +184,11 @@ Flag example: c01d1fd2-133a-4713-9587-1f6a00000001
 
 ### 1. Basic
 
-flag_lifetime_in_seconds:
+flag-lifetime-in-seconds:
   - EN: flag lifetime (by default: 60 seconds, but not more then 1500 seconds)
   - RU: время жизни флага (по умолчанию: 60 секунд, но не более 1500 секунд)
 
-flag_cost_in_points:
+flag-cost-in-points:
   - EN: Basic cost of stolen flag (by default: 100 point)
   - RU: Базовая стоимость украденного флага (по умолчанию: 100 поинт)
 

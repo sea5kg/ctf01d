@@ -46,6 +46,7 @@
 #include <fstream>
 #include <iomanip>
 #include "ctf01d/objects/ctf01d_files_watcher.h"
+#include "ctf01d/objects/ctf01d_game_config.h"
 #include <sea5kg_logger.h>
 #include "ctf01d/include/ctf01d_images.h"
 #include "ctf01d/include/ctf01d_globals.h"
@@ -99,7 +100,6 @@ private:
   void update_data_html(nlohmann::json &files);
 
   bool checkYamlMainKeys(WsjcppYaml &yaml);
-  bool checkGameConf();
   bool applyScoreboardPortFromEnv();
   bool applyServicesConfig(WsjcppYaml &yaml);
   bool readTeamsConf(WsjcppYaml &yaml);
@@ -125,16 +125,7 @@ private:
   std::shared_ptr<ctf01d::var_allowed_ip> m_scoreboard_metrics_allowed_for;
 
   // game config
-  ctf01d::scope_vars m_game_vars = ctf01d::scope_vars("game_config");
-  std::shared_ptr<ctf01d::var_int> m_flag_lifetime_in_seconds;
-  std::shared_ptr<ctf01d::var_int> m_flag_cost_in_points;
-  std::shared_ptr<ctf01d::var_string> m_game_id;
-  std::shared_ptr<ctf01d::var_string> m_game_name;
-  std::shared_ptr<ctf01d::var_datetime> m_game_start_utc;
-  std::shared_ptr<ctf01d::var_datetime> m_game_end_utc;
-  bool m_has_coffee_break;
-  std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_start_utc;
-  std::shared_ptr<ctf01d::var_datetime> m_game_coffee_break_end_utc;
+  ctf01d::game_config m_game_config;
 
   ctf01d::scope_vars m_teams_config_vars = ctf01d::scope_vars("teams_config");
   std::shared_ptr<ctf01d::var_string> m_ip_or_host_prefix;
@@ -163,27 +154,9 @@ employ_config::employ_config()
   m_files_watcher = std::make_shared<ctf01d::files_watcher>();
 
   // game options
-  m_game_id = ctf01d::var_string::create({"game", "id"}, "test", m_game_vars);
-  m_game_name = ctf01d::var_string::create({"game", "name"}, "Test", m_game_vars);
-
   m_applied_config = false;
-  m_flag_lifetime_in_seconds = ctf01d::var_int::create({"game", "flag_lifetime_in_seconds"}, 60, m_game_vars);
-  m_flag_lifetime_in_seconds->set_minimum(1);
-  m_flag_lifetime_in_seconds->set_maximum(ctf01d::MAX_FLAG_LIFETIME_SECONDS);
-
-  m_flag_cost_in_points = ctf01d::var_int::create({"game", "flag_cost_in_points"}, 100, m_game_vars);
-  m_flag_cost_in_points->set_minimum(1);
-  m_flag_cost_in_points->set_maximum(ctf01d::MAX_FLAG_COST_IN_POINTS);
-
-  m_game_start_utc = ctf01d::var_datetime::create({"game", "start-utc"}, "2023-11-12 16:00:00", m_game_vars);
-  m_game_coffee_break_start_utc = ctf01d::var_datetime::create({"game", "coffee-break-start"}, "2023-11-12 20:00:00", m_game_vars);
-  m_game_coffee_break_end_utc = ctf01d::var_datetime::create({"game", "coffee-break-end"}, "2023-11-12 21:00:00", m_game_vars);
-  m_game_end_utc = ctf01d::var_datetime::create({"game", "end-utc"}, "2030-11-12 22:00:00", m_game_vars);
-
-  m_has_coffee_break = false;
 
   // scoreboard config
-
   m_scoreboard_port = ctf01d::var_int::create({"scoreboard", "port"}, 8080, m_scoreboard_vars);
   m_scoreboard_port->set_minimum(ctf01d::MIN_TCP_PORT);
   m_scoreboard_port->set_maximum(ctf01d::MAX_TCP_PORT);
@@ -201,7 +174,6 @@ employ_config::employ_config()
 
 employ_config::~employ_config() {
   // TODO cleanup
-  m_game_vars.clear();
   m_scoreboard_vars.clear();
 }
 
@@ -276,10 +248,11 @@ bool employ_config::apply_config() {
 
   auto cursor = yaml.getCursor();
   std::string err;
-  if (!m_game_vars.read(cursor, err)) {
+  if (!m_game_config.read(cursor, m_work_dir, err)) {
     sea5kg::log::err(TAG, err);
     return false;
   }
+
   if (!m_scoreboard_vars.read(cursor, err)) {
     sea5kg::log::err(TAG, err);
     return false;
@@ -287,10 +260,6 @@ bool employ_config::apply_config() {
 
   // CTF01D_PORT
   if (!applyScoreboardPortFromEnv()) {
-    return false;
-  }
-
-  if (!this->checkGameConf()) {
     return false;
   }
 
@@ -305,10 +274,10 @@ bool employ_config::apply_config() {
   // scoreboard
   m_scoreboard = std::make_shared<ctf01d::scoreboard>(
     m_scoreboard_random->value(),
-    m_game_start_utc->value_in_seconds(),
-    m_game_end_utc->value_in_seconds(),
-    m_game_coffee_break_start_utc->value_in_seconds(),
-    m_game_coffee_break_end_utc->value_in_seconds()
+    m_game_config.start_utc_in_seconds(),
+    m_game_config.end_utc_in_seconds(),
+    m_game_config.coffee_break_start_utc_in_seconds(),
+    m_game_config.coffee_break_end_utc_in_seconds()
   );
 
   m_applied_config = true;
@@ -362,41 +331,41 @@ std::shared_ptr<ctf01d::var_allowed_ip> employ_config::scoreboard_metrics_allowe
 }
 
 std::string employ_config::game_id() const {
-  return m_game_id->value();
+  return m_game_config.id();
 }
 
 std::string employ_config::game_name() const  {
-  return m_game_name->value();
+  return m_game_config.name();
 }
 
 int employ_config::flag_lifetime_in_seconds() const  {
-  return m_flag_lifetime_in_seconds->value();
+  return m_game_config.flag_lifetime_in_seconds();
 }
 
 std::shared_ptr<ctf01d::var_int> employ_config::get_flag_cost_in_points() const {
-  return m_flag_cost_in_points;
+  return m_game_config.flag_cost_in_points();
 }
 
 int employ_config::game_start_utc_in_seconds() const {
   // TODO return var
-  return m_game_start_utc->value_in_seconds();
+  return m_game_config.start_utc_in_seconds();
 }
 
 int employ_config::game_end_utc_in_seconds() const {
   // TODO return var
-  return m_game_end_utc->value_in_seconds();
+  return m_game_config.end_utc_in_seconds();
 }
 
 bool employ_config::game_has_coffee_break() const {
-  return m_has_coffee_break;
+  return m_game_config.has_coffee_break();
 }
 
 int employ_config::game_coffee_break_start_utc_in_seconds() const {
-  return m_game_coffee_break_start_utc->value_in_seconds();
+  return m_game_config.coffee_break_start_utc_in_seconds();
 }
 
 int employ_config::game_coffee_break_end_utc_in_seconds() const {
-  return m_game_coffee_break_end_utc->value_in_seconds();
+  return m_game_config.coffee_break_end_utc_in_seconds();
 }
 
 std::shared_ptr<ctf01d::scoreboard> employ_config::scoreboard() {
@@ -671,36 +640,6 @@ bool employ_config::checkYamlMainKeys(WsjcppYaml &yaml) {
       sea5kg::log::err(TAG, "Not found expected key in config: '" + expected_keys[i] + "'");
       return false;
     }
-  }
-  return true;
-}
-
-bool employ_config::checkGameConf() {
-  std::string err;
-
-  sea5kg::log::info(TAG, "Game start: " + m_game_start_utc->value());
-  sea5kg::log::info(TAG, "Game start (UNIX timestamp): " + std::to_string(m_game_start_utc->value_in_seconds()));
-  sea5kg::log::info(TAG, "Game end: " + m_game_end_utc->value());
-  sea5kg::log::info(TAG, "Game end (UNIX timestamp): " + std::to_string(m_game_end_utc->value_in_seconds()));
-
-  if (m_game_end_utc->value_in_seconds() <= m_game_start_utc->value_in_seconds()) {
-    sea5kg::log::err(TAG, "game.end must be gather then game.start");
-    return false;
-  }
-
-  sea5kg::log::info(TAG, "game.coffee_break_start: " + m_game_coffee_break_start_utc->value());
-  sea5kg::log::info(TAG, "Game coffee break start (UNIX timestamp): " + std::to_string(m_game_coffee_break_start_utc->value_in_seconds()));
-
-  sea5kg::log::info(TAG, "game.coffee_break_end: " + m_game_coffee_break_end_utc->value());
-  sea5kg::log::info(TAG, "Game coffee break end (UNIX timestamp): " + std::to_string(m_game_coffee_break_end_utc->value_in_seconds()));
-
-  if (m_game_start_utc->value_in_seconds() < m_game_coffee_break_start_utc->value_in_seconds()
-    && m_game_coffee_break_start_utc->value_in_seconds() < m_game_end_utc->value_in_seconds()
-    && m_game_start_utc->value_in_seconds() < m_game_coffee_break_end_utc->value_in_seconds()
-    && m_game_coffee_break_end_utc->value_in_seconds() < m_game_end_utc->value_in_seconds()
-  ) {
-    sea5kg::log::ok(TAG, "Oh! Game has coffee break! nice!");
-    m_has_coffee_break = true;
   }
   return true;
 }

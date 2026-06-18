@@ -9,6 +9,9 @@
 - Renamed 'coffee_break_end' to 'coffee-break-end'
 - Renamed 'end_utc' to 'end-utc'
 - Prepare generate rsa keys 'data/keys/auto_flag_private' and 'data/keys/auto_flag_public.pub'
+- Renamed 'flag_lifetime_in_seconds' -> 'flag-lifetime-in-seconds'
+- Renamed 'flag_cost_in_points' -> 'flag-cost-in-points'
+- Redesign 'coffee-break' section
 
 ## [v0.7.3] - (2026 June 10)
 

@@ -121,7 +121,7 @@ void scoreboard::init_json_scoreboard() {
     m_scoreboard["s_sta"][serviceConf.id()] = nlohmann::json();
     m_service_statistics[serviceConf.id()]->update_scoreboard(m_scoreboard);
   }
-  m_scoreboard[ctf01d::JSON_FIELD_SUMMARY_ACTIVITIES] = 0;
+  m_scoreboard[ctf01d::json_fields::SUMMARY_ACTIVITIES] = 0;
 
   nlohmann::json jsonScoreboard;
   for (unsigned int i_team = 0; i_team < vTeamsConf.size(); ++i_team) {
@@ -130,7 +130,7 @@ void scoreboard::init_json_scoreboard() {
     nlohmann::json teamData;
     teamData["place"] = m_teams_statuses[team_id]->getPlace();
     teamData["points"] = m_teams_statuses[team_id]->getPoints();
-    teamData[ctf01d::JSON_FIELD_TRIES] = 0;
+    teamData[ctf01d::json_fields::TRIES] = 0;
     teamData["logo_last_updated"] = 0;
     nlohmann::json jsonServices;
     for (unsigned int iservice = 0; iservice < vServices.size(); iservice++) {
@@ -240,7 +240,7 @@ void scoreboard::init_state_from_storage() {
   for (it = m_teams_statuses.begin(); it != m_teams_statuses.end(); it++) {
     ctf01d::team_status_row *pRow = it->second;
 
-    m_scoreboard["scoreboard"][pRow->teamId()][ctf01d::JSON_FIELD_TRIES] = 0;
+    m_scoreboard["scoreboard"][pRow->teamId()][ctf01d::json_fields::TRIES] = 0;
 
     for (unsigned int i = 0; i < vServices.size(); i++) {
       std::string sServiceID = vServices[i].id();
