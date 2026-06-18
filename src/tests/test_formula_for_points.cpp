@@ -39,7 +39,7 @@
 #include <iostream>
 #include <wsjcpp_core.h>
 #include <memory>
-#include "ctf01d_formulas_for_points.h"
+#include "ctf01d/objects/ctf01d_formulas_for_points.h"
 
 int main() {
 

@@ -45,11 +45,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY tests)
 # list (APPEND WSJCPP_LIBRARIES sqlite3-static)
 # list (APPEND TEST_CTF01D_INCLUDE_DIRS "${PROJECT_BINARY_DIR}/../third_party/sqlite3/src")
 
-list (APPEND TEST_CTF01D_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/")
+list (APPEND TEST_CTF01D_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/../")
+list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/utils/ctf01d_flag_id_generator.cpp")
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_files_watcher.cpp")
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_flag.cpp")
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_var.cpp")
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../ctf01d/objects/ctf01d_formulas_for_points.cpp")
+
 list (APPEND TEST_CTF01D_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/../../src.wsjcpp/sea5kg_logger/sea5kg_logger.cpp")
 
 # sea5kg_logger
@@ -78,7 +80,7 @@ foreach(_TEST ${ALL_TESTS})
         ${_TEST}
         ${TEST_CTF01D_SOURCES}
     )
-    target_link_libraries(${TEST_NAME} -lpthread ${WSJCPP_LIBRARIES})
+    target_link_libraries(${TEST_NAME} -lpthread -lssl -lcrypto ${WSJCPP_LIBRARIES})
 
     add_test(
       NAME ${TEST_NAME}

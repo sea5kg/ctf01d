@@ -41,7 +41,7 @@
 #include <memory>
 #include <thread>
 #include <chrono>
-#include "ctf01d_files_watcher.h"
+#include "ctf01d/objects/ctf01d_files_watcher.h"
 
 int main() {
 

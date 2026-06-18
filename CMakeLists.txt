@@ -60,6 +60,7 @@ list (APPEND WSJCPP_INCLUDE_DIRS "src/third_party/sqlite3/src")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/third_party/smallsha1/smallsha1.cpp")
 
 # utils
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/utils/ctf01d_flag_id_generator.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/utils/ctf01d_time_measurer.cpp")
 
 # employees
