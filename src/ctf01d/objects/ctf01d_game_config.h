@@ -41,6 +41,7 @@
 #include <memory>
 #include <wsjcpp_yaml.h>
 #include "ctf01d_var.h"
+#include "ctf01d/utils/ctf01d_flag_id_generators.h"
 
 namespace ctf01d {
 
@@ -63,6 +64,7 @@ public:
   bool has_coffee_break() const;
   int flag_lifetime_in_seconds() const;
   std::shared_ptr<ctf01d::var_int> flag_cost_in_points() const;
+  std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator();
 
 private:
   std::string TAG;
@@ -77,6 +79,7 @@ private:
   bool m_has_coffee_break;
   std::shared_ptr<ctf01d::var_datetime> m_coffee_break_start_utc;
   std::shared_ptr<ctf01d::var_datetime> m_coffee_break_end_utc;
+  std::shared_ptr<ctf01d::flag_id_generator> m_default_flag_id_generator;
 };
 
 } // namespace ctf01d

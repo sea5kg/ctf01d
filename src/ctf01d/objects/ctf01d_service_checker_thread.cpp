@@ -208,6 +208,7 @@ void service_checker_thread::run() {
     if (nCurrentTime < (m_config->game_end_utc_in_seconds() - m_config->flag_lifetime_in_seconds())) {
       ctf01d::flag flag;
       flag.generate_random_flag(
+        m_config->default_flag_id_generator(),
         m_config->flag_lifetime_in_seconds(),
         m_team_config.id(),
         m_service_config.id(),

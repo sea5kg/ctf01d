@@ -51,8 +51,13 @@ int main() {
     int nGameStartUTCInSec = nCurrentTime - 86400; // Game started 24 hours ago
     std::cout << "nGameStartUTCInSec=" << nGameStartUTCInSec << std::endl;
 
+    const int random_string_size = 12;
+    nlohmann::json options;
+    options["size"] = random_string_size;
+    auto gen_random_string = ctf01d::flag_id_generators::random_string(options);
+
     ctf01d::flag flag;
-    flag.generate_random_flag(flag_lifetime_in_seconds, sTeamId, sServiceId, nGameStartUTCInSec);
+    flag.generate_random_flag(gen_random_string, flag_lifetime_in_seconds, sTeamId, sServiceId, nGameStartUTCInSec);
 
     if (flag.team_id() != sTeamId) {
         std::cerr << "Unexpected team1" << std::endl;
@@ -97,13 +102,6 @@ int main() {
     if (flag.time_end_in_milliseconds() != nEndTimeInMs) {
         std::cerr << "end time in ms 2" << std::endl;
         return 7;
-    }
-
-    std::string sOldId = flag.id();
-    flag.generate_id();
-    if (flag.id() == sOldId) {
-        std::cerr << "generate_id 2" << std::endl;
-        return 8;
     }
 
     std::string flag_id = "QWHzYEKuTX";

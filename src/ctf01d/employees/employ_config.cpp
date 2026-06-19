@@ -91,6 +91,7 @@ public:
   virtual int game_coffee_break_start_utc_in_seconds() const override;
   virtual int game_coffee_break_end_utc_in_seconds() const override;
   virtual std::shared_ptr<ctf01d::scoreboard> scoreboard() override;
+  virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() override;
 
 private:
   void update_files_in_data();
@@ -370,6 +371,10 @@ int employ_config::game_coffee_break_end_utc_in_seconds() const {
 
 std::shared_ptr<ctf01d::scoreboard> employ_config::scoreboard() {
   return m_scoreboard;
+}
+
+std::shared_ptr<ctf01d::flag_id_generator> employ_config::default_flag_id_generator() {
+  return m_game_config.default_flag_id_generator();
 }
 
 // helper

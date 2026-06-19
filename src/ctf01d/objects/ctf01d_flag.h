@@ -38,6 +38,7 @@
 #pragma once
 
 #include <string>
+#include "ctf01d/utils/ctf01d_flag_id_generators.h"
 
 namespace ctf01d {
 
@@ -45,10 +46,13 @@ class flag {
 public:
   flag();
   void generate_random_flag(
+    std::shared_ptr<ctf01d::flag_id_generator> flag_id_generator,
     int flag_lifetime_in_seconds,
-    const std::string &team_id, const std::string &service_id, int game_start_utc_in_seconds);
+    const std::string &team_id,
+    const std::string &service_id,
+    int game_start_utc_in_seconds
+  );
 
-  void generate_id();
   void set_id(const std::string &id);
   const std::string &id() const;
 

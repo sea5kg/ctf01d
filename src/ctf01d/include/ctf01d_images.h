@@ -46,7 +46,7 @@ namespace ctf01d {
 class images {
 public:
   static std::string name() { return "images"; }
-  
+
   virtual bool load_team_logo(const std::string &team_id, const std::string &filepath) = 0;
   virtual bool load_team_big_logo(const std::string &team_id, const std::string &filepath) = 0;
   virtual bool load_service_logo(const std::string &service_id, const std::string &filepath) = 0;

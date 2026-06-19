@@ -41,6 +41,7 @@
 #include "ctf01d/objects/ctf01d_service_config.h"
 #include "ctf01d/objects/ctf01d_var.h"
 #include "ctf01d/objects/ctf01d_scoreboard.h"
+#include "ctf01d/utils/ctf01d_flag_id_generators.h"
 
 namespace ctf01d {
 
@@ -71,6 +72,7 @@ public:
   virtual int game_coffee_break_start_utc_in_seconds() const = 0;
   virtual int game_coffee_break_end_utc_in_seconds() const = 0;
   virtual std::shared_ptr<ctf01d::scoreboard> scoreboard() = 0;
+  virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() = 0;
 };
 
 } // namespace ctf01d

@@ -41,7 +41,10 @@
 #include "ctf01d/utils/ctf01d_flag_id_generators.h"
 
 int main() {
-  auto gen_random_string = ctf01d::flag_id_generators::random_string();
+  const int random_string_size = 12;
+  nlohmann::json options;
+  options["size"] = random_string_size;
+  auto gen_random_string = ctf01d::flag_id_generators::random_string(options);
 
   static const std::string alphabet =
     "0123456789"
@@ -56,8 +59,7 @@ int main() {
   int test = 0;
   while (test < tests) {
     test++;
-    int random_string_size = 10 + test;
-    std::string s = gen_random_string->generate(random_string_size);
+    std::string s = gen_random_string->generate();
     if (s.size() != random_string_size) {
       std::cerr << "Expected size of string " << random_string_size << ", but got " << s.size() << std::endl;
       return 1;

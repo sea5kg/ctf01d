@@ -39,17 +39,18 @@
 
 #include <string>
 #include <memory>
+#include <json.hpp>
 
 namespace ctf01d {
 
 class flag_id_generator {
 public:
-  virtual std::string generate(int size) = 0;
+  virtual std::string generate() = 0;
 };
 
 class flag_id_generators {
 public:
-  static std::shared_ptr<flag_id_generator> random_string();
+  static std::shared_ptr<flag_id_generator> random_string(nlohmann::json options);
 };
 
 } // namespace ctf01d

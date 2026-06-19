@@ -53,29 +53,22 @@ flag::flag() {
   m_time_end_in_milliseconds = 0;
 }
 
-void flag::generate_random_flag(int flag_lifetime_in_seconds, const std::string &team_id, const std::string &service_id, int game_start_utc_in_seconds) {
+void flag::generate_random_flag(
+  std::shared_ptr<ctf01d::flag_id_generator> flag_id_generator,
+  int flag_lifetime_in_seconds,
+  const std::string &team_id,
+  const std::string &service_id,
+  int game_start_utc_in_seconds
+) {
   long time_start_in_milliseconds = WsjcppCore::getCurrentTimeInMilliseconds();
   long time_end_in_milliseconds = time_start_in_milliseconds + long(flag_lifetime_in_seconds)*1000;
   set_time_start_in_milliseconds(time_start_in_milliseconds);
   set_time_end_in_milliseconds(time_end_in_milliseconds);
 
-  generate_id();
+  m_id = flag_id_generator->generate();
   generate_value(game_start_utc_in_seconds);
   m_team_id = team_id;
   m_service_id = service_id;
-}
-
-void ctf01d::flag::generate_id() {
-  static const std::string sAlphabet =
-    "0123456789"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "abcdefghijklmnopqrstuvwxyz";
-
-  std::string sFlagId = "";
-  int nLenId = m_id.size();
-  for (int i = 0; i < 10; ++i) {
-    m_id[i] = sAlphabet[rand() % sAlphabet.length()];
-  }
 }
 
 void ctf01d::flag::set_id(const std::string &id) {

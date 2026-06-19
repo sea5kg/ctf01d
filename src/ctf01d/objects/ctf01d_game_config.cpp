@@ -62,6 +62,10 @@ game_config::game_config() {
   m_flag_cost_in_points->set_maximum(ctf01d::MAX_FLAG_COST_IN_POINTS);
 
   m_has_coffee_break = false;
+
+  nlohmann::json options;
+  options["size"] = 10;
+  m_default_flag_id_generator = ctf01d::flag_id_generators::random_string(options);
 }
 
 game_config::~game_config() {
@@ -170,6 +174,10 @@ int game_config::flag_lifetime_in_seconds() const {
 
 std::shared_ptr<ctf01d::var_int> game_config::flag_cost_in_points() const {
   return m_flag_cost_in_points;
+}
+
+std::shared_ptr<ctf01d::flag_id_generator> game_config::default_flag_id_generator() {
+  return m_default_flag_id_generator;
 }
 
 } // namespace ctf01d

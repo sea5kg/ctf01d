@@ -46,16 +46,26 @@ namespace ctf01d {
 
 class flag_id_generator_random_string : public flag_id_generator {
 public:
-  virtual std::string generate(int size) override;
+  flag_id_generator_random_string(nlohmann::json options);
+  virtual std::string generate() override;
+private:
+  int m_size;
 };
 
-std::string flag_id_generator_random_string::generate(int size) {
+flag_id_generator_random_string::flag_id_generator_random_string(nlohmann::json options) {
+  m_size = 10;
+  if (options.contains("size")) {
+    m_size = options["size"];
+  }
+}
+
+std::string flag_id_generator_random_string::generate() {
   std::string ret;
   // static const std::string sAlphabet =
   //   "0123456789"
   //   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
   //   "abcdefghijklmnopqrstuvwxyz";
-  while (ret.size() < size) {
+  while (ret.size() < m_size) {
     // ret += sAlphabet[rand() % sAlphabet.length()];
     const int buffer_size = 16;
     unsigned char buffer[buffer_size];
@@ -63,7 +73,7 @@ std::string flag_id_generator_random_string::generate(int size) {
       sea5kg::log::throw_err("flag_id_generator_random_string", "Problem with RAND_bytes");
     }
     for (int i = 0; i < buffer_size; ++i) {
-      if (ret.size() >= size) {
+      if (ret.size() >= m_size) {
         break;
       }
       char c = buffer[i];
@@ -75,8 +85,8 @@ std::string flag_id_generator_random_string::generate(int size) {
   return ret;
 }
 
-std::shared_ptr<flag_id_generator> flag_id_generators::random_string() {
-  return std::make_shared<flag_id_generator_random_string>();
+std::shared_ptr<flag_id_generator> flag_id_generators::random_string(nlohmann::json options) {
+  return std::make_shared<flag_id_generator_random_string>(options);
 }
 
 } // namespace ctf01d
