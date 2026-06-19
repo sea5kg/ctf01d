@@ -44,11 +44,13 @@ namespace ctf01d {
 class flag {
 public:
   flag();
-  void generate_random_flag(int flag_lifetime_in_seconds, const std::string &team_id, const std::string &service_id, int game_start_utc_in_seconds);
+  void generate_random_flag(
+    int flag_lifetime_in_seconds,
+    const std::string &team_id, const std::string &service_id, int game_start_utc_in_seconds);
 
   void generate_id();
   void set_id(const std::string &id);
-  const std::string &getId() const;
+  const std::string &id() const;
 
   void generate_value(int game_start_utc_in_seconds);
   void set_value(const std::string &sValue);

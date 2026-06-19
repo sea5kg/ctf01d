@@ -82,7 +82,7 @@ void ctf01d::flag::set_id(const std::string &id) {
   m_id = id;
 }
 
-const std::string &ctf01d::flag::getId() const {
+const std::string &ctf01d::flag::id() const {
   return m_id;
 }
 
@@ -163,7 +163,7 @@ long ctf01d::flag::time_end_in_milliseconds() const {
 }
 
 void ctf01d::flag::copy_from(const ctf01d::flag &flag) {
-  this->set_id(flag.getId());
+  this->set_id(flag.id());
   this->set_value(flag.value());
   this->set_service_id(flag.service_id());
   this->set_team_id(flag.team_id());

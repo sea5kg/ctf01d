@@ -187,7 +187,7 @@ void employ_database::insert_to_flags_checker_put_result(ctf01d::flag flag, std:
   std::string sQuery = "INSERT INTO flags_checker_put_results(serviceid, flag_id, flag, team_id, "
     "   date_start, date_end, result) VALUES("
     "'" + flag.service_id() + "', "
-    + "'" + flag.getId() + "', "
+    + "'" + flag.id() + "', "
     + "'" + flag.value() + "', "
     + "'" + flag.team_id() + "', "
     + std::to_string(flag.time_start_in_milliseconds()) + ", "
@@ -223,7 +223,7 @@ void employ_database::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
     "   date_start, date_end, flag_cost) VALUES("
     "'" + flag.service_id() + "', "
     + "'" + flag.team_id() + "', "
-    + "'" + flag.getId() + "', "
+    + "'" + flag.id() + "', "
     + "'" + flag.value() + "', "
     + std::to_string(flag.time_start_in_milliseconds()) + ", "
     + std::to_string(flag.time_end_in_milliseconds()) + ", "
@@ -263,7 +263,7 @@ void employ_database::insert_flag_check_fail(ctf01d::flag flag, std::string sRea
   std::string sQuery = "INSERT INTO flags_check_fails(serviceid, flag_id, flag, team_id, "
     "   date_start, date_end, reason) VALUES("
     "'" + flag.service_id() + "', "
-    + "'" + flag.getId() + "', "
+    + "'" + flag.id() + "', "
     + "'" + flag.value() + "', "
     + "'" + flag.team_id() + "', "
     + std::to_string(flag.time_start_in_milliseconds()) + ", "
@@ -336,7 +336,7 @@ void employ_database::insert_to_flags_stolen(ctf01d::flag flag, std::string team
     "'" + flag.service_id() + "', "
     + "'" + flag.team_id() + "', "
     + "'" + team_id + "', "
-    + "'" + flag.getId() + "', "
+    + "'" + flag.id() + "', "
     + "'" + flag.value() + "', "
     + std::to_string(flag.time_start_in_milliseconds()) + ", "
     + std::to_string(flag.time_end_in_milliseconds()) + ", "
@@ -354,7 +354,7 @@ bool employ_database::is_already_stole(ctf01d::flag flag, std::string team_id) {
     "SELECT COUNT(*) as cnt FROM flags_stolen "
     " WHERE serviceid = '" + flag.service_id() + "' "
     "   AND thief_team_id = '" + team_id + "'"
-    "   AND flag_id = '" + flag.getId() + "'"
+    "   AND flag_id = '" + flag.id() + "'"
     "   AND flag = '" + flag.value() + "'"
   );
   return nRet > 0;
@@ -365,7 +365,7 @@ bool employ_database::is_somebody_stole(ctf01d::flag flag) {
     "SELECT COUNT(*) as cnt FROM flags_stolen "
     " WHERE serviceid = '" + flag.service_id() + "' "
     "   AND team_id = '" + flag.team_id() + "'"
-    "   AND flag_id = '" + flag.getId() + "'"
+    "   AND flag_id = '" + flag.id() + "'"
     "   AND flag = '" + flag.value() + "'"
   );
   return nRet > 0;

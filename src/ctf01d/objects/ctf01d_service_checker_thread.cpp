@@ -110,7 +110,7 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
   std::string sShellCommand = m_service_config.script_path()
     + " " + m_team_config.ip_or_host()
     + " " + sCommand
-    + " " + flag.getId()
+    + " " + flag.id()
     + " " + flag.value();
 
   m_logger->info(TAG, "Start script " + sShellCommand);
@@ -119,7 +119,7 @@ int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sC
     m_service_config.script_dir(),
     m_service_config.script_path(),
     m_team_config.ip_or_host(),
-    sCommand, flag.getId(),
+    sCommand, flag.id(),
     flag.value()
   );
   process.start(m_service_config.script_timeout_in_seconds()*1000);

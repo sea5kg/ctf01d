@@ -112,7 +112,7 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     // TODO check service_id and team_id
     ctf01d::flag flag = alive_flags[i];
     m_alive_flags_cache[flag.value()] = flag;
-    sea5kg::log::info(TAG, "Loaded flag from previous session flags_live: id = " + flag.getId() + ", value = " + flag.value());
+    sea5kg::log::info(TAG, "Loaded flag from previous session flags_live: id = " + flag.id() + ", value = " + flag.value());
   }
 
   return true;
@@ -136,7 +136,7 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
   std::string sQuery = "INSERT INTO alive_flags(service_id, flag_id, flag, team_id, "
     "   date_start, date_end) VALUES("
     "'" + flag.service_id() + "', "
-    + "'" + flag.getId() + "', "
+    + "'" + flag.id() + "', "
     + "'" + flag.value() + "', "
     + "'" + flag.team_id() + "', "
     + std::to_string(flag.time_start_in_milliseconds()) + ", "

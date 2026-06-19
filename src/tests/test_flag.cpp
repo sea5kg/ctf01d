@@ -99,16 +99,16 @@ int main() {
         return 7;
     }
 
-    std::string sOldId = flag.getId();
+    std::string sOldId = flag.id();
     flag.generate_id();
-    if (flag.getId() == sOldId) {
+    if (flag.id() == sOldId) {
         std::cerr << "generate_id 2" << std::endl;
         return 8;
     }
 
     std::string flag_id = "QWHzYEKuTX";
     flag.set_id(flag_id);
-    if (flag.getId() != flag_id) {
+    if (flag.id() != flag_id) {
         std::cerr << "flag id 2" << std::endl;
         return 9;
     }
@@ -132,7 +132,7 @@ int main() {
     ctf01d::flag flag3;
     flag3.copy_from(flag);
 
-    if (flag3.getId() != flag_id) {
+    if (flag3.id() != flag_id) {
         std::cerr << "flag id 3" << std::endl;
         return 12;
     }
