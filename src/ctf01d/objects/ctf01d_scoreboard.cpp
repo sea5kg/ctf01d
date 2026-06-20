@@ -130,8 +130,8 @@ void scoreboard::init_json_scoreboard() {
     nlohmann::json teamData;
     teamData["place"] = m_teams_statuses[team_id]->getPlace();
     teamData["points"] = m_teams_statuses[team_id]->getPoints();
-    teamData[ctf01d::json_fields::TRIES] = 0;
-    teamData["logo_last_updated"] = 0;
+    teamData[json_fields::TRIES] = 0;
+    teamData[json_fields::UPDATED] = 0;
     nlohmann::json jsonServices;
     for (unsigned int iservice = 0; iservice < vServices.size(); iservice++) {
       ctf01d::service_config serviceConf = vServices[iservice];

@@ -36,6 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_team_config.h"
+#include "ctf01d/include/ctf01d_globals.h"
 #include <sea5kg_logger.h>
 #include <wsjcpp_core.h>
 #include <vector>
@@ -44,14 +45,16 @@
 namespace ctf01d {
 
 team_config::team_config() {
-  m_id = ctf01d::var_string::create({"id"}, "", m_vars);
+  m_id = ctf01d::var_string::create({yaml_keys::ID}, "", m_vars);
   // normal, red, blue, guest, inactive, disqualified
-  m_type = ctf01d::var_string::create({"type"}, "normal", m_vars); // TODO var_types
-  m_name = ctf01d::var_string::create({"name"}, "", m_vars);
-  m_active = ctf01d::var_bool::create({"active"}, true, m_vars);
-  m_logo = ctf01d::var_file::create({"logo"}, "", "", m_vars);
-  m_logo_big = ctf01d::var_file::create({"logo-big"}, "", "", m_vars);
-  m_ip_or_host = ctf01d::var_ip_or_host::create({"ip-or-host"}, m_vars); // TODO var_ip_or_host
+  m_type = ctf01d::var_string::create({yaml_keys::TYPE}, yaml_keys::TYPE_NORMAL, m_vars); // TODO var_types
+  m_name = ctf01d::var_string::create({yaml_keys::NAME}, "", m_vars);
+  m_description = ctf01d::var_string::create({yaml_keys::DESCRIPTION}, "", m_vars);
+  m_active = ctf01d::var_bool::create({yaml_keys::ACTIVE}, true, m_vars); // TODO rename enabled
+  m_logo = ctf01d::var_file::create({yaml_keys::LOGO}, "", "", m_vars);
+  m_logo_big = ctf01d::var_file::create({yaml_keys::LOGO_BIG}, "", "", m_vars);
+  m_ip_or_host = ctf01d::var_ip_or_host::create({yaml_keys::IP_OR_HOST}, m_vars);
+  m_updated_time = 0;
 }
 
 bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, std::string &err) {
@@ -63,11 +66,11 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
   }
   // check type
   static const std::vector<std::string> allowed_types = {
-    "normal",
-    "red",
-    "blue",
-    "guest",
-    "disqualified",
+    yaml_keys::TYPE_NORMAL,
+    yaml_keys::TYPE_RED,
+    yaml_keys::TYPE_BLUE,
+    yaml_keys::TYPE_QUEST,
+    yaml_keys::TYPE_DISQUALIFIED,
   };
   if (std::find(allowed_types.begin(), allowed_types.end(), m_type->value()) == allowed_types.end()) {
     err = "Didn't allowed team.type: '" + m_type->value() + "'";
@@ -84,6 +87,10 @@ std::string team_config::id() const {
 
 std::string team_config::name() const {
   return m_name->value();
+}
+
+std::string team_config::description() const {
+  return m_description->value();
 }
 
 void team_config::set_ip_or_host_prefix(const std::string &val) {
@@ -113,8 +120,20 @@ std::string team_config::logo_big_path() const {
   return m_logo_big->value();
 }
 
-int team_config::get_logo_last_modified_time() {
-  return m_logo_last_modified_time;
+long team_config::updated_time() {
+  return m_updated_time;
+}
+
+nlohmann::json team_config::to_json() {
+  nlohmann::json teamInfo;
+  teamInfo[json_fields::ID] = id();
+  teamInfo[json_fields::NAME] = name();
+  teamInfo[json_fields::DESCRIPTION] = description();
+  teamInfo[json_fields::IP_OR_HOST] = ip_or_host();
+  teamInfo[json_fields::LOGO] = "./logo/team/" + id();
+  teamInfo[json_fields::LOGO_BIG] = "./logo/big/team/" + id();
+  teamInfo[json_fields::UPDATED] = updated_time();
+  return teamInfo;
 }
 
 } // namespace ctf01d

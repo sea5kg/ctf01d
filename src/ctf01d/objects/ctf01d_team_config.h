@@ -39,6 +39,7 @@
 
 #include <string>
 #include <memory>
+#include <json.hpp>
 #include <wsjcpp_yaml.h>
 #include "ctf01d_var.h"
 
@@ -51,6 +52,7 @@ public:
 
   std::string id() const;
   std::string name() const;
+  std::string description() const;
   std::string ip_or_host() const;
   std::string ip_subnet() const;
   void set_ip_or_host_prefix(const std::string &);
@@ -58,7 +60,8 @@ public:
   bool is_active() const;
   std::string logo_path() const;
   std::string logo_big_path() const;
-  int get_logo_last_modified_time();
+  long updated_time();
+  nlohmann::json to_json();
 
 private:
   std::string TAG;
@@ -66,13 +69,14 @@ private:
   ctf01d::scope_vars m_vars = ctf01d::scope_vars("team_config");
   std::shared_ptr<ctf01d::var_string> m_id;
   std::shared_ptr<ctf01d::var_string> m_name;
+  std::shared_ptr<ctf01d::var_string> m_description;
   std::shared_ptr<ctf01d::var_string> m_type;
   std::shared_ptr<ctf01d::var_ip_or_host> m_ip_or_host;
   std::shared_ptr<ctf01d::var_file> m_logo;
   std::shared_ptr<ctf01d::var_file> m_logo_big;
   std::shared_ptr<ctf01d::var_bool> m_active;
 
-  int m_logo_last_modified_time;
+  long m_updated_time;
 };
 
 } // namespace ctf01d

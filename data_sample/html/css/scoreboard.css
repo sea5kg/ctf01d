@@ -118,6 +118,14 @@ button {
   text-overflow: ellipsis;
 }
 
+.team-description {
+  font-size: 10px;
+  line-height: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .current-team .team-name {
   color: white;
 }

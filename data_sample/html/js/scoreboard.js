@@ -372,17 +372,17 @@ function showTeamEventSlider(team_id, title, subtitle, type) {
   }]);
 }
 
-function copyToBuffer(elid) {
-    var el = document.getElementById(elid);
-    el.focus();
-    el.select();
-    try {
-        var successful = document.execCommand('copy');
-        var msg = successful ? 'successful' : 'unsuccessful';
-        console.log('Copying text command was ' + msg);
-    } catch (err) {
-        console.log('Oops, unable to copy');
-    }
+function copyToBuffer(el_id) {
+  var el = document.getElementById(el_id);
+  el.focus();
+  el.select();
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } catch (err) {
+    console.log('Oops, unable to copy');
+  }
 }
 
 var curl_example = document.getElementById("curl_request_send_flag").innerHTML;
@@ -407,7 +407,7 @@ function updateTeamRequiredFields() {
     }
     window.my_ip = resp["my-ip"];
     console.log("MyIP: " + window.my_ip);
-    window.found_teamid = undefined;
+    window.found_team_id = undefined;
     var found_teams = []
     // search by exact match ip
     for (var i = 0; i < window.teams.length; i++) {
@@ -849,17 +849,18 @@ function updateScoreboard() {
             var t = resp.scoreboard[teamID];
             teamIDs.push(teamID);
             var teamLogoElemId = "team-logo-" + teamID;
-            var lastWriteTimeLogo = document.getElementById(teamLogoElemId).getAttribute('logo_last_updated');
+            var lastWriteTimeLogo = document.getElementById(teamLogoElemId).getAttribute('updated');
             if (lastWriteTimeLogo == "0") {
-                document.getElementById(teamLogoElemId).setAttribute('logo_last_updated', t.logo_last_updated);
-            } else if (lastWriteTimeLogo != t.logo_last_updated) {
-                console.warn("Need update logo for team ", t);
-                document.getElementById(teamLogoElemId).setAttribute('logo_last_updated', t.logo_last_updated);
-                var logoUrl = document.getElementById(teamLogoElemId).src;
-                if (logoUrl.indexOf("?") !== -1) {
-                    logoUrl = logoUrl.split("?")[0];
-                }
-                document.getElementById(teamLogoElemId).src = logoUrl + "?t=" + t.logo_last_updated;
+              document.getElementById(teamLogoElemId).setAttribute('updated', t.upd);
+            } else if (lastWriteTimeLogo != t.upd) {
+              // TODO if update all information about team
+              console.warn("Need update logo for team ", t);
+              document.getElementById(teamLogoElemId).setAttribute('updated', t.upd);
+              var logoUrl = document.getElementById(teamLogoElemId).src;
+              if (logoUrl.indexOf("?") !== -1) {
+                  logoUrl = logoUrl.split("?")[0];
+              }
+              document.getElementById(teamLogoElemId).src = logoUrl + "?t=" + t.upd;
             }
 
             var elPointsTrend = document.getElementById(teamID + '-points-trend');
@@ -1032,11 +1033,13 @@ getAjax('/api/v1/game', function(err, resp){
     team_rows += ""
       + "<div class='tm' id='" + sTeamId + "'>"
       + '  <div class="place" id="place-' + sTeamId + '" ></div>'
-      + "  <div class='team-logo'><img class='team-logo' id='team-logo-" + sTeamId + "' logo_last_updated='0' src='" + resp.teams[num_team].logo + "'/></div>"
+      + "  <div class='team-logo'><img class='team-logo' id='team-logo-" + sTeamId + "' updated='0' src='" + resp.teams[num_team].logo + "'/></div>"
       + '  <div class="team tooltip">'
       + '    <div class="team-name" style="font-size: ' + getTeamNameFontSize(resp.teams[num_team].name) + 'px">' + escapeHtml(resp.teams[num_team].name) + '</div>'
+      + '    <div class="team-description">' + escapeHtml(resp.teams[num_team].dsc) + '</div>'
       + '    <span class="tooltiptext team-info">'
       + '     Team Name: ' + escapeHtml(resp.teams[num_team].name) + '<br>'
+      + '     Team Description: ' + escapeHtml(resp.teams[num_team].dsc) + '<br>'
       + '     Team ID: <input readonly id="' + team_id + '-copy" value="' + sTeamId + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy\')">copy</button> <br>'
       + '     Team IP-Address: <input readonly id="' + team_id + '-copy-ip" value="' + resp.teams[num_team].ip_address + '"> <button onclick="copyToBuffer(\'' + team_id + '-copy-ip\')">copy</button>'
       + '    </span>'

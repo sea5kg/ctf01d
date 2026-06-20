@@ -73,6 +73,8 @@ services:
     script-timeout-in-seconds: 5
     round-in-seconds: 15
 
+# team.type can be: "normal", "red", "blue", "guest", "disqualified",
+
 teams:
   config:
     ip-or-host-prefix: "127.0."
@@ -81,6 +83,7 @@ teams:
     - id: "t01" # must be uniq
       type: normal
       name: "Team #1"
+      description: "University 1"
       active: yes
       logo: "./html/images/teams/team01.png"
       logo-big: "./html/images/teams/team01.png"
@@ -88,6 +91,7 @@ teams:
     - id: "t02" # must be uniq
       type: normal
       name: "Team #2"
+      description: "University 2"
       active: yes
       logo: "./html/images/teams/team02.png"
       logo-big: "./html/images/teams/team02.png"
@@ -95,6 +99,7 @@ teams:
     - id: "t03" # must be uniq
       type: normal
       name: "Team #3"
+      description: "University 3"
       active: yes
       logo: "./html/images/teams/team03.png"
       logo-big: "./html/images/teams/team03.png"
@@ -102,6 +107,7 @@ teams:
     - id: "t04" # must be uniq
       type: normal
       name: "Team #4"
+      description: "University 4"
       active: yes
       logo: "./html/images/teams/team04.png"
       logo-big: "./html/images/teams/team03.png"
@@ -109,6 +115,7 @@ teams:
     - id: "t05" # must be uniq
       type: normal
       name: "Team #5"
+      description: "City 1"
       active: yes
       logo: "./html/images/teams/team05.png"
       logo-big: "./html/images/teams/team03.png"
@@ -116,6 +123,7 @@ teams:
     - id: "t06" # must be uniq
       type: normal
       name: "Team #6"
+      description: "City 2"
       active: yes
       logo: "./html/images/teams/team06.png"
       logo-big: "./html/images/teams/team06.png"
@@ -123,6 +131,7 @@ teams:
     - id: "t07" # must be uniq
       type: normal
       name: "Team #7"
+      description: "City 4"
       active: yes
       logo: "./html/images/teams/team07.png"
       logo-big: "./html/images/teams/team07.png"
@@ -130,6 +139,7 @@ teams:
     - id: "t08" # must be uniq
       type: normal
       name: "Team #8"
+      description: ""
       active: yes
       logo: "./html/images/teams/team08.png"
       logo-big: "./html/images/teams/team08.png"
@@ -137,6 +147,7 @@ teams:
     - id: "t09" # must be uniq
       type: normal
       name: "Team #9"
+      description: ""
       active: yes
       logo: "./html/images/teams/team09.png"
       logo-big: "./html/images/teams/team09.png"
@@ -144,6 +155,7 @@ teams:
     - id: "t10" # must be uniq
       type: normal
       name: "Team #10"
+      description: ""
       active: yes
       logo: "./html/images/teams/team10.png"
       logo-big: "./html/images/teams/team10.png"
@@ -151,6 +163,7 @@ teams:
     - id: "t11" # must be uniq
       type: normal
       name: "Team #11"
+      description: ""
       active: yes
       logo: "./html/images/teams/team11.png"
       logo-big: "./html/images/teams/team11.png"
@@ -158,6 +171,7 @@ teams:
     - id: "t12" # must be uniq
       type: normal
       name: "Team #12"
+      description: ""
       active: yes
       logo: "./html/images/teams/team12.png"
       logo-big: "./html/images/teams/team12.png"
@@ -165,6 +179,7 @@ teams:
     - id: "t13" # must be uniq
       type: normal
       name: "Team #13"
+      description: ""
       active: yes
       logo: "./html/images/teams/team13.png"
       logo-big: "./html/images/teams/team13.png"
@@ -172,6 +187,7 @@ teams:
     - id: "t14" # must be uniq
       type: normal
       name: "Team #14"
+      description: ""
       active: yes
       logo: "./html/images/teams/team14.png"
       logo-big: "./html/images/teams/team14.png"
@@ -179,6 +195,7 @@ teams:
     - id: "t15" # must be uniq
       type: normal
       name: "Team #15"
+      description: ""
       active: yes
       logo: "./html/images/teams/team15.png"
       logo-big: "./html/images/teams/team15.png"
@@ -186,6 +203,7 @@ teams:
     - id: "t16" # must be uniq
       type: normal
       name: "Team #16"
+      description: ""
       active: yes
       logo: "./html/images/teams/team16.png"
       logo-big: "./html/images/teams/team16.png"
@@ -193,6 +211,7 @@ teams:
     - id: "t17" # must be uniq
       type: normal
       name: "Team #17"
+      description: ""
       active: yes
       logo: "./html/images/teams/team17.png"
       logo-big: "./html/images/teams/team17.png"
@@ -200,6 +219,7 @@ teams:
     - id: "t18" # must be uniq
       type: normal
       name: "Team #18"
+      description: ""
       active: yes
       logo: "./html/images/teams/team18.png"
       logo-big: "./html/images/teams/team18.png"
@@ -207,6 +227,7 @@ teams:
     - id: "t19" # must be uniq
       type: normal
       name: "Team #19"
+      description: ""
       active: yes
       logo: "./html/images/teams/team19.png"
       logo-big: "./html/images/teams/team19.png"
@@ -214,6 +235,7 @@ teams:
     - id: "t20" # must be uniq
       type: normal
       name: "Team #20"
+      description: ""
       active: yes
       logo: "./html/images/teams/team20.png"
       logo-big: "./html/images/teams/team20.png"
@@ -221,6 +243,7 @@ teams:
     - id: "t21" # must be uniq
       type: normal
       name: "Team #21"
+      description: ""
       active: yes
       logo: "./html/images/teams/team21.png"
       logo-big: "./html/images/teams/team21.png"
@@ -228,6 +251,7 @@ teams:
     - id: "t22" # must be uniq
       type: normal
       name: "Team #22"
+      description: ""
       active: yes
       logo: "./html/images/teams/team22.png"
       logo-big: "./html/images/teams/team22.png"
@@ -235,6 +259,7 @@ teams:
     - id: "t23" # must be uniq
       type: normal
       name: "Team #23"
+      description: ""
       active: yes
       logo: "./html/images/teams/team23.png"
       logo-big: "./html/images/teams/team23.png"
@@ -242,6 +267,7 @@ teams:
     - id: "t24" # must be uniq
       type: normal
       name: "Team #24"
+      description: ""
       active: yes
       logo: "./html/images/teams/team24.png"
       logo-big: "./html/images/teams/team24.png"
@@ -249,6 +275,7 @@ teams:
     - id: "t25" # must be uniq
       type: normal
       name: "Team #25"
+      description: ""
       active: yes
       logo: "./html/images/teams/team25.png"
       logo-big: "./html/images/teams/team25.png"
@@ -256,6 +283,7 @@ teams:
     - id: "t26" # must be uniq
       type: normal
       name: "Team #26"
+      description: ""
       active: yes
       logo: "./html/images/teams/team26.png"
       logo-big: "./html/images/teams/team26.png"
@@ -263,6 +291,7 @@ teams:
     - id: "t27" # must be uniq
       type: normal
       name: "Team #27"
+      description: ""
       active: yes
       logo: "./html/images/teams/team27.png"
       logo-big: "./html/images/teams/team27.png"
@@ -270,6 +299,7 @@ teams:
     - id: "t28" # must be uniq
       type: normal
       name: "Team #28 😊️ 😐️ ☹️"
+      description: ""
       active: yes
       logo: "./html/images/teams/team28.png"
       logo-big: "./html/images/teams/team28.png"
@@ -277,6 +307,7 @@ teams:
     - id: "t29" # must be uniq
       type: normal
       name: "Team #29 😊︎ 😐︎ ☹︎"
+      description: ""
       active: yes
       logo: "./html/images/teams/team29.png"
       logo-big: "./html/images/teams/team29.png"
@@ -284,6 +315,7 @@ teams:
     - id: "t30" # must be uniq
       type: normal
       name: "Team #30 1111111111111111111111111111111"
+      description: "1111111111111111111111111111111111111111111"
       active: yes
       logo: "./html/images/teams/team30.png"
       logo-big: "./html/images/teams/team30.png"
