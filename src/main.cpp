@@ -244,6 +244,7 @@ int main(int argc, const char* argv[]) {
   std::cout << "WorkDir: " << sWorkDir << std::endl;
   auto config = findWsjcppEmploy<ctf01d::config>();
   config->set_work_dir(sWorkDir);
+  config->set_ctf01d_version(appVersion);
 
   if (arguments.size() == 0) {
     std::cout << "Not found command. Please run '" << programName << " help'" << std::endl;

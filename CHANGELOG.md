@@ -13,6 +13,7 @@
 - Renamed 'flag_cost_in_points' -> 'flag-cost-in-points'
 - Redesign 'coffee-break' section
 - Fixed #121. Add team description (like a town or university) and show it in scoreboard small text under team name
+- Fixed #62. copyright and version of jury on webpage 
 
 ## [v0.7.3] - (2026 June 10)
 

@@ -46,6 +46,7 @@
 #include <vector>
 #include <wsjcpp_employees.h>
 #include <wsjcpp_core.h>
+#include "ctf01d/include/ctf01d_globals.h"
 #include "ctf01d/include/ctf01d_web_server.h"
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/include/ctf01d_config.h"
@@ -309,6 +310,7 @@ void employ_web_server::updateJsonCache() {
   nlohmann::json jsonGame;
   nlohmann::json jsonTeams;
 
+  jsonGame[ctf01d::json_fields::CTF01D_VERSION] = m_config->ctf01d_version();
   jsonGame["game_id"] = m_config->game_id();
   jsonGame["game_name"] = m_config->game_name();
   jsonGame["game_start"] = WsjcppCore::formatTimeUTC(m_config->game_start_utc_in_seconds()) + " (UTC)";
@@ -663,7 +665,7 @@ int employ_web_server::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
   std::ostringstream oss;
 
   prometheusMetricInfo(oss, "ctf01d_build_info", "gauge", "ctf01d build information.");
-  oss << "ctf01d_build_info" << prometheusLabels({{"version", std::string(WSJCPP_APP_VERSION)}}) << " 1\n";
+  oss << "ctf01d_build_info" << prometheusLabels({{"version", m_config->ctf01d_version()}}) << " 1\n";
 
   prometheusMetricInfo(oss, "ctf01d_game_start_timestamp_seconds", "gauge", "Game start (UTC).");
   oss << "ctf01d_game_start_timestamp_seconds " << jsonScoreboard["game"]["t0"].get<long>() << "\n";

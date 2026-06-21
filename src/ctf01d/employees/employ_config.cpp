@@ -68,6 +68,8 @@ public:
   virtual bool deinit(const std::string &name, bool silent) override;
 
   // ctf01d::config
+  virtual void set_ctf01d_version(const std::string &ctf01d_version) override;
+  virtual std::string ctf01d_version() override;
   virtual void set_work_dir(const std::string &work_dir) override;
   virtual std::string get_work_dir() override;
   virtual bool apply_config() override;
@@ -111,6 +113,7 @@ private:
   void hot_reload_config_yaml();
 
   std::string TAG;
+  std::string m_ctf01d_version;
   std::string m_work_dir;
   std::string m_config_filepath;
   bool m_applied_config;
@@ -152,6 +155,7 @@ REGISTRY_WSJCPP_EMPLOY(employ_config)
 employ_config::employ_config()
 : WsjcppEmployBase({ ctf01d::config::name() }, {}) {
   TAG = ctf01d::config::name();
+  m_ctf01d_version = "v??";
   m_files_watcher = std::make_shared<ctf01d::files_watcher>();
 
   // game options
@@ -206,6 +210,14 @@ bool employ_config::deinit(const std::string &sName, bool bSilent) {
     m_thread_watcher.join();
   }
   return true;
+}
+
+void employ_config::set_ctf01d_version(const std::string &ctf01d_version) {
+  m_ctf01d_version = ctf01d_version;
+}
+
+std::string employ_config::ctf01d_version() {
+  return m_ctf01d_version;
 }
 
 void employ_config::set_work_dir(const std::string &sWorkDir) {

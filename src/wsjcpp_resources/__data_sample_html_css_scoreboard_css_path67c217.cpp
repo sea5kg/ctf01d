@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_css_scoreboard_css_path67c217::getPack
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_css_scoreboard_css_path67c217::getBufferSize() const {
-  return 21509;
+  return 21872;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() const {
-  static const std::string sRet = "" // size: 21509
+  static const std::string sRet = "" // size: 21872
     "@font-face {\n"
     "  font-family: 'DejaVuSans';\n"
     "  src: url('../font/AmazingGroteskDemi.otf');\n"
@@ -1203,6 +1203,38 @@ const char *RES___data_sample_html_css_scoreboard_css_path67c217::getBuffer() co
     "  .team-slider-slide-first-blood .team-slider-name {\n"
     "    font-size:2.1rem;\n"
     "  }\n"
+    "}\n"
+    "\n"
+    ".powered-by {\n"
+    "  display: block;\n"
+    "  text-align: center;\n"
+    "  width: 100%;\n"
+    "  position: absolute;\n"
+    "  top: 0px;\n"
+    "  background: #202b3a;\n"
+    "  padding-top: 10px;\n"
+    "  padding-bottom: 10px;\n"
+    "}\n"
+    "\n"
+    ".text-version {\n"
+    " display: inline-block;\n"
+    "}\n"
+    "\n"
+    "a {\n"
+    "  color: #ff9800;\n"
+    "  text-decoration: none;\n"
+    "}\n"
+    "\n"
+    "a:visited {\n"
+    "  color: #ff9800;\n"
+    "}\n"
+    "\n"
+    "a:hover {\n"
+    "  color: #ff9800;\n"
+    "}\n"
+    "\n"
+    "a:active {\n"
+    "  color: #ff9800;\n"
     "}\n"
     ""
   ;

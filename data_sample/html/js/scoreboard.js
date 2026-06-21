@@ -759,10 +759,6 @@ function humanTimeFromSeconds(sec) {
     return result
 }
 
-function update_first_blood(service_info) {
-
-}
-
 function updateScoreboard() {
   getAjax('/api/v1/scoreboard', function(err, resp){
     if (err) {
@@ -801,7 +797,6 @@ function updateScoreboard() {
         silentUpdate("tries-all-summary-teams", resp.sum_act);
         _animateElement(document.getElementById('tries-icon-all-summary-teams'), false);
     }
-
 
         // console.log("game_len_time", game_len_time);
         if (resp.game.tc < resp.game.t0) {
@@ -957,6 +952,7 @@ function updateScoreboard() {
             //     elms2[i].e.style.top = expected_top_value;
             // }
         }
+        document.getElementById('powered_by').style.top = (150 + (elms2.length + 1) * 50) + 'px';
 
         // open controls
         if (document.getElementById('scoreboard_content').style.display != 'block') {
@@ -1004,6 +1000,7 @@ getAjax('/api/v1/game', function(err, resp){
   }
   window.teams = resp.teams;
   document.getElementById('game_name').innerHTML = resp.game_name;
+  document.getElementById('ctf01d_version').innerHTML = resp["ctf01d-version"];
 
   // TODO beauty print periods
   if (resp.game_has_coffee_break) {

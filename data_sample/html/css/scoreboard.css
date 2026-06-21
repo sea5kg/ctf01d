@@ -1178,3 +1178,35 @@ background: rgba(70,95,55,0.72);
     font-size:2.1rem;
   }
 }
+
+.powered-by {
+  display: block;
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  background: #202b3a;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.text-version {
+ display: inline-block;
+}
+
+a {
+  color: #ff9800;
+  text-decoration: none;
+}
+
+a:visited {
+  color: #ff9800;
+}
+
+a:hover {
+  color: #ff9800;
+}
+
+a:active {
+  color: #ff9800;
+}

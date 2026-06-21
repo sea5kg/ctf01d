@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_index_html_path6838f8::getPackAs() con
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_index_html_path6838f8::getBufferSize() const {
-  return 10077;
+  return 10342;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
-  static const std::string sRet = "" // size: 10077
+  static const std::string sRet = "" // size: 10342
     "<!DOCTYPE html>\n"
     "<html>\n"
     "<head>\n"
@@ -225,6 +225,7 @@ const char *RES___data_sample_html_index_html_path6838f8::getBuffer() const {
     "          </div>\n"
     "          <div id=\"teams_rows\"></div>\n"
     "        </div>\n"
+    "        <div class=\"powered-by\" id=\"powered_by\">Powered by <a target=\"_blank\" href=\"https://github.com/sea5kg/ctf01d\">ctf01d</a> (<div class=\"text-version\" id=\"ctf01d_version\"></div>) © 2018-2026 Evgenii Sopov. This application is shared under a MIT License</div>\n"
     "      </div>\n"
     "      <div id=\"loader_content\" style=\"display: block\">\n"
     "        <div class=\"lds-facebook\">\n"

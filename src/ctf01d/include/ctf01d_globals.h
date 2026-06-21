@@ -56,6 +56,7 @@ public:
   inline static const std::string IP_OR_HOST = "ip_address";
   inline static const std::string LOGO = "logo";
   inline static const std::string LOGO_BIG = "logo-big";
+  inline static const std::string CTF01D_VERSION = "ctf01d-version";
 };
 
 class yaml_keys {

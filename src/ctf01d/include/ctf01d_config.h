@@ -49,6 +49,8 @@ class config {
 public:
   static std::string name() { return "config"; }
 
+  virtual void set_ctf01d_version(const std::string &ctf01d_version) = 0;
+  virtual std::string ctf01d_version() = 0;
   virtual void set_work_dir(const std::string &sWorkDir) = 0;
   virtual std::string get_work_dir() = 0;
   virtual bool apply_config() = 0;

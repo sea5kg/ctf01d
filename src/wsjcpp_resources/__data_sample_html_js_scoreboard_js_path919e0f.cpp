@@ -17,13 +17,13 @@ const std::string &RES___data_sample_html_js_scoreboard_js_path919e0f::getPackAs
 // ---------------------------------------------------------------------
 
 int RES___data_sample_html_js_scoreboard_js_path919e0f::getBufferSize() const {
-  return 40614;
+  return 40743;
 }
 
 // ---------------------------------------------------------------------
 
 const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() const {
-  static const std::string sRet = "" // size: 40614
+  static const std::string sRet = "" // size: 40743
     "\n"
     "function parsePageParams() {\n"
     "  var loc = location.search.slice(1);\n"
@@ -785,10 +785,6 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "    return result\n"
     "}\n"
     "\n"
-    "function update_first_blood(service_info) {\n"
-    "\n"
-    "}\n"
-    "\n"
     "function updateScoreboard() {\n"
     "  getAjax('/api/v1/scoreboard', function(err, resp){\n"
     "    if (err) {\n"
@@ -827,7 +823,6 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "        silentUpdate(\"tries-all-summary-teams\", resp.sum_act);\n"
     "        _animateElement(document.getElementById('tries-icon-all-summary-teams'), false);\n"
     "    }\n"
-    "\n"
     "\n"
     "        // console.log(\"game_len_time\", game_len_time);\n"
     "        if (resp.game.tc < resp.game.t0) {\n"
@@ -983,6 +978,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "            //     elms2[i].e.style.top = expected_top_value;\n"
     "            // }\n"
     "        }\n"
+    "        document.getElementById('powered_by').style.top = (150 + (elms2.length + 1) * 50) + 'px';\n"
     "\n"
     "        // open controls\n"
     "        if (document.getElementById('scoreboard_content').style.display != 'block') {\n"
@@ -1030,6 +1026,7 @@ const char *RES___data_sample_html_js_scoreboard_js_path919e0f::getBuffer() cons
     "  }\n"
     "  window.teams = resp.teams;\n"
     "  document.getElementById('game_name').innerHTML = resp.game_name;\n"
+    "  document.getElementById('ctf01d_version').innerHTML = resp[\"ctf01d-version\"];\n"
     "\n"
     "  // TODO beauty print periods\n"
     "  if (resp.game_has_coffee_break) {\n"
