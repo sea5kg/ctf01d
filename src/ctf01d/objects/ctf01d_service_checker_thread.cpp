@@ -37,9 +37,9 @@
 
 #include "ctf01d_service_checker_thread.h"
 #include <unistd.h>
+#include <wsjcpp_employees.h>
 
 #include "ctf01d_do_run_checker.h"
-
 #include <iostream>
 #include <sstream>
 #include <wsjcpp_core.h>
@@ -73,8 +73,8 @@ service_checker_thread::service_checker_thread(
   m_pDatabase = findWsjcppEmploy<ctf01d::database>();
   m_team_config = team_config;
   m_service_config = service_config;
-  m_alive_flags = findWsjcppEmploy<alive_flags>();
-  m_scoreboard = findWsjcppEmploy<employ_scoreboard>();
+  m_alive_flags = findWsjcppEmploy<ctf01d::alive_flags>();
+  m_scoreboard = findWsjcppEmploy<ctf01d::scoreboard>();
 
   TAG = "Checker: " + m_team_config.id() + std::string( 15 - m_team_config.id().length(), ' ')
     + m_service_config.id() + " ";

@@ -37,9 +37,11 @@
 
 #pragma once
 
-#include "ctf01d/employees/employ_scoreboard.h"
+#include "ctf01d/include/ctf01d_scoreboard.h"
+#include "ctf01d/include/ctf01d_database.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_alive_flags.h"
+#include "ctf01d/objects/ctf01d_service_status_cell.h"
 #include <sea5kg_logger.h>
 
 namespace ctf01d {
@@ -68,8 +70,8 @@ private:
   pthread_t m_checkerThread;
   ctf01d::config *m_config;
   ctf01d::database *m_pDatabase; // TODO not must be here
-  employ_scoreboard *m_scoreboard;
-  alive_flags *m_alive_flags;
+  ctf01d::scoreboard *m_scoreboard;
+  ctf01d::alive_flags *m_alive_flags;
 
   ctf01d::team_config m_team_config;
   ctf01d::service_config m_service_config;

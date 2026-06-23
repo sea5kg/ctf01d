@@ -39,6 +39,7 @@
 #include <sys/types.h>
 #include <wsjcpp_core.h>
 #include <sea5kg_logger.h>
+#include <wsjcpp_employees.h>
 #include "ctf01d/objects/ctf01d_service_checker_thread.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_web_server.h"
@@ -295,7 +296,7 @@ int main(int argc, const char* argv[]) {
 
         // reset status to down
         // TODO reset must be in scoreboard and only if game in started not ended
-        findWsjcppEmploy<employ_scoreboard>()->set_service_status(team_config.id(), service_config.id(), ctf01d::service_status_cell::SERVICE_DOWN);
+        findWsjcppEmploy<ctf01d::scoreboard>()->set_service_status(team_config.id(), service_config.id(), ctf01d::service_status_cell::SERVICE_DOWN);
 
         ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(service_logger, service_config, team_config);
         thr->start();

@@ -50,11 +50,12 @@
 #include "ctf01d/include/ctf01d_web_server.h"
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/include/ctf01d_config.h"
+#include "ctf01d/include/ctf01d_scoreboard.h"
+#include "ctf01d/include/ctf01d_alive_flags.h"
 #include "ctf01d/include/ctf01d_images.h"
 #include <sea5kg_logger.h>
 #include "ctf01d/objects/ctf01d_service_status_cell.h"
 #include "ctf01d/objects/ctf01d_error_info.h"
-#include "ctf01d/employees/employ_scoreboard.h"
 
 // libhv includes
 #include "HttpService.h" // libhv
@@ -115,7 +116,7 @@ private:
   std::string m_sCacheResponseTeamsJson;
 
   ctf01d::config *m_config;
-  employ_scoreboard *m_scoreboard;
+  ctf01d::scoreboard *m_scoreboard;
 };
 
 static std::string prometheusEscapeLabelValue(const std::string &sValue) {
@@ -192,7 +193,7 @@ employ_web_server::employ_web_server()
   m_logo_prefix_length = m_logo_prefix.size();
 
   m_config = findWsjcppEmploy<ctf01d::config>();
-  m_scoreboard = findWsjcppEmploy<employ_scoreboard>();
+  m_scoreboard = findWsjcppEmploy<ctf01d::scoreboard>();
 }
 
 bool employ_web_server::init(const std::string &name, bool bSilent) {

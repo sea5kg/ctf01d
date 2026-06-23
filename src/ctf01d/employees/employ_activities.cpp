@@ -45,6 +45,7 @@
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_activities.h"
+#include "ctf01d/include/ctf01d_database.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/utils/ctf01d_time_measurer.h"
 

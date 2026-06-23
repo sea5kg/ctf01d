@@ -45,6 +45,7 @@
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_alive_flags.h"
 #include "ctf01d/include/ctf01d_config.h"
+#include "ctf01d/include/ctf01d_database.h"
 
 // ---------------------------------------------------------------------
 // EmployAliveFlags definition

@@ -40,7 +40,6 @@
 #include "ctf01d/objects/ctf01d_team_config.h"
 #include "ctf01d/objects/ctf01d_service_config.h"
 #include "ctf01d/objects/ctf01d_var.h"
-#include "ctf01d/objects/ctf01d_scoreboard.h"
 #include "ctf01d/utils/ctf01d_flag_id_generators.h"
 
 namespace ctf01d {
