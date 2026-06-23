@@ -45,26 +45,40 @@
 #include <mutex>
 #include <vector>
 
-REGISTRY_WSJCPP_EMPLOY(EmployScoreboard)
+REGISTRY_WSJCPP_EMPLOY(employ_scoreboard)
 
-EmployScoreboard::EmployScoreboard()
-: WsjcppEmployBase({ EmployScoreboard::name() }, {}) {
-  TAG = EmployScoreboard::name();
+employ_scoreboard::employ_scoreboard()
+: WsjcppEmployBase({ employ_scoreboard::name() }, { ctf01d::config::name(), ctf01d::database::name() }) {
+  TAG = employ_scoreboard::name();
 }
 
-bool EmployScoreboard::init(const std::string &sName, bool bSilent) {
+bool employ_scoreboard::init(const std::string &sName, bool bSilent) {
   if (!init_services_stats()) {
     return false;
   }
+
+  // scoreboard
+  auto config = findWsjcppEmploy<ctf01d::config>();
+  m_scoreboard = std::make_shared<ctf01d::scoreboard>(
+    config->scoreboard_random(),
+    config->game_start_utc_in_seconds(),
+    config->game_end_utc_in_seconds(),
+    config->game_coffee_break_start_utc_in_seconds(),
+    config->game_coffee_break_end_utc_in_seconds()
+  );
+
+  sea5kg::log::info(TAG, "Restoring states from storage...");
+  m_scoreboard->init_state_from_storage();
+  sea5kg::log::ok(TAG, "Restored state from storage.");
   return true;
 }
 
-bool EmployScoreboard::deinit(const std::string &sName, bool bSilent) {
+bool employ_scoreboard::deinit(const std::string &sName, bool bSilent) {
   sea5kg::log::info(TAG, "deinit");
   return true;
 }
 
-bool EmployScoreboard::init_services_stats() {
+bool employ_scoreboard::init_services_stats() {
   std::lock_guard<std::mutex> lock(m_mutex_services_statistics);
   m_services_statistics.clear();
 
@@ -80,3 +94,39 @@ bool EmployScoreboard::init_services_stats() {
   return true;
 }
 
+void employ_scoreboard::set_service_status(const std::string &team_id, const std::string &service_id, const std::string &status) {
+  m_scoreboard->insert_flag_attempt(team_id, service_id, status);
+}
+
+void employ_scoreboard::insert_flag_attempt(const std::string &thief_team_id, const std::string &flag_value, const std::string &request_ip) {
+  m_scoreboard->insert_flag_attempt(thief_team_id, flag_value, request_ip);
+}
+
+void employ_scoreboard::init_state_from_storage() {
+  m_scoreboard->init_state_from_storage();
+}
+
+std::optional<int> employ_scoreboard::increment_attack_score(const ctf01d::flag &flag, const std::string &team_id) {
+  return m_scoreboard->increment_attack_score(flag, team_id);
+}
+
+void employ_scoreboard::increment_defense_score(const ctf01d::flag &flag) {
+  m_scoreboard->increment_defense_score(flag);
+}
+
+void employ_scoreboard::increment_flags_putted_and_service_up(const ctf01d::flag &flag) {
+  m_scoreboard->increment_flags_putted_and_service_up(flag);
+}
+
+void employ_scoreboard::insert_flag_put_fail(const ctf01d::flag &flag, const std::string &service_status, const std::string &description_status) {
+  m_scoreboard->insert_flag_put_fail(flag, service_status, description_status);
+}
+
+std::string employ_scoreboard::service_status(const std::string &team_id, const std::string &service_id) {
+  return m_scoreboard->service_status(team_id, service_id);
+}
+
+
+const nlohmann::json &employ_scoreboard::to_json() {
+  return m_scoreboard->to_json();
+}

@@ -54,6 +54,7 @@
 #include <sea5kg_logger.h>
 #include "ctf01d/objects/ctf01d_service_status_cell.h"
 #include "ctf01d/objects/ctf01d_error_info.h"
+#include "ctf01d/employees/employ_scoreboard.h"
 
 // libhv includes
 #include "HttpService.h" // libhv
@@ -114,6 +115,7 @@ private:
   std::string m_sCacheResponseTeamsJson;
 
   ctf01d::config *m_config;
+  employ_scoreboard *m_scoreboard;
 };
 
 static std::string prometheusEscapeLabelValue(const std::string &sValue) {
@@ -184,12 +186,13 @@ employ_web_server::employ_web_server()
 : WsjcppEmployBase({ ctf01d::web_server::name() }, { ctf01d::config::name(), ctf01d::activities::name() }) {
   TAG = ctf01d::web_server::name();
   m_sApiPathPrefix = "/api/v1/";
-  
+
   // TODO refactoring it
   m_logo_prefix = "/logo/";
   m_logo_prefix_length = m_logo_prefix.size();
-  
+
   m_config = findWsjcppEmploy<ctf01d::config>();
+  m_scoreboard = findWsjcppEmploy<employ_scoreboard>();
 }
 
 bool employ_web_server::init(const std::string &name, bool bSilent) {
@@ -454,7 +457,7 @@ int employ_web_server::httpApiV1Scoreboard(HttpRequest* req, HttpResponse* resp)
   auto teamLogos = findWsjcppEmploy<ctf01d::images>();
   teamLogos->update_last_change_time();
 
-  nlohmann::json jsonScoreboard = m_config->scoreboard()->to_json();
+  nlohmann::json jsonScoreboard = m_scoreboard->to_json();
   teamLogos->update_scoreboard_json(jsonScoreboard);
   std::string sScoreboardJson = jsonScoreboard.dump();
   resp->Data(
@@ -534,12 +537,12 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   if (!can_handle_flags(req, current_time_in_seconds, err)) {
     return response_error(400, req, resp, err);
   }
-  
+
   std::string team_id = "";
   if (!find_or_detect_team_id(req, team_id, err)) {
     return response_error(400, req, resp, err);
   }
-  
+
   std::string flag_value = req->GetParam("flag");
   flag_value = WsjcppCore::trim(flag_value);
   flag_value = WsjcppCore::toLower(flag_value);
@@ -561,8 +564,8 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     resp->String(sErrorMsg);
     return 400;
   }
-  
-  m_config->scoreboard()->insert_flag_attempt(team_id, flag_value, request_ip);
+
+  m_scoreboard->insert_flag_attempt(team_id, flag_value, request_ip);
 
   ctf01d::flag flag;
   if (!findWsjcppEmploy<ctf01d::alive_flags>()->find_alive_flag(flag_value, flag)) {
@@ -595,7 +598,7 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
     return 403;
   }
 
-  std::string sServiceStatus = m_config->scoreboard()->service_status(team_id, flag.service_id());
+  std::string sServiceStatus = m_scoreboard->service_status(team_id, flag.service_id());
 
   // std::cout << "sServiceStatus: " << sServiceStatus << "\n";
 
@@ -610,7 +613,7 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
   // TODO light update scoreboard
   // incrementAttackScore performs the dedup check under its own mutex,
   // so check-then-insert is atomic against concurrent submissions.
-  std::optional<int> oPoints = m_config->scoreboard()->increment_attack_score(flag, team_id);
+  std::optional<int> oPoints = m_scoreboard->increment_attack_score(flag, team_id);
   if (!oPoints.has_value()) {
     // TODO server statistics
     static const std::string sErrorMsg = "Error(-170): flag already stolen by your team";
@@ -660,7 +663,7 @@ int employ_web_server::httpApiV1Metrics(HttpRequest* req, HttpResponse* resp) {
     return 403;
   }
 
-  nlohmann::json jsonScoreboard = m_config->scoreboard()->to_json();
+  nlohmann::json jsonScoreboard = m_scoreboard->to_json();
 
   std::ostringstream oss;
 

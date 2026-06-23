@@ -92,7 +92,6 @@ public:
   virtual bool game_has_coffee_break() const override;
   virtual int game_coffee_break_start_utc_in_seconds() const override;
   virtual int game_coffee_break_end_utc_in_seconds() const override;
-  virtual std::shared_ptr<ctf01d::scoreboard> scoreboard() override;
   virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() override;
 
 private:
@@ -120,7 +119,6 @@ private:
 
   // scoreboard config
   ctf01d::scope_vars m_scoreboard_vars = ctf01d::scope_vars("scoreboard_config");
-  std::shared_ptr<ctf01d::scoreboard> m_scoreboard;
   std::shared_ptr<ctf01d::var_int> m_scoreboard_port;
   std::shared_ptr<ctf01d::var_dir> m_scoreboard_html_folder;
   std::shared_ptr<ctf01d::var_bool> m_scoreboard_auto_detection_team_id_by_subnet_ip;
@@ -173,8 +171,6 @@ employ_config::employ_config()
 
   m_ip_or_host_prefix = ctf01d::var_string::create({"config", "ip-or-host-prefix"}, "", m_teams_config_vars);
   m_ip_or_host_suffix = ctf01d::var_string::create({"config", "ip-or-host-suffix"}, "", m_teams_config_vars);
-
-  m_scoreboard = nullptr;
 }
 
 employ_config::~employ_config() {
@@ -284,15 +280,6 @@ bool employ_config::apply_config() {
     return false;
   }
 
-  // scoreboard
-  m_scoreboard = std::make_shared<ctf01d::scoreboard>(
-    m_scoreboard_random->value(),
-    m_game_config.start_utc_in_seconds(),
-    m_game_config.end_utc_in_seconds(),
-    m_game_config.coffee_break_start_utc_in_seconds(),
-    m_game_config.coffee_break_end_utc_in_seconds()
-  );
-
   m_applied_config = true;
   m_files_watcher->watchFile(m_config_filepath);
   m_thread_watcher = std::thread(&employ_config::thread_watcher, this);
@@ -379,10 +366,6 @@ int employ_config::game_coffee_break_start_utc_in_seconds() const {
 
 int employ_config::game_coffee_break_end_utc_in_seconds() const {
   return m_game_config.coffee_break_end_utc_in_seconds();
-}
-
-std::shared_ptr<ctf01d::scoreboard> employ_config::scoreboard() {
-  return m_scoreboard;
 }
 
 std::shared_ptr<ctf01d::flag_id_generator> employ_config::default_flag_id_generator() {

@@ -36,6 +36,7 @@
  ***********************************************************************************/
 
 #include "ctf01d_scoreboard.h"
+#include <wsjcpp_employees.h>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>

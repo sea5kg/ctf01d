@@ -41,18 +41,34 @@
 #include <json.hpp>
 #include "ctf01d/objects/ctf01d_service_statistics.h"
 #include "ctf01d/objects/ctf01d_flag.h"
+#include "ctf01d/objects/ctf01d_scoreboard.h"
 
-class EmployScoreboard : public WsjcppEmployBase {
+class employ_scoreboard : public WsjcppEmployBase {
 public:
-  EmployScoreboard();
-  static std::string name() { return "EmployScoreboard"; }
+  employ_scoreboard();
+  static std::string name() { return "employ_scoreboard"; }
   virtual bool init(const std::string &sName, bool bSilent) override;
   virtual bool deinit(const std::string &sName, bool bSilent) override;
+
+  void set_service_status(const std::string &team_id, const std::string &service_id, const std::string &status);
+  void insert_flag_attempt(const std::string &thief_team_id, const std::string &flag_value, const std::string &request_ip);
+  void init_state_from_storage();
+  // Returns flag points on success; std::nullopt if this team has already
+  // stolen the flag (dedup check happens under the same lock as the insert
+  // so concurrent submissions can't double-credit).
+  std::optional<int> increment_attack_score(const ctf01d::flag &flag, const std::string &team_id);
+  void increment_defense_score(const ctf01d::flag &flag);
+  void increment_flags_putted_and_service_up(const ctf01d::flag &flag);
+  void insert_flag_put_fail(const ctf01d::flag &flag, const std::string &service_status, const std::string &description_status);
+  // void update_points(const std::string &team_id, const std::string &service_id);
+  std::string service_status(const std::string &team_id, const std::string &service_id);
+  const nlohmann::json &to_json();
 
 private:
   bool init_services_stats();
 
   std::string TAG;
+  std::shared_ptr<ctf01d::scoreboard> m_scoreboard;
   std::mutex m_mutex_services_statistics;
   std::map<std::string, std::shared_ptr<ctf01d::service_statistics>> m_services_statistics;
 };

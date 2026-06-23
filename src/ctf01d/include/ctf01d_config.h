@@ -73,7 +73,6 @@ public:
   virtual bool game_has_coffee_break() const = 0;
   virtual int game_coffee_break_start_utc_in_seconds() const = 0;
   virtual int game_coffee_break_end_utc_in_seconds() const = 0;
-  virtual std::shared_ptr<ctf01d::scoreboard> scoreboard() = 0;
   virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() = 0;
 };
 
