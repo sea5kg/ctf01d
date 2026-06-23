@@ -277,9 +277,6 @@ int main(int argc, const char* argv[]) {
     // signal( SIGINT, quitApp );
     // signal( SIGTERM, quitApp );
 
-    // TODO move to hot reload and EmployScoreboard::init
-    auto config = findWsjcppEmploy<ctf01d::config>();
-
     std::vector<ctf01d::service_checker_thread *> vThreads;
     sea5kg::log::info(TAG, "Starting threads...");
     for (unsigned int iservice = 0; iservice < config->services().size(); iservice++) {
@@ -297,6 +294,7 @@ int main(int argc, const char* argv[]) {
         ctf01d::team_config team_config = config->teams()[i_team];
 
         // reset status to down
+        // TODO reset must be in scoreboard and only if game in started not ended
         findWsjcppEmploy<employ_scoreboard>()->set_service_status(team_config.id(), service_config.id(), ctf01d::service_status_cell::SERVICE_DOWN);
 
         ctf01d::service_checker_thread *thr = new ctf01d::service_checker_thread(service_logger, service_config, team_config);
