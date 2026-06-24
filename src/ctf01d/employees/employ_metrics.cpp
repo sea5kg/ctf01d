@@ -83,11 +83,14 @@ static void prometheusMetricInfo(std::ostringstream &oss, const std::string &sNa
     << "# TYPE " << sName << " " << sType << "\n";
 }
 
-class employ_metrics : public WsjcppEmployBase, public ctf01d::metrics {
+class employ_metrics : public WsjcppEmployBase, public ctf01d::metrics, public ctf01d::listener_config_changed {
 public:
   employ_metrics();
   virtual bool init(const std::string &name, bool silent) override;
   virtual bool deinit(const std::string &name, bool silent) override;
+
+  // ctf01d::listener_config_changed
+  virtual void config_changed() override;
 
   // ctf01d::metrics
   virtual bool is_prometheus_metrics_client_allowed(const std::string &request_ip) override;
@@ -99,6 +102,7 @@ private:
   bool m_prometheus_metrics_enabled = false;
   ctf01d::config *m_config;
   ctf01d::scoreboard *m_scoreboard;
+  std::mutex m_mutex;
 };
 
 REGISTRY_WSJCPP_EMPLOY(employ_metrics)
@@ -108,14 +112,16 @@ employ_metrics::employ_metrics()
   TAG = ctf01d::metrics::name();
   m_scoreboard = nullptr;
   m_config = nullptr;
+  m_prometheus_metrics_allowed_list_ip = "";
+  m_prometheus_metrics_enabled = false;
 }
 
 bool employ_metrics::init(const std::string &name, bool silent) {
   sea5kg::log::info(TAG, "init");
   m_scoreboard = findWsjcppEmploy<ctf01d::scoreboard>();
   m_config = findWsjcppEmploy<ctf01d::config>();
-  m_prometheus_metrics_allowed_list_ip = findWsjcppEmploy<ctf01d::config>()->scoreboard_metrics_allowed_for()->value();
-  m_prometheus_metrics_enabled = findWsjcppEmploy<ctf01d::config>()->scoreboard_metrics_enabled()->value();
+  config_changed();
+  m_config->add_listener(this);
   return true;
 }
 
@@ -124,7 +130,23 @@ bool employ_metrics::deinit(const std::string &name, bool silent) {
   return true;
 }
 
+// ctf01d::listener_config_changed
+void employ_metrics::config_changed() {
+  if (m_config == nullptr) {
+    return;
+  }
+  std::lock_guard<std::mutex> lock(m_mutex);
+  if (m_prometheus_metrics_allowed_list_ip != m_config->scoreboard_metrics_allowed_for()) {
+    sea5kg::log::warn(TAG, "Applied option: '" + m_prometheus_metrics_allowed_list_ip + "' -> '" + m_config->scoreboard_metrics_allowed_for() + "'");
+    m_prometheus_metrics_allowed_list_ip = m_config->scoreboard_metrics_allowed_for();
+  }
+  if (m_prometheus_metrics_enabled != m_config->scoreboard_metrics_enabled()) {
+    
+  }
+}
+
 bool employ_metrics::is_prometheus_metrics_client_allowed(const std::string &request_ip) {
+  std::lock_guard<std::mutex> lock(m_mutex);
   // Decide whether a client may access /api/v1/metrics. The allowlist is a
   // comma-separated list of IP patterns matched with libhv's wildcard matcher
   // (only a trailing '*' is supported), e.g. "10.10.100.*, 127.0.*". On A/D CTF
@@ -154,6 +176,7 @@ bool employ_metrics::is_prometheus_metrics_client_allowed(const std::string &req
 }
 
 std::string employ_metrics::prometheus_metrics() {
+  std::lock_guard<std::mutex> lock(m_mutex);
 
   nlohmann::json jsonScoreboard = m_scoreboard->to_json();
 

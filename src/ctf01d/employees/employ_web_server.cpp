@@ -135,18 +135,18 @@ employ_web_server::employ_web_server()
   m_metrics = nullptr;
 }
 
-bool employ_web_server::init(const std::string &name, bool bSilent) {
+bool employ_web_server::init(const std::string &name, bool silent) {
   sea5kg::log::info(TAG, "init");
   m_config = findWsjcppEmploy<ctf01d::config>();
   m_scoreboard = findWsjcppEmploy<ctf01d::scoreboard>();
   m_metrics = findWsjcppEmploy<ctf01d::metrics>();
 
-  m_metrics_enabled.store(m_config->scoreboard_metrics_enabled()->value());
+  m_metrics_enabled.store(m_config->scoreboard_metrics_enabled());
   m_auto_detection_team_id_by_subnet_ip.store(m_config->scoreboard_auto_detection_team_id_by_subnet_ip()->value());
   return true;
 }
 
-bool employ_web_server::deinit(const std::string &name, bool bSilent) {
+bool employ_web_server::deinit(const std::string &name, bool silent) {
   sea5kg::log::info(TAG, "deinit");
   return true;
 }

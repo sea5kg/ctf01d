@@ -81,8 +81,8 @@ public:
   virtual std::string scoreboard_html_folder() const override;
   virtual std::shared_ptr<ctf01d::var_bool> scoreboard_auto_detection_team_id_by_subnet_ip() const override;
   virtual bool scoreboard_random() const override;
-  virtual std::shared_ptr<ctf01d::var_bool> scoreboard_metrics_enabled() const override;
-  virtual std::shared_ptr<ctf01d::var_allowed_ip> scoreboard_metrics_allowed_for() const override;
+  virtual bool scoreboard_metrics_enabled() const override;
+  virtual std::string scoreboard_metrics_allowed_for() const override;
   virtual std::string game_id() const override;
   virtual std::string game_name() const override;
   virtual int flag_lifetime_in_seconds() const override;
@@ -93,6 +93,7 @@ public:
   virtual int game_coffee_break_start_utc_in_seconds() const override;
   virtual int game_coffee_break_end_utc_in_seconds() const override;
   virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() override;
+  virtual void add_listener(ctf01d::listener_config_changed *listener) override;
 
 private:
   void update_files_in_data();
@@ -146,6 +147,7 @@ private:
   std::thread m_thread_watcher;
   std::mutex m_mutex_thread_watcher;
   std::shared_ptr<ctf01d::files_watcher> m_files_watcher;
+  std::vector<ctf01d::listener_config_changed *> m_listeners;
 };
 
 REGISTRY_WSJCPP_EMPLOY(employ_config)
@@ -322,12 +324,12 @@ bool employ_config::scoreboard_random() const {
   return m_scoreboard_random->value();
 }
 
-std::shared_ptr<ctf01d::var_bool> employ_config::scoreboard_metrics_enabled() const {
-  return m_scoreboard_metrics_enabled;
+bool employ_config::scoreboard_metrics_enabled() const {
+  return m_scoreboard_metrics_enabled->value();
 }
 
-std::shared_ptr<ctf01d::var_allowed_ip> employ_config::scoreboard_metrics_allowed_for() const {
-  return m_scoreboard_metrics_allowed_for;
+std::string employ_config::scoreboard_metrics_allowed_for() const {
+  return m_scoreboard_metrics_allowed_for->value();
 }
 
 std::string employ_config::game_id() const {
@@ -370,6 +372,10 @@ int employ_config::game_coffee_break_end_utc_in_seconds() const {
 
 std::shared_ptr<ctf01d::flag_id_generator> employ_config::default_flag_id_generator() {
   return m_game_config.default_flag_id_generator();
+}
+
+void employ_config::add_listener(ctf01d::listener_config_changed *listener) {
+  m_listeners.push_back(listener);
 }
 
 // helper
@@ -815,7 +821,7 @@ bool employ_config::readTeamsConf(WsjcppYaml &yaml) {
 
     m_teams.push_back(_team_config);
     m_teams_cache[_team_config.id()] = _team_config;
-    
+
     if (m_scoreboard_auto_detection_team_id_by_subnet_ip->value()) {
       if (m_teams_subnets.count(_team_config.ip_subnet()) > 0) {
         sea5kg::log::err(TAG, "Found duplicate subnet: " + _team_config.ip_subnet());
@@ -911,6 +917,7 @@ void employ_config::hot_reload_config_yaml() {
     return;
   }
   auto cursor = yaml.getCursor();
+  bool config_changed = false;
   {
     std::shared_ptr<ctf01d::var_bool> reload_bool_var;
     bool prev_value;
@@ -920,6 +927,7 @@ void employ_config::hot_reload_config_yaml() {
     if (reload_bool_var->read(cursor, err)) {
       if (prev_value != reload_bool_var->value()) {
         sea5kg::log::info(TAG, "Updated option: " + reload_bool_var->name() + " " + reload_bool_var->to_string());
+        config_changed = true;
         findWsjcppEmploy<ctf01d::web_server>()->set_metrics_enabled(reload_bool_var->value());
       }
     };
@@ -930,13 +938,18 @@ void employ_config::hot_reload_config_yaml() {
     if (reload_bool_var->read(cursor, err)) {
       if (prev_value != reload_bool_var->value()) {
         sea5kg::log::info(TAG, "Updated option: " + reload_bool_var->name() + " " + reload_bool_var->to_string());
+        config_changed = true;
         findWsjcppEmploy<ctf01d::web_server>()->set_auto_detection_team_id_by_subnet_ip(reload_bool_var->value());
       }
     };
   }
 
+  if (config_changed) {
+    for (int i = 0; i < m_listeners.size(); ++i) {
+      m_listeners[i]->config_changed();
+    }
+  }
   // std::shared_ptr<ctf01d::var_allowed_ip> m_scoreboard_metrics_allowed_for;
-
   // if (!m_scoreboard_vars.read(cursor, err)) {
   //   sea5kg::log::err(TAG, err);
   //   return;

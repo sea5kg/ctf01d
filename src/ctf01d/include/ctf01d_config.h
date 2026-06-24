@@ -44,6 +44,11 @@
 
 namespace ctf01d {
 
+class listener_config_changed {
+public:
+  virtual void config_changed() = 0;
+};
+
 class config {
 public:
   static std::string name() { return "config"; }
@@ -61,8 +66,8 @@ public:
   virtual std::string scoreboard_html_folder() const = 0;
   virtual std::shared_ptr<ctf01d::var_bool> scoreboard_auto_detection_team_id_by_subnet_ip() const = 0;
   virtual bool scoreboard_random() const = 0;
-  virtual std::shared_ptr<ctf01d::var_bool> scoreboard_metrics_enabled() const = 0;
-  virtual std::shared_ptr<ctf01d::var_allowed_ip> scoreboard_metrics_allowed_for() const = 0;
+  virtual bool scoreboard_metrics_enabled() const = 0;
+  virtual std::string scoreboard_metrics_allowed_for() const = 0;
   virtual std::string game_id() const = 0;
   virtual std::string game_name() const = 0;
   virtual int flag_lifetime_in_seconds() const = 0;
@@ -73,6 +78,7 @@ public:
   virtual int game_coffee_break_start_utc_in_seconds() const = 0;
   virtual int game_coffee_break_end_utc_in_seconds() const = 0;
   virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() = 0;
+  virtual void add_listener(ctf01d::listener_config_changed *listener) = 0;
 };
 
 } // namespace ctf01d
