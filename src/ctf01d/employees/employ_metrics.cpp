@@ -141,7 +141,8 @@ void employ_metrics::config_changed() {
     m_prometheus_metrics_allowed_list_ip = m_config->scoreboard_metrics_allowed_for();
   }
   if (m_prometheus_metrics_enabled != m_config->scoreboard_metrics_enabled()) {
-    
+    sea5kg::log::warn(TAG, "Applied option: prometheus metric enabled '" + std::string(m_prometheus_metrics_enabled ? "yes" : "no") + "' -> '" + (m_config->scoreboard_metrics_enabled() ? "yes" : "no") + "'");
+    m_prometheus_metrics_enabled = m_config->scoreboard_metrics_enabled();
   }
 }
 
