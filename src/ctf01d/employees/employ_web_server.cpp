@@ -66,13 +66,16 @@
 #include "hssl.h"  // libhv
 #include "hlog.h"  // libhv
 
-class employ_web_server : public WsjcppEmployBase, public ctf01d::web_server {
+class employ_web_server : public WsjcppEmployBase, public ctf01d::web_server, public ctf01d::listener_config_changed {
 public:
   employ_web_server();
   virtual bool init(const std::string &name, bool bSilent) override;
   virtual bool deinit(const std::string &name, bool bSilent) override;
 
-  // IWebServer
+  // ctf01d::listener_config_changed
+  virtual void config_changed() override;
+
+  // ctf01d::web_server
   virtual int start() override;
   virtual void set_metrics_enabled(bool val) override;
   virtual void set_auto_detection_team_id_by_subnet_ip(bool val) override;
@@ -141,8 +144,9 @@ bool employ_web_server::init(const std::string &name, bool silent) {
   m_scoreboard = findWsjcppEmploy<ctf01d::scoreboard>();
   m_metrics = findWsjcppEmploy<ctf01d::metrics>();
 
-  m_metrics_enabled.store(m_config->scoreboard_metrics_enabled());
-  m_auto_detection_team_id_by_subnet_ip.store(m_config->scoreboard_auto_detection_team_id_by_subnet_ip()->value());
+  config_changed();
+
+  m_config->add_listener(this);
   return true;
 }
 
@@ -150,6 +154,25 @@ bool employ_web_server::deinit(const std::string &name, bool silent) {
   sea5kg::log::info(TAG, "deinit");
   return true;
 }
+
+// ctf01d::listener_config_changed
+void employ_web_server::config_changed() {
+  if (m_config == nullptr) {
+    return;
+  }
+
+  if (m_metrics_enabled.load() != m_config->scoreboard_metrics_enabled()) {
+    m_metrics_enabled.store(m_config->scoreboard_metrics_enabled());
+  }
+
+  if (m_auto_detection_team_id_by_subnet_ip.load() != m_config->scoreboard_auto_detection_team_id_by_subnet_ip()) {
+    m_auto_detection_team_id_by_subnet_ip.store(m_config->scoreboard_auto_detection_team_id_by_subnet_ip());
+  }
+
+  // std::lock_guard<std::mutex> lock(m_mutex);
+
+}
+
 
 static std::shared_ptr<sea5kg::logger> g_http_logger = std::shared_ptr<sea5kg::logger>(sea5kg::logger::create());
 

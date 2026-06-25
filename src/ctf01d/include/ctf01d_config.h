@@ -64,7 +64,7 @@ public:
   virtual std::string find_team_id_by_subnet(const std::string &ip) const = 0;
   virtual int scoreboard_port() const = 0;
   virtual std::string scoreboard_html_folder() const = 0;
-  virtual std::shared_ptr<ctf01d::var_bool> scoreboard_auto_detection_team_id_by_subnet_ip() const = 0;
+  virtual bool scoreboard_auto_detection_team_id_by_subnet_ip() const = 0;
   virtual bool scoreboard_random() const = 0;
   virtual bool scoreboard_metrics_enabled() const = 0;
   virtual std::string scoreboard_metrics_allowed_for() const = 0;

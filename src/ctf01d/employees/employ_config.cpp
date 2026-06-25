@@ -79,7 +79,7 @@ public:
   virtual std::string find_team_id_by_subnet(const std::string &ip) const override;
   virtual int scoreboard_port() const override;
   virtual std::string scoreboard_html_folder() const override;
-  virtual std::shared_ptr<ctf01d::var_bool> scoreboard_auto_detection_team_id_by_subnet_ip() const override;
+  virtual bool scoreboard_auto_detection_team_id_by_subnet_ip() const override;
   virtual bool scoreboard_random() const override;
   virtual bool scoreboard_metrics_enabled() const override;
   virtual std::string scoreboard_metrics_allowed_for() const override;
@@ -316,8 +316,8 @@ std::string employ_config::scoreboard_html_folder() const {
   return m_scoreboard_html_folder->value();
 }
 
-std::shared_ptr<ctf01d::var_bool> employ_config::scoreboard_auto_detection_team_id_by_subnet_ip() const {
-  return m_scoreboard_auto_detection_team_id_by_subnet_ip;
+bool employ_config::scoreboard_auto_detection_team_id_by_subnet_ip() const {
+  return m_scoreboard_auto_detection_team_id_by_subnet_ip->value();
 }
 
 bool employ_config::scoreboard_random() const {
