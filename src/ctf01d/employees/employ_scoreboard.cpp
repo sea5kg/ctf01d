@@ -55,12 +55,16 @@
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/include/ctf01d_database.h"
 
-class employ_scoreboard : public WsjcppEmployBase, public ctf01d::scoreboard {
+class employ_scoreboard : public WsjcppEmployBase, public ctf01d::scoreboard, public ctf01d::listener_config_changed {
 public:
   employ_scoreboard();
   virtual bool init(const std::string &sName, bool bSilent) override;
   virtual bool deinit(const std::string &sName, bool bSilent) override;
 
+  // ctf01d::listener_config_changed
+  virtual void config_changed() override;
+
+  // ctf01d::scoreboard
   virtual void set_service_status(const std::string &team_id, const std::string &service_id, const std::string &status) override;
   virtual void insert_flag_attempt(const std::string &thief_team_id, const std::string &flag_value, const std::string &request_ip) override;
   virtual void init_state_from_storage() override;
@@ -112,7 +116,6 @@ private:
   // std::mutex m_mutex_services_statistics;
   // std::map<std::string, std::shared_ptr<ctf01d::service_statistics>> m_services_statistics;
 };
-
 
 REGISTRY_WSJCPP_EMPLOY(employ_scoreboard)
 
@@ -180,7 +183,7 @@ bool employ_scoreboard::init(const std::string &sName, bool bSilent) {
   sea5kg::log::info(TAG, "Restoring states from storage...");
   init_state_from_storage();
   sea5kg::log::ok(TAG, "Restored state from storage.");
-
+  config->add_listener(this);
   return true;
 }
 
@@ -189,6 +192,12 @@ bool employ_scoreboard::deinit(const std::string &sName, bool bSilent) {
   return true;
 }
 
+void employ_scoreboard::config_changed() {
+  std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
+  auto config = findWsjcppEmploy<ctf01d::config>();
+  // update time in scoreboard response for inform client about some changes in config
+  m_scoreboard[ctf01d::json_fields::CONFIG_UPDATED] = config->updated_time();
+}
 
 void employ_scoreboard::init_json_scoreboard() {
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
@@ -237,8 +246,9 @@ void employ_scoreboard::init_json_scoreboard() {
   jsonGame["t1"] = config->game_coffee_break_start_utc_in_seconds();
   jsonGame["t2"] = config->game_coffee_break_end_utc_in_seconds();
   jsonGame["t3"] = config->game_end_utc_in_seconds();
-  jsonGame["tc"] = WsjcppCore::getCurrentTimeInSeconds();
   m_scoreboard["game"] = jsonGame;
+  m_scoreboard[ctf01d::json_fields::CONFIG_UPDATED] = config->updated_time();
+  m_scoreboard[ctf01d::json_fields::CURRENT_TIME] = WsjcppCore::getCurrentTimeInSeconds();
 }
 
 void employ_scoreboard::update_json_scoreboard() {
@@ -580,6 +590,6 @@ void employ_scoreboard::update_services_statistics() {
 
 const nlohmann::json &employ_scoreboard::to_json() {
   std::lock_guard<std::mutex> lock(m_mutex_scoreboard);
-  m_scoreboard["game"]["tc"] = WsjcppCore::getCurrentTimeInSeconds();
+  m_scoreboard[ctf01d::json_fields::CURRENT_TIME] = WsjcppCore::getCurrentTimeInSeconds();
   return m_scoreboard;
 }

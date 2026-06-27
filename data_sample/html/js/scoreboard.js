@@ -779,7 +779,7 @@ function updateScoreboard() {
 
     // game time
     var game_len_time = resp.game.t3 - resp.game.t0;
-    var game_passed_time = resp.game.tc - resp.game.t0;
+    var game_passed_time = resp.t - resp.game.t0;
 
     // all summary tries-activities
     var all_activities_id = "tries-all-summary-teams"
@@ -799,18 +799,18 @@ function updateScoreboard() {
     }
 
         // console.log("game_len_time", game_len_time);
-        if (resp.game.tc < resp.game.t0) {
+        if (resp.t < resp.game.t0) {
             silentUpdateWithoutAnimation(
                 'game_current_time',
-                'game started after: ' + humanTimeFromSeconds(resp.game.t0 - resp.game.tc)
+                'game started after: ' + humanTimeFromSeconds(resp.game.t0 - resp.t)
             );
             document.getElementById('game_progress_time').style.display = 'none';
-        } else if (resp.game.tc >= resp.game.t1 && resp.game.tc <= resp.game.t2) { // coffee break
+        } else if (resp.t >= resp.game.t1 && resp.t <= resp.game.t2) { // coffee break
             silentUpdateWithoutAnimation(
                 'game_current_time',
-                'the game will continue after the coffee break in ' + humanTimeFromSeconds(resp.game.t2 - resp.game.tc)
+                'the game will continue after the coffee break in ' + humanTimeFromSeconds(resp.game.t2 - resp.t)
             );
-        } else if (resp.game.tc > resp.game.t3) {
+        } else if (resp.t > resp.game.t3) {
             silentUpdateWithoutAnimation('game_current_time', 'game ended');
             document.getElementById('game_progress_time').style.display = 'block';
             document.getElementById('game_progress_time').style.width = '100%';
@@ -821,20 +821,20 @@ function updateScoreboard() {
             // console.log("game passed_time", (game_passed_time / game_len_time)*100);
             document.getElementById('game_progress_time').style.display = 'block';
             document.getElementById('game_progress_time').style.width = Math.ceil((game_passed_time / game_len_time)*100) + '%';
-            if (resp.game.tc > resp.game.t0 && resp.game.tc < resp.game.t1) { // before coffee break
+            if (resp.t > resp.game.t0 && resp.t < resp.game.t1) { // before coffee break
                 silentUpdateWithoutAnimation(
                     'game_current_time',
-                    'game time: ' + humanTimeFromSeconds(resp.game.tc - resp.game.t0) + ' and coffee break will start in ' + humanTimeFromSeconds(resp.game.t1 - resp.game.tc)
+                    'game time: ' + humanTimeFromSeconds(resp.t - resp.game.t0) + ' and coffee break will start in ' + humanTimeFromSeconds(resp.game.t1 - resp.t)
                 );
                 document.getElementById('game_progress_time').style.display = 'block';
-            } else if (resp.game.tc > resp.game.t2 && resp.game.tc < resp.game.t3) { // after coffee break
+            } else if (resp.t > resp.game.t2 && resp.t < resp.game.t3) { // after coffee break
                 silentUpdateWithoutAnimation(
                     'game_current_time',
-                    'game time: ' + humanTimeFromSeconds(resp.game.tc - resp.game.t0) + ' and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.game.tc)
+                    'game time: ' + humanTimeFromSeconds(resp.t - resp.game.t0) + ' and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.t)
                 );
             }
-        } else if (resp.game.tc > resp.game.t0 && resp.game.tc < resp.game.t3) { // before coffee break
-            silentUpdateWithoutAnimation('game_current_time', 'game time: ' + humanTimeFromSeconds(resp.game.tc - resp.game.t0) + ', and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.game.tc));
+        } else if (resp.t > resp.game.t0 && resp.t < resp.game.t3) { // before coffee break
+            silentUpdateWithoutAnimation('game_current_time', 'game time: ' + humanTimeFromSeconds(resp.t - resp.game.t0) + ', and game will end in ' + humanTimeFromSeconds(resp.game.t3 - resp.t));
             document.getElementById('game_progress_time').style.display = 'block';
             document.getElementById('game_progress_time').style.width = Math.ceil((game_passed_time / game_len_time)*100) + '%';
         }

@@ -46,10 +46,10 @@ namespace ctf01d {
 class files_watcher {
 public:
   files_watcher();
-  bool watchFile(const std::string &filepath);
-  void stopWatchingFile(const std::string &filepath);
-  long getLastModifiedTimeFile(const std::string &filepath);
-  bool isModifiedFile(const std::string &filepath);
+  bool watch_file(const std::string &filepath);
+  void stop_watching_file(const std::string &filepath);
+  long get_last_modified_time_file(const std::string &filepath);
+  bool is_modified_file(const std::string &filepath);
   std::map<std::string, long> get_modified_files();
 private:
   std::string TAG;

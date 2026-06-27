@@ -59,18 +59,18 @@ int main() {
 
   std::string file_1_txt = "test_file_watcher/1.txt";
   WsjcppCore::writeFile(file_1_txt, "test1 " + wsjcpp::Core::randomString(alphabet, 10));
-  watcher->watchFile(file_1_txt);
+  watcher->watch_file(file_1_txt);
   // std::cout << "LastModifiedTimeFile: " << watcher->getLastModifiedTimeFile(file_1_txt) << std::endl;
 
   std::string file_2_txt = "test_file_watcher/2.txt";
   WsjcppCore::writeFile(file_2_txt, "test2 " + wsjcpp::Core::randomString(alphabet, 10));
-  watcher->watchFile(file_2_txt);
+  watcher->watch_file(file_2_txt);
 
   std::string file_3_txt = "test_file_watcher/3.txt";
   WsjcppCore::writeFile(file_3_txt, "test3 " + wsjcpp::Core::randomString(alphabet, 10));
-  watcher->watchFile(file_3_txt);
+  watcher->watch_file(file_3_txt);
 
-  if (watcher->isModifiedFile(file_1_txt)) {
+  if (watcher->is_modified_file(file_1_txt)) {
     std::cerr << "Wrong state. File must be not modified" << std::endl;
     return -1;
   }
@@ -81,7 +81,7 @@ int main() {
   WsjcppCore::writeFile(file_2_txt, "test2 " + wsjcpp::Core::randomString(alphabet, 20));
   // std::cout << "LastModifiedTimeFile: " << watcher->getLastModifiedTimeFile(file_1_txt) << std::endl;
 
-  if (!watcher->isModifiedFile(file_1_txt)) {
+  if (!watcher->is_modified_file(file_1_txt)) {
     std::cerr << "Expected that file was modified." << std::endl;
     return -1;
   }

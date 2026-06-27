@@ -94,6 +94,7 @@ public:
   virtual int game_coffee_break_end_utc_in_seconds() const override;
   virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() override;
   virtual void add_listener(ctf01d::listener_config_changed *listener) override;
+  virtual long updated_time() override;
 
 private:
   void update_files_in_data();
@@ -110,13 +111,14 @@ private:
   bool init_logger();
 
   void thread_watcher();
-  void hot_reload_config_yaml();
+  void hot_reload_config_yaml(long modified_config_time);
 
   std::string TAG;
   std::string m_ctf01d_version;
   std::string m_work_dir;
   std::string m_config_filepath;
   bool m_applied_config;
+  long m_updated_time;
 
   // scoreboard config
   ctf01d::scope_vars m_scoreboard_vars = ctf01d::scope_vars("scoreboard_config");
@@ -173,6 +175,7 @@ employ_config::employ_config()
 
   m_ip_or_host_prefix = ctf01d::var_string::create({"config", "ip-or-host-prefix"}, "", m_teams_config_vars);
   m_ip_or_host_suffix = ctf01d::var_string::create({"config", "ip-or-host-suffix"}, "", m_teams_config_vars);
+  m_updated_time = 0;
 }
 
 employ_config::~employ_config() {
@@ -283,7 +286,8 @@ bool employ_config::apply_config() {
   }
 
   m_applied_config = true;
-  m_files_watcher->watchFile(m_config_filepath);
+  m_files_watcher->watch_file(m_config_filepath);
+  m_updated_time = m_files_watcher->get_last_modified_time_file(m_config_filepath);
   m_thread_watcher = std::thread(&employ_config::thread_watcher, this);
   return m_applied_config;
 }
@@ -378,6 +382,10 @@ void employ_config::add_listener(ctf01d::listener_config_changed *listener) {
   m_listeners.push_back(listener);
 }
 
+long employ_config::updated_time() {
+  return m_updated_time;
+}
+
 // helper
 std::string sha1_by_string(const std::string &data) {
   char hexstring[41]; // 40 chars + a zero
@@ -444,12 +452,12 @@ bool employ_config::update_ssl_keys() {
   if (!WsjcppCore::fileExists(flag_private_path) || !WsjcppCore::fileExists(flag_public_path)) {
     // 1. Инициализируем генератор случайных чисел
     RAND_poll();
-    
+
     // 2. Генерируем RSA ключ
     RSA* rsa = RSA_new();
     BIGNUM* exp = BN_new();
     BN_set_word(exp, RSA_F4); // 65537 - стандартная экспонента
-    
+
     if (!RSA_generate_key_ex(rsa, bits, exp, nullptr)) {
         std::cerr << "Ошибка генерации ключа!" << std::endl;
         return false;
@@ -461,18 +469,18 @@ bool employ_config::update_ssl_keys() {
         return false;
     }
     BIO_free(priv_bio);
-    
+
     BIO* pub_bio = BIO_new_file(flag_public_path.c_str(), "w");
     if (!PEM_write_bio_RSA_PUBKEY(pub_bio, rsa)) {
         std::cerr << "Ошибка сохранения публичного ключа!" << std::endl;
         return false;
     }
     BIO_free(pub_bio);
-    
+
     // 5. Очистка
     RSA_free(rsa);
     BN_free(exp);
-    
+
     std::cout << "✓ Ключи сгенерированы!" << std::endl;
   }
   return true;
@@ -564,7 +572,7 @@ void employ_config::update_data_html(nlohmann::json &previous_files_sha1) {
   if (!WsjcppCore::dirExists(m_work_dir + "/html")) {
     WsjcppCore::makeDir(m_work_dir + "/html");
   }
-  
+
   const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
   for (int i = 0; i < vFiles.size(); i++) {
     std::string source_filepath = vFiles[i]->getFilename();
@@ -897,7 +905,7 @@ void employ_config::thread_watcher() {
     for (auto it = modified_files.begin(); it != modified_files.end(); ++it) {
       const std::string &filepath = it->first;
       if (filepath == m_config_filepath) {
-        hot_reload_config_yaml();
+        hot_reload_config_yaml(it->second);
       } else {
         sea5kg::log::warn(TAG, "TODO update file watched " + filepath);
       }
@@ -905,7 +913,7 @@ void employ_config::thread_watcher() {
   }
 }
 
-void employ_config::hot_reload_config_yaml() {
+void employ_config::hot_reload_config_yaml(long modified_config_time) {
   if (!WsjcppCore::fileExists(m_config_filepath)) {
     sea5kg::log::err(TAG, "File " + m_config_filepath + " does not exists");
     return;
@@ -945,6 +953,8 @@ void employ_config::hot_reload_config_yaml() {
   }
 
   if (config_changed) {
+    m_updated_time = modified_config_time;
+    sea5kg::log::info(TAG, "m_updated_time " + std::to_string(m_updated_time));
     for (int i = 0; i < m_listeners.size(); ++i) {
       m_listeners[i]->config_changed();
     }

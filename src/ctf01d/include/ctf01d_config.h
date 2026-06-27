@@ -79,6 +79,7 @@ public:
   virtual int game_coffee_break_end_utc_in_seconds() const = 0;
   virtual std::shared_ptr<ctf01d::flag_id_generator> default_flag_id_generator() = 0;
   virtual void add_listener(ctf01d::listener_config_changed *listener) = 0;
+  virtual long updated_time() = 0;
 };
 
 } // namespace ctf01d

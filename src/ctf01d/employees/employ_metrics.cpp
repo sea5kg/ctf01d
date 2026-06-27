@@ -42,6 +42,7 @@
 #include <wsjcpp_core.h>
 #include <filesystem>
 #include "ctf01d/include/ctf01d_config.h"
+#include "ctf01d/include/ctf01d_globals.h"
 #include "ctf01d/include/ctf01d_scoreboard.h"
 #include "ctf01d/include/ctf01d_metrics.h"
 #include "ctf01d/include/ctf01d_alive_flags.h"
@@ -195,7 +196,7 @@ std::string employ_metrics::prometheus_metrics() {
   prometheusMetricInfo(oss, "ctf01d_game_coffee_break_end_timestamp_seconds", "gauge", "Coffee break end.");
   oss << "ctf01d_game_coffee_break_end_timestamp_seconds " << jsonScoreboard["game"]["t2"].get<long>() << "\n";
   prometheusMetricInfo(oss, "ctf01d_game_current_time_seconds", "gauge", "Server current time.");
-  oss << "ctf01d_game_current_time_seconds " << jsonScoreboard["game"]["tc"].get<long>() << "\n";
+  oss << "ctf01d_game_current_time_seconds " << jsonScoreboard[ctf01d::json_fields::CURRENT_TIME].get<long>() << "\n";
 
   prometheusMetricInfo(oss, "ctf01d_teams_total", "gauge", "Teams in the game.");
   oss << "ctf01d_teams_total " << jsonScoreboard["scoreboard"].size() << "\n";

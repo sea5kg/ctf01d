@@ -46,7 +46,7 @@ files_watcher::files_watcher() {
   TAG = "files_watcher";
 }
 
-bool files_watcher::watchFile(const std::string &filepath) {
+bool files_watcher::watch_file(const std::string &filepath) {
   if (!WsjcppCore::fileExists(filepath)) {
     sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
@@ -57,13 +57,13 @@ bool files_watcher::watchFile(const std::string &filepath) {
     sea5kg::log::err(TAG, "File '" + filepath + "' already in watch list.");
     return false;
   }
-  // set real time modified
+  // get real time modified
   std::filesystem::file_time_type ftime = std::filesystem::last_write_time(filepath.c_str());
   m_files[filepath] = std::chrono::duration_cast<std::chrono::milliseconds>(ftime.time_since_epoch()).count();
   return true;
 }
 
-void files_watcher::stopWatchingFile(const std::string &filepath) {
+void files_watcher::stop_watching_file(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it != m_files.end()) {
@@ -71,7 +71,7 @@ void files_watcher::stopWatchingFile(const std::string &filepath) {
   }
 }
 
-long files_watcher::getLastModifiedTimeFile(const std::string &filepath) {
+long files_watcher::get_last_modified_time_file(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it == m_files.end()) {
@@ -84,7 +84,7 @@ long files_watcher::getLastModifiedTimeFile(const std::string &filepath) {
   return m_files[filepath];
 }
 
-bool files_watcher::isModifiedFile(const std::string &filepath) {
+bool files_watcher::is_modified_file(const std::string &filepath) {
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it == m_files.end()) {

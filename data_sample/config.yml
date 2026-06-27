@@ -320,4 +320,5 @@ teams:
       logo: "./html/images/teams/team30.png"
       logo-big: "./html/images/teams/team30.png"
       # ip-or-host: "192.168.88.3"
-      ip-or-host: "30"
+      # ip-or-host: "30"
+      ip-or-host: "0"
