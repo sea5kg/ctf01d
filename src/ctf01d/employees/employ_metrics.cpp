@@ -164,7 +164,7 @@ bool employ_metrics::is_prometheus_metrics_client_allowed(const std::string &req
     sIp = sIp.substr(sMappedPrefix.size());
   }
 
-  std::vector<std::string> vEntries = WsjcppCore::split(m_prometheus_metrics_allowed_list_ip, ",");
+  std::vector<std::string> vEntries = wsjcpp::split(m_prometheus_metrics_allowed_list_ip, ",");
   for (std::string sEntry : vEntries) {
     sEntry = WsjcppCore::trim(sEntry);
     if (sEntry.empty()) {

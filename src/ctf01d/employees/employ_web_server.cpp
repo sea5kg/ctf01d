@@ -324,7 +324,7 @@ int employ_web_server::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
   } else {
     request_path = sOriginalRequestPath;
   }
-  request_path = wsjcpp::normalizeFilePath(request_path);
+  request_path = wsjcpp::normalize_filepath(request_path);
 
   // hlogi("request_path = " + request_path);
   if (request_path == "/flag") { // Public endpoint. Allowed without authorization.
@@ -356,15 +356,15 @@ int employ_web_server::httpWebFolder(HttpRequest* req, HttpResponse* resp) {
       request_path = "/index.html";
   }
 
-  std::string filepath = wsjcpp::normalizeFilePath(m_sScoreboardHtmlFolder + "/" + request_path);
-  if (WsjcppCore::dirExists(filepath)) {
+  std::string filepath = wsjcpp::normalize_filepath(m_sScoreboardHtmlFolder + "/" + request_path);
+  if (wsjcpp::dir_exists(filepath)) {
       return 404;
   }
-  if (WsjcppCore::fileExists(filepath)) {
+  if (wsjcpp::file_exists(filepath)) {
       return resp->File(filepath.c_str());
   }
 
-  std::string sResPath = wsjcpp::normalizeFilePath("./data_sample/html/" + request_path);
+  std::string sResPath = wsjcpp::normalize_filepath("./data_sample/html/" + request_path);
   if (WsjcppResourcesManager::has(sResPath)) {
       WsjcppResourceFile *pFile = WsjcppResourcesManager::get(sResPath);
       resp->Data(

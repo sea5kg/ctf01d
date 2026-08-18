@@ -14,6 +14,7 @@
 - Redesign 'coffee-break' section
 - Fixed #121. Add team description (like a town or university) and show it in scoreboard small text under team name
 - Fixed #62. Added copyright and version of jury on webpage.
+- Updated wsjcpp-core from v0.2.5 to v0.3.0
 
 ## [v0.7.3] - (2026 June 10)
 

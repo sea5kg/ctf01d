@@ -57,7 +57,7 @@ std::string tryResolveRelativePath(const std::string &path) {
   if (ret.size() > 0 && ret[0] != '/') {
       ret = WsjcppCore::getCurrentDirectory() + "/" + ret;
   }
-  return wsjcpp::normalizeFilePath(ret);
+  return wsjcpp::normalize_filepath(ret);
 }
 
 bool findWorkDir(std::vector<std::string> &arguments, std::string &workDir) {
@@ -92,7 +92,7 @@ bool findWorkDir(std::vector<std::string> &arguments, std::string &workDir) {
 
     for (int i = 0; i < vPossibleFolders.size(); i++) {
       std::string sWorkDir = vPossibleFolders[i];
-      if (WsjcppCore::fileExists(sWorkDir + "/config.yml")) {
+      if (wsjcpp::file_exists(sWorkDir + "/config.yml")) {
         found = true;
         workDir = sWorkDir;
         break;

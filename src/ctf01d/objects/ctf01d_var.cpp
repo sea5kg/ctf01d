@@ -329,7 +329,7 @@ std::string var_dir::value() const {
 bool var_dir::set_value(const std::string &val, std::string &err) {
   std::string new_val = to_absolute_path(val);
 
-  if (!WsjcppCore::dirExists(new_val)) {
+  if (!wsjcpp::dir_exists(new_val)) {
     err = "Directory '" + new_val + "' does not exists";
     sea5kg::log::err("var_dir", err);
     return false;
@@ -345,7 +345,7 @@ std::string var_dir::to_absolute_path(const std::string &val) {
   if (ret.size() > 0 && ret[0] != '/') {
     ret = m_root_dir + "/" + ret;
   }
-  return wsjcpp::normalizeFilePath(ret);
+  return wsjcpp::normalize_filepath(ret);
 }
 
 
@@ -400,7 +400,7 @@ std::string var_file::value() const {
 bool var_file::set_value(const std::string &val, std::string &err) {
   std::string new_val = to_absolute_path(val);
 
-  if (!WsjcppCore::fileExists(new_val)) {
+  if (!wsjcpp::file_exists(new_val)) {
     err = "File '" + new_val + "' does not exists";
     sea5kg::log::err("var_file", err);
     return false;
@@ -416,7 +416,7 @@ std::string var_file::to_absolute_path(const std::string &val) {
   if (ret.size() > 0 && ret[0] != '/') {
     ret = m_root_dir + "/" + ret;
   }
-  return wsjcpp::normalizeFilePath(ret);
+  return wsjcpp::normalize_filepath(ret);
 }
 
 // ---------------------------------------------------------------------

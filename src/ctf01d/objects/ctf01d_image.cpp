@@ -70,7 +70,7 @@ bool image::reload_from_file(const std::string &filepath) {
     delete pBuffer;
   }
   m_filepath = filepath;
-  m_filename = WsjcppCore::extractFilename(filepath);
+  m_filename = wsjcpp::extract_filename(filepath);
   if (!WsjcppCore::readFileToBuffer(m_filepath, &pBuffer, nBufferSize)) {
     return false;
   }

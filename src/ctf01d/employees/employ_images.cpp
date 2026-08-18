@@ -157,7 +157,7 @@ void employ_images::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
 }
 
 bool employ_images::load_logo(const std::string &id, const std::string &filepath) {
-   if (!WsjcppCore::fileExists(filepath)) {
+   if (!wsjcpp::file_exists(filepath)) {
     sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
   }

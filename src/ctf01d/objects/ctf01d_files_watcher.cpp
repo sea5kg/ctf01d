@@ -47,7 +47,7 @@ files_watcher::files_watcher() {
 }
 
 bool files_watcher::watch_file(const std::string &filepath) {
-  if (!WsjcppCore::fileExists(filepath)) {
+  if (!wsjcpp::file_exists(filepath)) {
     sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
   }
@@ -77,7 +77,7 @@ long files_watcher::get_last_modified_time_file(const std::string &filepath) {
   if (it == m_files.end()) {
     return 0;
   }
-  if (!WsjcppCore::fileExists(filepath)) {
+  if (!wsjcpp::file_exists(filepath)) {
     sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
     return 0;
   }
@@ -90,7 +90,7 @@ bool files_watcher::is_modified_file(const std::string &filepath) {
   if (it == m_files.end()) {
     return false;
   }
-  if (!WsjcppCore::fileExists(filepath)) {
+  if (!wsjcpp::file_exists(filepath)) {
     sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
     return false;
   }
@@ -108,7 +108,7 @@ std::map<std::string, long> files_watcher::get_modified_files() {
   std::map<std::string, long> ret;
   for (auto it = m_files.begin(); it != m_files.end(); ++it) {
     const std::string &filepath = it->first;
-    if (!WsjcppCore::fileExists(filepath)) {
+    if (!wsjcpp::file_exists(filepath)) {
       sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
       // don't remove from m_files
       continue;

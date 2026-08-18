@@ -128,7 +128,7 @@ database_file::database_file(const std::string &sFilename, const std::string &sS
   m_sSqlCreateTable = sSqlCreateTable;
   auto config = findWsjcppEmploy<ctf01d::config>();
   std::string sDatabaseDir = config->get_work_dir() + "/db";
-  if (!WsjcppCore::dirExists(sDatabaseDir)) {
+  if (!wsjcpp::dir_exists(sDatabaseDir)) {
     if (!WsjcppCore::makeDir(sDatabaseDir)) {
       sea5kg::log::throw_err(TAG, "Could not create dir " + sDatabaseDir);
     }
@@ -139,7 +139,7 @@ database_file::database_file(const std::string &sFilename, const std::string &sS
   m_sFileFullpath = sDatabaseDir + "/" + m_sFilename;
 
   std::string sDatabaseBackupDir = sDatabaseDir + "/backups";
-  if (!WsjcppCore::dirExists(sDatabaseBackupDir)) {
+  if (!wsjcpp::dir_exists(sDatabaseBackupDir)) {
     if (!WsjcppCore::makeDir(sDatabaseBackupDir)) {
       sea5kg::log::throw_err(TAG, "Could not create dir " + sDatabaseBackupDir);
     }
@@ -250,13 +250,13 @@ void database_file::copy_database_to_backup() {
   int nMaxBackupsFiles = 9;
   sea5kg::log::info(TAG, "Start backup for " + m_sFileFullpath);
   std::string sFilebackup = m_sBaseFileBackupFullpath + "." + std::to_string(nMaxBackupsFiles);
-  if (WsjcppCore::fileExists(sFilebackup)) {
+  if (wsjcpp::file_exists(sFilebackup)) {
     WsjcppCore::removeFile(sFilebackup);
   }
   for (int i = nMaxBackupsFiles - 1; i >= 0; i--) {
     std::string sFilebackupFrom = m_sBaseFileBackupFullpath + "." + std::to_string(i);
     std::string sFilebackupTo = m_sBaseFileBackupFullpath + "." + std::to_string(i+1);
-    if (WsjcppCore::fileExists(sFilebackupFrom)) {
+    if (wsjcpp::file_exists(sFilebackupFrom)) {
       if (std::rename(sFilebackupFrom.c_str(), sFilebackupTo.c_str())) {
         sea5kg::log::throw_err(TAG, "Could not rename from " + sFilebackupFrom + " to " + sFilebackupTo);
       }

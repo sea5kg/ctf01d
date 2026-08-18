@@ -1,9 +1,9 @@
 wsjcpp_version: v0.0.1
 cmake_cxx_standard: 17
-cmake_minimum_required: 3.0
+cmake_minimum_required: 3.7
 
 name: wsjcpp-core
-version: v0.2.5
+version: v0.3.0
 description: Basic Utils for wsjcpp
 issues: https://github.com/wsjcpp/wsjcpp-core/issues
 repositories:
@@ -18,86 +18,41 @@ authors:
     email: mrseakg@gmail.com
 
 distribution:
-  - source-file: src/wsjcpp_core.cpp
+  - source-file: src/wsjcpp_core/wsjcpp_core.cpp
     target-file: wsjcpp_core.cpp
     type: "source-code"
-    sha1: "7e24a15978c6f63aef083606c06e8bde545f1ec1"
-  - source-file: src/wsjcpp_core.h
+    sha1: "2a3de591ee9266d731b41c469d36837d9275c0b3"
+  - source-file: src/wsjcpp_core/wsjcpp_core.h
     target-file: wsjcpp_core.h
     type: "source-code" # todo must be header-file
-    sha1: "c98f342fb6ee1a11576971f48d929f0a355e52e2"
-  - source-file: "src/wsjcpp_unit_tests.cpp"
+    sha1: "92ff899bb609c40881a2256a0f86114d14118b68"
+  - source-file: "src/wsjcpp_core/wsjcpp_unit_tests.cpp"
     target-file: "wsjcpp_unit_tests.cpp"
     type: "unit-tests"
-    sha1: "b96d9d06775069d0777cb168da16d432f019d5e9"
-  - source-file: "src/wsjcpp_unit_tests.h"
+    sha1: "ba8f7f30928c457f515b4f69b41cd7545b31cdf3"
+  - source-file: "src/wsjcpp_core/wsjcpp_unit_tests.h"
     target-file: "wsjcpp_unit_tests.h"
     type: "unit-tests"
-    sha1: "aa581f5678795a4a6b0ecc488181bb5289a03c6b"
-  - source-file: "src/wsjcpp_unit_tests_main.cpp"
+    sha1: "c097f9b6f3201d2b63e9c9b44f127d037959a36e"
+  - source-file: "src/wsjcpp_core/wsjcpp_unit_tests_main.cpp"
     target-file: "wsjcpp_unit_tests_main.cpp"
     type: "unit-tests"
-    sha1: "cd50e0ba4b0ff7501ad0dc8e6c6ce9f5c735a787"
-  - source-file: "scripts.wsjcpp/generate.WsjcppUnitTest.wsjcpp-script"
+    sha1: "07c37e61e39eb4cf670f977414a3822d57455386"
+  - source-file: "src/wsjcpp_core/generate.WsjcppUnitTest.wsjcpp-script"
     target-file: "generate.WsjcppUnitTest.wsjcpp-script"
     type: "safe-scripting-generate"
     sha1: "a7c9c2d19bf81c5b00e659384b0b92a99319a4c1"
-  - source-file: "scripts.wsjcpp/generate.Class.wsjcpp-script"
+  - source-file: "src/wsjcpp_core/generate.Class.wsjcpp-script"
     target-file: "generate.Class.wsjcpp-script"
     type: "safe-scripting-generate"
     sha1: "de1799907c685d606b93e08b821b540c2faa2db1"
 
-unit-tests:
-  cases:
-    - name: CoreNormalizePath
-      description: Check function normalizePath
-    - name: CoreExtractFilename
-      description: Check function extract filenane from path
-    - name: "ToUpper"
-      description: "String to upper"
-    - name: "CreateUuid"
-      description: "Test generation uuids"
-    - name: "GetEnv"
-      description: "Test getEnv function"
-    - name: "ToLower"
-      description: "Test toLower"
-    - name: "ReplaceAll"
-      description: "Test replace all"
-    - name: "DecodeUriComponent"
-      description: "Check decoding"
-    - name: "EncodeUriComponent"
-      description: "Check encoding"
-    - name: "Uint2HexString"
-      description: "Test convert unsigned int to hex string"
-    - name: "Split"
-      description: "Test split function"
-    - name: "CreateEmptyFile"
-      description: "Test create empty file"
-    - name: "ReadFileToBuffer"
-      description: "test for readFileToBuffer"
-    - name: "Join"
-      description: "Test join function"
-    - name: "getHumanSizeBytes"
-      description: "Test function get human size in bytes"
-    - name: "TestResources"
-      description: "Test basic resources"
-    - name: "ListOfDirs"
-      description: "Check list of directories"
-    - name: "FilePermissions"
-      description: ""
-    - name: "StringPadding"
-      description: ""
-    - name: "DateTimeFormat"
-      description: ""
-    - name: "MakeDirsPath"
-      description: ""
-    - name: "ExtractDirpath"
-      description: ""
-    - name: "ExtractFilepath"
-      description: ""
-    - name: "StartsWith"
-      description: ""
-
-    - name: "EndsWith"
-      description: ""
+resources:
+  output-generation-dir: src/resources.wsjcpp
+  files:
+    - filepath: "./src/resources/html/images/favicon.svg"
+      size: 10014
+      pack-as: "text"
+      modified: 1600318923
+      sha1: "a3393af3be6713c1268d38066e54087422b99c09"
 

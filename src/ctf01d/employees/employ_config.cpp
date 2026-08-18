@@ -244,7 +244,7 @@ bool employ_config::apply_config() {
 
   sea5kg::log::info(TAG, "Reading config: " + m_config_filepath);
 
-  if (!WsjcppCore::fileExists(m_config_filepath)) {
+  if (!wsjcpp::file_exists(m_config_filepath)) {
     sea5kg::log::err(TAG, "File " + m_config_filepath + " does not exists");
     return false;
   }
@@ -438,7 +438,7 @@ std::string sha1_by_file(const std::string &sFilename) {
 bool employ_config::update_ssl_keys() {
   std::string error;
   std::string data_keys_dir = m_work_dir + "/keys";
-  if (!WsjcppCore::dirExists(data_keys_dir)) {
+  if (!wsjcpp::dir_exists(data_keys_dir)) {
     WsjcppCore::makeDir(data_keys_dir);
     if (!WsjcppCore::setFilePermissions(data_keys_dir, WsjcppFilePermissions(0x755), error)) {
       sea5kg::log::throw_err(TAG, error);
@@ -449,7 +449,7 @@ bool employ_config::update_ssl_keys() {
 
   int bits = 2048;
 
-  if (!WsjcppCore::fileExists(flag_private_path) || !WsjcppCore::fileExists(flag_public_path)) {
+  if (!wsjcpp::file_exists(flag_private_path) || !wsjcpp::file_exists(flag_public_path)) {
     // 1. Инициализируем генератор случайных чисел
     RAND_poll();
 
@@ -488,7 +488,7 @@ bool employ_config::update_ssl_keys() {
 
 void employ_config::update_files_in_data() {
   std::string sError;
-  if (!WsjcppCore::dirExists(m_work_dir + "/logs")) {
+  if (!wsjcpp::dir_exists(m_work_dir + "/logs")) {
     WsjcppCore::makeDir(m_work_dir + "/logs");
     if (!WsjcppCore::setFilePermissions(m_work_dir + "/logs", WsjcppFilePermissions(0x755), sError)) {
       sea5kg::log::throw_err(TAG, sError);
@@ -497,7 +497,7 @@ void employ_config::update_files_in_data() {
 
   nlohmann::json previous_files_sha1 = load_files_sha1();
 
-  if (!WsjcppCore::fileExists(m_work_dir + "/config.yml")) {
+  if (!wsjcpp::file_exists(m_work_dir + "/config.yml")) {
     sea5kg::log::warn(TAG, "Extracting config.yml and files");
     sea5kg::log::warn(TAG, "Extracting checker_example_*");
     const std::vector<WsjcppResourceFile*> &vFiles = WsjcppResourcesManager::list();
@@ -505,12 +505,12 @@ void employ_config::update_files_in_data() {
     for (int i = 0; i < vFiles.size(); i++) {
       std::string filepath = vFiles[i]->getFilename();
       if (filepath.rfind("./data_sample/checker_example_", 0) == 0) {
-        std::vector<std::string> vPath = WsjcppCore::split(filepath, "/");
+        std::vector<std::string> vPath = wsjcpp::split(filepath, "/");
         std::string sDirname = vPath[2];
         vPath.erase (vPath.begin(),vPath.begin()+3);
-        std::string sNewFilepath = WsjcppCore::join(vPath, "/");
-        sNewFilepath = wsjcpp::normalizeFilePath(m_work_dir + "/" + sDirname + "/" + sNewFilepath);
-        if (!WsjcppCore::fileExists(sNewFilepath)) {
+        std::string sNewFilepath = wsjcpp::join(vPath, "/");
+        sNewFilepath = wsjcpp::normalize_filepath(m_work_dir + "/" + sDirname + "/" + sNewFilepath);
+        if (!wsjcpp::file_exists(sNewFilepath)) {
           std::cout << "Extracting file '" << filepath << "' to '" << sNewFilepath << "'" << std::endl;
         } else {
           std::cout << "File '" << sNewFilepath << "' already exists. Skip." << std::endl;
@@ -518,8 +518,8 @@ void employ_config::update_files_in_data() {
         }
 
         // prepare folder
-        std::string sFolder = wsjcpp::normalizeFilePath(m_work_dir + "/" + sDirname + "/");
-        if (!WsjcppCore::dirExists(sFolder)) {
+        std::string sFolder = wsjcpp::normalize_filepath(m_work_dir + "/" + sDirname + "/");
+        if (!wsjcpp::dir_exists(sFolder)) {
           WsjcppCore::makeDir(sFolder);
         }
 
@@ -541,7 +541,7 @@ void employ_config::update_files_in_data() {
     }
 
     WsjcppResourceFile* pConfigYml = WsjcppResourcesManager::get("./data_sample/config.yml");
-    std::string sNewFilepath = wsjcpp::normalizeFilePath(m_work_dir + "/config.yml");
+    std::string sNewFilepath = wsjcpp::normalize_filepath(m_work_dir + "/config.yml");
     if (!WsjcppCore::writeFile(sNewFilepath, pConfigYml->getBuffer(), pConfigYml->getBufferSize())) {
       std::cout << "ERROR. Could not write file. " << std::endl;
     } else {
@@ -555,7 +555,7 @@ void employ_config::update_files_in_data() {
 
 nlohmann::json employ_config::load_files_sha1() {
   nlohmann::json files_sha1;
-  if (WsjcppCore::fileExists(m_work_dir + "/files_sha1.json")) {
+  if (wsjcpp::file_exists(m_work_dir + "/files_sha1.json")) {
     std::ifstream ifs(m_work_dir + "/files_sha1.json");
     files_sha1 = nlohmann::json::parse(ifs);
   }
@@ -569,7 +569,7 @@ void employ_config::save_files_sha1(nlohmann::json &files) {
 
 void employ_config::update_data_html(nlohmann::json &previous_files_sha1) {
   sea5kg::log::warn(TAG, "Updating files in data/html");
-  if (!WsjcppCore::dirExists(m_work_dir + "/html")) {
+  if (!wsjcpp::dir_exists(m_work_dir + "/html")) {
     WsjcppCore::makeDir(m_work_dir + "/html");
   }
 
@@ -580,17 +580,17 @@ void employ_config::update_data_html(nlohmann::json &previous_files_sha1) {
       continue;
     }
     // remove base folder
-    std::vector<std::string> vPath = WsjcppCore::split(source_filepath, "/");
+    std::vector<std::string> vPath = wsjcpp::split(source_filepath, "/");
     vPath.erase (vPath.begin(),vPath.begin()+3);
-    std::string target_filepath = WsjcppCore::join(vPath, "/");
-    target_filepath = wsjcpp::normalizeFilePath(m_work_dir + "/html/" + target_filepath);
+    std::string target_filepath = wsjcpp::join(vPath, "/");
+    target_filepath = wsjcpp::normalize_filepath(m_work_dir + "/html/" + target_filepath);
 
     // prepare folders
-    if (!WsjcppCore::fileExists(target_filepath)) {
-      std::string dirpath = wsjcpp::normalizeFilePath(m_work_dir + "/html/");
+    if (!wsjcpp::file_exists(target_filepath)) {
+      std::string dirpath = wsjcpp::normalize_filepath(m_work_dir + "/html/");
       for (int p = 0; p < vPath.size()-1; p++) {
-        dirpath = wsjcpp::normalizeFilePath(dirpath + "/" + vPath[p]);
-        if (!WsjcppCore::dirExists(dirpath)) {
+        dirpath = wsjcpp::normalize_filepath(dirpath + "/" + vPath[p]);
+        if (!wsjcpp::dir_exists(dirpath)) {
           if (!WsjcppCore::makeDir(dirpath)) {
             std::cout << "ERROR. Could not create: " << dirpath << std::endl;
             continue;
@@ -604,7 +604,7 @@ void employ_config::update_data_html(nlohmann::json &previous_files_sha1) {
       previous_sha1 = previous_files_sha1[source_filepath];
     }
 
-    if (WsjcppCore::fileExists(target_filepath) && previous_sha1 != "") {
+    if (wsjcpp::file_exists(target_filepath) && previous_sha1 != "") {
       if (previous_sha1 != sha1_by_file(target_filepath)) {
         // Skip. file has changes by user. Skip.
         std::cout << "Warning. Could not override file, because has changes: " << target_filepath << std::endl;
@@ -613,7 +613,7 @@ void employ_config::update_data_html(nlohmann::json &previous_files_sha1) {
     }
 
     std::string new_sha1 = sha1_by_data(vFiles[i]->getBuffer(), vFiles[i]->getBufferSize());
-    if (WsjcppCore::fileExists(target_filepath) && new_sha1 == previous_sha1) {
+    if (wsjcpp::file_exists(target_filepath) && new_sha1 == previous_sha1) {
       // Skip. file has same content
       continue;
     }
@@ -738,8 +738,8 @@ bool employ_config::applyServicesConfig(WsjcppYaml &yaml) {
       return false;
     }
 
-    std::string script_absolute_path = wsjcpp::normalizeFilePath(_serviceConf.script_dir() + "/" + _serviceConf.script_path());
-    if (!WsjcppCore::fileExists(script_absolute_path)) {
+    std::string script_absolute_path = wsjcpp::normalize_filepath(_serviceConf.script_dir() + "/" + _serviceConf.script_path());
+    if (!wsjcpp::file_exists(script_absolute_path)) {
       sea5kg::log::err(TAG, "File " + script_absolute_path + " did not exists");
       return false;
     }
@@ -855,7 +855,7 @@ bool employ_config::init_work_dir() {
     sea5kg::log::throw_err(TAG, "Work Directory not defined.");
     return false;
   }
-  if (!WsjcppCore::dirExists(sWorkDir)) {
+  if (!wsjcpp::dir_exists(sWorkDir)) {
     sea5kg::log::err(TAG, "Directory " + sWorkDir + " does not exists");
     return false;
   }
@@ -865,8 +865,8 @@ bool employ_config::init_work_dir() {
 bool employ_config::init_logger() {
   // init logger
   std::string sLogDir = m_work_dir + "/logs/" + WsjcppCore::getCurrentTimeForFilename();
-  sLogDir = wsjcpp::normalizeFilePath(sLogDir);
-  if (!WsjcppCore::dirExists(sLogDir)) {
+  sLogDir = wsjcpp::normalize_filepath(sLogDir);
+  if (!wsjcpp::dir_exists(sLogDir)) {
     if (!WsjcppCore::makeDirsPath(sLogDir)) {
       sea5kg::log::err(TAG, "Could not make dirs for logs: " + sLogDir);
       return false;
@@ -876,7 +876,7 @@ bool employ_config::init_logger() {
       sea5kg::log::throw_err(TAG, sError);
     }
   }
-  if (!WsjcppCore::dirExists(sLogDir)) {
+  if (!wsjcpp::dir_exists(sLogDir)) {
     std::cout << "Error: Folder '" << sLogDir << "' does not exists and could not created, please check access rights to parent folder.\n";
     return false;
   }
@@ -914,7 +914,7 @@ void employ_config::thread_watcher() {
 }
 
 void employ_config::hot_reload_config_yaml(long modified_config_time) {
-  if (!WsjcppCore::fileExists(m_config_filepath)) {
+  if (!wsjcpp::file_exists(m_config_filepath)) {
     sea5kg::log::err(TAG, "File " + m_config_filepath + " does not exists");
     return;
   }

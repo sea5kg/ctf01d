@@ -47,7 +47,7 @@ int main() {
 
   std::shared_ptr<ctf01d::files_watcher> watcher = std::make_shared<ctf01d::files_watcher>();
 
-  if (!WsjcppCore::dirExists("test_file_watcher")) {
+  if (!wsjcpp::dir_exists("test_file_watcher")) {
     if (!WsjcppCore::makeDir("test_file_watcher")) {
       std::cerr << "Could not create 'test_file_watcher' directory" << std::endl;
       return -1;
