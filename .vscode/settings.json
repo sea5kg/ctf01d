@@ -1,4 +1,5 @@
 {
+    "C_Cpp.clang_format_style": "file",
     "cSpell.words": [
         "dedup",
         "Demi",
