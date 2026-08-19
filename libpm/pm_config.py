@@ -50,6 +50,7 @@ class PmConfig:
         self.__re_uuid = re.compile(
             r'.*\"([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})\".*'
         )
+        self.__base_tag = "sea5kg/ctf01d"
 
     def get_root_dir(self):
         """ return root dir """
@@ -58,6 +59,10 @@ class PmConfig:
     def get_re_uuid(self):
         """ return regular expression for a search uuid in string """
         return self.__re_uuid
+
+    def docker_image_tag(self):
+        """ return docker base tag image """
+        return self.__base_tag
 
 
 class FolderSwitcher:

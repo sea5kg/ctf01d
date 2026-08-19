@@ -58,7 +58,6 @@ class CommandRebuildEnvironmentImages:
         self.__dt_tag = now.strftime("%Y-%m-%d")
         self.__subcommand_name = "rebuild-environment-images"
         self.__debian_version = "13"
-        self.__base_tag = "sea5kg/ctf01d"
         self.__packages = {
             "build": [
                 "make",
@@ -203,10 +202,10 @@ RUN sed -i -e "s/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/" /etc/locale.gen && \\
         release_env = self.__update_dockerfile_release_env()
         self.__log.info("Rebuild environment images...")
 
-        tag_build = self.__base_tag
+        tag_build = self.__config.docker_image_tag()
         tag_build_today = tag_build + ":build-environment-" + self.__dt_tag
         tag_build_latest = tag_build + ":build-environment-latest"
-        tag_release = self.__base_tag
+        tag_release = self.__config.docker_image_tag()
         tag_release_today = tag_release + ":release-environment-" + self.__dt_tag
         tag_release_latest = tag_release + ":release-environment-latest"
 
