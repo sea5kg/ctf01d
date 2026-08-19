@@ -36,59 +36,44 @@
 #
 ##################################################################################
 
-""" Config for a pm """
+""" Helpers for processing docker """
 
-import re
+import sys
 import os
+from .utils_shell import UtilsShell
 
 
-class PmConfig:
-    """ PmConfig """
+class UtilsDocker:
+    """ UtilsDocker """
 
-    def __init__(self, root_dir):
-        self.__root_dir = root_dir
-        self.__re_uuid = re.compile(
-            r'.*\"([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12})\".*'
-        )
-        self.__base_tag = "sea5kg/ctf01d"
-        self.__repo_url = "https://github.com/sea5kg/ctf01d"
+    @staticmethod
+    def has_image(full_tag, _log):
+        """ check image exists """
+        exit_code, output = UtilsShell.run_command_get_output(_log, [
+            "docker", "images", full_tag, "--format", "{{json . }}"
+        ])
+        if exit_code != 0:
+            # self.__log.info("exit_code: %s", exit_code)
+            _log.error("Could not execute command 'docker images...', output %s", output)
+            sys.exit(-1)
+        # self.__log.info("output: %s", output)
+        return output != ""  # output not empty... so has image
 
-    def get_root_dir(self):
-        """ return root dir """
-        return self.__root_dir
+    @staticmethod
+    def silent_remove_image(image_tag, _log):
+        """ remove image if exists """
+        if UtilsDocker.has_image(image_tag, _log):
+            _log.info("Found image %s, try removing...", image_tag)
+            ret = os.system("docker rmi " + image_tag)
+            if ret != 0:
+                _log.error("Could not remove %s", image_tag)
+                sys.exit(1)
 
-    def get_re_uuid(self):
-        """ return regular expression for a search uuid in string """
-        return self.__re_uuid
-
-    def docker_image_tag(self):
-        """ return docker base tag image """
-        return self.__base_tag
-
-    def repo_url(self):
-        """ return repository link """
-        return self.__repo_url
-
-
-class FolderSwitcher:
-    """
-        Change work directory to specify folder
-        And on exit change back work directory
-    """
-    def __init__(self, _log, new_dir):
-        self.__prev = os.getcwd()
-        self.__new_dir = new_dir
-        self.__log = _log
-        os.chdir(self.__new_dir)
-        self.__log.debug(
-            "FolderSwitcher (begin): %s -> %s", self.__prev, self.__new_dir
-        )
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        os.chdir(self.__prev)
-        self.__log.debug(
-            "FolderSwitcher (end): %s -> %s", self.__new_dir, self.__prev
-        )
+    @staticmethod
+    def build_docker_image(tag, filename, _log):
+        """ build image """
+        cmd = "docker build --rm --tag " + tag + " -f " + filename + " ."
+        ret = os.system(cmd)
+        if ret != 0:
+            _log.error("ERROR: Could not build image by command: %s", cmd)
+            sys.exit(1)
