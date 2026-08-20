@@ -1,9 +1,11 @@
 {
     "C_Cpp.clang_format_style": "file",
     "cSpell.words": [
+        "abcdifghr",
         "dedup",
         "Demi",
         "dpkg",
+        "ECONNREFUSED",
         "elif",
         "errno",
         "Evgenii",

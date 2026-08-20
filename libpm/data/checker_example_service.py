@@ -36,81 +36,103 @@
 #
 ##################################################################################
 
+"""
+    checker for vuln_example_service.py
+"""
+
 import sys
 import socket
+import traceback
 import errno
 
 
-# put-get flag to service success
 def service_up():
+    """
+    put-get flag to service success
+    """
     print("[service is worked] - 101")
-    exit(101)
+    sys.exit(101)
 
 
-# service is available (available tcp connect) but protocol wrong could not put/get flag
 def service_corrupt():
+    """
+    service is available (available tcp connect) but protocol wrong could not put/get flag
+    """
     print("[service is corrupt] - 102")
-    exit(102)
+    sys.exit(102)
 
 
-# waited time (for example: 5 sec) but service did not have time to reply
 def service_mumble():
+    """
+    waited time (for example: 5 sec) but service did not have time to reply
+    """
     print("[service is mumble] - 103")
-    exit(103)
+    sys.exit(103)
 
 
-# service is not available (maybe blocked port or service is down)
 def service_down():
+    """
+    service is not available (maybe blocked port or service is down)
+    """
     print("[service is down] - 104")
-    exit(104)
+    sys.exit(104)
 
 
 if len(sys.argv) != 5:
-    _fl_id = "abcdifghr"
-    _fl = "123e4567-e89b-12d3-a456-426655440000"
+    _FLAG_ID = "abcdifghr"
+    _FLAG_VALUE = "123e4567-e89b-12d3-a456-426655440000"
     print(
         "\n"
         "Usage:\n"
         "\t" + sys.argv[0] + " <host> (put|check) <flag_id> <flag>\n"
         "Example:\n"
-        "\t" + sys.argv[0] + " \"127.0.0.1\" put \"" + _fl_id + "\" \"" + _fl + "\" \n"
+        "\t" + sys.argv[0] + " \"127.0.0.1\" put \"" + _FLAG_ID + "\" \"" + _FLAG_VALUE + "\" \n"
         "\n"
     )
-    exit(0)
+    sys.exit(-1)
+
+DEBUG_ENABLED = False
 
 
 def debug(err):
-    pass
-    # if isinstance(err, str):
-    #     err = Exception(err)
-    # traceback.print_exc()
-    # raise err
+    """ debug """
+    if DEBUG_ENABLED:
+        if isinstance(err, str):
+            err = Exception(err)
+        traceback.print_exc()
+        raise err
 
 
-host = sys.argv[1]
-port = 4101
-command = sys.argv[2]
-f_id = sys.argv[3]
-flag = sys.argv[4]
+class Config:  # pylint: disable=too-few-public-methods
+    """ Class config with host, port, flag and etc."""
+    def __init__(self):
+        self.host = sys.argv[1]
+        self.port = 4101
+        self.command = sys.argv[2]
+        self.f_id = sys.argv[3]
+        self.flag = sys.argv[4]
+
+
+CONFIG = Config()
 
 # will be mumble (2) - for test jury
 # while True: time.sleep(10);
 
 
-def put_flag():
-    global host, port, f_id, flag
+def put_flag(cfg: Config):
+    """ put flag on service """
     # try put
     try:
-        # print("try connect " + host + ":" + str(port))
+        # print("try connect " + cfg.host + ":" + str(cfg.port))
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(1)
-        s.connect((host, port))
+        s.connect((cfg.host, cfg.port))
         s.recv(1024)
         s.send(("put" + "\n").encode("utf-8"))
         s.recv(1024)
-        s.send((f_id + "\n").encode("utf-8"))
+        s.send((cfg.f_id + "\n").encode("utf-8"))
         s.recv(1024)
-        s.send((flag + "\n").encode("utf-8"))
+        s.send((cfg.flag + "\n").encode("utf-8"))
         s.recv(1024)
         s.close()
     except socket.timeout:
@@ -121,24 +143,23 @@ def put_flag():
         else:
             debug(_err)
             service_corrupt()
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         debug(e)
         service_corrupt()
 
 
-def check_flag():
-    global host, port, f_id, flag
-    # try get
+def check_flag(cfg: Config):
+    """ check flag """
     flag2 = ""
     try:
-        # print("try connect " + host + ":" + str(port))
+        # print("try connect " + cfg.host + ":" + str(cfg.port))
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.settimeout(1)
-        s.connect((host, port))
+        s.connect((cfg.host, cfg.port))
         s.recv(1024)
         s.send(("get\n").encode("utf-8"))
         s.recv(1024)
-        s.send((f_id + "\n").encode("utf-8"))
+        s.send((cfg.f_id + "\n").encode("utf-8"))
         result = s.recv(1024)
         result = result.decode("utf-8", "ignore")
         flag2 = result.strip()
@@ -156,20 +177,20 @@ def check_flag():
         else:
             debug(_err)
             service_corrupt()
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         debug(e)
         service_corrupt()
 
-    if flag != flag2:
-        debug('flag: [' + flag + '] flag2: [' + str(flag2) + ']')
+    if cfg.flag != flag2:
+        debug('flag: [' + cfg.flag + '] flag2: [' + str(flag2) + ']')
         service_corrupt()
 
 
-if command == "put":
-    put_flag()
-    check_flag()
+if CONFIG.command == "put":
+    put_flag(CONFIG)
+    check_flag(CONFIG)
     service_up()
 
-if command == "check":
-    check_flag()
+if CONFIG.command == "check":
+    check_flag(CONFIG)
     service_up()
