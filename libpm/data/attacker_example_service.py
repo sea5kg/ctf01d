@@ -43,7 +43,7 @@ Auto detect subnetwork and start attack in infinite while
 import socket
 import os
 import sys
-import json
+# import json
 import time
 import traceback
 import sqlite3
@@ -240,14 +240,14 @@ def start_exploit(your_team_num, ip_address, port):
 
     if not os.path.isdir(FLAGS_DIR):
         os.mkdir(FLAGS_DIR)
-    with sqlite3.connect("flags/flags.db") as conn:
+    with sqlite3.connect("flags/flags.db") as _conn:
         # Create a cursor object to execute SQL commands
-        cursor = conn.cursor()
+        _cursor = _conn.cursor()
 
         for flag_id in flag_ids:
             flag = get_flag(ip_address, port, flag_id)
-            cursor.execute("SELECT COUNT(*) as cnt FROM flags WHERE flag_value = ?", (flag,))
-            rows = cursor.fetchall()
+            _cursor.execute("SELECT COUNT(*) as cnt FROM flags WHERE flag_value = ?", (flag,))
+            rows = _cursor.fetchall()
             count_flags = rows[0][0]
             if count_flags == 1:
                 continue  # skip
@@ -258,7 +258,7 @@ def start_exploit(your_team_num, ip_address, port):
             if flag != '':
                 ret = send_flag(your_team_num, flag)
                 if ret is not None:
-                    cursor.execute(
+                    _cursor.execute(
                         "INSERT INTO flags(flag_id, flag_value, flag_response, victim_ip) "
                         " VALUES (?,?,?,?)",
                         (flag_id, flag, ret, ip_address,)
@@ -276,32 +276,33 @@ SERVICES_PORTS = {
 }
 
 
-def get_my_team_id(teams):
+def get_my_team_id(_teams):
+    """ get_my_team_id """
     my_ip = get_my_ip()
-    SUBNETWORK = ".".join(my_ip.split(".")[:-1]) + "."
+    subnetwork = ".".join(my_ip.split(".")[:-1]) + "."
     # print("my ip = ", my_ip)
-    # print("my subnetwork = " + SUBNETWORK + "0/24")
+    # print("my subnetwork = " + subnetwork + "0/24")
 
-    FOUND_TEAM = None
+    _found_team = None
     found_teams = []
-    for team in teams:
-        # print(team['ip_address'])
-        if team['ip_address'].startswith(SUBNETWORK):
-            found_teams.append(team)
+    for _team in _teams:
+        # print(_team['ip_address'])
+        if _team['ip_address'].startswith(subnetwork):
+            found_teams.append(_team)
 
     if len(found_teams) == 1:
         # print("Found team by subnetwork")
-        FOUND_TEAM = found_teams[0]
+        _found_team = found_teams[0]
     else:
-        for team in found_teams:
-            if team['ip_address'] == my_ip:
+        for _team in found_teams:
+            if _team['ip_address'] == my_ip:
                 # print("Found team by ip")
-                FOUND_TEAM = team
+                _found_team = _team
 
-    if not FOUND_TEAM:
+    if not _found_team:
         print("ERROR: Could not detect team number - please hardcode (your ip: " + my_ip + ")")
         return None
-    return FOUND_TEAM['id']
+    return _found_team['id']
 
 
 while True:
@@ -317,7 +318,7 @@ while True:
         my_team_id = get_my_team_id(teams)
 
     if my_team_id is None:
-        print("ERROR: Could not detect team number - please hardcode (your ip: " + my_ip + ")")
+        print("ERROR: Could not detect team number - please hardcode you team id")
         time.sleep(5)
         continue
 
