@@ -41,7 +41,7 @@ Sample vuln-service for testing ctf01d
 """
 
 import socket
-# import sqlite3
+import sqlite3
 import threading
 import re
 import os
@@ -57,9 +57,14 @@ if len(sys.argv) < 2:
 PORT = int(sys.argv[1])  # 4101
 CLIENT_THREADS = []
 
-# # Allow sharing, but it is NOT inherently thread-safe yet
-# SHARED_CONN = sqlite3.connect(FLAGS_DB, check_same_thread=False)
-# DB_LOCK = threading.Lock()
+# Allow sharing, but it is NOT inherently thread-safe yet
+SHARED_CONN = sqlite3.connect(FLAGS_DB, check_same_thread=False)
+DB_LOCK = threading.Lock()
+
+with DB_LOCK:
+    _cursor = SHARED_CONN.cursor()
+    _cursor.execute("CREATE TABLE IF NOT EXISTS flags (id TEXT, val TEXT)")
+    SHARED_CONN.commit()
 
 
 class Connect(threading.Thread):
@@ -69,6 +74,7 @@ class Connect(threading.Thread):
     def __init__(self, sock, addr):
         self.__sock = sock
         self.__addr = addr
+        self.__client_ip = str(self.__addr[0])
         self.__is_kill = False
         self.__commands = {
             "put": self.__handle_command_put,
@@ -78,7 +84,7 @@ class Connect(threading.Thread):
             "close": self.__handle_command_close,
         }
         self.__welcome = "\n"
-        self.__welcome += "Welcome to sample_service (DETECTED YOUR IP: " + self.__addr + ")\n"
+        self.__welcome += "Welcome to sample_service (YOUR IP: " + self.__client_ip + ")\n"
         self.__welcome += "Commands: put, get, delete, list, close\n"
         self.__welcome += "> "
         threading.Thread.__init__(self)
@@ -86,95 +92,97 @@ class Connect(threading.Thread):
     def __send(self, data):
         self.__sock.send(data.encode())
 
-    def __send_and_read(self, data):
-        self.__sock.send(data.encode())
+    def __read(self, data=None):
+        if data is not None:
+            self.__sock.send(data.encode())
         resp = self.__sock.recv(1024)
         resp = resp.decode("utf-8", "ignore")
         resp = resp.strip()
         return resp
 
+    def __check_flag_id(self, flag_id):
+        if flag_id == "":
+            resp = "\nFAIL: Incorrect flag_id (empty)\n"
+            return False
+        orig_flag_id = flag_id
+        flag_id = re.search(r"\w*", flag_id).group()
+        if flag_id == "" or flag_id != orig_flag_id:
+            resp = "\nFAIL: Incorrect flag_id\n"
+            self.__sock.send(resp.encode())
+            return False
+        return True
+
+    def __flag_exists(self, cursor, flag_id):
+        cursor.execute("SELECT COUNT(*) FROM flags WHERE id = ?", (flag_id,))
+        total_rows = cursor.fetchone()[0]
+        if total_rows == 0:
+            self.__send("\nFAIL: flag_id not found\n")
+            return False
+        return True
+
     def __handle_command_list(self):
         counter = 0
-        for filename in os.listdir(FLAGS_DIR):
-            counter += 1
-            resp = "file: " + filename + "\n"
-            self.__sock.send(resp.encode())
-        if counter == 0:
-            self.__sock.send("*nothing*".encode())
+        with DB_LOCK:
+            cursor = SHARED_CONN.cursor()
+            cursor.execute("SELECT id FROM flags", ())
+            rows = cursor.fetchall()
+            for row in rows:
+                counter += 1
+                self.__send(f"file: {row[0]}\n")
+            if counter == 0:
+                self.__send("*nothing*\n".encode())
 
     def __handle_command_close(self):
         self.__send("\nBye-bye\n\n")
 
     def __handle_command_put(self):
-        f_id = self.__send_and_read("flag_id = ")
-        if f_id == "":
+        flag_id = self.__read("flag_id = ")
+        if not self.__check_flag_id(flag_id):
             return
-        orig_flag_id = f_id
-        f_id = re.search(r"\w*", f_id).group()
-        if f_id == "" or f_id != orig_flag_id:
-            resp = "\nFAIL: Incorrect flag_id\n"
-            self.__sock.send(resp.encode())
+        flag_value = self.__read("flag = ")
+        if flag_value == "":
             return
-        f_text = self.__send_and_read("flag = ")
-        if f_text == "":
-            return
-        with open(os.path.join(FLAGS_DIR, f_id), 'w', encoding="utf-8") as _file:
-            _file.write(f_text)
-        self.__sock.send("OK".encode())
+        with DB_LOCK:
+            cursor = SHARED_CONN.cursor()
+            cursor.execute("SELECT COUNT(*) FROM flags WHERE id = ?", (flag_id,))
+            total_rows = cursor.fetchone()[0]
+            if total_rows == 0:
+                cursor.execute("INSERT INTO flags VALUES (?,?)", (flag_id, flag_value))
+            else:
+                cursor.execute("UPDATE flags SET val = ? WHERE id = ?", (flag_value, flag_id))
+            SHARED_CONN.commit()
+        self.__send("OK\n")
 
     def __handle_command_get(self):
-        resp = "flag_id = "
-        self.__sock.send(resp.encode())
-        f_id = self.__sock.recv(1024)
-        f_id = f_id.decode("utf-8", "ignore")
-        f_id = f_id.strip()
-        if f_id == "":
+        flag_id = self.__read("flag_id = ")
+        if not self.__check_flag_id(flag_id):
             return
-        orig_flag_id = f_id
-        f_id = re.search(r"\w*", f_id).group()
-        if f_id == "" or f_id != orig_flag_id:
-            resp = "\nFAIL: Incorrect flag_id\n"
-            self.__sock.send(resp.encode())
-            return
-        if os.path.exists(os.path.join(FLAGS_DIR, f_id)):
-            with open(os.path.join(FLAGS_DIR, f_id), 'r', encoding="utf-8") as _file:
-                line = _file.readline()
-            resp = "FOUND FLAG: " + line + ""
-            self.__sock.send(resp.encode())
-        else:
-            resp = "\nFAIL: flag_id not found\n"
-            self.__sock.send(resp.encode())
+        with DB_LOCK:
+            cursor = SHARED_CONN.cursor()
+            if not self.__flag_exists(cursor, flag_id):
+                return
+            cursor.execute("SELECT val FROM flags WHERE id = ?", (flag_id,))
+            flag_value = cursor.fetchone()[0]
+            self.__send("FOUND FLAG: " + flag_value + "\n")
 
     def __handle_command_delete(self):
-        resp = "flag_id = "
-        self.__sock.send(resp.encode())
-        f_id = self.__sock.recv(1024)
-        f_id = f_id.decode("utf-8", "ignore")
-        f_id = f_id.strip()
-        if f_id == "":
+        flag_id = self.__read("flag_id = ")
+        if not self.__check_flag_id(flag_id):
             return
-        orig_flag_id = f_id
-        f_id = re.search(r"\w*", f_id).group()
-        if f_id == "" or f_id != orig_flag_id:
-            resp = "\nFAIL: Incorrect flag_id\n"
-            self.__sock.send(resp.encode())
-            return
-        if os.path.exists(os.path.join(FLAGS_DIR, f_id)):
-            os.remove(os.path.join(FLAGS_DIR, f_id))
-            resp = "REMOVED"
-            self.__sock.send(resp.encode())
-        else:
-            resp = "\nFAIL: flag_id not found\n"
-            self.__sock.send(resp.encode())
+        with DB_LOCK:
+            cursor = SHARED_CONN.cursor()
+            if not self.__flag_exists(cursor, flag_id):
+                return
+            cursor.execute("DELETE FROM flags WHERE id = ?", (flag_id,))
+            SHARED_CONN.commit()
+            self.__send("REMOVED")
 
     def run(self):
         self.__sock.send(self.__welcome.encode())
         while True:
             if self.__is_kill is True:
                 break
-            buf = self.__sock.recv(1024)
-            buf = buf.decode("utf-8", "ignore")
-            buf = buf.strip()
+            buf = self.__read()
             if buf == "":
                 break
             command = re.search(r"\w*", buf).group()
@@ -186,7 +194,7 @@ class Connect(threading.Thread):
                 self.__sock.send(resp.encode())
                 break
         self.__is_kill = True
-        # it's will be corrapt service
+        # it's will be corrupt service
         # self.__sock.send("bye!\n".encode())
         self.__sock.close()
         CLIENT_THREADS.remove(self)
