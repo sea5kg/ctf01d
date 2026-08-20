@@ -47,7 +47,7 @@ class UtilsShell:
     """ UtilsShell """
 
     @staticmethod
-    def run_command(_command, _output=None):
+    def run_command(_command, _output=None, exit_on_error=True):
         """ run_command """
         print("Run command: " + " ".join(_command))
         if _output is not None:
@@ -80,10 +80,13 @@ class UtilsShell:
                 print("ERROR: returncode " + str(_returncode))
                 if _output is not None:
                     _output.write("ERROR: returncode " + str(_returncode) + "\n")
-                sys.exit(_returncode)
-            return
+                if exit_on_error:
+                    sys.exit(_returncode)
+            return _returncode
         print("ERROR: Could not start process")
-        sys.exit(-1)
+        if exit_on_error:
+            sys.exit(-1)
+        return -1
 
     @staticmethod
     def run_command_get_output(_log, _command):
@@ -111,7 +114,7 @@ class UtilsShell:
                 else:
                     break
             if _returncode != 0:
-                _log.error("ERROR: returncode %s", str(_returncode))
+                # _log.error("ERROR: returncode %s", str(_returncode))
                 return _returncode, _output
         return _returncode, _output
 

@@ -38,10 +38,10 @@
 
 """ Command for linting python scripts """
 
-import os
 import sys
+import os
 import logging
-
+from .utils_shell import UtilsShell
 # from .pm_config import PmConfig
 
 logging.basicConfig()
@@ -70,8 +70,40 @@ class CommandPyCheck:
     def execute(self, _):
         """ executing """
         self.__log.info("Starting py-check...")
-        ret_pep8 = os.system("python3 -m pycodestyle libpm --max-line-length=100")
-        ret_pylint = os.system("python3 -m pylint libpm --max-line-length=100")
-        if ret_pep8 != 0 or ret_pylint != 0:
+        check_python_files = [
+            "libpm",
+        ]
+
+        for _file in os.listdir("libpm/data"):
+            if _file.endswith(".py"):
+                check_python_files.append("libpm/data/" + _file)
+
+        failed = []
+        for py_file in check_python_files:
+            ret, _output = UtilsShell.run_command_get_output(
+                self.__log,
+                ['python3', '-m', 'pycodestyle', py_file, '--max-line-length=100'],
+            )
+            if ret == 0:
+                self.__log.info("OK (pep8): %s", py_file)
+            else:
+                failed.append(py_file)
+                self.__log.error(_output)
+                self.__log.info("FAIL (pep8): %s", py_file)
+
+            ret, _output = UtilsShell.run_command_get_output(
+                self.__log,
+                ['python3', '-m', 'pylint', py_file, '--max-line-length=100'],
+            )
+            if ret == 0:
+                self.__log.info("OK (pylint): %s", py_file)
+            else:
+                failed.append(py_file)
+                self.__log.error(_output)
+                self.__log.info("FAIL (pylint): %s", py_file)
+
+        if len(failed) > 0:
+            self.__log.error("Has fails")
             sys.exit(1)
+        self.__log.info("Looks fine.")
         sys.exit(0)
