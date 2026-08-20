@@ -41,6 +41,7 @@ Sample vuln-service for testing ctf01d
 """
 
 import socket
+# import sqlite3
 import threading
 import re
 import os
@@ -48,12 +49,17 @@ import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 FLAGS_DIR = os.path.join(SCRIPT_DIR, 'flags')
+FLAGS_DB = os.path.join(FLAGS_DIR, 'flags.db')
 
 if len(sys.argv) < 2:
     sys.exit("Expected parameter <port>")
 
 PORT = int(sys.argv[1])  # 4101
 CLIENT_THREADS = []
+
+# # Allow sharing, but it is NOT inherently thread-safe yet
+# SHARED_CONN = sqlite3.connect(FLAGS_DB, check_same_thread=False)
+# DB_LOCK = threading.Lock()
 
 
 class Connect(threading.Thread):
@@ -72,10 +78,20 @@ class Connect(threading.Thread):
             "close": self.__handle_command_close,
         }
         self.__welcome = "\n"
-        self.__welcome += "Welcome to sample_service\n"
+        self.__welcome += "Welcome to sample_service (DETECTED YOUR IP: " + self.__addr + ")\n"
         self.__welcome += "Commands: put, get, delete, list, close\n"
         self.__welcome += "> "
         threading.Thread.__init__(self)
+
+    def __send(self, data):
+        self.__sock.send(data.encode())
+
+    def __send_and_read(self, data):
+        self.__sock.send(data.encode())
+        resp = self.__sock.recv(1024)
+        resp = resp.decode("utf-8", "ignore")
+        resp = resp.strip()
+        return resp
 
     def __handle_command_list(self):
         counter = 0
@@ -87,15 +103,10 @@ class Connect(threading.Thread):
             self.__sock.send("*nothing*".encode())
 
     def __handle_command_close(self):
-        resp = "\nBye-bye\n\n"
-        self.__sock.send(resp.encode())
+        self.__send("\nBye-bye\n\n")
 
     def __handle_command_put(self):
-        resp = "flag_id = "
-        self.__sock.send(resp.encode())
-        f_id = self.__sock.recv(1024)
-        f_id = f_id.decode("utf-8", "ignore")
-        f_id = f_id.strip()
+        f_id = self.__send_and_read("flag_id = ")
         if f_id == "":
             return
         orig_flag_id = f_id
@@ -104,13 +115,10 @@ class Connect(threading.Thread):
             resp = "\nFAIL: Incorrect flag_id\n"
             self.__sock.send(resp.encode())
             return
-        resp = "flag = "
-        self.__sock.send(resp.encode())
-        f_text = self.__sock.recv(1024)
-        f_text = f_text.decode("utf-8", "ignore")
+        f_text = self.__send_and_read("flag = ")
         if f_text == "":
             return
-        with open(os.path.join(FLAGS_DIR, f_id), 'w') as _file:
+        with open(os.path.join(FLAGS_DIR, f_id), 'w', encoding="utf-8") as _file:
             _file.write(f_text)
         self.__sock.send("OK".encode())
 
@@ -129,7 +137,7 @@ class Connect(threading.Thread):
             self.__sock.send(resp.encode())
             return
         if os.path.exists(os.path.join(FLAGS_DIR, f_id)):
-            with open(os.path.join(FLAGS_DIR, f_id), 'r') as _file:
+            with open(os.path.join(FLAGS_DIR, f_id), 'r', encoding="utf-8") as _file:
                 line = _file.readline()
             resp = "FOUND FLAG: " + line + ""
             self.__sock.send(resp.encode())
