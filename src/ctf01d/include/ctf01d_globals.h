@@ -45,6 +45,11 @@ static const int MIN_TCP_PORT = 11;
 static const int MAX_TCP_PORT = 65435;
 static const int DEFAULT_FLAG_LIFETIME_IN_SECONDS = 60;
 
+class keys {
+public:
+  inline static const std::string CTF01D_PORT = "CTF01D_PORT";
+};
+
 class json_fields {
 public:
   inline static const std::string SUMMARY_ACTIVITIES = "sum_act";

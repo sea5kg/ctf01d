@@ -660,27 +660,27 @@ bool employ_config::checkYamlMainKeys(WsjcppYaml &yaml) {
 
 bool employ_config::applyScoreboardPortFromEnv() {
   std::string str_port;
-  if (WsjcppCore::getEnv("CTF01D_PORT", str_port)) {
-    sea5kg::log::warn(TAG, "CTF01D_PORT='" + str_port + "'");
+  if (WsjcppCore::getEnv(ctf01d::keys::CTF01D_PORT, str_port)) {
+    sea5kg::log::warn(TAG, ctf01d::keys::CTF01D_PORT + "='" + str_port + "'");
     try {
       int port = std::stoi(str_port);
       std::string err;
       if (!m_scoreboard_port->set_value(port, err)) {
-        sea5kg::log::err(TAG, "CTF01D_PORT='" + str_port + "' is wrong. " + err);
+        sea5kg::log::err(TAG, ctf01d::keys::CTF01D_PORT + "='" + str_port + "' is wrong. " + err);
         return false;
       }
     } catch (const std::invalid_argument& e) {
-      sea5kg::log::err(TAG, "No conversion could be performed. CTF01D_PORT='" + str_port + "'");
+      sea5kg::log::err(TAG, "No conversion could be performed. " + ctf01d::keys::CTF01D_PORT + "='" + str_port + "'");
       std::cerr << "Error: \n";
       return false;
     } catch (const std::out_of_range& e) {
-      sea5kg::log::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
+      sea5kg::log::err(TAG, "The converted value is too big for an int.. " + ctf01d::keys::CTF01D_PORT + "='" + str_port + "'");
       return false;
     } catch (...) {
-      sea5kg::log::err(TAG, "The converted value is too big for an int.. CTF01D_PORT='" + str_port + "'");
+      sea5kg::log::err(TAG, "The converted value is too big for an int.. " + ctf01d::keys::CTF01D_PORT + "='" + str_port + "'");
       return false;
     }
-    sea5kg::log::info(TAG, "scoreboard.port will be overridden from environment variable. CTF01D_PORT='" + str_port + "'");
+    sea5kg::log::info(TAG, "scoreboard.port will be overridden from environment variable. " + ctf01d::keys::CTF01D_PORT + "='" + str_port + "'");
     return true;
   }
   return true;
