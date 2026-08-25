@@ -107,7 +107,7 @@ bool scope_vars::read(WsjcppYamlCursor &cursor, std::string &err) {
     std::string err;
     if (!var->read(cursor, err)) {
       var_errors = true;
-      sea5kg::log::err(m_scope_name, "Problem with read: " + var->name() + ". " +  err);
+      sea5kg::log::error(m_scope_name, "Problem with read: " + var->name() + ". " +  err);
       continue;
     }
     sea5kg::log::info(m_scope_name, var->name() + ": " + var->to_string());
@@ -166,12 +166,12 @@ int var_int::value() const {
 bool var_int::set_value(int val, std::string &err) {
   if (m_check_minimum && val < m_minimum) {
     err = "Value '" + name() + "' must be equal or more than " + std::to_string(m_minimum);
-    sea5kg::log::err("var_int", err);
+    sea5kg::log::error("var_int", err);
     return false;
   }
   if (m_check_maximum && val > m_maximum) {
     err = "Value '" + name() + "' must be less or equal than " + std::to_string(m_maximum);
-    sea5kg::log::err("var_int", err);
+    sea5kg::log::error("var_int", err);
     return false;
   }
   m_value = val;
@@ -331,7 +331,7 @@ bool var_dir::set_value(const std::string &val, std::string &err) {
 
   if (!wsjcpp::dir_exists(new_val)) {
     err = "Directory '" + new_val + "' does not exists";
-    sea5kg::log::err("var_dir", err);
+    sea5kg::log::error("var_dir", err);
     return false;
   }
   m_value = val;
@@ -402,7 +402,7 @@ bool var_file::set_value(const std::string &val, std::string &err) {
 
   if (!wsjcpp::file_exists(new_val)) {
     err = "File '" + new_val + "' does not exists";
-    sea5kg::log::err("var_file", err);
+    sea5kg::log::error("var_file", err);
     return false;
   }
   m_value = val;

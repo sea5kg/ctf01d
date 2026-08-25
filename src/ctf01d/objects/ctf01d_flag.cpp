@@ -100,7 +100,7 @@ void ctf01d::flag::generate_value(int game_start_utc_in_seconds) {
   std::string sTimePoint = std::to_string(dt);
   int nTimePointLen = sTimePoint.size();
   if (nTimePointLen > 8) {
-    sea5kg::log::throw_err("ctf01d::flag::generate_value", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
+    sea5kg::log::critical("ctf01d::flag::generate_value", "Really game was started more then 3 years ago ??? got value: " + sTimePoint);
   }
   int nPos = m_value.size() - 1;
   for (int i = nTimePointLen - 1; i >= 0; i--) {

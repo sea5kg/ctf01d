@@ -74,7 +74,7 @@ bool team_config::read(WsjcppYamlCursor &cursor, const std::string &work_dir, st
   };
   if (std::find(allowed_types.begin(), allowed_types.end(), m_type->value()) == allowed_types.end()) {
     err = "Didn't allowed team.type: '" + m_type->value() + "'";
-    sea5kg::log::err(TAG, err);
+    sea5kg::log::error(TAG, err);
     return false;
   }
 

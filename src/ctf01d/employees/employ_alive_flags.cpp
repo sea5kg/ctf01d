@@ -129,7 +129,7 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
   std::map<std::string, ctf01d::flag>::iterator it;
   it = m_alive_flags_cache.find(flag.value());
   if (it != m_alive_flags_cache.end()) {
-    sea5kg::log::err(TAG, flag.value() + " - flag already exists");
+    sea5kg::log::error(TAG, flag.value() + " - flag already exists");
     return false;
   }
   m_alive_flags_cache[flag.value()] = flag;
@@ -144,7 +144,7 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
     + std::to_string(flag.time_end_in_milliseconds())
     + ");";
   if (!m_alive_flags_db->executeQuery(sQuery)) {
-    sea5kg::log::err(TAG, "Error insert insertToFlagLive");
+    sea5kg::log::error(TAG, "Error insert insertToFlagLive");
   }
   return true;
 }
@@ -185,10 +185,10 @@ void EmployAliveFlags::remove_alive_flag(const ctf01d::flag &flag) {
 
     std::string sQuery = "DELETE FROM alive_flags WHERE flag = '" + flag.value() + "';";
     if (!m_alive_flags_db->executeQuery(sQuery)) {
-      sea5kg::log::err(TAG, "Error delete deleteFlagLive");
+      sea5kg::log::error(TAG, "Error delete deleteFlagLive");
     }
   } else {
-    sea5kg::log::warn(TAG, flag.value() + " - flag did not exists");
+    sea5kg::log::warning(TAG, flag.value() + " - flag did not exists");
   }
 }
 
@@ -212,7 +212,7 @@ std::vector<ctf01d::flag> EmployAliveFlags::get_from_db_alive_flags() {
   std::vector<ctf01d::flag> vResult;
   auto rows = m_alive_flags_db->selectRows(sQuery);
   if (rows == nullptr) {
-    sea5kg::log::err(TAG, "Error select listOfLiveFlags " + sQuery);
+    sea5kg::log::error(TAG, "Error select listOfLiveFlags " + sQuery);
     return vResult;
   }
   int nCounter = 0;

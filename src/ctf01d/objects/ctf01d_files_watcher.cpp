@@ -48,13 +48,13 @@ files_watcher::files_watcher() {
 
 bool files_watcher::watch_file(const std::string &filepath) {
   if (!wsjcpp::file_exists(filepath)) {
-    sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
+    sea5kg::log::error(TAG, "File '" + filepath + "' did not found");
     return false;
   }
   std::lock_guard<std::mutex> lock(m_mutex);
   auto it = m_files.find(filepath);
   if (it != m_files.end()) {
-    sea5kg::log::err(TAG, "File '" + filepath + "' already in watch list.");
+    sea5kg::log::error(TAG, "File '" + filepath + "' already in watch list.");
     return false;
   }
   // get real time modified
@@ -78,7 +78,7 @@ long files_watcher::get_last_modified_time_file(const std::string &filepath) {
     return 0;
   }
   if (!wsjcpp::file_exists(filepath)) {
-    sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
+    sea5kg::log::error(TAG, "File '" + filepath + "' did not found");
     return 0;
   }
   return m_files[filepath];
@@ -91,7 +91,7 @@ bool files_watcher::is_modified_file(const std::string &filepath) {
     return false;
   }
   if (!wsjcpp::file_exists(filepath)) {
-    sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
+    sea5kg::log::error(TAG, "File '" + filepath + "' did not found");
     return false;
   }
   std::filesystem::file_time_type ftime = std::filesystem::last_write_time(filepath.c_str());
@@ -109,7 +109,7 @@ std::map<std::string, long> files_watcher::get_modified_files() {
   for (auto it = m_files.begin(); it != m_files.end(); ++it) {
     const std::string &filepath = it->first;
     if (!wsjcpp::file_exists(filepath)) {
-      sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
+      sea5kg::log::error(TAG, "File '" + filepath + "' did not found");
       // don't remove from m_files
       continue;
     }

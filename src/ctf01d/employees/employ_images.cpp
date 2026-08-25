@@ -158,12 +158,12 @@ void employ_images::update_scoreboard_json(nlohmann::json &jsonScoreboard) {
 
 bool employ_images::load_logo(const std::string &id, const std::string &filepath) {
    if (!wsjcpp::file_exists(filepath)) {
-    sea5kg::log::err(TAG, "File '" + filepath + "' did not found");
+    sea5kg::log::error(TAG, "File '" + filepath + "' did not found");
     return false;
   }
   std::shared_ptr<ctf01d::image> img = std::make_shared<ctf01d::image>(id);
   if (!img->reload_from_file(filepath)) {
-    sea5kg::log::throw_err(TAG, "Could not read file '" + filepath + "'");
+    sea5kg::log::critical(TAG, "Could not read file '" + filepath + "'");
     return false;
   }
   m_images[id] = img;

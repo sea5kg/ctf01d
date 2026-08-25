@@ -187,20 +187,20 @@ void EmployWebServer_custom_logger(int level, const char *msg, int len) {
     g_http_logger->info(TAG, message);
     break;
   case LOG_LEVEL_WARN:
-    sea5kg::log::warn(TAG, message);
-    g_http_logger->warn(TAG, message);
+    sea5kg::log::warning(TAG, message);
+    g_http_logger->warning(TAG, message);
     break;
   case LOG_LEVEL_ERROR:
-    sea5kg::log::err(TAG, message);
-    g_http_logger->err(TAG, message);
+    sea5kg::log::error(TAG, message);
+    g_http_logger->error(TAG, message);
     break;
   case LOG_LEVEL_FATAL:
-    sea5kg::log::err(TAG, message);
-    g_http_logger->throw_err(TAG, message);
+    sea5kg::log::error(TAG, message);
+    g_http_logger->critical(TAG, message);
     break;
   default:
-    sea5kg::log::err(TAG, "Unknow level: " + message);
-    g_http_logger->err(TAG, message);
+    sea5kg::log::error(TAG, "Unknow level: " + message);
+    g_http_logger->error(TAG, message);
   }
 }
 
@@ -208,17 +208,17 @@ int employ_web_server::start() {
 
   auto pEmployConfig = findWsjcppEmploy<ctf01d::config>();
   g_http_logger->set_log_filename_prefix("http_hv_");
-  g_http_logger->set_log_dirpath(sea5kg::log::get_log_dirpath());
+  g_http_logger->set_log_dirpath(sea5kg::log::log_dirpath());
   g_http_logger->set_rotation_period_in_seconds(sea5kg::log::rotation_period_in_seconds());
-  g_http_logger->set_enable_log_file(true);
-  g_http_logger->set_enable_console_output(false);
+  g_http_logger->set_log_level_file_output(sea5kg::log_level::DEBUG);
+  g_http_logger->set_log_level_console_output(sea5kg::log_level::DISABLE);
 
   m_sScoreboardHtmlFolder = pEmployConfig->scoreboard_html_folder();
   updateJsonCache();
 
   std::string starting_message = "Starting scoreboard on http://localhost:" + std::to_string(pEmployConfig->scoreboard_port()) + "/";
-  g_http_logger->ok(TAG, starting_message);
-  sea5kg::log::ok(TAG, starting_message);
+  g_http_logger->success(TAG, starting_message);
+  sea5kg::log::success(TAG, starting_message);
 
   {
     logger_t *pLogger = hv_default_logger();
@@ -267,13 +267,13 @@ int employ_web_server::response_error(int http_code, HttpRequest* req, HttpRespo
 }
 
 void employ_web_server::log_err(const std::string &message) {
-  sea5kg::log::err(TAG, message);
-  g_http_logger->err(TAG, message);
+  sea5kg::log::error(TAG, message);
+  g_http_logger->error(TAG, message);
 }
 
 void employ_web_server::log_warn(const std::string &message) {
-  sea5kg::log::warn(TAG, message);
-  g_http_logger->warn(TAG, message);
+  sea5kg::log::warning(TAG, message);
+  g_http_logger->warning(TAG, message);
 }
 
 void employ_web_server::updateJsonCache() {
@@ -592,8 +592,8 @@ int employ_web_server::httpApiV1Flag(HttpRequest* req, HttpResponse* resp) {
 
   std::string sResponse = "Accepted: Received flag {" + flag_value + "} from {" + team_id + "} (Accepted + " + sPoints + ")";
   // really need send to current ???
-  g_http_logger->ok(TAG, sResponse + sRequestIP_MsgSuffix);
-  sea5kg::log::ok(TAG, sResponse + sRequestIP_MsgSuffix);
+  g_http_logger->success(TAG, sResponse + sRequestIP_MsgSuffix);
+  sea5kg::log::success(TAG, sResponse + sRequestIP_MsgSuffix);
   resp->Data(
       (void *)(sResponse.c_str()),
       sResponse.size(),

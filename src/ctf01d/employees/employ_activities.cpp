@@ -178,7 +178,7 @@ void employ_activities::insert_flag_attempt(
       " VALUES('" + flag_value + "', '" + thief_team_id + "', '" + request_ip + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
 
     if (!m_flags_attempts_db->executeQuery(sQuery)) {
-      sea5kg::log::throw_err(TAG, "Error insert attempt");
+      sea5kg::log::critical(TAG, "Error insert attempt");
     }
   }
 

@@ -70,7 +70,7 @@ std::string flag_id_generator_random_string::generate() {
     const int buffer_size = 16;
     unsigned char buffer[buffer_size];
     if (RAND_bytes(buffer, buffer_size) != 1) {
-      sea5kg::log::throw_err("flag_id_generator_random_string", "Problem with RAND_bytes");
+      sea5kg::log::critical("flag_id_generator_random_string", "Problem with RAND_bytes");
     }
     for (int i = 0; i < buffer_size; ++i) {
       if (ret.size() >= m_size) {

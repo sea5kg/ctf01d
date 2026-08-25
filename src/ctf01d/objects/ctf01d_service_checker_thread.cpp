@@ -94,8 +94,8 @@ void service_checker_thread::start() {
 }
 
 void service_checker_thread::log_err(const std::string &message) {
-  m_logger->err(TAG, message);
-  sea5kg::log::err(TAG, message);
+  m_logger->error(TAG, message);
+  sea5kg::log::error(TAG, message);
 }
 
 int service_checker_thread::runChecker(ctf01d::flag &flag, const std::string &sCommand) {
@@ -190,12 +190,12 @@ void service_checker_thread::run() {
     }
 
     if (nCurrentTime > m_config->game_end_utc_in_seconds()) {
-      m_logger->warn(TAG, "Game ended (current time: " + std::to_string(nCurrentTime) + ")");
+      m_logger->warning(TAG, "Game ended (current time: " + std::to_string(nCurrentTime) + ")");
       return;
     };
 
     if (nCurrentTime < nGameStartUTCInSec) {
-      m_logger->warn(TAG, "Game started after: " + std::to_string(nGameStartUTCInSec - nCurrentTime) + " seconds");
+      m_logger->warning(TAG, "Game started after: " + std::to_string(nGameStartUTCInSec - nCurrentTime) + " seconds");
       m_scoreboard->set_service_status(m_team_config.id(), m_service_config.id(), ctf01d::service_status_cell::SERVICE_WAIT);
       std::this_thread::sleep_for(std::chrono::milliseconds(1000));
       continue;
@@ -222,28 +222,28 @@ void service_checker_thread::run() {
 
       if (nExitCode == service_checker_thread::CHECKER_CODE_UP) {
         // >>>>>>>>>>> service is UP <<<<<<<<<<<<<<
-        m_logger->ok(TAG, " => service is up");
+        m_logger->success(TAG, " => service is up");
         m_scoreboard->increment_flags_putted_and_service_up(flag);
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_CORRUPT) {
         // >>>>>>>>>>> service is CORRUPT <<<<<<<<<<<<<<
-        m_logger->warn(TAG, " => service is corrupt");
+        m_logger->warning(TAG, " => service is corrupt");
         m_scoreboard->insert_flag_put_fail(flag, ctf01d::service_status_cell::SERVICE_CORRUPT, "corrupt");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_MUMBLE) {
         // >>>>>>>>>>> service is MUMBLE <<<<<<<<<<<<<<
-        m_logger->warn(TAG, " => service is mumble");
-        m_logger->warn(TAG, "exit_code = " + std::to_string(nExitCode));
+        m_logger->warning(TAG, " => service is mumble");
+        m_logger->warning(TAG, "exit_code = " + std::to_string(nExitCode));
         m_scoreboard->insert_flag_put_fail(flag, ctf01d::service_status_cell::SERVICE_MUMBLE, "mumble");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_DOWN) {
         // >>>>>>>>>>> service is DOWN <<<<<<<<<<<<<<
         m_scoreboard->insert_flag_put_fail(flag, ctf01d::service_status_cell::SERVICE_DOWN, "down");
-        m_logger->warn(TAG, " => service is down");
+        m_logger->warning(TAG, " => service is down");
       } else if (nExitCode == service_checker_thread::CHECKER_CODE_SHIT) {
         // >>>>>>>>>>> checker is SHIT <<<<<<<<<<<<<<
         m_scoreboard->insert_flag_put_fail(flag, ctf01d::service_status_cell::SERVICE_SHIT, "shit");
-        m_logger->err(TAG, " => checker is shit");
+        m_logger->error(TAG, " => checker is shit");
       } else {
         m_scoreboard->insert_flag_put_fail(flag, ctf01d::service_status_cell::SERVICE_SHIT, "internal_error");
-        m_logger->err(TAG, " => runChecker - wrong code return");
+        m_logger->error(TAG, " => runChecker - wrong code return");
       }
     } else {
       m_logger->info(TAG, "Game ended after: " + std::to_string(m_config->game_end_utc_in_seconds() - nCurrentTime) + " sec");

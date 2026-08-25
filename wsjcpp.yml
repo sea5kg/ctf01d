@@ -35,11 +35,11 @@ dependencies:
     installation-dir: "./src.wsjcpp/wsjcpp_employees"
     installation-datetime: "Thu, 21 May 2026 03:16:05 GMT"
   - name: "sea5kg-logger"
-    version: "v2.0.0"
+    version: "v2.0.1"
     url: "https://github.com/sea5kg/sea5kg-logger:master"
     origin: "https://github.com/"
     installation-dir: "./src.wsjcpp/sea5kg_logger"
-    installation-datetime: "Tue, 16 Jun 2026 11:38:20 GMT"
+    installation-datetime: "Tue, 25 Aug 2026 05:35:51 GMT"
 
 resources:
   output-generation-dir: src/wsjcpp_resources

@@ -262,7 +262,7 @@ int main(int argc, const char* argv[]) {
   if (command == "web-test") {
     sea5kg::log::info(TAG, "Web Test...");
     if (!WsjcppEmployees::init({})) {
-        sea5kg::log::err(TAG, "Failed.");
+        sea5kg::log::error(TAG, "Failed.");
         return -1;
     }
     return findWsjcppEmploy<ctf01d::web_server>()->start();
@@ -271,7 +271,7 @@ int main(int argc, const char* argv[]) {
   if (command == "start") {
     sea5kg::log::info(TAG, "Starting...");
     if (!WsjcppEmployees::init({})) {
-      sea5kg::log::err(TAG, "Start failed on step init configs.");
+      sea5kg::log::error(TAG, "Start failed on step init configs.");
       return -1;
     }
 
@@ -284,11 +284,12 @@ int main(int argc, const char* argv[]) {
       ctf01d::service_config service_config = config->services()[iservice];
 
       std::shared_ptr<sea5kg::logger> service_logger(sea5kg::logger::create());
-      service_logger->set_log_dirpath(sea5kg::log::get_log_dirpath());
+      service_logger->set_log_dirpath(sea5kg::log::log_dirpath());
       service_logger->set_rotation_period_in_seconds(sea5kg::log::rotation_period_in_seconds());
       service_logger->set_log_filename_prefix("checker_" + service_config.id() + "_");
-      service_logger->set_enable_log_file(true);
-      service_logger->set_enable_console_output(false); // only errors will be to main log
+      service_logger->set_log_level_file_output(sea5kg::log_level::DEBUG);
+      service_logger->set_log_level_console_output(sea5kg::log_level::DISABLE); // only errors will be to main log
+      service_logger->set_log_level_redirect_to_global(sea5kg::log_level::ERROR);
       service_logger->info(TAG, "Starting threads");
 
       for (unsigned int i_team = 0; i_team < config->teams().size(); i_team++) {

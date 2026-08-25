@@ -137,7 +137,7 @@ bool employ_scoreboard::init(const std::string &sName, bool bSilent) {
   m_random = config->scoreboard_random();
   std::string scoreboard_random = "Scoreboard random: ";
   scoreboard_random = scoreboard_random + (m_random ? "yes" : "no");
-  sea5kg::log::warn(TAG, scoreboard_random);
+  sea5kg::log::warning(TAG, scoreboard_random);
   std::srand(unsigned(std::time(0)));
   m_game_start_in_seconds = config->game_start_utc_in_seconds();
   m_game_end_in_seconds = config->game_end_utc_in_seconds();
@@ -182,7 +182,7 @@ bool employ_scoreboard::init(const std::string &sName, bool bSilent) {
 
   sea5kg::log::info(TAG, "Restoring states from storage...");
   init_state_from_storage();
-  sea5kg::log::ok(TAG, "Restored state from storage.");
+  sea5kg::log::success(TAG, "Restored state from storage.");
   config->add_listener(this);
   return true;
 }

@@ -153,7 +153,7 @@ void service_status_cell::incrementPutFlagFail() {
 int service_status_cell::calculateSLA() {
   if (m_nFlagsPutAllResultsCounter == 0) {
     // if (m_nFlagsPutSuccessResultsCounter != 0) {
-    //   sea5kg::log::warn(TAG, "Could not possible situation!");
+    //   sea5kg::log::warning(TAG, "Could not possible situation!");
     // }
     return 100;
   }

@@ -140,7 +140,7 @@ void DoRunChecker::run() {
 
   if (pipe(fd) != 0) {
     m_sOutput = "Could not open pipe";
-    sea5kg::log::err(TAG, m_sOutput);
+    sea5kg::log::error(TAG, m_sOutput);
     m_nExitCode = -1;
     m_bHasError = true;
     m_bFinishedByTimeout = false;
@@ -152,7 +152,7 @@ void DoRunChecker::run() {
 
   if (nChildPid < 0) {
     m_sOutput = "fork failed!";
-    sea5kg::log::err(TAG, m_sOutput);
+    sea5kg::log::error(TAG, m_sOutput);
     m_nExitCode = -1;
     m_bHasError = true;
     m_bFinishedByTimeout = false;
@@ -213,7 +213,7 @@ void DoRunChecker::run() {
     close(nPipeOut);
     m_bHasError = true;
     m_nExitCode = -1;
-    sea5kg::log::err("DoRunProcess", "bad alloc");
+    sea5kg::log::error("DoRunProcess", "bad alloc");
     return;
   }
 

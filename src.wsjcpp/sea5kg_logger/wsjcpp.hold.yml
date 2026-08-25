@@ -3,7 +3,7 @@ cmake_cxx_standard: 11
 cmake_minimum_required: 3.7
 
 name: sea5kg-logger
-version: v2.0.0
+version: v2.0.1
 description: C++ Logger Implementation
 issues: https://github.com/sea5kg/sea5kg-logger/issues
 repositories:
@@ -22,9 +22,9 @@ distribution:
   - source-file: src/sea5kg/logger/sea5kg_logger.cpp
     target-file: sea5kg_logger.cpp
     type: "source-code"
-    sha1: "df209251e374cefb53fff7227daf15cf49f17c71"
+    sha1: "a2a547495600de920a08c382c7417ad3297ee80c"
   - source-file: src/sea5kg/logger/sea5kg_logger.h
     target-file: sea5kg_logger.h
     type: "source-code" # todo must be header-file
-    sha1: "5cb0ced79a2cb1c6024089b2b8a8847a92429449"
+    sha1: "3da989417d54ce110dc4196a1c8a102c0827c4b5"
 

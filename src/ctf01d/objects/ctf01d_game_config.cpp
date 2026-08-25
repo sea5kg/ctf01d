@@ -117,7 +117,7 @@ bool game_config::read(WsjcppYamlCursor cursor, const std::string &work_dir, std
     && start_utc_in_seconds() < coffee_break_end_utc_in_seconds()
     && coffee_break_end_utc_in_seconds() < end_utc_in_seconds()
   ) {
-    sea5kg::log::ok(TAG, "Oh! Game has coffee break! nice!");
+    sea5kg::log::success(TAG, "Oh! Game has coffee break! nice!");
     m_has_coffee_break = true;
   }
 

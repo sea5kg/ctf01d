@@ -138,11 +138,11 @@ void employ_metrics::config_changed() {
   }
   std::lock_guard<std::mutex> lock(m_mutex);
   if (m_prometheus_metrics_allowed_list_ip != m_config->scoreboard_metrics_allowed_for()) {
-    sea5kg::log::warn(TAG, "Applied option: '" + m_prometheus_metrics_allowed_list_ip + "' -> '" + m_config->scoreboard_metrics_allowed_for() + "'");
+    sea5kg::log::warning(TAG, "Applied option: '" + m_prometheus_metrics_allowed_list_ip + "' -> '" + m_config->scoreboard_metrics_allowed_for() + "'");
     m_prometheus_metrics_allowed_list_ip = m_config->scoreboard_metrics_allowed_for();
   }
   if (m_prometheus_metrics_enabled != m_config->scoreboard_metrics_enabled()) {
-    sea5kg::log::warn(TAG, "Applied option: prometheus metric enabled '" + std::string(m_prometheus_metrics_enabled ? "yes" : "no") + "' -> '" + (m_config->scoreboard_metrics_enabled() ? "yes" : "no") + "'");
+    sea5kg::log::warning(TAG, "Applied option: prometheus metric enabled '" + std::string(m_prometheus_metrics_enabled ? "yes" : "no") + "' -> '" + (m_config->scoreboard_metrics_enabled() ? "yes" : "no") + "'");
     m_prometheus_metrics_enabled = m_config->scoreboard_metrics_enabled();
   }
 }
