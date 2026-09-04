@@ -46,9 +46,7 @@
 #include "ctf01d/include/ctf01d_alive_flags.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_database.h"
-
-// ---------------------------------------------------------------------
-// EmployAliveFlags definition
+#include "ctf01d/include/ctf01d_globals.h"
 
 class EmployAliveFlags : public WsjcppEmployBase, public ctf01d::alive_flags {
 public:
@@ -90,7 +88,7 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
   sea5kg::log::info(TAG, "init");
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
 
-  m_alive_flags_db = std::make_shared<ctf01d::database_file>("alive_flags.db",
+  m_alive_flags_db = std::make_shared<ctf01d::database_file>("database_alive_flags",
     "CREATE TABLE IF NOT EXISTS alive_flags ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  service_id VARCHAR(50) NOT NULL, "
@@ -99,7 +97,10 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     "  team_id VARCHAR(50) NOT NULL, "
     "  date_start INTEGER NOT NULL, "
     "  date_end INTEGER NOT NULL "
-    ");"
+    ");",
+    "alive_flags.db",
+    findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening alive_flags.db");
   if (!m_alive_flags_db->open()) {

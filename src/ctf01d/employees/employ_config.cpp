@@ -72,6 +72,7 @@ public:
   virtual std::string ctf01d_version() override;
   virtual void set_work_dir(const std::string &work_dir) override;
   virtual std::string get_work_dir() override;
+  virtual const std::string &db_dir() override;
   virtual bool apply_config() override;
   virtual const std::vector<ctf01d::service_config> &services() override;
   virtual const std::vector<ctf01d::team_config> &teams() override;
@@ -116,6 +117,7 @@ private:
   std::string TAG;
   std::string m_ctf01d_version;
   std::string m_work_dir;
+  std::string m_db_dir;
   std::string m_config_filepath;
   bool m_applied_config;
   long m_updated_time;
@@ -232,6 +234,10 @@ void employ_config::set_work_dir(const std::string &sWorkDir) {
 
 std::string employ_config::get_work_dir() {
     return m_work_dir;
+}
+
+const std::string &employ_config::db_dir() {
+  return m_db_dir;
 }
 
 bool employ_config::apply_config() {
@@ -858,6 +864,19 @@ bool employ_config::init_work_dir() {
   if (!wsjcpp::dir_exists(sWorkDir)) {
     sea5kg::log::error(TAG, "Directory " + sWorkDir + " does not exists");
     return false;
+  }
+
+  m_db_dir = wsjcpp::normalize_filepath(m_work_dir + "/db");
+  if (!wsjcpp::dir_exists(m_db_dir)) {
+    if (!WsjcppCore::makeDir(m_db_dir)) {
+      sea5kg::log::error(TAG, "Could not create " + m_db_dir);
+      return false;
+    }
+    std::string error;
+    if (!WsjcppCore::setFilePermissions(m_db_dir, WsjcppFilePermissions(0x776), error)) {
+      sea5kg::log::critical(TAG, error);
+      return false;
+    }
   }
   return true;
 }

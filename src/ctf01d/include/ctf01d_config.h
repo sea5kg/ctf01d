@@ -57,6 +57,7 @@ public:
   virtual std::string ctf01d_version() = 0;
   virtual void set_work_dir(const std::string &sWorkDir) = 0;
   virtual std::string get_work_dir() = 0;
+  virtual const std::string &db_dir() = 0;
   virtual bool apply_config() = 0;
   virtual const std::vector<ctf01d::service_config> &services() = 0;
   virtual const std::vector<ctf01d::team_config> &teams() = 0;

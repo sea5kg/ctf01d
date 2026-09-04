@@ -44,6 +44,7 @@ static const int MAX_FLAG_COST_IN_POINTS = 1000;
 static const int MIN_TCP_PORT = 11;
 static const int MAX_TCP_PORT = 65435;
 static const int DEFAULT_FLAG_LIFETIME_IN_SECONDS = 60;
+static const int DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS = 60;
 
 class keys {
 public:

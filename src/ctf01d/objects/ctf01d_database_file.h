@@ -37,10 +37,10 @@
 
 #pragma once
 
-#include <string>
 #include <map>
-#include <mutex>
 #include <memory>
+#include <mutex>
+#include <string>
 
 namespace ctf01d {
 
@@ -64,7 +64,8 @@ public:
 
 class database_file {
 public:
-  database_file(const std::string &sFilename, const std::string &sSqlCreateTable);
+  database_file(const std::string &db_name, const std::string &init_sql, const std::string &db_dir = "./",
+                const std::string &filename = "", long backup_freq = 0);
   ~database_file();
   bool open();
   void close();
@@ -73,7 +74,6 @@ public:
   std::shared_ptr<database_select_rows> selectRows(std::string sqlSelectRows);
 
 private:
-
   void copy_database_to_backup();
   std::mutex m_mutex;
 
@@ -81,8 +81,9 @@ private:
   void *m_database_file_db;
   std::string m_sFilename;
   std::string m_sFileFullpath;
+  long m_backup_freq_in_seconds;
   std::string m_sBaseFileBackupFullpath;
-  std::string m_sSqlCreateTable;
+  std::string m_init_sql;
   int m_nLastBackupTime;
 };
 

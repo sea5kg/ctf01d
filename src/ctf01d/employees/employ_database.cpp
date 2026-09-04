@@ -41,6 +41,7 @@
 #include "ctf01d/objects/ctf01d_database_file.h"
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_config.h"
+#include "ctf01d/include/ctf01d_globals.h"
 #include <sea5kg_logger.h>
 #include <cmath>
 #include <stdio.h>
@@ -100,7 +101,7 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
   }
   sea5kg::log::success(TAG, "Initialize build-in sqlite3 library");
 
-  m_flags_checker_puts_results = std::make_shared<ctf01d::database_file>("flags_checker_put_results.db",
+  m_flags_checker_puts_results = std::make_shared<ctf01d::database_file>("database_flags_checker_put_results",
     "CREATE TABLE IF NOT EXISTS flags_checker_put_results ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -110,14 +111,17 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_start INTEGER NOT NULL,"
     "  date_end INTEGER NOT NULL,"
     "  result VARCHAR(50) NOT NULL"
-    ");"
+    ");",
+    "flags_checker_put_results.db",
+    findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_checker_puts_results");
   if (!m_flags_checker_puts_results->open()) {
     return false;
   }
 
-  m_flags_defense_db = std::make_shared<ctf01d::database_file>("flags_defense.db",
+  m_flags_defense_db = std::make_shared<ctf01d::database_file>("database_flags_defense",
     "CREATE TABLE IF NOT EXISTS flags_defense ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -127,14 +131,17 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_start INTEGER NOT NULL, "
     "  date_end INTEGER NOT NULL, "
     "  flag_cost INTEGER NOT NULL"
-    ");"
+    ");",
+    "flags_defense.db",
+    findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_defense_db");
   if (!m_flags_defense_db->open()) {
     return false;
   }
 
-  m_flags_check_fails = std::make_shared<ctf01d::database_file>("flags_check_fails.db",
+  m_flags_check_fails = std::make_shared<ctf01d::database_file>("database_flags_check_fails",
     "CREATE TABLE IF NOT EXISTS flags_check_fails ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -144,14 +151,17 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_start INTEGER NOT NULL, "
     "  date_end INTEGER NOT NULL, "
     "  reason VARCHAR(50) NOT NULL "
-    ");"
+    ");",
+    "flags_check_fails.db",
+    findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_check_fails");
   if (!m_flags_check_fails->open()) {
     return false;
   }
 
-  m_flags_stolen = std::make_shared<ctf01d::database_file>("flags_stolen.db",
+  m_flags_stolen = std::make_shared<ctf01d::database_file>("database_flags_stolen",
     "CREATE TABLE IF NOT EXISTS flags_stolen ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -163,7 +173,10 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_end INTEGER NOT NULL, "
     "  date_action INTEGER NOT NULL, "
     "  flag_cost INTEGER NOT NULL "
-    ");"
+    ");",
+    "flags_stolen.db",
+    findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   // TODO
   // "  INDEX(`serviceid`), "

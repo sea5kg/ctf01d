@@ -206,29 +206,32 @@ void employ_activities::insert_flag_attempt(
 }
 
 bool employ_activities::init_flags_attempts_db() {
-  m_flags_attempts_db = std::make_shared<ctf01d::database_file>("flags_attempts.db",
+  m_flags_attempts_db = std::make_shared<ctf01d::database_file>("database_flags_attempts",
     "CREATE TABLE IF NOT EXISTS flags_attempts ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  flag VARCHAR(1024) NOT NULL, "
     "  team_id VARCHAR(50) NOT NULL, "
     "  request_ip VARCHAR(50) NOT NULL, "
     "  dt INTEGER NOT NULL "
-    ");"
+    ");",
     // TODO result of send_flag (error code or success + elapsed time)
+    "flags_attempts.db",
+    findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening flags_attempts.db");
   if (!m_flags_attempts_db->open()) {
     return false;
   }
 
-  m_flags_attempts_db->executeQuery("CREATE INDEX IF NOT EXISTS  idx_dt ON flags_attempts(dt);");
+  m_flags_attempts_db->executeQuery("CREATE INDEX IF NOT EXISTS idx_dt ON flags_attempts(dt);");
   return true;
 }
 
 bool employ_activities::init_flags_attempts_snapshots_db()
 {
   std::lock_guard<std::mutex> lock(m_mutex_flags_attempts_snapshots_db);
-  m_flags_attempts_snapshots_db = std::make_shared<ctf01d::database_file>("flags_attempts_snapshots.db",
+  m_flags_attempts_snapshots_db = std::make_shared<ctf01d::database_file>("database_flags_attempts_snapshots",
     "CREATE TABLE IF NOT EXISTS flags_attempts_snapshots ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  team_id VARCHAR(50) NOT NULL, "
@@ -236,8 +239,11 @@ bool employ_activities::init_flags_attempts_snapshots_db()
     "  total_attempts INTEGER NOT NULL, " // TODO
     "  total_success INTEGER NOT NULL, " // TODO
     "  total_failed INTEGER NOT NULL " // TODO
-    ");"
+    ");",
     // TODO result of send_flag (error code or success + elapsed time)
+    "flags_attempts_snapshots.db",
+    findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening flags_attempts_snapshots.db");
   if (!m_flags_attempts_snapshots_db->open()) {
