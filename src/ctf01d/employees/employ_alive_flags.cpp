@@ -98,8 +98,8 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     "  date_start INTEGER NOT NULL, "
     "  date_end INTEGER NOT NULL "
     ");",
-    "alive_flags.db",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    "alive_flags.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening alive_flags.db");

@@ -215,8 +215,8 @@ bool employ_activities::init_flags_attempts_db() {
     "  dt INTEGER NOT NULL "
     ");",
     // TODO result of send_flag (error code or success + elapsed time)
-    "flags_attempts.db",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    "flags_attempts.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening flags_attempts.db");
@@ -241,8 +241,8 @@ bool employ_activities::init_flags_attempts_snapshots_db()
     "  total_failed INTEGER NOT NULL " // TODO
     ");",
     // TODO result of send_flag (error code or success + elapsed time)
-    "flags_attempts_snapshots.db",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    "flags_attempts_snapshots.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening flags_attempts_snapshots.db");

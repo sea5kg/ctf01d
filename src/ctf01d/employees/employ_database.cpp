@@ -112,8 +112,8 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_end INTEGER NOT NULL,"
     "  result VARCHAR(50) NOT NULL"
     ");",
-    "flags_checker_put_results.db",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    "flags_checker_put_results.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_checker_puts_results");
@@ -132,8 +132,8 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_end INTEGER NOT NULL, "
     "  flag_cost INTEGER NOT NULL"
     ");",
-    "flags_defense.db",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    "flags_defense.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_defense_db");
@@ -152,8 +152,8 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_end INTEGER NOT NULL, "
     "  reason VARCHAR(50) NOT NULL "
     ");",
-    "flags_check_fails.db",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    "flags_check_fails.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_check_fails");
@@ -174,8 +174,8 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "  date_action INTEGER NOT NULL, "
     "  flag_cost INTEGER NOT NULL "
     ");",
-    "flags_stolen.db",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
+    "flags_stolen.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   // TODO
