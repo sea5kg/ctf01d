@@ -213,22 +213,31 @@ void employ_database::insert_to_flags_checker_put_result(ctf01d::flag flag, std:
 }
 
 int employ_database::number_of_flags_checker_put_all_results(std::string team_id, std::string service_id) {
-  return m_flags_checker_puts_results->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_checker_puts_results->select_sum_or_count(
     "SELECT COUNT(*) as defense FROM flags_checker_put_results "
     "WHERE serviceid = '" + service_id + "' "
     "   AND team_id = '" + team_id + "' "
-    ";"
-  );
+    ";", error);
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 int employ_database::number_of_flags_checker_put_success_result(std::string team_id, std::string service_id) {
-  return m_flags_checker_puts_results->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_checker_puts_results->select_sum_or_count(
     "SELECT COUNT(*) as defense FROM flags_checker_put_results "
     "WHERE serviceid = '" + service_id + "' "
     "   AND team_id = '" + team_id + "' "
     "   AND result = 'up' "
-    ";"
+    ";", error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 void employ_database::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
@@ -249,27 +258,43 @@ void employ_database::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
 }
 
 int employ_database::number_of_flags_defense(std::string team_id, std::string service_id) {
-  return m_flags_defense_db->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_defense_db->select_sum_or_count(
     "SELECT COUNT(*) as defense FROM flags_defense "
     "WHERE serviceid = '" + service_id + "' "
     "   AND team_id = '" + team_id + "' "
-    ";"
+    ";", error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 int employ_database::sum_points_of_flags_defense(std::string team_id, std::string service_id) {
-  return m_flags_defense_db->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_defense_db->select_sum_or_count(
     "SELECT SUM(flag_cost) as points FROM flags_defense "
     "WHERE serviceid = '" + service_id + "' "
     "   AND team_id = '" + team_id + "' "
-    ";"
+    ";", error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 int employ_database::number_of_defense_flag_for_service(std::string service_id) {
-  return m_flags_defense_db->selectSumOrCount(
-    "SELECT COUNT(*) as cnt FROM flags_defense WHERE serviceid = '" + service_id + "'"
+  std::string error;
+  int ret = m_flags_defense_db->select_sum_or_count(
+    "SELECT COUNT(*) as cnt FROM flags_defense WHERE serviceid = '" + service_id + "'",
+    error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 void employ_database::insert_flag_check_fail(ctf01d::flag flag, std::string sReason) {
@@ -291,36 +316,57 @@ void employ_database::insert_flag_check_fail(ctf01d::flag flag, std::string sRea
 
 
 int employ_database::number_of_flags_stollen(std::string team_id, std::string service_id) {
-  return m_flags_stolen->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_stolen->select_sum_or_count(
     "SELECT COUNT(*) as cnt FROM flags_stolen "
     "   WHERE serviceid = '" + service_id + "' "
     "   AND thief_team_id = '" + team_id + "' "
-    ";"
+    ";", error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 int employ_database::number_of_flags_stollen_by_victim(std::string team_id, std::string service_id) {
-  return m_flags_stolen->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_stolen->select_sum_or_count(
     "SELECT COUNT(*) as cnt FROM flags_stolen "
     "   WHERE serviceid = '" + service_id + "' "
     "   AND team_id = '" + team_id + "' "
-    ";"
+    ";", error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 int employ_database::sum_points_of_flags_stolen(std::string team_id, std::string service_id) {
-  return m_flags_stolen->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_stolen->select_sum_or_count(
     "SELECT SUM(flag_cost) as points FROM flags_stolen "
     "WHERE serviceid = '" + service_id + "' "
     "   AND thief_team_id = '" + team_id + "' "
-    ";"
+    ";", error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 int employ_database::number_of_stolen_flags_for_service(std::string service_id) {
-  return m_flags_stolen->selectSumOrCount(
-    "SELECT COUNT(*) as cnt FROM flags_stolen WHERE serviceid = '" + service_id + "'"
+  std::string error;
+  int ret = m_flags_stolen->select_sum_or_count(
+    "SELECT COUNT(*) as cnt FROM flags_stolen WHERE serviceid = '" + service_id + "'",
+    error
   );
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret;
 }
 
 std::pair<std::string, long> employ_database::get_first_blood_from_stolen_flags_for_service(std::string service_id) {
@@ -363,23 +409,33 @@ void employ_database::insert_to_flags_stolen(ctf01d::flag flag, std::string team
 }
 
 bool employ_database::is_already_stole(ctf01d::flag flag, std::string team_id) {
-  int nRet = m_flags_stolen->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_stolen->select_sum_or_count(
     "SELECT COUNT(*) as cnt FROM flags_stolen "
     " WHERE serviceid = '" + flag.service_id() + "' "
     "   AND thief_team_id = '" + team_id + "'"
     "   AND flag_id = '" + flag.id() + "'"
-    "   AND flag = '" + flag.value() + "'"
+    "   AND flag = '" + flag.value() + "'",
+    error
   );
-  return nRet > 0;
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret > 0;
 }
 
 bool employ_database::is_somebody_stole(ctf01d::flag flag) {
-  int nRet = m_flags_stolen->selectSumOrCount(
+  std::string error;
+  int ret = m_flags_stolen->select_sum_or_count(
     "SELECT COUNT(*) as cnt FROM flags_stolen "
     " WHERE serviceid = '" + flag.service_id() + "' "
     "   AND team_id = '" + flag.team_id() + "'"
     "   AND flag_id = '" + flag.id() + "'"
-    "   AND flag = '" + flag.value() + "'"
+    "   AND flag = '" + flag.value() + "'",
+    error
   );
-  return nRet > 0;
+  if (ret == -1) {
+    sea5kg::log::critical(TAG, error);
+  }
+  return ret > 0;
 }

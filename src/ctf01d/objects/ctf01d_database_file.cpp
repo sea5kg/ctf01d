@@ -195,22 +195,24 @@ bool database_file::executeQuery(std::string sql_query) {
   return true;
 }
 
-int database_file::selectSumOrCount(std::string sSqlSelectCount) {
+int database_file::select_sum_or_count(const std::string &sql, std::string &error) {
   copy_database_to_backup();
   sqlite3_stmt *pQuery = nullptr;
-  int ret = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sSqlSelectCount.c_str(), -1, &pQuery, NULL);
+  int ret = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sql.c_str(), -1, &pQuery, NULL);
   // prepare the statement
   if (ret != SQLITE_OK) {
-    sea5kg::log::critical(
-        TAG, "Failed to prepare select count: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
-                 "\n SQL-query: " + sSqlSelectCount);
+    error = "Failed to prepare select count: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
+            "\n SQL-query: " + sql;
+    sea5kg::log::critical(TAG, error);
+    return -1;
   }
   // step to 1st row of data
   ret = sqlite3_step(pQuery);
   if (ret != SQLITE_ROW) { // see documentation, this can return more values as success
-    sea5kg::log::critical(
-        TAG, "Failed to step for select count or sum: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
-                 "\n SQL-query: " + sSqlSelectCount);
+    error = "Failed to step for select count or sum: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
+            "\n SQL-query: " + sql;
+    sea5kg::log::critical(TAG, error);
+    return -1;
   }
   int nRet = sqlite3_column_int(pQuery, 0);
   if (pQuery != nullptr)

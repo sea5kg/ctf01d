@@ -124,13 +124,18 @@ bool employ_activities::init(const std::string &name, bool silent) {
     std::lock_guard<std::mutex> lock(m_mutex_teams_activities_send_flag);
     for (unsigned int i = 0; i < config->teams().size(); i++) {
       const ctf01d::team_config &team_config = config->teams()[i];
-      int flag_attempts_sum = m_flags_attempts_db->selectSumOrCount(
+      std::string error;
+      int flag_attempts_sum = m_flags_attempts_db->select_sum_or_count(
         "SELECT COUNT(*) FROM flags_attempts"
         "  WHERE "
         "    team_id = '" + team_config.id() + "'"
         "    AND dt >= " + str_game_start + " "
-        "    AND dt <= " + str_game_end + " "
+        "    AND dt <= " + str_game_end + " ",
+        error
       );
+      if (flag_attempts_sum == -1) {
+        sea5kg::log::critical(TAG, error);
+      }
       m_all_activities_send_flag += flag_attempts_sum;
       m_teams_activities_send_flag[team_config.id()] = flag_attempts_sum;
     }

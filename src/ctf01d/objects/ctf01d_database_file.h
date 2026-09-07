@@ -70,7 +70,7 @@ public:
   bool open();
   void close();
   bool executeQuery(std::string sSqlInsert);
-  int selectSumOrCount(std::string sSqlSelectCount);
+  int select_sum_or_count(const std::string &sql, std::string &error);
   std::shared_ptr<database_select_rows> selectRows(std::string sqlSelectRows);
 
 private:
