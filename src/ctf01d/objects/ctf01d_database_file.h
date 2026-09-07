@@ -55,11 +55,11 @@ public:
   static void shutdown_driver_sqlite3();
 };
 
-class database_select_rows {
+class rows_iterator {
 public:
   virtual bool next() = 0;
-  virtual std::string getString(int nColumnNumber) = 0;
-  virtual long getLong(int nColumnNumber) = 0;
+  virtual std::string as_string(int column_idx) = 0;
+  virtual long as_long(int column_idx) = 0;
 };
 
 class database_file {
@@ -71,7 +71,7 @@ public:
   void close();
   bool executeQuery(std::string sSqlInsert);
   int select_sum_or_count(const std::string &sql, std::string &error);
-  std::shared_ptr<database_select_rows> selectRows(std::string sqlSelectRows);
+  std::shared_ptr<rows_iterator> select_rows(const std::string &sql, std::string &error);
 
 private:
   void copy_database_to_backup();

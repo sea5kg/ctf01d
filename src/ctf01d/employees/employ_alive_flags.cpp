@@ -211,23 +211,24 @@ std::vector<ctf01d::flag> EmployAliveFlags::get_from_db_alive_flags() {
     ";";
 
   std::vector<ctf01d::flag> vResult;
-  auto rows = m_alive_flags_db->selectRows(sQuery);
+  std::string error;
+  auto rows = m_alive_flags_db->select_rows(sQuery, error);
   if (rows == nullptr) {
-    sea5kg::log::error(TAG, "Error select listOfLiveFlags " + sQuery);
+    sea5kg::log::critical(TAG, "Error select listOfLiveFlags. " + error);
     return vResult;
   }
   int nCounter = 0;
   while (rows->next()) {
     nCounter++;
     ctf01d::flag flag;
-    std::string flag_id = rows->getString(0);
+    std::string flag_id = rows->as_string(0);
     flag.set_id(flag_id);
-    flag.set_service_id(rows->getString(1));
-    flag.set_team_id(rows->getString(2));
-    std::string flag_value = rows->getString(3);
+    flag.set_service_id(rows->as_string(1));
+    flag.set_team_id(rows->as_string(2));
+    std::string flag_value = rows->as_string(3);
     flag.set_value(flag_value);
-    flag.set_time_start_in_milliseconds(rows->getLong(4));
-    flag.set_time_end_in_milliseconds(rows->getLong(5));
+    flag.set_time_start_in_milliseconds(rows->as_long(4));
+    flag.set_time_end_in_milliseconds(rows->as_long(5));
     vResult.push_back(flag);
   }
   return vResult;

@@ -75,43 +75,48 @@ void global_databases::shutdown_driver_sqlite3() {
   sqlite3_shutdown();
 }
 
-class impl_database_select_rows : public database_select_rows {
+class impl_rows_iterator : public rows_iterator {
 public:
-  impl_database_select_rows();
-  ~impl_database_select_rows();
-  void setQuery(sqlite3_stmt *pQuery);
+  impl_rows_iterator();
+  ~impl_rows_iterator();
+  void set_stmt(sqlite3_stmt *pQuery);
+  void *stmt();
   virtual bool next() override;
-  virtual std::string getString(int nColumnNumber) override;
-  virtual long getLong(int nColumnNumber) override;
+  virtual std::string as_string(int column_idx) override;
+  virtual long as_long(int column_idx) override;
 
 private:
   sqlite3_stmt *m_pQuery;
 };
 
-impl_database_select_rows::impl_database_select_rows() {
+impl_rows_iterator::impl_rows_iterator() {
   m_pQuery = nullptr;
 }
 
-impl_database_select_rows::~impl_database_select_rows() {
+impl_rows_iterator::~impl_rows_iterator() {
   if (m_pQuery != nullptr) {
     sqlite3_finalize(m_pQuery);
   }
 }
 
-void impl_database_select_rows::setQuery(sqlite3_stmt *pQuery) {
+void impl_rows_iterator::set_stmt(sqlite3_stmt *pQuery) {
   m_pQuery = pQuery;
 }
 
-bool impl_database_select_rows::next() {
+void *impl_rows_iterator::stmt() {
+  return m_pQuery;
+}
+
+bool impl_rows_iterator::next() {
   return sqlite3_step(m_pQuery) == SQLITE_ROW;
 }
 
-std::string impl_database_select_rows::getString(int nColumnNumber) {
-  return std::string((const char *)sqlite3_column_text(m_pQuery, nColumnNumber));
+std::string impl_rows_iterator::as_string(int column_idx) {
+  return std::string((const char *)sqlite3_column_text(m_pQuery, column_idx));
 }
 
-long impl_database_select_rows::getLong(int nColumnNumber) {
-  return sqlite3_column_int64(m_pQuery, nColumnNumber);
+long impl_rows_iterator::as_long(int column_idx) {
+  return sqlite3_column_int64(m_pQuery, column_idx);
 }
 
 // ---------------------------------------------------------------------
@@ -220,20 +225,19 @@ int database_file::select_sum_or_count(const std::string &sql, std::string &erro
   return nRet;
 }
 
-std::shared_ptr<database_select_rows> database_file::selectRows(std::string sqlSelectRows) {
+std::shared_ptr<rows_iterator> database_file::select_rows(const std::string &sql, std::string &error) {
   copy_database_to_backup();
   sqlite3_stmt *pQuery = nullptr;
-  int nRet = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sqlSelectRows.c_str(), -1, &pQuery, NULL);
+  int res = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sql.c_str(), -1, &pQuery, NULL);
   // prepare the statement
-  if (nRet != SQLITE_OK) {
-    sea5kg::log::critical(
-        TAG, "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
-                 "\n SQL-query: " + sqlSelectRows);
+  if (res != SQLITE_OK) {
+    error = "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
+            "\n SQL-query: " + sql;
     return nullptr;
   }
-  auto selectRows = std::make_shared<impl_database_select_rows>();
-  selectRows->setQuery(pQuery);
-  return selectRows;
+  auto ret = std::make_shared<impl_rows_iterator>();
+  ret->set_stmt(pQuery);
+  return ret;
 }
 
 void database_file::copy_database_to_backup() {

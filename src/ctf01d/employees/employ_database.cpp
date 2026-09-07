@@ -374,14 +374,15 @@ std::pair<std::string, long> employ_database::get_first_blood_from_stolen_flags_
   std::pair<std::string, long> pairRet;
   pairRet.first = "?";
   pairRet.second = 0;
-  auto rows = m_flags_stolen->selectRows(sQuery);
+  std::string error;
+  auto rows = m_flags_stolen->select_rows(sQuery, error);
   if (rows == nullptr) {
-    sea5kg::log::error(TAG, "Error select get_first_blood_from_stolen_flags_for_service " + sQuery);
+    sea5kg::log::critical(TAG, "Error select get_first_blood_from_stolen_flags_for_service " + error);
     return pairRet;
   }
   if (rows->next()) {
-    pairRet.first = rows->getString(0);
-    pairRet.second = rows->getLong(1);
+    pairRet.first = rows->as_string(0);
+    pairRet.second = rows->as_long(1);
   }
   return pairRet;
 }
