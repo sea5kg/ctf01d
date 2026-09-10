@@ -42,7 +42,7 @@
 #include <fstream>
 #include <cstring>
 #include "ctf01d/include/ctf01d_globals.h"
-#include "ctf01d/objects/ctf01d_database_file.h"
+#include <sea5kg_sqlite3_wrapper.h>
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_activities.h"
 #include "ctf01d/include/ctf01d_database.h"

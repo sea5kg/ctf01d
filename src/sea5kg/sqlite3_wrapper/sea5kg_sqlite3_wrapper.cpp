@@ -35,7 +35,7 @@
  *
  ***********************************************************************************/
 
-#include "ctf01d_database_file.h"
+#include "sea5kg_sqlite3_wrapper.h"
 #include <sea5kg_logger.h>
 #include <sqlite3.h>
 #include <wsjcpp_core.h>
@@ -44,6 +44,24 @@
 namespace sea5kg {
 
 namespace sqlite3_wrapper {
+
+database_update_info::database_update_info(
+  const std::string &version_from, const std::string &version_to, const std::string &description
+)
+    : m_version_from(version_from), m_version_to(version_to), m_description(description) {
+}
+
+const std::string &database_update_info::version_from() const {
+  return m_version_from;
+}
+
+const std::string &database_update_info::version_to() const {
+  return m_version_to;
+}
+
+const std::string &database_update_info::description() const {
+  return m_description;
+}
 
 std::map<std::string, database_file *> *g_opened_database_files = nullptr;
 
@@ -93,30 +111,6 @@ void global::shutdown_driver_sqlite3() {
   }
   sqlite3_shutdown();
 }
-
-#define CLASS_DATABASE_UPDATE_BEGIN(class_name, ver_from, ver_to, description) \
-  class db_update_##class_name##_##ver_from##_##ver_to; \
-  struct registry_db_update_fabric_##class_name##_##ver_from##_##ver_to { \
-    registry_db_update_fabric_##class_name##_##ver_from##_##ver_to() { \
-      std::shared_ptr<sea5kg::sqlite3_wrapper::database_update_fabric_base> ptr = std::make_shared< \
-        sea5kg::sqlite3_wrapper::database_update_fabric<db_update_##class_name##_##ver_from##_##ver_to>>(); \
-      sea5kg::sqlite3_wrapper::global::registry_database_update_fabric(#class_name, ptr); \
-    } \
-  } registry_db_update_fabric_##class_name##_##ver_from##_##ver_to##__; \
-  class db_update_##class_name##_##ver_from##_##ver_to : public sea5kg::sqlite3_wrapper::database_update { \
-  public: \
-    db_update_##class_name##_##ver_from##_##ver_to() \
-        : sea5kg::sqlite3_wrapper::database_update(#class_name, #ver_from, #ver_to, description) { \
-    } \
-    virtual bool apply_update(sea5kg::sqlite3_wrapper::database_file * db, std::string & error) override
-
-#define CLASS_DATABASE_UPDATE_END() \
-  } \
-  ;
-
-#define CLASS_DATABASE_UPDATE_NEXT(class_name, ver_from, ver_to, description) \
-  CLASS_DATABASE_UPDATE_END() \
-  CLASS_DATABASE_UPDATE_BEGIN(class_name, ver_from, ver_to, description)
 
 class impl_rows_iterator : public rows_iterator {
 public:

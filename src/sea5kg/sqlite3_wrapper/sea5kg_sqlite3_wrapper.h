@@ -47,6 +47,19 @@ namespace sea5kg {
 
 namespace sqlite3_wrapper {
 
+class database_update_info {
+public:
+  database_update_info(const std::string &version_from, const std::string &version_to, const std::string &description);
+  const std::string &version_from() const;
+  const std::string &version_to() const;
+  const std::string &description() const;
+
+private:
+  std::string m_version_from;
+  std::string m_version_to;
+  std::string m_description;
+};
+
 class database_file;
 class database_update;
 
@@ -72,6 +85,53 @@ public:
   static bool init_driver_sqlite3(int &ret);
   static void shutdown_driver_sqlite3();
 };
+
+// class database_update {
+// public:
+//   database_update(
+//     const std::string &db_name,
+//     const std::string &version_from,
+//     const std::string &version_to,
+//     const std::string &description
+//   );
+//   const database_update_info &info();
+//   const std::string &db_name() const;
+//   void set_weight(int weight);
+//   int weight();
+//   virtual bool apply_update(database_file *db, std::string &error) = 0;
+
+// protected:
+//   std::string TAG;
+
+// private:
+//   database_update_info m_update_info;
+//   std::string m_db_name;
+//   int m_weight;
+// };
+
+#define CLASS_DATABASE_UPDATE_BEGIN(class_name, ver_from, ver_to, description) \
+  class db_update_##class_name##_##ver_from##_##ver_to; \
+  struct registry_db_update_fabric_##class_name##_##ver_from##_##ver_to { \
+    registry_db_update_fabric_##class_name##_##ver_from##_##ver_to() { \
+      std::shared_ptr<sea5kg::sqlite3_wrapper::database_update_fabric_base> ptr = std::make_shared< \
+        sea5kg::sqlite3_wrapper::database_update_fabric<db_update_##class_name##_##ver_from##_##ver_to>>(); \
+      sea5kg::sqlite3_wrapper::global::registry_database_update_fabric(#class_name, ptr); \
+    } \
+  } registry_db_update_fabric_##class_name##_##ver_from##_##ver_to##__; \
+  class db_update_##class_name##_##ver_from##_##ver_to : public sea5kg::sqlite3_wrapper::database_update { \
+  public: \
+    db_update_##class_name##_##ver_from##_##ver_to() \
+        : sea5kg::sqlite3_wrapper::database_update(#class_name, #ver_from, #ver_to, description) { \
+    } \
+    virtual bool apply_update(sea5kg::sqlite3_wrapper::database_file * db, std::string & error) override
+
+#define CLASS_DATABASE_UPDATE_END() \
+  } \
+  ;
+
+#define CLASS_DATABASE_UPDATE_NEXT(class_name, ver_from, ver_to, description) \
+  CLASS_DATABASE_UPDATE_END() \
+  CLASS_DATABASE_UPDATE_BEGIN(class_name, ver_from, ver_to, description)
 
 class rows_iterator {
 public:

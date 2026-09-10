@@ -38,7 +38,7 @@
 #include <wsjcpp_employees.h>
 #include <wsjcpp_core.h>
 #include "ctf01d/include/ctf01d_database.h"
-#include "ctf01d/objects/ctf01d_database_file.h"
+#include <sea5kg_sqlite3_wrapper.h>
 #include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_globals.h"
