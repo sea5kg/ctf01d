@@ -70,7 +70,7 @@ private:
 
   std::mutex m_mutex_alive_flags;
   std::map<std::string, ctf01d::flag> m_alive_flags_cache;
-  std::shared_ptr<ctf01d::database_file> m_alive_flags_db;
+  std::shared_ptr<sea5kg::sqlite3_wrapper::database_file> m_alive_flags_db;
 };
 
 // ---------------------------------------------------------------------
@@ -88,7 +88,7 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
   sea5kg::log::info(TAG, "init");
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
 
-  m_alive_flags_db = std::make_shared<ctf01d::database_file>("database_alive_flags",
+  m_alive_flags_db = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_alive_flags",
     "CREATE TABLE IF NOT EXISTS alive_flags ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  service_id VARCHAR(50) NOT NULL, "
@@ -103,8 +103,10 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening alive_flags.db");
-  if (!m_alive_flags_db->open()) {
-      return false;
+  std::string error;
+  if (!m_alive_flags_db->open(error)) {
+    sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
+    return false;
   }
 
   // load alive flags
@@ -144,8 +146,9 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
     + std::to_string(flag.time_start_in_milliseconds()) + ", "
     + std::to_string(flag.time_end_in_milliseconds())
     + ");";
-  if (!m_alive_flags_db->executeQuery(sQuery)) {
-    sea5kg::log::error(TAG, "Error insert insertToFlagLive");
+  std::string error;
+  if (!m_alive_flags_db->execute_query(sQuery, error)) {
+    sea5kg::log::error(TAG, error);
   }
   return true;
 }
@@ -185,8 +188,9 @@ void EmployAliveFlags::remove_alive_flag(const ctf01d::flag &flag) {
     m_alive_flags_cache.erase(it);
 
     std::string sQuery = "DELETE FROM alive_flags WHERE flag = '" + flag.value() + "';";
-    if (!m_alive_flags_db->executeQuery(sQuery)) {
-      sea5kg::log::error(TAG, "Error delete deleteFlagLive");
+    std::string error;
+    if (!m_alive_flags_db->execute_query(sQuery, error)) {
+      sea5kg::log::error(TAG, error);
     }
   } else {
     sea5kg::log::warning(TAG, flag.value() + " - flag did not exists");

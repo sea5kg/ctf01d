@@ -76,10 +76,10 @@ public:
 
 private:
   std::string TAG;
-  std::shared_ptr<ctf01d::database_file> m_flags_defense_db;
-  std::shared_ptr<ctf01d::database_file> m_flags_check_fails;
-  std::shared_ptr<ctf01d::database_file> m_flags_stolen;
-  std::shared_ptr<ctf01d::database_file> m_flags_checker_puts_results;
+  std::shared_ptr<sea5kg::sqlite3_wrapper::database_file> m_flags_defense_db;
+  std::shared_ptr<sea5kg::sqlite3_wrapper::database_file> m_flags_check_fails;
+  std::shared_ptr<sea5kg::sqlite3_wrapper::database_file> m_flags_stolen;
+  std::shared_ptr<sea5kg::sqlite3_wrapper::database_file> m_flags_checker_puts_results;
 };
 
 REGISTRY_WSJCPP_EMPLOY(employ_database)
@@ -95,13 +95,14 @@ employ_database::employ_database()
 
 bool employ_database::init(const std::string &sName, bool bSilent) {
   int driver_init_ret;
-  if (!ctf01d::global_databases::init_driver_sqlite3(driver_init_ret)) {
+  std::string error;
+  if (!sea5kg::sqlite3_wrapper::global::init_driver_sqlite3(driver_init_ret)) {
     sea5kg::log::critical(TAG, "Failed to initialize build-in sqlite3 library: " + std::to_string(driver_init_ret));
     return false;
   }
   sea5kg::log::success(TAG, "Initialize build-in sqlite3 library");
 
-  m_flags_checker_puts_results = std::make_shared<ctf01d::database_file>("database_flags_checker_put_results",
+  m_flags_checker_puts_results = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_flags_checker_put_results",
     "CREATE TABLE IF NOT EXISTS flags_checker_put_results ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -117,11 +118,12 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_checker_puts_results");
-  if (!m_flags_checker_puts_results->open()) {
+  if (!m_flags_checker_puts_results->open(error)) {
+    sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;
   }
 
-  m_flags_defense_db = std::make_shared<ctf01d::database_file>("database_flags_defense",
+  m_flags_defense_db = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_flags_defense",
     "CREATE TABLE IF NOT EXISTS flags_defense ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -137,11 +139,12 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_defense_db");
-  if (!m_flags_defense_db->open()) {
+  if (!m_flags_defense_db->open(error)) {
+    sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;
   }
 
-  m_flags_check_fails = std::make_shared<ctf01d::database_file>("database_flags_check_fails",
+  m_flags_check_fails = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_flags_check_fails",
     "CREATE TABLE IF NOT EXISTS flags_check_fails ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -157,11 +160,12 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening m_flags_check_fails");
-  if (!m_flags_check_fails->open()) {
+  if (!m_flags_check_fails->open(error)) {
+    sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;
   }
 
-  m_flags_stolen = std::make_shared<ctf01d::database_file>("database_flags_stolen",
+  m_flags_stolen = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_flags_stolen",
     "CREATE TABLE IF NOT EXISTS flags_stolen ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  serviceid VARCHAR(50) NOT NULL, "
@@ -183,16 +187,17 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
   // "  INDEX(`serviceid`, `thief_team_id`), "
   // "  UNIQUE KEY(`serviceid`, `thief_team_id`, `flag_id`, `flag`)"
   sea5kg::log::info(TAG, "Opening m_flags_stolen");
-  if (!m_flags_stolen->open()) {
+  if (!m_flags_stolen->open(error)) {
+    sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;
   }
 
-    return true;
+  return true;
 }
 
 bool employ_database::deinit(const std::string &sName, bool bSilent) {
   sea5kg::log::info(TAG, "deinit");
-  ctf01d::global_databases::shutdown_driver_sqlite3();
+  sea5kg::sqlite3_wrapper::global::shutdown_driver_sqlite3();
   return true;
 }
 
@@ -207,8 +212,9 @@ void employ_database::insert_to_flags_checker_put_result(ctf01d::flag flag, std:
     + std::to_string(flag.time_end_in_milliseconds()) + ", "
     + "'" + sResult + "'"
     + ");";
-  if (!m_flags_checker_puts_results->executeQuery(sQuery)) {
-    sea5kg::log::error(TAG, "Error insert " + sQuery);
+  std::string error;
+  if (!m_flags_checker_puts_results->execute_query(sQuery, error)) {
+    sea5kg::log::error(TAG, error);
   }
 }
 
@@ -252,8 +258,9 @@ void employ_database::insertToFlagsDefense(ctf01d::flag flag, int nPoints) {
     + std::to_string(nPoints) + " "
     + ");";
 
-  if (!m_flags_defense_db->executeQuery(sQuery)) {
-    sea5kg::log::error(TAG, "Error insert insertToFlagsDefense");
+  std::string error;
+  if (!m_flags_defense_db->execute_query(sQuery, error)) {
+    sea5kg::log::error(TAG, error);
   }
 }
 
@@ -309,8 +316,9 @@ void employ_database::insert_flag_check_fail(ctf01d::flag flag, std::string sRea
     + "'" + sReason + "'"
     + ");";
 
-  if (!m_flags_check_fails->executeQuery(sQuery)) {
-    sea5kg::log::error(TAG, "Error insert insertToFlagsDefense");
+  std::string error;
+  if (!m_flags_check_fails->execute_query(sQuery, error)) {
+    sea5kg::log::error(TAG, error);
   }
 }
 
@@ -404,8 +412,9 @@ void employ_database::insert_to_flags_stolen(ctf01d::flag flag, std::string team
     + std::to_string(nPoints) + " "
     + ");";
 
-  if (!m_flags_stolen->executeQuery(sQuery)) {
-    sea5kg::log::error(TAG, "Error insert insertToFlagsDefense");
+  std::string error;
+  if (!m_flags_stolen->execute_query(sQuery, error)) {
+    sea5kg::log::error(TAG, error);
   }
 }
 

@@ -40,16 +40,34 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <vector>
 #include <string>
 
-namespace ctf01d {
+namespace sea5kg {
+
+namespace sqlite3_wrapper {
 
 class database_file;
+class database_update;
 
+class database_update_fabric_base {
+public:
+  virtual std::shared_ptr<database_update> create_update() = 0;
+};
+
+template <typename T> class database_update_fabric : public database_update_fabric_base {
+public:
+  virtual std::shared_ptr<database_update> create_update() override {
+    return std::make_shared<T>();
+  }
+};
+
+extern std::map<std::string, std::vector<std::shared_ptr<database_update_fabric_base>>> *g_database_updates_fabric;
 extern std::map<std::string, database_file *> *g_opened_database_files;
 
-class global_databases {
+class global {
 public:
+  static void registry_database_update_fabric(const std::string &db_name, std::shared_ptr<database_update_fabric_base>);
   static void add_opened_database_file(const std::string &name, database_file *db);
   static bool init_driver_sqlite3(int &ret);
   static void shutdown_driver_sqlite3();
@@ -67,24 +85,27 @@ public:
   database_file(const std::string &db_name, const std::string &init_sql, const std::string &db_dir = "./",
                 const std::string &filename = "", long backup_freq = 0);
   ~database_file();
-  bool open();
+  bool open(std::string &error);
+  bool is_opened() const;
   void close();
-  bool executeQuery(std::string sSqlInsert);
+  bool execute_query(const std::string &sql, std::string &error);
   int select_sum_or_count(const std::string &sql, std::string &error);
   std::shared_ptr<rows_iterator> select_rows(const std::string &sql, std::string &error);
 
 private:
-  void copy_database_to_backup();
+  bool copy_database_to_backup(std::string &error);
   std::mutex m_mutex;
 
   std::string TAG;
-  void *m_database_file_db;
+  void *m_db;
   std::string m_sFilename;
   std::string m_sFileFullpath;
   long m_backup_freq_in_seconds;
   std::string m_sBaseFileBackupFullpath;
   std::string m_init_sql;
-  int m_nLastBackupTime;
+  int m_last_backup_time;
 };
+
+} // namespace sqlite3_wrapper
 
 } // namespace ctf01d

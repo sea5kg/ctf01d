@@ -41,12 +41,31 @@
 #include <wsjcpp_core.h>
 #include <wsjcpp_employees.h>
 
-namespace ctf01d {
+namespace sea5kg {
+
+namespace sqlite3_wrapper {
 
 std::map<std::string, database_file *> *g_opened_database_files = nullptr;
 
+std::map<std::string, std::vector<std::shared_ptr<database_update_fabric_base>>> *g_database_updates_fabric = nullptr;
+
 // static
-void global_databases::add_opened_database_file(const std::string &name, database_file *db) {
+void global::registry_database_update_fabric(
+  const std::string &db_name, std::shared_ptr<database_update_fabric_base> fab
+) {
+  if (g_database_updates_fabric == nullptr) {
+    g_database_updates_fabric = new std::map<std::string, std::vector<std::shared_ptr<database_update_fabric_base>>>();
+  }
+  if (g_database_updates_fabric->count(db_name) == 0) {
+    g_database_updates_fabric->insert(
+      std::pair<std::string, std::vector<std::shared_ptr<database_update_fabric_base>>>(db_name, {})
+    );
+  }
+  g_database_updates_fabric->at(db_name).push_back(fab);
+}
+
+// static
+void global::add_opened_database_file(const std::string &name, database_file *db) {
   if (g_opened_database_files == nullptr) {
     // sea5kg::log::info(std::string(), "Create employees map");
     g_opened_database_files = new std::map<std::string, database_file *>();
@@ -59,13 +78,13 @@ void global_databases::add_opened_database_file(const std::string &name, databas
 }
 
 // static
-bool global_databases::init_driver_sqlite3(int &ret) {
+bool global::init_driver_sqlite3(int &ret) {
   ret = sqlite3_initialize();
   return SQLITE_OK == ret;
 }
 
 // static
-void global_databases::shutdown_driver_sqlite3() {
+void global::shutdown_driver_sqlite3() {
   // will be automatically closed all opened databases
   if (g_opened_database_files != nullptr) {
     for (const auto &pair : *g_opened_database_files) {
@@ -74,6 +93,30 @@ void global_databases::shutdown_driver_sqlite3() {
   }
   sqlite3_shutdown();
 }
+
+#define CLASS_DATABASE_UPDATE_BEGIN(class_name, ver_from, ver_to, description) \
+  class db_update_##class_name##_##ver_from##_##ver_to; \
+  struct registry_db_update_fabric_##class_name##_##ver_from##_##ver_to { \
+    registry_db_update_fabric_##class_name##_##ver_from##_##ver_to() { \
+      std::shared_ptr<sea5kg::sqlite3_wrapper::database_update_fabric_base> ptr = std::make_shared< \
+        sea5kg::sqlite3_wrapper::database_update_fabric<db_update_##class_name##_##ver_from##_##ver_to>>(); \
+      sea5kg::sqlite3_wrapper::global::registry_database_update_fabric(#class_name, ptr); \
+    } \
+  } registry_db_update_fabric_##class_name##_##ver_from##_##ver_to##__; \
+  class db_update_##class_name##_##ver_from##_##ver_to : public sea5kg::sqlite3_wrapper::database_update { \
+  public: \
+    db_update_##class_name##_##ver_from##_##ver_to() \
+        : sea5kg::sqlite3_wrapper::database_update(#class_name, #ver_from, #ver_to, description) { \
+    } \
+    virtual bool apply_update(sea5kg::sqlite3_wrapper::database_file * db, std::string & error) override
+
+#define CLASS_DATABASE_UPDATE_END() \
+  } \
+  ;
+
+#define CLASS_DATABASE_UPDATE_NEXT(class_name, ver_from, ver_to, description) \
+  CLASS_DATABASE_UPDATE_END() \
+  CLASS_DATABASE_UPDATE_BEGIN(class_name, ver_from, ver_to, description)
 
 class impl_rows_iterator : public rows_iterator {
 public:
@@ -126,9 +169,9 @@ database_file::database_file(const std::string &db_name, const std::string &init
                              const std::string &filename, long backup_freq)
     : m_backup_freq_in_seconds(backup_freq) {
   TAG = "database_file-" + filename;
-  m_database_file_db = nullptr;
+  m_db = nullptr;
   m_sFilename = filename;
-  m_nLastBackupTime = 0;
+  m_last_backup_time = 0;
   m_init_sql = init_sql;
   // auto config = findWsjcppEmploy<ctf01d::config>();
   if (!wsjcpp::dir_exists(db_dir)) {
@@ -153,47 +196,53 @@ database_file::~database_file() {
   close();
 }
 
-bool database_file::open() {
-  // open connection to a DB
-  sqlite3 *db = (sqlite3 *)m_database_file_db;
+bool database_file::open(std::string &error) {
+  m_db = nullptr;
+  // TODO if could not open but has backup try open backup
+  sqlite3 *db = (sqlite3 *)m_db;
   int nRet = sqlite3_open_v2(m_sFileFullpath.c_str(), &db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
   if (nRet != SQLITE_OK) {
-    sea5kg::log::critical(TAG, "Failed to open conn: " + std::to_string(nRet));
+    error = "Failed to open conn: " + std::to_string(nRet);
+    m_db = nullptr;
     return false;
   }
-  m_database_file_db = db;
+  m_db = db;
 
-  // Run the SQL (convert the string to a C-String with c_str() )
-  char *zErrMsg = 0;
-  nRet = sqlite3_exec((sqlite3 *)m_database_file_db, m_init_sql.c_str(), 0, 0, &zErrMsg);
-  if (nRet != SQLITE_OK) {
-    sea5kg::log::error(TAG, "Could not create table: " + m_init_sql);
-    std::string error_msg = "";
-    if (zErrMsg != 0) {
-      error_msg = std::string(zErrMsg);
+  // Run the SQL
+  if (m_init_sql != "") {
+    if (!execute_query(m_init_sql, error)) {
+      close();
+      return false;
     }
-    sea5kg::log::critical(TAG, "Problem with create table: " + error_msg);
-    return false;
   }
   sea5kg::log::success(TAG, "Opened database file " + m_sFileFullpath);
-  copy_database_to_backup();
-  ctf01d::global_databases::add_opened_database_file(m_sFileFullpath, this);
+  if (!copy_database_to_backup(error)) {
+    close();
+    return false;
+  }
+  sea5kg::sqlite3_wrapper::global::add_opened_database_file(m_sFileFullpath, this);
   return true;
 }
 
+bool database_file::is_opened() const {
+  return m_db != nullptr;
+}
+
 void database_file::close() {
-  if (m_database_file_db != nullptr) {
-    sqlite3_close((sqlite3 *)m_database_file_db);
-    m_database_file_db = nullptr;
+  if (is_opened()) {
+    sqlite3_close((sqlite3 *)m_db);
+    m_db = nullptr;
   }
 }
 
-bool database_file::executeQuery(std::string sql_query) {
-  copy_database_to_backup();
+bool database_file::execute_query(const std::string &sql, std::string &error) {
+  if (!copy_database_to_backup(error)) {
+    return false;
+  }
   char *errMsg = 0;
-  int nRet = sqlite3_exec((sqlite3 *)m_database_file_db, sql_query.c_str(), 0, 0, &errMsg);
+  int nRet = sqlite3_exec((sqlite3 *)m_db, sql.c_str(), 0, 0, &errMsg);
   if (nRet != SQLITE_OK) {
-    sea5kg::log::critical(TAG, "Problem with insert: " + std::string(errMsg) + "\n SQL-query: " + sql_query);
+    error = "Problem with SQL: " + std::string(errMsg) + "\n SQL-query: " + sql;
     sqlite3_free(errMsg);
     return false;
   }
@@ -201,12 +250,14 @@ bool database_file::executeQuery(std::string sql_query) {
 }
 
 int database_file::select_sum_or_count(const std::string &sql, std::string &error) {
-  copy_database_to_backup();
+  if (!copy_database_to_backup(error)) {
+    return -1;
+  }
   sqlite3_stmt *pQuery = nullptr;
-  int ret = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sql.c_str(), -1, &pQuery, NULL);
+  int ret = sqlite3_prepare_v2((sqlite3 *)m_db, sql.c_str(), -1, &pQuery, NULL);
   // prepare the statement
   if (ret != SQLITE_OK) {
-    error = "Failed to prepare select count: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
+    error = "Failed to prepare select count: " + std::string(sqlite3_errmsg((sqlite3 *)m_db)) +
             "\n SQL-query: " + sql;
     sea5kg::log::critical(TAG, error);
     return -1;
@@ -214,7 +265,7 @@ int database_file::select_sum_or_count(const std::string &sql, std::string &erro
   // step to 1st row of data
   ret = sqlite3_step(pQuery);
   if (ret != SQLITE_ROW) { // see documentation, this can return more values as success
-    error = "Failed to step for select count or sum: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
+    error = "Failed to step for select count or sum: " + std::string(sqlite3_errmsg((sqlite3 *)m_db)) +
             "\n SQL-query: " + sql;
     sea5kg::log::critical(TAG, error);
     return -1;
@@ -226,12 +277,14 @@ int database_file::select_sum_or_count(const std::string &sql, std::string &erro
 }
 
 std::shared_ptr<rows_iterator> database_file::select_rows(const std::string &sql, std::string &error) {
-  copy_database_to_backup();
+  if (!copy_database_to_backup(error)) {
+    return nullptr;
+  }
   sqlite3_stmt *pQuery = nullptr;
-  int res = sqlite3_prepare_v2((sqlite3 *)m_database_file_db, sql.c_str(), -1, &pQuery, NULL);
+  int res = sqlite3_prepare_v2((sqlite3 *)m_db, sql.c_str(), -1, &pQuery, NULL);
   // prepare the statement
   if (res != SQLITE_OK) {
-    error = "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)m_database_file_db)) +
+    error = "Failed to prepare select rows: " + std::string(sqlite3_errmsg((sqlite3 *)m_db)) +
             "\n SQL-query: " + sql;
     return nullptr;
   }
@@ -240,14 +293,14 @@ std::shared_ptr<rows_iterator> database_file::select_rows(const std::string &sql
   return ret;
 }
 
-void database_file::copy_database_to_backup() {
+bool database_file::copy_database_to_backup(std::string &error) {
   std::lock_guard<std::mutex> lock(m_mutex);
   // every 1 minutes make backup
   int nCurrentTime = WsjcppCore::getCurrentTimeInSeconds();
-  if (nCurrentTime - m_nLastBackupTime < 60) {
-    return;
+  if (nCurrentTime - m_last_backup_time < m_backup_freq_in_seconds) {
+    return true;
   }
-  m_nLastBackupTime = nCurrentTime;
+  m_last_backup_time = nCurrentTime;
 
   int nMaxBackupsFiles = 9;
   sea5kg::log::info(TAG, "Start backup for " + m_sFileFullpath);
@@ -261,6 +314,7 @@ void database_file::copy_database_to_backup() {
     if (wsjcpp::file_exists(sFilebackupFrom)) {
       if (std::rename(sFilebackupFrom.c_str(), sFilebackupTo.c_str())) {
         sea5kg::log::critical(TAG, "Could not rename from " + sFilebackupFrom + " to " + sFilebackupTo);
+        return false;
       }
     }
   }
@@ -269,6 +323,9 @@ void database_file::copy_database_to_backup() {
     sea5kg::log::critical(TAG, "Failed copy file to backup for " + m_sFileFullpath);
   }
   sea5kg::log::info(TAG, "Backup done for " + m_sFileFullpath);
+  return true;
 }
 
-} // namespace ctf01d
+} // namespace sqlite3_wrapper
+
+} // namespace sea5kg

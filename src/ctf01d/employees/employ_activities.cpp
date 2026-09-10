@@ -82,10 +82,10 @@ private:
 
   // db attempts
   std::mutex m_mutex_flags_attempts_db;
-  std::shared_ptr<ctf01d::database_file> m_flags_attempts_db;
+  std::shared_ptr<sea5kg::sqlite3_wrapper::database_file> m_flags_attempts_db;
   // db attempts_snapshot
   std::mutex m_mutex_flags_attempts_snapshots_db;
-  std::shared_ptr<ctf01d::database_file> m_flags_attempts_snapshots_db;
+  std::shared_ptr<sea5kg::sqlite3_wrapper::database_file> m_flags_attempts_snapshots_db;
 };
 
 // ---------------------------------------------------------------------
@@ -103,9 +103,9 @@ employ_activities::employ_activities()
 bool employ_activities::init(const std::string &name, bool silent) {
   sea5kg::log::info(TAG, "init");
   std::lock_guard<std::mutex> lock(m_mutex_flags_attempts_db);
-  
+
   m_all_activities_send_flag = 0;
-  
+
   if (!init_flags_attempts_db()) {
     return false;
   }
@@ -182,8 +182,9 @@ void employ_activities::insert_flag_attempt(
     std::string sQuery = "INSERT INTO flags_attempts(flag, team_id, request_ip, dt) "
       " VALUES('" + flag_value + "', '" + thief_team_id + "', '" + request_ip + "', " + std::to_string(WsjcppCore::getCurrentTimeInMilliseconds()) + ");";
 
-    if (!m_flags_attempts_db->executeQuery(sQuery)) {
-      sea5kg::log::critical(TAG, "Error insert attempt");
+    std::string error;
+    if (!m_flags_attempts_db->execute_query(sQuery, error)) {
+      sea5kg::log::critical(TAG, error);
     }
   }
 
@@ -211,7 +212,7 @@ void employ_activities::insert_flag_attempt(
 }
 
 bool employ_activities::init_flags_attempts_db() {
-  m_flags_attempts_db = std::make_shared<ctf01d::database_file>("database_flags_attempts",
+  m_flags_attempts_db = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_flags_attempts",
     "CREATE TABLE IF NOT EXISTS flags_attempts ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  flag VARCHAR(1024) NOT NULL, "
@@ -225,18 +226,22 @@ bool employ_activities::init_flags_attempts_db() {
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening flags_attempts.db");
-  if (!m_flags_attempts_db->open()) {
+  std::string error;
+  if (!m_flags_attempts_db->open(error)) {
+    sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;
   }
 
-  m_flags_attempts_db->executeQuery("CREATE INDEX IF NOT EXISTS idx_dt ON flags_attempts(dt);");
+  if (!m_flags_attempts_db->execute_query("CREATE INDEX IF NOT EXISTS idx_dt ON flags_attempts(dt);", error)) {
+    sea5kg::log::critical(TAG, error);
+  }
   return true;
 }
 
 bool employ_activities::init_flags_attempts_snapshots_db()
 {
   std::lock_guard<std::mutex> lock(m_mutex_flags_attempts_snapshots_db);
-  m_flags_attempts_snapshots_db = std::make_shared<ctf01d::database_file>("database_flags_attempts_snapshots",
+  m_flags_attempts_snapshots_db = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_flags_attempts_snapshots",
     "CREATE TABLE IF NOT EXISTS flags_attempts_snapshots ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  team_id VARCHAR(50) NOT NULL, "
@@ -251,7 +256,9 @@ bool employ_activities::init_flags_attempts_snapshots_db()
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
   sea5kg::log::info(TAG, "Opening flags_attempts_snapshots.db");
-  if (!m_flags_attempts_snapshots_db->open()) {
+  std::string error;
+  if (!m_flags_attempts_snapshots_db->open(error)) {
+    sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;
   }
   return true;
