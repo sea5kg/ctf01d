@@ -9,3 +9,39 @@ AllowShortLambdasOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
 BreakBeforeBraces: Attach
+AlignEscapedNewlines: DontAlign
+AlignAfterOpenBracket: BlockIndent
+ContinuationIndentWidth: 2
+
+# Do not pack multiple arguments/parameters on the same line
+BinPackArguments: false
+BinPackParameters: false
+
+# BreakBeforeBraces: Custom
+# BraceWrapping:
+#   AfterCaseLabel: false
+#   AfterClass: false
+#   AfterControlStatement: Never
+#   AfterEnum: false
+#   AfterFunction: false
+#   AfterNamespace: false
+#   AfterObjCDeclaration: false
+#   AfterStruct: false
+#   AfterUnion: false
+#   BeforeCatch: false
+#   BeforeElse: false
+#   BeforeLambdaBody: false
+#   BeforeWhile: false
+#   IndentBraces: false
+#   SplitEmptyFunction: true
+#   SplitEmptyRecord: true
+#   SplitEmptyNamespace: true
+
+SpaceBeforeCtorInitializerColon: true
+
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterControlStatements: true    # Space after if, for, while -> if (condition)
+  AfterFunctionDeclarationName: false # Space before function signature parameters -> void func ()
+  AfterFunctionDefinitionName: false  # Space before function body parameters -> void func () {}
+  BeforeNonEmptyParentheses: false # Space only if containing arguments -> func (x) vs func()
