@@ -1,17 +1,7 @@
 /**********************************************************************************
- *           Project
- *   _______ _________ _______  _______  __    ______
- *  (  ____ \\__   __/(  ____ \(  __   )/  \  (  __  \
- *  | (    \/   ) (   | (    \/| (  )  |\/) ) | (  \  )
- *  | |         | |   | (__    | | /   |  | | | |   ) |
- *  | |         | |   |  __)   | (/ /) |  | | | |   | |
- *  | |         | |   | (      |   / | |  | | | |   ) |
- *  | (____/\   | |   | )      |  (__) |__) (_| (__/  )
- *  (_______/   )_(   |/       (_______)\____/(______/
- *
  * MIT License
  *
- * Copyright (c) 2018-2026 Evgenii Sopov
+ * Copyright (c) 2025-2026 Evgenii Sopov <mrseakg@gmail.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +11,7 @@
  * furnished to do so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ *all copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -31,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
- * Original repository: https://github.com/sea5kg/ctf01d
+ * Official Source Code: https://github.com/sea5kg/sea5kg-sql-builder
  *
  ***********************************************************************************/
 
@@ -40,8 +30,8 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sea5kg {
 
@@ -86,28 +76,28 @@ public:
   static void shutdown_driver_sqlite3();
 };
 
-// class database_update {
-// public:
-//   database_update(
-//     const std::string &db_name,
-//     const std::string &version_from,
-//     const std::string &version_to,
-//     const std::string &description
-//   );
-//   const database_update_info &info();
-//   const std::string &db_name() const;
-//   void set_weight(int weight);
-//   int weight();
-//   virtual bool apply_update(database_file *db, std::string &error) = 0;
+class database_update {
+public:
+  database_update(
+    const std::string &db_name,
+    const std::string &version_from,
+    const std::string &version_to,
+    const std::string &description
+  );
+  const database_update_info &info();
+  const std::string &db_name() const;
+  void set_weight(int weight);
+  int weight();
+  virtual bool apply_update(database_file *db, std::string &error) = 0;
 
-// protected:
-//   std::string TAG;
+protected:
+  std::string TAG;
 
-// private:
-//   database_update_info m_update_info;
-//   std::string m_db_name;
-//   int m_weight;
-// };
+private:
+  database_update_info m_update_info;
+  std::string m_db_name;
+  int m_weight;
+};
 
 #define CLASS_DATABASE_UPDATE_BEGIN(class_name, ver_from, ver_to, description) \
   class db_update_##class_name##_##ver_from##_##ver_to; \
@@ -142,30 +132,46 @@ public:
 
 class database_file {
 public:
-  database_file(const std::string &db_name, const std::string &init_sql, const std::string &db_dir = "./",
-                const std::string &filename = "", long backup_freq = 0);
+  database_file(
+    const std::string &db_name,
+    const std::string &init_sql,
+    const std::string &db_dir = "./",
+    const std::string &filename = "",
+    long backup_freq = 0
+  );
   ~database_file();
+  const std::string &filename() const;
+  const std::string &filepath() const;
   bool open(std::string &error);
   bool is_opened() const;
   void close();
+  bool contains_table(const std::string &table_name);
   bool execute_query(const std::string &sql, std::string &error);
   int select_sum_or_count(const std::string &sql, std::string &error);
   std::shared_ptr<rows_iterator> select_rows(const std::string &sql, std::string &error);
+  bool copy_database_to_backup(std::string &error);
 
 private:
-  bool copy_database_to_backup(std::string &error);
+  bool create_table_db_version(std::string &error);
+  bool install_updates(std::string &error);
+  bool insert_db_version(const database_update_info &info, std::string &error);
+
   std::mutex m_mutex;
 
   std::string TAG;
-  void *m_db;
-  std::string m_sFilename;
-  std::string m_sFileFullpath;
-  long m_backup_freq_in_seconds;
-  std::string m_sBaseFileBackupFullpath;
   std::string m_init_sql;
-  int m_last_backup_time;
+  void *m_db; // hidden type 'sqlite3 *'
+  std::string m_db_name;
+  std::string m_filename;
+  std::string m_initial_version;
+  std::string m_filepath;
+  std::string m_basename_backup_filepath;
+  std::string m_last_error;
+  long m_last_backup_time;
+  long m_backup_freq_in_seconds;
+  std::vector<std::shared_ptr<database_update>> m_db_updates;
 };
 
 } // namespace sqlite3_wrapper
 
-} // namespace ctf01d
+} // namespace sea5kg

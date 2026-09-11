@@ -35,18 +35,18 @@
  *
  ***********************************************************************************/
 
-#include <wsjcpp_employees.h>
-#include <wsjcpp_core.h>
-#include <sea5kg_logger.h>
-#include <fstream>
-#include <cstring>
-#include <string>
-#include <sea5kg_sqlite3_wrapper.h>
-#include "ctf01d/objects/ctf01d_flag.h"
 #include "ctf01d/include/ctf01d_alive_flags.h"
 #include "ctf01d/include/ctf01d_config.h"
 #include "ctf01d/include/ctf01d_database.h"
 #include "ctf01d/include/ctf01d_globals.h"
+#include "ctf01d/objects/ctf01d_flag.h"
+#include <cstring>
+#include <fstream>
+#include <sea5kg_logger.h>
+#include <sea5kg_sqlite3_wrapper.h>
+#include <string>
+#include <wsjcpp_core.h>
+#include <wsjcpp_employees.h>
 
 class EmployAliveFlags : public WsjcppEmployBase, public ctf01d::alive_flags {
 public:
@@ -58,7 +58,8 @@ public:
 
   // ctf01d::alive_flags
   virtual bool insert_alive_flag(const ctf01d::flag &flag) override;
-  virtual std::vector<ctf01d::flag> outdated_alive_flags(const std::string &team_id, const std::string &service_id) override;
+  virtual std::vector<ctf01d::flag>
+  outdated_alive_flags(const std::string &team_id, const std::string &service_id) override;
   virtual bool find_alive_flag(const std::string &flag_value, ctf01d::flag &flag) override;
   virtual void remove_alive_flag(const ctf01d::flag &flag) override;
   virtual int count_alive_flags() override;
@@ -78,17 +79,9 @@ private:
 
 REGISTRY_WSJCPP_EMPLOY(EmployAliveFlags)
 
-EmployAliveFlags::EmployAliveFlags()
-: WsjcppEmployBase({ ctf01d::alive_flags::name() }, { ctf01d::config::name(), ctf01d::database::name() }) {
-  TAG = "EmployAliveFlags";
-  m_alive_flags_db = nullptr;
-}
-
-bool EmployAliveFlags::init(const std::string &name, bool silent) {
-  sea5kg::log::info(TAG, "init");
-  std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
-
-  m_alive_flags_db = std::make_shared<sea5kg::sqlite3_wrapper::database_file>("database_alive_flags",
+CLASS_DATABASE_UPDATE_BEGIN(database_alive_flags, initial, v001, "Init table alive_flags") {
+  // IF NOT EXISTS
+  return db->execute_query(
     "CREATE TABLE IF NOT EXISTS alive_flags ( "
     "  id INTEGER PRIMARY KEY AUTOINCREMENT, "
     "  service_id VARCHAR(50) NOT NULL, "
@@ -98,6 +91,24 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     "  date_start INTEGER NOT NULL, "
     "  date_end INTEGER NOT NULL "
     ");",
+    error
+  );
+}
+CLASS_DATABASE_UPDATE_END()
+
+EmployAliveFlags::EmployAliveFlags()
+    : WsjcppEmployBase({ctf01d::alive_flags::name()}, {ctf01d::config::name(), ctf01d::database::name()}) {
+  TAG = "EmployAliveFlags";
+  m_alive_flags_db = nullptr;
+}
+
+bool EmployAliveFlags::init(const std::string &name, bool silent) {
+  sea5kg::log::info(TAG, "init");
+  std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
+
+  m_alive_flags_db = std::make_shared<sea5kg::sqlite3_wrapper::database_file>(
+    "database_alive_flags",
+    "",
     findWsjcppEmploy<ctf01d::config>()->db_dir(),
     "alive_flags.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
@@ -116,7 +127,9 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     // TODO check service_id and team_id
     ctf01d::flag flag = alive_flags[i];
     m_alive_flags_cache[flag.value()] = flag;
-    sea5kg::log::info(TAG, "Loaded flag from previous session flags_live: id = " + flag.id() + ", value = " + flag.value());
+    sea5kg::log::info(
+      TAG, "Loaded flag from previous session flags_live: id = " + flag.id() + ", value = " + flag.value()
+    );
   }
 
   return true;
@@ -138,14 +151,11 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
   m_alive_flags_cache[flag.value()] = flag;
 
   std::string sQuery = "INSERT INTO alive_flags(service_id, flag_id, flag, team_id, "
-    "   date_start, date_end) VALUES("
-    "'" + flag.service_id() + "', "
-    + "'" + flag.id() + "', "
-    + "'" + flag.value() + "', "
-    + "'" + flag.team_id() + "', "
-    + std::to_string(flag.time_start_in_milliseconds()) + ", "
-    + std::to_string(flag.time_end_in_milliseconds())
-    + ");";
+                       "   date_start, date_end) VALUES("
+                       "'" +
+                       flag.service_id() + "', " + "'" + flag.id() + "', " + "'" + flag.value() + "', " + "'" +
+                       flag.team_id() + "', " + std::to_string(flag.time_start_in_milliseconds()) + ", " +
+                       std::to_string(flag.time_end_in_milliseconds()) + ");";
   std::string error;
   if (!m_alive_flags_db->execute_query(sQuery, error)) {
     sea5kg::log::error(TAG, error);
@@ -153,16 +163,16 @@ bool EmployAliveFlags::insert_alive_flag(const ctf01d::flag &flag) {
   return true;
 }
 
-std::vector<ctf01d::flag> EmployAliveFlags::outdated_alive_flags(const std::string &team_id, const std::string &service_id) {
+std::vector<ctf01d::flag>
+EmployAliveFlags::outdated_alive_flags(const std::string &team_id, const std::string &service_id) {
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
   std::vector<ctf01d::flag> vResult;
   long current_time = WsjcppCore::getCurrentTimeInMilliseconds();
-  std::map<std::string,ctf01d::flag>::iterator it;
+  std::map<std::string, ctf01d::flag>::iterator it;
   for (it = m_alive_flags_cache.begin(); it != m_alive_flags_cache.end(); it++) {
     ctf01d::flag flag = it->second;
-    if (flag.team_id() == team_id
-      && flag.service_id() == service_id
-      && flag.time_end_in_milliseconds() < current_time
+    if (
+      flag.team_id() == team_id && flag.service_id() == service_id && flag.time_end_in_milliseconds() < current_time
     ) {
       vResult.push_back(flag);
     }
@@ -172,7 +182,7 @@ std::vector<ctf01d::flag> EmployAliveFlags::outdated_alive_flags(const std::stri
 
 bool EmployAliveFlags::find_alive_flag(const std::string &sFlagValue, ctf01d::flag &flag) {
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
-  std::map<std::string,ctf01d::flag>::iterator it = m_alive_flags_cache.find(sFlagValue);
+  std::map<std::string, ctf01d::flag>::iterator it = m_alive_flags_cache.find(sFlagValue);
   if (it != m_alive_flags_cache.end()) {
     flag.copy_from(it->second);
     return true;
@@ -182,7 +192,7 @@ bool EmployAliveFlags::find_alive_flag(const std::string &sFlagValue, ctf01d::fl
 
 void EmployAliveFlags::remove_alive_flag(const ctf01d::flag &flag) {
   std::lock_guard<std::mutex> lock(m_mutex_alive_flags);
-  std::map<std::string,ctf01d::flag>::iterator it;
+  std::map<std::string, ctf01d::flag>::iterator it;
   it = m_alive_flags_cache.find(flag.value());
   if (it != m_alive_flags_cache.end()) {
     m_alive_flags_cache.erase(it);
@@ -206,13 +216,16 @@ std::vector<ctf01d::flag> EmployAliveFlags::get_from_db_alive_flags() {
   // long nCurrentTime = WsjcppCore::getCurrentTimeInMilliseconds();
   auto config = findWsjcppEmploy<ctf01d::config>();
 
-  std::string sQuery =
-    "SELECT flag_id, service_id, team_id, flag, date_start, date_end "
-    "FROM alive_flags "
-    "WHERE "
-    "   date_start > " + std::to_string(long(config->game_start_utc_in_seconds())*1000) + " "
-    "   AND date_end < " + std::to_string(long(config->game_end_utc_in_seconds())*1000) + " "
-    ";";
+  std::string sQuery = "SELECT flag_id, service_id, team_id, flag, date_start, date_end "
+                       "FROM alive_flags "
+                       "WHERE "
+                       "   date_start > " +
+                       std::to_string(long(config->game_start_utc_in_seconds()) * 1000) +
+                       " "
+                       "   AND date_end < " +
+                       std::to_string(long(config->game_end_utc_in_seconds()) * 1000) +
+                       " "
+                       ";";
 
   std::vector<ctf01d::flag> vResult;
   std::string error;
