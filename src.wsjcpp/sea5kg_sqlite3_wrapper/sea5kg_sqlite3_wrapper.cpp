@@ -30,9 +30,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <sea5kg_logger.h>
 #include <sqlite3.h>
-#include <wsjcpp_core.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -243,14 +241,10 @@ long impl_rows_iterator::as_long(int column_idx) {
 // database_file
 
 database_file::database_file(
-  const std::string &db_name,
-  const std::string &db_dir,
-  const std::string &filename,
-  long backup_freq
+  const std::string &db_name, const std::string &db_dir, const std::string &filename, long backup_freq
 )
     : m_db(nullptr), m_backup_freq_in_seconds(backup_freq), m_last_backup_time(0), m_initial_version("initial"),
       m_db_name(db_name) {
-  TAG = "database_file-" + filename;
   m_filename = filename != "" ? filename : db_name + ".db";
 
   std::string sDatabaseDir = db_dir;
@@ -260,11 +254,8 @@ database_file::database_file(
     std::string sDatabaseBackupDir = db_dir + "/backups";
     if (!__dir_exists(sDatabaseBackupDir)) {
       if (!__make_dir(sDatabaseBackupDir)) {
-        sea5kg::log::critical(TAG, "Could not create dir " + sDatabaseBackupDir);
-      }
-      std::string error;
-      if (!WsjcppCore::setFilePermissions(sDatabaseBackupDir, WsjcppFilePermissions(0x776), error)) {
-        sea5kg::log::critical(TAG, error);
+        m_last_error = "Could not create database dir";
+        return;
       }
     }
     m_basename_backup_filepath = sDatabaseBackupDir + "/" + m_filename;
@@ -281,7 +272,8 @@ database_file::database_file(
   }
 
   if (!__dir_exists(db_dir)) {
-    sea5kg::log::critical(TAG, "Not found db dir: " + db_dir);
+    m_last_error = "Not found db dir: " + db_dir;
+    return;
   }
 };
 
@@ -520,7 +512,6 @@ bool database_file::copy_database_to_backup(std::string &error) {
 
   // TODO must be configurable
   int nMaxBackupsFiles = 9;
-  // sea5kg::log::info(TAG, "Start backup for " + m_filepath);
   std::string sFilebackup = m_basename_backup_filepath + "." + std::to_string(nMaxBackupsFiles);
   if (__file_exists(sFilebackup)) {
     if (!std::filesystem::remove(sFilebackup)) {
@@ -543,8 +534,15 @@ bool database_file::copy_database_to_backup(std::string &error) {
     error = "Failed copy file to backup for " + m_filepath;
     return false;
   }
-  // sea5kg::log::info(TAG, "Backup done for " + m_filepath);
   return true;
+}
+
+bool database_file::has_error(std::string &error) {
+  if (m_last_error != "") {
+    m_last_error = error;
+    return true;
+  }
+  return false;
 }
 
 bool database_file::create_table_db_version(std::string &error) {

@@ -112,8 +112,11 @@ bool EmployAliveFlags::init(const std::string &name, bool silent) {
     "alive_flags.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
-  sea5kg::log::info(TAG, "Opening alive_flags.db");
   std::string error;
+  if (m_alive_flags_db->has_error(error)) {
+    sea5kg::log::critical(TAG, error);
+  }
+  sea5kg::log::info(TAG, "Opening alive_flags.db");
   if (!m_alive_flags_db->open(error)) {
     sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;

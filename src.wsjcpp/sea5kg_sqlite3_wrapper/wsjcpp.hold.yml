@@ -1,0 +1,28 @@
+name: "sea5kg-sqlite3-wrapper"
+version: v0.1.1
+cmake_minimum_required: "3.0"
+cmake_cxx_standard: "17"
+description: "C++ Class-helper for build SQL queries"
+authors:
+  - name: "Evgenii Sopov"
+    email: "mrseakg@gmail.com"
+
+origins:
+  - address: "https://sea5kg.ru/wsjcpp-package-registry/"
+    type: "package-registry"
+
+keywords:
+  - "c++"
+  - "sql"
+  - "builder"
+
+distribution:
+  - source-file: "src/sea5kg/sqlite3_wrapper/sea5kg_sqlite3_wrapper.h"
+    target-file: "sea5kg_sqlite3_wrapper.h"
+    type: "source-code"
+    sha1: "f4722e53092ca0076e30aa377e5ef2ff4f7b17e1"
+  - source-file: "src/sea5kg/sqlite3_wrapper/sea5kg_sqlite3_wrapper.cpp"
+    target-file: "sea5kg_sqlite3_wrapper.cpp"
+    type: "source-code"
+    sha1: "7f435dd665259bb77643c1b5b11aea5736630ac5"
+

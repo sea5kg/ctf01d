@@ -90,10 +90,6 @@ list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_servi
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_team_config.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/ctf01d/objects/ctf01d_team_status_row.cpp")
 
-# sea5kg/sqlite3_wrapper
-list (APPEND WSJCPP_INCLUDE_DIRS "src/sea5kg/sqlite3_wrapper")
-list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/sea5kg/sqlite3_wrapper/sea5kg_sqlite3_wrapper.cpp")
-
 # main
 list (APPEND WSJCPP_SOURCES "src/main.cpp")
 

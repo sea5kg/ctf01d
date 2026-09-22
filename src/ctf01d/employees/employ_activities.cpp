@@ -244,8 +244,11 @@ bool employ_activities::init_flags_attempts_db() {
     "flags_attempts.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
-  sea5kg::log::info(TAG, "Opening flags_attempts.db");
   std::string error;
+  if (m_flags_attempts_db->has_error(error)) {
+    sea5kg::log::critical(TAG, error);
+  }
+  sea5kg::log::info(TAG, "Opening flags_attempts.db");
   if (!m_flags_attempts_db->open(error)) {
     sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;
@@ -278,8 +281,11 @@ bool employ_activities::init_flags_attempts_snapshots_db() {
     "flags_attempts_snapshots.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
-  sea5kg::log::info(TAG, "Opening flags_attempts_snapshots.db");
   std::string error;
+  if (m_flags_attempts_snapshots_db->has_error(error)) {
+    sea5kg::log::critical(TAG, error);
+  }
+  sea5kg::log::info(TAG, "Opening flags_attempts_snapshots.db");
   if (!m_flags_attempts_snapshots_db->open(error)) {
     sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
     return false;

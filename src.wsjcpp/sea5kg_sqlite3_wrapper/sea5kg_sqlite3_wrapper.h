@@ -33,6 +33,10 @@
 #include <string>
 #include <vector>
 
+#define SEA5KG_SQLITE3_WRAPPER_VER_0
+#define SEA5KG_SQLITE3_WRAPPER_VER_0_1
+#define SEA5KG_SQLITE3_WRAPPER_VER_0_1_1
+
 namespace sea5kg {
 
 namespace sqlite3_wrapper {
@@ -133,10 +137,7 @@ public:
 class database_file {
 public:
   database_file(
-    const std::string &db_name,
-    const std::string &db_dir = "./",
-    const std::string &filename = "",
-    long backup_freq = 0
+    const std::string &db_name, const std::string &db_dir = "./", const std::string &filename = "", long backup_freq = 0
   );
   ~database_file();
   const std::string &filename() const;
@@ -149,6 +150,7 @@ public:
   int select_sum_or_count(const std::string &sql, std::string &error);
   std::shared_ptr<rows_iterator> select_rows(const std::string &sql, std::string &error);
   bool copy_database_to_backup(std::string &error);
+  bool has_error(std::string &error);
 
 private:
   bool create_table_db_version(std::string &error);
@@ -156,8 +158,6 @@ private:
   bool insert_db_version(const database_update_info &info, std::string &error);
 
   std::mutex m_mutex;
-
-  std::string TAG;
   void *m_db; // hidden type 'sqlite3 *'
   std::string m_db_name;
   std::string m_filename;

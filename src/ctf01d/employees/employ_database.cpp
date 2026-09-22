@@ -192,6 +192,9 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "flags_checker_put_results.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
+  if (m_flags_checker_puts_results->has_error(error)) {
+    sea5kg::log::critical(TAG, error);
+  }
   sea5kg::log::info(TAG, "Opening m_flags_checker_puts_results");
   if (!m_flags_checker_puts_results->open(error)) {
     sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
@@ -204,6 +207,9 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "flags_defense.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
+  if (m_flags_defense_db->has_error(error)) {
+    sea5kg::log::critical(TAG, error);
+  }
   sea5kg::log::info(TAG, "Opening m_flags_defense_db");
   if (!m_flags_defense_db->open(error)) {
     sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
@@ -216,6 +222,9 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "flags_check_fails.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
+  if (m_flags_check_fails->has_error(error)) {
+    sea5kg::log::critical(TAG, error);
+  }
   sea5kg::log::info(TAG, "Opening m_flags_check_fails");
   if (!m_flags_check_fails->open(error)) {
     sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);
@@ -228,6 +237,9 @@ bool employ_database::init(const std::string &sName, bool bSilent) {
     "flags_stolen.db",
     ctf01d::DEFAULT_DATABASE_BACKUP_FREQUENCY_IN_SECONDS
   );
+  if (m_flags_stolen->has_error(error)) {
+    sea5kg::log::critical(TAG, error);
+  }
   sea5kg::log::info(TAG, "Opening m_flags_stolen");
   if (!m_flags_stolen->open(error)) {
     sea5kg::log::critical(TAG, "Problem with open database. Error: " + error);

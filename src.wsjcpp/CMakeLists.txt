@@ -37,6 +37,11 @@ list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/./src.wsjcpp/sea5kg_logger
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/sea5kg_logger/sea5kg_logger.cpp")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/sea5kg_logger/sea5kg_logger.h")
 
+# sea5kg-sqlite3-wrapper:v0.1.1
+list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/./src.wsjcpp/sea5kg_sqlite3_wrapper/")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/sea5kg_sqlite3_wrapper/sea5kg_sqlite3_wrapper.h")
+list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/./src.wsjcpp/sea5kg_sqlite3_wrapper/sea5kg_sqlite3_wrapper.cpp")
+
 # resources.wsjcpp
 list (APPEND WSJCPP_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/")
 list (APPEND WSJCPP_SOURCES "${CMAKE_SOURCE_DIR}/src/wsjcpp_resources/__data_sample_checker_example_service4_checker_py_path013bb4.h")
